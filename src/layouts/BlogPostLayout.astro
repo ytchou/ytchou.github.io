@@ -7,32 +7,31 @@ interface Props {
   description: string;
   date: Date;
   tags: string[];
+  lang?: string;
 }
-const { title, description, date, tags } = Astro.props;
-const formatted = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+const { title, description, date, tags, lang = 'en' } = Astro.props;
+const formatted = date.toLocaleDateString(lang === 'zh' ? 'zh-TW' : 'en-US', {
+  year: 'numeric', month: 'long', day: 'numeric'
+});
 ---
 
 <BaseLayout title={`${title} — ${SITE_TITLE}`} description={description}>
   <article>
-    <header>
-      <h1>{title}</h1>
-      <time datetime={date.toISOString()}>{formatted}</time>
-      <ul class="tags">
-        {tags.map(tag => <li>{tag}</li>)}
-      </ul>
+    <header class="mb-10 pb-8 border-b border-gray-100">
+      <h1 class="text-3xl font-bold text-gray-900 tracking-tight mb-3">{title}</h1>
+      <div class="flex items-center gap-4 flex-wrap">
+        <time class="text-sm text-gray-400" datetime={date.toISOString()}>{formatted}</time>
+        {tags.length > 0 && (
+          <ul class="flex flex-wrap gap-1.5 list-none p-0 m-0">
+            {tags.map(tag => (
+              <li class="text-xs px-2 py-0.5 bg-gray-100 text-gray-500 rounded-full">{tag}</li>
+            ))}
+          </ul>
+        )}
+      </div>
     </header>
-    <div class="prose">
+    <div class="prose prose-gray max-w-none">
       <slot />
     </div>
   </article>
 </BaseLayout>
-
-<style>
-  header { margin-bottom: 2rem; border-bottom: 1px solid rgb(var(--gray-light)); padding-bottom: 1.5rem; }
-  h1 { margin-bottom: 0.5rem; }
-  time { color: rgb(var(--gray)); font-size: 0.9rem; }
-  .tags { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.75rem; }
-  .tags li { background: rgb(var(--gray-light)); padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.8rem; color: rgb(var(--gray)); }
-  .prose { line-height: 1.8; font-size: 1.05rem; }
-  .prose h2, .prose h3 { margin-top: 2rem; }
-</style>
