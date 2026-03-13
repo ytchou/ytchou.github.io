@@ -1,5 +1,6 @@
 ---
 import type { Lang } from '../i18n/ui';
+import { getPostSlug } from '../i18n/utils';
 
 interface Props {
   title: string;
@@ -11,7 +12,7 @@ interface Props {
 }
 const { title, description, date, id, pinned, lang = 'en' } = Astro.props;
 const basePath = lang === 'zh' ? '/zh/blog' : '/blog';
-const slug = id.startsWith('zh/') ? id.slice(3) : id;
+const slug = getPostSlug(id);
 const formatted = date.toLocaleDateString(lang === 'zh' ? 'zh-TW' : 'en-US', {
   year: 'numeric', month: 'long', day: 'numeric'
 });

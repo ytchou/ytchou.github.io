@@ -14,6 +14,11 @@ export function useTranslations(lang: Lang) {
   };
 }
 
+/** Strip the language-directory prefix from a content collection post ID to get a clean URL slug. */
+export function getPostSlug(id: string): string {
+  return id.startsWith('zh/') ? id.slice(3) : id;
+}
+
 export function getAlternateLangUrl(url: URL, lang: Lang): string {
   const path = url.pathname;
   if (lang === 'zh') {

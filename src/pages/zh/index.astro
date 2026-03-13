@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
 import { projects } from '../../data/projects';
-import { useTranslations } from '../../i18n/utils';
+import { useTranslations, getPostSlug } from '../../i18n/utils';
 
 const t = useTranslations('zh');
 
@@ -37,7 +37,7 @@ const featuredProjects = projects.filter(p => p.featured);
     <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-6">{t('home.writing')}</h2>
     <ul class="space-y-0">
       {latestPosts.map(post => {
-        const slug = post.id.startsWith('zh/') ? post.id.slice(3) : post.id;
+        const slug = getPostSlug(post.id);
         return (
           <li class="flex items-baseline justify-between py-3 border-b border-gray-50 last:border-0 group">
             <a href={`/zh/blog/${slug}`} class="text-gray-800 hover:text-indigo-600 transition-colors font-medium no-underline group-hover:underline underline-offset-4">
