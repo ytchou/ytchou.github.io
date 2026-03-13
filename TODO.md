@@ -16,7 +16,7 @@
 - [x] Task 5: Redesign Footer
 
 **Wave 4 — Blog schema:**
-- [ ] Task 6: Update blog content schema (lang + pinned fields) and add ZH sample posts
+- [x] Task 6: Update blog content schema (lang + pinned fields) and add ZH sample posts
 
 **Wave 5 — Page redesigns (parallel):**
 - [ ] Task 7: Redesign Home page (hero, recent posts, featured projects)
