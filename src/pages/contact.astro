@@ -18,7 +18,7 @@ const calendlyUrl = 'https://calendly.com/yourname/coffee-chat';
     {links.map(link => (
       <li>
         <strong>{link.label}:</strong>
-        <a href={link.href} target="_blank" rel="noopener">{link.display}</a>
+        <a href={link.href} {...(!link.href.startsWith('mailto:') && { target: '_blank', rel: 'noopener' })}>{link.display}</a>
       </li>
     ))}
   </ul>
