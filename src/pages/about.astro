@@ -1,43 +1,28 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { useTranslations } from '../i18n/utils';
 
+const t = useTranslations('en');
 const skills = ['TypeScript', 'Python', 'React', 'Node.js', 'SQL', 'Docker'];
 ---
 
-<BaseLayout title="About — Your Name" description="A bit about me.">
-  <h1>About</h1>
+<BaseLayout title={`${t('about.title')} — Yung-Tang Chou`} description="A bit about me.">
+  <h1 class="text-3xl font-bold text-gray-900 tracking-tight mb-8">{t('about.title')}</h1>
 
-  <section class="bio">
+  <section class="mb-10 space-y-4 text-gray-600 leading-relaxed">
     <p>
-      I'm a software engineer based in [City]. I work on [what you do].
+      I'm a software engineer based in Taiwan. I work on [what you do].
       Previously at [Company/School]. I care about [values/interests].
     </p>
-    <p>
-      Outside of work, I [hobbies/interests].
-    </p>
+    <p>Outside of work, I [hobbies/interests].</p>
   </section>
 
   <section>
-    <h2>Skills</h2>
-    <ul class="skills">
-      {skills.map(skill => <li>{skill}</li>)}
+    <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Skills</h2>
+    <ul class="flex flex-wrap gap-2 list-none p-0 m-0">
+      {skills.map(skill => (
+        <li class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full">{skill}</li>
+      ))}
     </ul>
   </section>
 </BaseLayout>
-
-<style>
-  .bio p { font-size: 1.1rem; line-height: 1.8; color: rgb(var(--gray-dark)); }
-  .skills {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-  }
-  .skills li {
-    background: rgb(var(--gray-light));
-    padding: 0.4rem 1rem;
-    border-radius: 6px;
-    font-size: 0.95rem;
-  }
-</style>
