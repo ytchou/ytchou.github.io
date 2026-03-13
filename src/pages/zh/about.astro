@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { useTranslations } from '../../i18n/utils';
+
+const t = useTranslations('zh');
+const skills = ['TypeScript', 'Python', 'React', 'Node.js', 'SQL', 'Docker'];
+---
+
+<BaseLayout title={`${t('about.title')} — 周永唐`} description="關於我。">
+  <h1 class="text-3xl font-bold text-gray-900 tracking-tight mb-8">{t('about.title')}</h1>
+  <section class="mb-10 space-y-4 text-gray-600 leading-relaxed">
+    <p>我是一位台灣的軟體工程師。我專注於 [您的工作領域]。曾任職於 [公司/學校]。我重視 [價值觀/興趣]。</p>
+    <p>工作之外，我喜歡 [興趣/嗜好]。</p>
+  </section>
+  <section>
+    <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">技能</h2>
+    <ul class="flex flex-wrap gap-2 list-none p-0 m-0">
+      {skills.map(skill => (
+        <li class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full">{skill}</li>
+      ))}
+    </ul>
+  </section>
+</BaseLayout>

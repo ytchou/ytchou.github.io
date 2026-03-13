@@ -26,7 +26,7 @@
 - [x] Task 11: Redesign About page
 
 **Wave 6 — ZH routes:**
-- [ ] Task 12: Create ZH page routes (src/pages/zh/)
+- [x] Task 12: Create ZH page routes (src/pages/zh/)
 
 **Wave 7 — Content:**
 - [ ] Task 13: Update personal content (name, GitHub URLs, placeholder bio/projects)
