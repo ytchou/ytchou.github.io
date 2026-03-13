@@ -30,8 +30,9 @@ export function getPostSlug(id: string): string {
 
 export function getAlternateLangUrl(url: URL, lang: Lang): string {
   const path = url.pathname;
+  const isZhPath = path === '/zh' || path.startsWith('/zh/');
   if (lang === 'zh') {
-    return path.startsWith('/zh') ? path : `/zh${path === '/' ? '' : path}`;
+    return isZhPath ? path : `/zh${path === '/' ? '' : path}`;
   }
-  return path.startsWith('/zh') ? path.slice(3) || '/' : path;
+  return isZhPath ? path.slice(3) || '/' : path;
 }

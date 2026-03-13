@@ -13,7 +13,7 @@ const t = useTranslations('zh');
     {contactLinks.map(link => (
       <li class="flex items-center gap-3">
         <span class="text-sm font-medium text-gray-700 w-20">{t(link.labelKey)}</span>
-        <a href={link.href} {...(link.external ? { target: '_blank', rel: 'noopener' } : {})}
+        <a href={link.href} {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
           class="text-sm text-indigo-600 hover:text-indigo-700 no-underline hover:underline underline-offset-4">
           {link.display}
         </a>
@@ -23,7 +23,7 @@ const t = useTranslations('zh');
   <section class="border-t border-gray-100 pt-8">
     <h2 class="text-lg font-semibold text-gray-900 mb-2">{t('contact.coffee')}</h2>
     <p class="text-gray-500 text-sm mb-4">{t('contact.coffee-body')}</p>
-    <a href={calendlyUrl} target="_blank" rel="noopener"
+    <a href={calendlyUrl} target="_blank" rel="noopener noreferrer"
       class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors no-underline">
       {t('contact.book')}
     </a>
