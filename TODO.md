@@ -19,11 +19,11 @@
 - [x] Task 6: Update blog content schema (lang + pinned fields) and add ZH sample posts
 
 **Wave 5 — Page redesigns (parallel):**
-- [ ] Task 7: Redesign Home page (hero, recent posts, featured projects)
-- [ ] Task 8: Redesign Blog listing page (chronological, pinned marker)
-- [ ] Task 9: Redesign BlogPostLayout (clean article layout)
-- [ ] Task 10: Create ProjectCard component and redesign Projects page
-- [ ] Task 11: Redesign About page
+- [x] Task 7: Redesign Home page (hero, recent posts, featured projects)
+- [x] Task 8: Redesign Blog listing page (chronological, pinned marker)
+- [x] Task 9: Redesign BlogPostLayout (clean article layout)
+- [x] Task 10: Create ProjectCard component and redesign Projects page
+- [x] Task 11: Redesign About page
 
 **Wave 6 — ZH routes:**
 - [ ] Task 12: Create ZH page routes (src/pages/zh/)
