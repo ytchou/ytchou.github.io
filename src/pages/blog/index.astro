@@ -2,15 +2,11 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import BlogPostCard from '../../components/BlogPostCard.astro';
-import { useTranslations } from '../../i18n/utils';
+import { useTranslations, sortPosts } from '../../i18n/utils';
 
 const t = useTranslations('en');
 
-const posts = (await getCollection('blog', ({ data }) => data.lang === 'en' && !data.draft))
-  .sort((a, b) => {
-    if (a.data.pinned !== b.data.pinned) return a.data.pinned ? -1 : 1;
-    return b.data.date.valueOf() - a.data.date.valueOf();
-  });
+const posts = sortPosts(await getCollection('blog', ({ data }) => data.lang === 'en' && !data.draft));
 ---
 
 <BaseLayout title={`${t('blog.title')} — Yung-Tang Chou`} description={t('blog.subtitle')}>

@@ -3,17 +3,12 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import { projects } from '../data/projects';
-import { useTranslations } from '../i18n/utils';
+import { useTranslations, sortPosts } from '../i18n/utils';
 
 const t = useTranslations('en');
 
 const allPosts = await getCollection('blog', ({ data }) => data.lang === 'en' && !data.draft);
-const latestPosts = allPosts
-  .sort((a, b) => {
-    if (a.data.pinned !== b.data.pinned) return a.data.pinned ? -1 : 1;
-    return b.data.date.valueOf() - a.data.date.valueOf();
-  })
-  .slice(0, 3);
+const latestPosts = sortPosts(allPosts).slice(0, 3);
 
 const featuredProjects = projects.filter(p => p.featured);
 ---

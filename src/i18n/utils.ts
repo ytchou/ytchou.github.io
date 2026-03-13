@@ -1,3 +1,4 @@
+import type { CollectionEntry } from 'astro:content';
 import { defaultLang, ui, type Lang, type UIKey } from './ui';
 
 export function getLangFromUrl(url: URL): Lang {
@@ -12,6 +13,14 @@ export function useTranslations(lang: Lang) {
       ?? (ui[defaultLang] as Record<string, string>)[key]
       ?? key;
   };
+}
+
+/** Sort blog posts pinned-first, then newest-first. */
+export function sortPosts(posts: CollectionEntry<'blog'>[]): CollectionEntry<'blog'>[] {
+  return [...posts].sort((a, b) => {
+    if (a.data.pinned !== b.data.pinned) return a.data.pinned ? -1 : 1;
+    return b.data.date.valueOf() - a.data.date.valueOf();
+  });
 }
 
 /** Strip the language-directory prefix from a content collection post ID to get a clean URL slug. */
