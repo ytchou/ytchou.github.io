@@ -7,9 +7,9 @@ const altLangUrl = getAlternateLangUrl(Astro.url, lang === 'en' ? 'zh' : 'en');
 const base = lang === 'zh' ? '/zh' : '';
 ---
 
-<header class="sticky top-0 z-10 bg-[#fafafa]/95 backdrop-blur-sm border-b border-gray-100">
+<header class="sticky top-0 z-10 bg-[#F5F2EE]/95 backdrop-blur-sm border-b border-[#E2DBD3]">
   <nav class="max-w-[720px] mx-auto px-6 py-4 flex items-center justify-between">
-    <a href={`${base}/`} class="font-semibold text-gray-900 hover:text-indigo-600 transition-colors text-sm">
+    <a href={`${base}/`} class="font-semibold text-[#2C2825] hover:text-[#6B5B47] transition-colors text-sm">
       {t('nav.home')}
     </a>
     <div class="flex items-center gap-1">
@@ -21,7 +21,7 @@ const base = lang === 'zh' ? '/zh' : '';
       </div>
       <a
         href={altLangUrl}
-        class="ml-3 text-xs font-medium px-2.5 py-1 rounded-md border border-gray-200 text-gray-500 hover:border-indigo-300 hover:text-indigo-600 transition-colors"
+        class="ml-3 text-xs font-medium px-2.5 py-1 rounded-md border border-[#E2DBD3] text-[#8C8078] hover:border-[#6B5B47] hover:text-[#6B5B47] transition-colors"
       >
         {t('nav.lang-toggle')}
       </a>

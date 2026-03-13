@@ -9,7 +9,7 @@ const t = useTranslations('zh');
 const posts = sortPosts(await getCollection('blog', ({ data }) => data.lang === 'zh' && !data.draft));
 ---
 
-<BaseLayout title={`${t('blog.title')} — 周永唐`} description={t('blog.subtitle')}>
+<BaseLayout title={`${t('blog.title')} — 周永堂`} description={t('blog.subtitle')}>
   <div class="mb-10">
     <h1 class="text-3xl font-bold text-gray-900 tracking-tight mb-2">{t('blog.title')}</h1>
     <p class="text-gray-500">{t('blog.subtitle')}</p>

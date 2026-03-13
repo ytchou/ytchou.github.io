@@ -1,9 +1,11 @@
 ---
 import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import { projects } from '../data/projects';
 import { useTranslations, sortPosts } from '../i18n/utils';
+import headshot from '../assets/headshot.jpeg';
 
 const t = useTranslations('en');
 
@@ -15,17 +17,30 @@ const featuredProjects = projects.filter(p => p.featured);
 
 <BaseLayout title="Yung-Tang Chou" description={t('hero.tagline')}>
   <!-- Hero -->
-  <section class="py-16 border-b border-gray-100">
-    <h1 class="text-4xl font-bold text-gray-900 mb-3 tracking-tight">Yung-Tang Chou</h1>
-    <p class="text-lg text-gray-500 mb-1">{t('hero.tagline')}</p>
-    <p class="text-lg text-gray-500 mb-8">{t('hero.sub')}</p>
-    <div class="flex gap-3">
-      <a href="/projects" class="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors no-underline">
-        {t('hero.cta.work')} ↗
-      </a>
-      <a href="/contact" class="inline-flex items-center px-4 py-2 border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:border-gray-300 hover:bg-gray-50 transition-colors no-underline">
-        {t('hero.cta.contact')}
-      </a>
+  <section class="py-16 border-b border-[#E2DBD3]">
+    <div class="flex items-center justify-between gap-10">
+      <div class="flex-1 min-w-0">
+        <h1 class="text-4xl font-bold text-[#2C2825] mb-3 tracking-tight">Yung-Tang Chou</h1>
+        <p class="text-lg text-[#8C8078] mb-1">{t('hero.tagline')}</p>
+        <p class="text-lg text-[#8C8078] mb-8">{t('hero.sub')}</p>
+        <div class="flex gap-3">
+          <a href="/projects" class="inline-flex items-center gap-1.5 px-4 py-2 bg-[#6B5B47] text-white text-sm font-medium rounded-lg hover:bg-[#5A4A3A] transition-colors no-underline">
+            {t('hero.cta.work')} ↗
+          </a>
+          <a href="/contact" class="inline-flex items-center px-4 py-2 border border-[#E2DBD3] text-[#2C2825] text-sm font-medium rounded-lg hover:border-[#C4B8AA] hover:bg-[#EDE8E3] transition-colors no-underline">
+            {t('hero.cta.contact')}
+          </a>
+        </div>
+      </div>
+      <div class="shrink-0">
+        <Image
+          src={headshot}
+          alt="Yung-Tang Chou"
+          width={160}
+          height={160}
+          class="w-32 h-32 sm:w-40 sm:h-40 rounded-full object-cover object-top"
+        />
+      </div>
     </div>
   </section>
 
@@ -35,8 +50,8 @@ const featuredProjects = projects.filter(p => p.featured);
     <ul class="space-y-0">
       {latestPosts.map(post => (
         <li class="flex items-baseline justify-between py-3 border-b border-gray-50 last:border-0 group">
-          <a href={`/blog/${post.id}`} class="text-gray-800 hover:text-indigo-600 transition-colors font-medium no-underline group-hover:underline underline-offset-4">
-            {post.data.pinned && <span class="inline-block w-1.5 h-1.5 rounded-full bg-indigo-500 mr-2 mb-0.5 align-middle"></span>}
+          <a href={`/blog/${post.id}`} class="text-gray-800 hover:text-[#6B5B47] transition-colors font-medium no-underline group-hover:underline underline-offset-4">
+            {post.data.pinned && <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#6B5B47] mr-2 mb-0.5 align-middle"></span>}
             {post.data.title}
           </a>
           <time class="text-sm text-gray-400 ml-4 shrink-0" datetime={post.data.date.toISOString()}>
@@ -45,7 +60,7 @@ const featuredProjects = projects.filter(p => p.featured);
         </li>
       ))}
     </ul>
-    <a href="/blog" class="inline-block mt-5 text-sm text-indigo-600 hover:text-indigo-700 font-medium no-underline">{t('home.all-posts')} →</a>
+    <a href="/blog" class="inline-block mt-5 text-sm text-[#6B5B47] hover:text-[#5A4A3A] font-medium no-underline">{t('home.all-posts')} →</a>
   </section>
 
   <!-- Featured Projects -->
@@ -54,6 +69,6 @@ const featuredProjects = projects.filter(p => p.featured);
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       {featuredProjects.map(project => <ProjectCard project={project} />)}
     </div>
-    <a href="/projects" class="inline-block mt-5 text-sm text-indigo-600 hover:text-indigo-700 font-medium no-underline">{t('home.all-projects')} →</a>
+    <a href="/projects" class="inline-block mt-5 text-sm text-[#6B5B47] hover:text-[#5A4A3A] font-medium no-underline">{t('home.all-projects')} →</a>
   </section>
 </BaseLayout>
