@@ -1,20 +1,32 @@
 ---
-// Import the global.css file here so that it is included on
-// all pages through the use of the <BaseHead /> component.
-import '../styles/global.css';
 import type { ImageMetadata } from 'astro';
 import FallbackImage from '../assets/blog-placeholder-1.jpg';
 import { SITE_TITLE } from '../consts';
+import type { Lang } from '../i18n/ui';
 
 interface Props {
-	title: string;
-	description: string;
-	image?: ImageMetadata;
+  title: string;
+  description: string;
+  image?: ImageMetadata;
+  lang?: Lang;
 }
 
+const { title, description, image = FallbackImage, lang = 'en' } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
-const { title, description, image = FallbackImage } = Astro.props;
+// Build hreflang alternates
+const enUrl = new URL(
+  Astro.url.pathname.startsWith('/zh')
+    ? Astro.url.pathname.slice(3) || '/'
+    : Astro.url.pathname,
+  Astro.site
+);
+const zhUrl = new URL(
+  Astro.url.pathname.startsWith('/zh')
+    ? Astro.url.pathname
+    : `/zh${Astro.url.pathname === '/' ? '' : Astro.url.pathname}`,
+  Astro.site
+);
 ---
 
 <!-- Global Metadata -->
@@ -23,23 +35,20 @@ const { title, description, image = FallbackImage } = Astro.props;
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="icon" href="/favicon.ico" />
 <link rel="sitemap" href="/sitemap-index.xml" />
-<link
-	rel="alternate"
-	type="application/rss+xml"
-	title={SITE_TITLE}
-	href={new URL('rss.xml', Astro.site)}
-/>
+<link rel="alternate" type="application/rss+xml" title={SITE_TITLE} href={new URL('rss.xml', Astro.site)} />
 <meta name="generator" content={Astro.generator} />
 
-<!-- Canonical URL -->
+<!-- Canonical + hreflang -->
 <link rel="canonical" href={canonicalURL} />
+<link rel="alternate" hreflang="en" href={enUrl} />
+<link rel="alternate" hreflang="zh-TW" href={zhUrl} />
+<link rel="alternate" hreflang="x-default" href={enUrl} />
 
-<!-- Primary Meta Tags -->
+<!-- Primary Meta -->
 <title>{title}</title>
-<meta name="title" content={title} />
 <meta name="description" content={description} />
 
-<!-- Open Graph / Facebook -->
+<!-- Open Graph -->
 <meta property="og:type" content="website" />
 <meta property="og:url" content={Astro.url} />
 <meta property="og:title" content={title} />

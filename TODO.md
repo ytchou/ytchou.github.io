@@ -9,7 +9,7 @@
 - [x] Task 2: Configure Astro i18n and create translation strings
 
 **Wave 2 — Base layout:**
-- [ ] Task 3: Update BaseLayout and BaseHead (lang attr + hreflang tags)
+- [x] Task 3: Update BaseLayout and BaseHead (lang attr + hreflang tags)
 
 **Wave 3 — Header + Footer (parallel):**
 - [ ] Task 4: Redesign Header with language toggle
