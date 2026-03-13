@@ -35,6 +35,9 @@ export const ui = {
     'contact.coffee': 'Coffee chat',
     'contact.coffee-body': 'Happy to chat about software, projects, or career advice.',
     'contact.book': 'Book a coffee chat',
+    'contact.link.email': 'Email',
+    'contact.link.github': 'GitHub',
+    'contact.link.linkedin': 'LinkedIn',
     'footer.rights': '© {year} Yung-Tang Chou',
   },
   zh: {
@@ -65,6 +68,9 @@ export const ui = {
     'contact.coffee': '喝咖啡聊聊',
     'contact.coffee-body': '歡迎聊軟體、專案或職涯建議。',
     'contact.book': '預約咖啡聊聊',
+    'contact.link.email': '電子郵件',
+    'contact.link.github': 'GitHub',
+    'contact.link.linkedin': 'LinkedIn',
     'footer.rights': '© {year} 周永唐',
   },
 } as const;
