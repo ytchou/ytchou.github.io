@@ -1,45 +1,30 @@
 ---
-import HeaderLink from './HeaderLink.astro';
-import { SITE_TITLE } from '../consts';
+import { getLangFromUrl, getAlternateLangUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const altLangUrl = getAlternateLangUrl(Astro.url, lang === 'en' ? 'zh' : 'en');
+const base = lang === 'zh' ? '/zh' : '';
 ---
 
-<header>
-	<nav>
-		<a href="/" class="logo">{SITE_TITLE}</a>
-		<ul>
-			<li><HeaderLink href="/about">About</HeaderLink></li>
-			<li><HeaderLink href="/projects">Projects</HeaderLink></li>
-			<li><HeaderLink href="/blog">Blog</HeaderLink></li>
-			<li><HeaderLink href="/contact">Contact</HeaderLink></li>
-		</ul>
-	</nav>
+<header class="sticky top-0 z-10 bg-[#fafafa]/95 backdrop-blur-sm border-b border-gray-100">
+  <nav class="max-w-[720px] mx-auto px-6 py-4 flex items-center justify-between">
+    <a href={`${base}/`} class="font-semibold text-gray-900 hover:text-indigo-600 transition-colors text-sm">
+      {t('nav.home')}
+    </a>
+    <div class="flex items-center gap-1">
+      <div class="hidden sm:flex items-center">
+        <a href={`${base}/about`} class="px-3 py-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors rounded-md hover:bg-gray-100">{t('nav.about')}</a>
+        <a href={`${base}/projects`} class="px-3 py-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors rounded-md hover:bg-gray-100">{t('nav.projects')}</a>
+        <a href={`${base}/blog`} class="px-3 py-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors rounded-md hover:bg-gray-100">{t('nav.blog')}</a>
+        <a href={`${base}/contact`} class="px-3 py-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors rounded-md hover:bg-gray-100">{t('nav.contact')}</a>
+      </div>
+      <a
+        href={altLangUrl}
+        class="ml-3 text-xs font-medium px-2.5 py-1 rounded-md border border-gray-200 text-gray-500 hover:border-indigo-300 hover:text-indigo-600 transition-colors"
+      >
+        {t('nav.lang-toggle')}
+      </a>
+    </div>
+  </nav>
 </header>
-<style>
-	header {
-		margin: 0;
-		padding: 0 1rem;
-		background: white;
-		box-shadow: 0 2px 8px rgba(var(--black), 5%);
-	}
-	nav {
-		max-width: 720px;
-		margin: 0 auto;
-		padding: 0.75rem 0;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-	}
-	.logo {
-		font-weight: 700;
-		font-size: 1.1rem;
-		color: rgb(var(--black));
-		text-decoration: none;
-	}
-	ul {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-		display: flex;
-		gap: 0.25rem;
-	}
-</style>

@@ -12,8 +12,8 @@
 - [x] Task 3: Update BaseLayout and BaseHead (lang attr + hreflang tags)
 
 **Wave 3 — Header + Footer (parallel):**
-- [ ] Task 4: Redesign Header with language toggle
-- [ ] Task 5: Redesign Footer
+- [x] Task 4: Redesign Header with language toggle
+- [x] Task 5: Redesign Footer
 
 **Wave 4 — Blog schema:**
 - [ ] Task 6: Update blog content schema (lang + pinned fields) and add ZH sample posts
