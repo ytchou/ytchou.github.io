@@ -6,7 +6,7 @@
 
 **Wave 1 — Foundation (parallel):**
 - [x] Task 1: Install Tailwind CSS v4 and Inter variable font
-- [ ] Task 2: Configure Astro i18n and create translation strings
+- [x] Task 2: Configure Astro i18n and create translation strings
 
 **Wave 2 — Base layout:**
 - [ ] Task 3: Update BaseLayout and BaseHead (lang attr + hreflang tags)
