@@ -2,20 +2,32 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import BlogPostCard from '../../components/BlogPostCard.astro';
+import { useTranslations } from '../../i18n/utils';
 
-const posts = (await getCollection('blog', ({ data }) => !data.draft))
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const t = useTranslations('en');
+
+const posts = (await getCollection('blog', ({ data }) => data.lang === 'en' && !data.draft))
+  .sort((a, b) => {
+    if (a.data.pinned !== b.data.pinned) return a.data.pinned ? -1 : 1;
+    return b.data.date.valueOf() - a.data.date.valueOf();
+  });
 ---
 
-<BaseLayout title="Blog — Your Name" description="Writing on software, projects, and ideas.">
-  <h1>Blog</h1>
-  {posts.map(post => (
-    <BlogPostCard
-      title={post.data.title}
-      description={post.data.description}
-      date={post.data.date}
-      id={post.id}
-      tags={post.data.tags}
-    />
-  ))}
+<BaseLayout title={`${t('blog.title')} — Yung-Tang Chou`} description={t('blog.subtitle')}>
+  <div class="mb-10">
+    <h1 class="text-3xl font-bold text-gray-900 tracking-tight mb-2">{t('blog.title')}</h1>
+    <p class="text-gray-500">{t('blog.subtitle')}</p>
+  </div>
+  <div>
+    {posts.map(post => (
+      <BlogPostCard
+        title={post.data.title}
+        description={post.data.description}
+        date={post.data.date}
+        id={post.id}
+        pinned={post.data.pinned}
+        lang="en"
+      />
+    ))}
+  </div>
 </BaseLayout>
