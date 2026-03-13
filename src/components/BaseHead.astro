@@ -1,32 +1,18 @@
 ---
-import type { ImageMetadata } from 'astro';
 import FallbackImage from '../assets/blog-placeholder-1.jpg';
 import { SITE_TITLE } from '../consts';
-import type { Lang } from '../i18n/ui';
+import { getAlternateLangUrl } from '../i18n/utils';
 
 interface Props {
   title: string;
   description: string;
-  image?: ImageMetadata;
-  lang?: Lang;
+  image?: typeof FallbackImage;
 }
 
-const { title, description, image = FallbackImage, lang = 'en' } = Astro.props;
+const { title, description, image = FallbackImage } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-
-// Build hreflang alternates
-const enUrl = new URL(
-  Astro.url.pathname.startsWith('/zh')
-    ? Astro.url.pathname.slice(3) || '/'
-    : Astro.url.pathname,
-  Astro.site
-);
-const zhUrl = new URL(
-  Astro.url.pathname.startsWith('/zh')
-    ? Astro.url.pathname
-    : `/zh${Astro.url.pathname === '/' ? '' : Astro.url.pathname}`,
-  Astro.site
-);
+const enUrl = new URL(getAlternateLangUrl(Astro.url, 'en'), Astro.site);
+const zhUrl = new URL(getAlternateLangUrl(Astro.url, 'zh'), Astro.site);
 ---
 
 <!-- Global Metadata -->

@@ -1,11 +1,14 @@
 ---
 import type { Project } from '../data/projects';
+import { useTranslations } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
 
 interface Props {
   project: Project;
-  lang?: string;
+  lang?: Lang;
 }
 const { project, lang = 'en' } = Astro.props;
+const t = useTranslations(lang);
 ---
 
 <article class="group border border-gray-200 rounded-xl p-5 hover:border-indigo-200 hover:shadow-sm transition-all duration-200 flex flex-col gap-3">
@@ -19,12 +22,12 @@ const { project, lang = 'en' } = Astro.props;
   <div class="flex gap-3 pt-1">
     {project.githubUrl && (
       <a href={project.githubUrl} target="_blank" rel="noopener" class="text-xs font-medium text-gray-500 hover:text-indigo-600 transition-colors no-underline">
-        GitHub ↗
+        {t('projects.github')} ↗
       </a>
     )}
     {project.liveUrl && (
       <a href={project.liveUrl} target="_blank" rel="noopener" class="text-xs font-medium text-gray-500 hover:text-indigo-600 transition-colors no-underline">
-        {lang === 'zh' ? '展示 ↗' : 'Live ↗'}
+        {t('projects.live')} ↗
       </a>
     )}
   </div>

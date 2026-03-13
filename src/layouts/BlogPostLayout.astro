@@ -1,13 +1,14 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 import { SITE_TITLE } from '../consts';
+import type { Lang } from '../i18n/ui';
 
 interface Props {
   title: string;
   description: string;
   date: Date;
   tags: string[];
-  lang?: string;
+  lang?: Lang;
 }
 const { title, description, date, tags, lang = 'en' } = Astro.props;
 const formatted = date.toLocaleDateString(lang === 'zh' ? 'zh-TW' : 'en-US', {

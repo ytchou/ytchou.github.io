@@ -1,11 +1,13 @@
 ---
+import type { Lang } from '../i18n/ui';
+
 interface Props {
   title: string;
   description: string;
   date: Date;
   id: string;
   pinned: boolean;
-  lang?: string;
+  lang?: Lang;
 }
 const { title, description, date, id, pinned, lang = 'en' } = Astro.props;
 const basePath = lang === 'zh' ? '/zh/blog' : '/blog';
