@@ -1,0 +1,29 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  date: Date;
+  id: string;
+  tags: string[];
+}
+const { title, description, date, id, tags } = Astro.props;
+const formatted = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+
+<article>
+  <a href={`/blog/${id}`}><h3>{title}</h3></a>
+  <time datetime={date.toISOString()}>{formatted}</time>
+  <p>{description}</p>
+  <ul class="tags">
+    {tags.map(tag => <li>{tag}</li>)}
+  </ul>
+</article>
+
+<style>
+  article { padding: 1.5rem 0; border-bottom: 1px solid rgb(var(--gray-light)); }
+  article h3 { margin: 0 0 0.25rem; }
+  time { font-size: 0.9rem; color: rgb(var(--gray)); }
+  p { margin: 0.5rem 0; color: rgb(var(--gray-dark)); }
+  .tags { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem; }
+  .tags li { background: rgb(var(--gray-light)); padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.8rem; color: rgb(var(--gray)); }
+</style>
