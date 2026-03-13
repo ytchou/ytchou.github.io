@@ -2,21 +2,17 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import { projects } from '../data/projects';
+import { useTranslations } from '../i18n/utils';
+
+const t = useTranslations('en');
 ---
 
-<BaseLayout title="Projects — Your Name" description="Things I've built.">
-  <h1>Projects</h1>
-  <p>A selection of things I've worked on.</p>
-  <div class="grid">
+<BaseLayout title={`${t('projects.title')} — Yung-Tang Chou`} description={t('projects.subtitle')}>
+  <div class="mb-10">
+    <h1 class="text-3xl font-bold text-gray-900 tracking-tight mb-2">{t('projects.title')}</h1>
+    <p class="text-gray-500">{t('projects.subtitle')}</p>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     {projects.map(project => <ProjectCard project={project} />)}
   </div>
 </BaseLayout>
-
-<style>
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin-top: 2rem;
-  }
-</style>
