@@ -3,67 +3,57 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import { projects } from '../data/projects';
+import { useTranslations, sortPosts } from '../i18n/utils';
 
-const allPosts = await getCollection('blog', ({ data }) => !data.draft);
-const latestPosts = allPosts
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0, 3);
+const t = useTranslations('en');
+
+const allPosts = await getCollection('blog', ({ data }) => data.lang === 'en' && !data.draft);
+const latestPosts = sortPosts(allPosts).slice(0, 3);
 
 const featuredProjects = projects.filter(p => p.featured);
 ---
 
-<BaseLayout title="Your Name" description="Software engineer, writer, and builder.">
-  <section class="hero">
-    <h1>Hi, I'm <span>Your Name</span></h1>
-    <p class="tagline">Software engineer. I build things and write about them.</p>
-    <div class="cta">
-      <a href="/projects">See my work</a>
-      <a href="/contact">Get in touch</a>
+<BaseLayout title="Yung-Tang Chou" description={t('hero.tagline')}>
+  <!-- Hero -->
+  <section class="py-16 border-b border-gray-100">
+    <h1 class="text-4xl font-bold text-gray-900 mb-3 tracking-tight">Yung-Tang Chou</h1>
+    <p class="text-lg text-gray-500 mb-1">{t('hero.tagline')}</p>
+    <p class="text-lg text-gray-500 mb-8">{t('hero.sub')}</p>
+    <div class="flex gap-3">
+      <a href="/projects" class="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors no-underline">
+        {t('hero.cta.work')} ↗
+      </a>
+      <a href="/contact" class="inline-flex items-center px-4 py-2 border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:border-gray-300 hover:bg-gray-50 transition-colors no-underline">
+        {t('hero.cta.contact')}
+      </a>
     </div>
   </section>
 
-  <section class="recent-posts">
-    <h2>Recent writing</h2>
-    <ul>
+  <!-- Recent Writing -->
+  <section class="py-12 border-b border-gray-100">
+    <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-6">{t('home.writing')}</h2>
+    <ul class="space-y-0">
       {latestPosts.map(post => (
-        <li>
-          <a href={`/blog/${post.id}`}>{post.data.title}</a>
-          <span class="date">{post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+        <li class="flex items-baseline justify-between py-3 border-b border-gray-50 last:border-0 group">
+          <a href={`/blog/${post.id}`} class="text-gray-800 hover:text-indigo-600 transition-colors font-medium no-underline group-hover:underline underline-offset-4">
+            {post.data.pinned && <span class="inline-block w-1.5 h-1.5 rounded-full bg-indigo-500 mr-2 mb-0.5 align-middle"></span>}
+            {post.data.title}
+          </a>
+          <time class="text-sm text-gray-400 ml-4 shrink-0" datetime={post.data.date.toISOString()}>
+            {post.data.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+          </time>
         </li>
       ))}
     </ul>
-    <a href="/blog">All posts →</a>
+    <a href="/blog" class="inline-block mt-5 text-sm text-indigo-600 hover:text-indigo-700 font-medium no-underline">{t('home.all-posts')} →</a>
   </section>
 
-  <section class="featured-projects">
-    <h2>Featured projects</h2>
-    <div class="project-grid">
+  <!-- Featured Projects -->
+  <section class="py-12">
+    <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-6">{t('home.projects')}</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       {featuredProjects.map(project => <ProjectCard project={project} />)}
     </div>
-    <a href="/projects">All projects →</a>
+    <a href="/projects" class="inline-block mt-5 text-sm text-indigo-600 hover:text-indigo-700 font-medium no-underline">{t('home.all-projects')} →</a>
   </section>
 </BaseLayout>
-
-<style>
-  .hero { padding: 4rem 0 3rem; }
-  .hero h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
-  .hero h1 span { color: var(--accent); }
-  .tagline { font-size: 1.2rem; color: rgb(var(--gray)); margin-bottom: 2rem; }
-  .cta { display: flex; gap: 1rem; }
-  .cta a {
-    padding: 0.6rem 1.4rem;
-    border-radius: 6px;
-    font-weight: 500;
-    text-decoration: none;
-  }
-  .cta a:first-child {
-    background: var(--accent);
-    color: #fff;
-  }
-  .cta a:last-child { border: 1px solid rgb(var(--gray-light)); color: rgb(var(--black)); }
-  section { margin-bottom: 4rem; }
-  ul { list-style: none; padding: 0; }
-  li { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid rgb(var(--gray-light)); }
-  .date { color: rgb(var(--gray)); font-size: 0.9rem; }
-  .project-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 1rem; }
-</style>

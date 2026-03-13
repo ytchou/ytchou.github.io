@@ -12,7 +12,7 @@ export const projects: Project[] = [
     title: 'Project One',
     description: 'A short description of what this project does and why it matters.',
     tags: ['TypeScript', 'React', 'Node.js'],
-    githubUrl: 'https://github.com/yourname/project-one',
+    githubUrl: 'https://github.com/ytchou/project-one',
     liveUrl: 'https://project-one.example.com',
     featured: true,
   },
@@ -20,7 +20,7 @@ export const projects: Project[] = [
     title: 'Project Two',
     description: 'Another project — replace this with your real work.',
     tags: ['Python', 'FastAPI'],
-    githubUrl: 'https://github.com/yourname/project-two',
+    githubUrl: 'https://github.com/ytchou/project-two',
     featured: false,
   },
 ];

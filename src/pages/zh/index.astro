@@ -1,0 +1,59 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { projects } from '../../data/projects';
+import { useTranslations, sortPosts, getPostSlug } from '../../i18n/utils';
+
+const t = useTranslations('zh');
+
+const allPosts = await getCollection('blog', ({ data }) => data.lang === 'zh' && !data.draft);
+const latestPosts = sortPosts(allPosts).slice(0, 3);
+
+const featuredProjects = projects.filter(p => p.featured);
+---
+
+<BaseLayout title="周永唐" description={t('hero.tagline')}>
+  <section class="py-16 border-b border-gray-100">
+    <h1 class="text-4xl font-bold text-gray-900 mb-3 tracking-tight">周永唐</h1>
+    <p class="text-lg text-gray-500 mb-1">{t('hero.tagline')}</p>
+    <p class="text-lg text-gray-500 mb-8">{t('hero.sub')}</p>
+    <div class="flex gap-3">
+      <a href="/zh/projects" class="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors no-underline">
+        {t('hero.cta.work')} ↗
+      </a>
+      <a href="/zh/contact" class="inline-flex items-center px-4 py-2 border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:border-gray-300 hover:bg-gray-50 transition-colors no-underline">
+        {t('hero.cta.contact')}
+      </a>
+    </div>
+  </section>
+
+  <section class="py-12 border-b border-gray-100">
+    <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-6">{t('home.writing')}</h2>
+    <ul class="space-y-0">
+      {latestPosts.map(post => {
+        const slug = getPostSlug(post.id);
+        return (
+          <li class="flex items-baseline justify-between py-3 border-b border-gray-50 last:border-0 group">
+            <a href={`/zh/blog/${slug}`} class="text-gray-800 hover:text-indigo-600 transition-colors font-medium no-underline group-hover:underline underline-offset-4">
+              {post.data.pinned && <span class="inline-block w-1.5 h-1.5 rounded-full bg-indigo-500 mr-2 mb-0.5 align-middle"></span>}
+              {post.data.title}
+            </a>
+            <time class="text-sm text-gray-400 ml-4 shrink-0" datetime={post.data.date.toISOString()}>
+              {post.data.date.toLocaleDateString('zh-TW', { month: 'short', day: 'numeric', year: 'numeric' })}
+            </time>
+          </li>
+        );
+      })}
+    </ul>
+    <a href="/zh/blog" class="inline-block mt-5 text-sm text-indigo-600 hover:text-indigo-700 font-medium no-underline">{t('home.all-posts')} →</a>
+  </section>
+
+  <section class="py-12">
+    <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-6">{t('home.projects')}</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {featuredProjects.map(project => <ProjectCard project={project} lang="zh" />)}
+    </div>
+    <a href="/zh/projects" class="inline-block mt-5 text-sm text-indigo-600 hover:text-indigo-700 font-medium no-underline">{t('home.all-projects')} →</a>
+  </section>
+</BaseLayout>

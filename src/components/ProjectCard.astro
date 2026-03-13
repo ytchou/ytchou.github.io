@@ -1,45 +1,34 @@
 ---
 import type { Project } from '../data/projects';
+import { useTranslations } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
 
 interface Props {
   project: Project;
+  lang?: Lang;
 }
-
-const { project } = Astro.props;
+const { project, lang = 'en' } = Astro.props;
+const t = useTranslations(lang);
 ---
 
-<article class="project-card">
-  <h3>{project.title}</h3>
-  <p>{project.description}</p>
-  <ul class="tags">
-    {project.tags.map(tag => <li>{tag}</li>)}
+<article class="group border border-gray-200 rounded-xl p-5 hover:border-indigo-200 hover:shadow-sm hover:-translate-y-0.5 transition-all duration-200 flex flex-col gap-3">
+  <h3 class="font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors mt-0">{project.title}</h3>
+  <p class="text-sm text-gray-500 leading-relaxed flex-1">{project.description}</p>
+  <ul class="flex flex-wrap gap-1.5 list-none p-0 m-0">
+    {project.tags.map(tag => (
+      <li class="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">{tag}</li>
+    ))}
   </ul>
-  <div class="links">
-    {project.githubUrl && <a href={project.githubUrl} target="_blank" rel="noopener">GitHub</a>}
-    {project.liveUrl && <a href={project.liveUrl} target="_blank" rel="noopener">Live</a>}
+  <div class="flex gap-3 pt-1">
+    {project.githubUrl && (
+      <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" class="text-xs font-medium text-gray-500 hover:text-indigo-600 transition-colors no-underline">
+        {t('projects.github')} ↗
+      </a>
+    )}
+    {project.liveUrl && (
+      <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" class="text-xs font-medium text-gray-500 hover:text-indigo-600 transition-colors no-underline">
+        {t('projects.live')} ↗
+      </a>
+    )}
   </div>
 </article>
-
-<style>
-  .project-card {
-    border: 1px solid rgb(var(--gray-light));
-    border-radius: 8px;
-    padding: 1.5rem;
-  }
-  .project-card h3 { margin-top: 0; }
-  .tags {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-  .tags li {
-    background: rgb(var(--gray-light));
-    padding: 0.2rem 0.6rem;
-    border-radius: 4px;
-    font-size: 0.85rem;
-    color: rgb(var(--gray-dark));
-  }
-  .links { display: flex; gap: 1rem; margin-top: 1rem; }
-</style>
