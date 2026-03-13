@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const links = [
+  { label: 'Email', href: 'mailto:you@example.com', display: 'you@example.com' },
+  { label: 'GitHub', href: 'https://github.com/yourname', display: 'github.com/yourname' },
+  { label: 'LinkedIn', href: 'https://linkedin.com/in/yourname', display: 'linkedin.com/in/yourname' },
+];
+
+const calendlyUrl = 'https://calendly.com/yourname/coffee-chat';
+---
+
+<BaseLayout title="Contact — Your Name" description="Get in touch.">
+  <h1>Contact</h1>
+  <p>The best way to reach me is email. I'm also around on GitHub and LinkedIn.</p>
+
+  <ul class="links">
+    {links.map(link => (
+      <li>
+        <strong>{link.label}:</strong>
+        <a href={link.href} target="_blank" rel="noopener">{link.display}</a>
+      </li>
+    ))}
+  </ul>
+
+  <section class="coffee">
+    <h2>Coffee chat</h2>
+    <p>Happy to chat about software, projects, or career advice. Grab a 30-minute slot:</p>
+    <a href={calendlyUrl} target="_blank" rel="noopener" class="calendly-btn">
+      Book a coffee chat
+    </a>
+  </section>
+</BaseLayout>
+
+<style>
+  .links { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 3rem; }
+  .coffee { border-top: 1px solid rgb(var(--gray-light)); padding-top: 2rem; }
+  .calendly-btn {
+    display: inline-block;
+    margin-top: 0.5rem;
+    padding: 0.7rem 1.6rem;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 6px;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .calendly-btn:hover { opacity: 0.9; text-decoration: none; }
+</style>
