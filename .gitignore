@@ -27,7 +27,3 @@ pnpm-debug.log*
 # Claude Code session artifacts
 docs/
 TODO.md
-
-# Personal assets (photos)
-src/assets/*.jpg
-src/assets/*.jpeg
