@@ -32,4 +32,4 @@
 - [x] Task 13: Update personal content (name, GitHub URLs, placeholder bio/projects)
 
 **Wave 8 — Verification:**
-- [ ] Task 14: Final build verification (routes, hreflang, lang attrs, deploy)
+- [x] Task 14: Final build verification (routes, hreflang, lang attrs, deploy)
