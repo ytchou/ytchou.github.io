@@ -22,8 +22,8 @@ const formatted = date.toLocaleDateString(lang === 'zh' ? 'zh-TW' : 'en-US', {
   <div class="flex items-start justify-between gap-4">
     <div class="flex-1 min-w-0">
       <a href={`${basePath}/${slug}`} class="group block">
-        <h3 class="font-medium text-gray-900 group-hover:text-indigo-600 transition-colors mb-1 flex items-center gap-2">
-          {pinned && <span class="inline-block w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0"></span>}
+        <h3 class="font-medium text-gray-900 group-hover:text-[#6B5B47] transition-colors mb-1 flex items-center gap-2">
+          {pinned && <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#6B5B47] shrink-0"></span>}
           {title}
         </h3>
         <p class="text-sm text-gray-500 line-clamp-2">{description}</p>

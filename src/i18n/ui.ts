@@ -14,7 +14,7 @@ export const ui = {
     'nav.blog': 'Blog',
     'nav.contact': 'Contact',
     'nav.lang-toggle': '中文',
-    'hero.tagline': 'Software engineer based in Taiwan.',
+    'hero.tagline': 'Data scientist based in Taiwan.',
     'hero.sub': 'Building products that matter.',
     'hero.cta.work': 'See my work',
     'hero.cta.contact': 'Get in touch',
@@ -41,13 +41,13 @@ export const ui = {
     'footer.rights': '© {year} Yung-Tang Chou',
   },
   zh: {
-    'nav.home': '周永唐',
+    'nav.home': '周永堂',
     'nav.about': '關於',
     'nav.projects': '專案',
     'nav.blog': '文章',
     'nav.contact': '聯絡',
     'nav.lang-toggle': 'English',
-    'hero.tagline': '台灣軟體工程師。',
+    'hero.tagline': '台灣資料科學家。',
     'hero.sub': '打造有意義的產品。',
     'hero.cta.work': '查看我的作品',
     'hero.cta.contact': '與我聯絡',
@@ -71,7 +71,7 @@ export const ui = {
     'contact.link.email': '電子郵件',
     'contact.link.github': 'GitHub',
     'contact.link.linkedin': 'LinkedIn',
-    'footer.rights': '© {year} 周永唐',
+    'footer.rights': '© {year} 周永堂',
   },
 } as const;
 

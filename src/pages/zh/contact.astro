@@ -6,7 +6,7 @@ import { contactLinks, calendlyUrl } from '../../data/contact';
 const t = useTranslations('zh');
 ---
 
-<BaseLayout title={`${t('contact.title')} — 周永唐`} description={t('contact.intro')}>
+<BaseLayout title={`${t('contact.title')} — 周永堂`} description={t('contact.intro')}>
   <h1 class="text-3xl font-bold text-gray-900 tracking-tight mb-4">{t('contact.title')}</h1>
   <p class="text-gray-500 mb-8">{t('contact.intro')}</p>
   <ul class="space-y-3 list-none p-0 mb-12">
@@ -14,7 +14,7 @@ const t = useTranslations('zh');
       <li class="flex items-center gap-3">
         <span class="text-sm font-medium text-gray-700 w-20">{t(link.labelKey)}</span>
         <a href={link.href} {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-          class="text-sm text-indigo-600 hover:text-indigo-700 no-underline hover:underline underline-offset-4">
+          class="text-sm text-[#6B5B47] hover:text-[#5A4A3A] no-underline hover:underline underline-offset-4">
           {link.display}
         </a>
       </li>
@@ -24,7 +24,7 @@ const t = useTranslations('zh');
     <h2 class="text-lg font-semibold text-gray-900 mb-2">{t('contact.coffee')}</h2>
     <p class="text-gray-500 text-sm mb-4">{t('contact.coffee-body')}</p>
     <a href={calendlyUrl} target="_blank" rel="noopener noreferrer"
-      class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors no-underline">
+      class="inline-flex items-center px-4 py-2 bg-[#6B5B47] text-white text-sm font-medium rounded-lg hover:bg-[#5A4A3A] transition-colors no-underline">
       {t('contact.book')}
     </a>
   </section>
