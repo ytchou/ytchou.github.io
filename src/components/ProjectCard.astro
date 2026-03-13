@@ -11,7 +11,7 @@ const { project, lang = 'en' } = Astro.props;
 const t = useTranslations(lang);
 ---
 
-<article class="group border border-gray-200 rounded-xl p-5 hover:border-indigo-200 hover:shadow-sm transition-all duration-200 flex flex-col gap-3">
+<article class="group border border-gray-200 rounded-xl p-5 hover:border-indigo-200 hover:shadow-sm hover:-translate-y-0.5 transition-all duration-200 flex flex-col gap-3">
   <h3 class="font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors mt-0">{project.title}</h3>
   <p class="text-sm text-gray-500 leading-relaxed flex-1">{project.description}</p>
   <ul class="flex flex-wrap gap-1.5 list-none p-0 m-0">
