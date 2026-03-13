@@ -29,7 +29,7 @@
 - [x] Task 12: Create ZH page routes (src/pages/zh/)
 
 **Wave 7 — Content:**
-- [ ] Task 13: Update personal content (name, GitHub URLs, placeholder bio/projects)
+- [x] Task 13: Update personal content (name, GitHub URLs, placeholder bio/projects)
 
 **Wave 8 — Verification:**
 - [ ] Task 14: Final build verification (routes, hreflang, lang attrs, deploy)

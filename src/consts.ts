@@ -1,2 +1,2 @@
-export const SITE_TITLE = 'Your Name';
-export const SITE_DESCRIPTION = 'Software engineer. I build things and write about them.';
+export const SITE_TITLE = 'Yung-Tang Chou';
+export const SITE_DESCRIPTION = 'Software engineer based in Taiwan.';
