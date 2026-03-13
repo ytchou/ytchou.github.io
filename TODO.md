@@ -5,7 +5,7 @@
 > **Plan:** [docs/plans/2026-03-13-portfolio-redesign-plan.md](docs/plans/2026-03-13-portfolio-redesign-plan.md)
 
 **Wave 1 — Foundation (parallel):**
-- [ ] Task 1: Install Tailwind CSS v4 and Inter variable font
+- [x] Task 1: Install Tailwind CSS v4 and Inter variable font
 - [ ] Task 2: Configure Astro i18n and create translation strings
 
 **Wave 2 — Base layout:**
