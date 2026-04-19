@@ -1,0 +1,78 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 19673,
+  "duration_api_ms": 20686,
+  "num_turns": 1,
+  "result": "## Unnecessary Re-renders in React\n\n### 1. Reference Equality\n\nReact re-renders a child when its props change. For primitives, \"change\" means a different value. For objects and functions, it means a different **reference** \u2014 and a new reference is created on every render.\n\n```jsx\n// Every render creates a new object reference \u2014 child always re-renders\nfunction Parent() {\n  return <Child config={{ theme: 'dark' }} onClick={() => doSomething()} />;\n}\n```\n\n`{}` and `() => {}` fail `===` against themselves across renders, so React considers them changed.\n\n---\n\n### 2. React.memo, useMemo, useCallback\n\n**`React.memo`** \u2014 wraps a component; skips re-render if props are shallowly equal.\nUse when: a component is pure, renders often, and its parent re-renders for unrelated reasons.\n\n**`useCallback`** \u2014 memoizes a function reference across renders.\nUse when: passing a callback to a memoized child (otherwise memo is defeated) or as a `useEffect` dependency.\n\n**`useMemo`** \u2014 memoizes a computed value.\nUse when: the computation is expensive, or you need a stable object/array reference to pass as a prop.\n\n> Don't reach for these by default \u2014 they add complexity and have their own cost. Profile first.\n\n---\n\n### 3. Context Provider Pitfalls\n\nEvery consumer re-renders when the context **value** changes reference. A common mistake:\n\n```jsx\n// Bad: new object on every Parent render \u2192 all consumers re-render\nfunction AuthProvider({ children }) {\n  const [user, setUser] = useState(null);\n  return (\n    <AuthContext.Provider value={{ user, setUser }}>\n      {children}\n    </AuthContext.Provider>\n  );\n}\n```\n\nThe `{ user, setUser }` object is recreated each render. Fix with `useMemo`:\n\n```jsx\nfunction AuthProvider({ children }) {\n  const [user, setUser] = useState(null);\n  const value = useMemo(() => ({ user, setUser }), [user]);\n  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;\n}\n```\n\nFor high-churn contexts, split into separate contexts (e.g. `UserContext` + `UserDispatchContext`) so reads and writes don't cross-contaminate consumers.\n\n---\n\n### 4. Before / After\n\n**Before** \u2014 `ExpensiveList` re-renders on every keystroke because `filters` and `onSelect` are recreated:\n\n```jsx\nfunction Dashboard() {\n  const [query, setQuery] = useState('');\n  const [selectedId, setSelectedId] = useState(null);\n  const items = useItems(); // comes from API, stable reference\n\n  return (\n    <>\n      <input value={query} onChange={e => setQuery(e.target.value)} />\n      <ExpensiveList\n        items={items}\n        filters={{ query }}          // new object every render\n        onSelect={id => setSelectedId(id)} // new function every render\n      />\n    </>\n  );\n}\n\nconst ExpensiveList = React.memo(({ items, filters, onSelect }) => {\n  // memo is defeated \u2014 filters and onSelect always differ\n});\n```\n\n**After** \u2014 stable references let `React.memo` do its job:\n\n```jsx\nfunction Dashboard() {\n  const [query, setQuery] = useState('');\n  const [selectedId, setSelectedId] = useState(null);\n  const items = useItems();\n\n  const filters = useMemo(() => ({ query }), [query]);\n  const onSelect = useCallback(id => setSelectedId(id), []);\n\n  return (\n    <>\n      <input value={query} onChange={e => setQuery(e.target.value)} />\n      <ExpensiveList items={items} filters={filters} onSelect={onSelect} />\n    </>\n  );\n}\n\nconst ExpensiveList = React.memo(({ items, filters, onSelect }) => {\n  // now only re-renders when items or query actually change\n});\n```\n\n---\n\n**Summary of when to reach for each tool:**\n\n| Tool | Memoizes | Reach for it when |\n|---|---|---|\n| `React.memo` | component render | child is expensive and props are stable |\n| `useCallback` | function reference | callback goes to a memo'd child or is a dep |\n| `useMemo` | computed value / object | expensive calc, or stabilizing an object reference |",
+  "stop_reason": "end_turn",
+  "session_id": "5804d75f-7b3c-4681-bcc6-a01098c39997",
+  "total_cost_usd": 0.022258699999999996,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17129,
+    "output_tokens": 1108,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 1108,
+        "cache_read_input_tokens": 17129,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 411,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000491,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 1108,
+      "cacheReadInputTokens": 17129,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.021767699999999997,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "e01b572f-5344-4d7e-baa2-0ace232e852a",
+  "_meta": {
+    "task": "explain_rerender",
+    "condition": "baseline",
+    "run_num": 19,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 21.19,
+    "timestamp": 1776582007,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

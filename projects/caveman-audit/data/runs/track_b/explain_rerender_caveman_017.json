@@ -1,0 +1,78 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 23523,
+  "duration_api_ms": 24712,
+  "num_turns": 1,
+  "result": "## Unnecessary Re-renders in React\n\n### 1. Reference Equality\n\nReact uses `Object.is` (shallow equality) to compare props. Primitives compare by value, but **objects and functions compare by reference**.\n\nEvery render creates new references for inline objects and functions, so even if the data is identical, React sees them as changed:\n\n```jsx\n// This creates a new object reference on every parent render\n<Child style={{ color: 'red' }} />\n\n// This creates a new function reference on every parent render\n<Child onClick={() => doSomething()} />\n```\n\nChild re-renders even if nothing meaningful changed.\n\n---\n\n### 2. React.memo, useMemo, useCallback\n\n**`React.memo`** \u2014 wraps a component; skips re-render if props are shallowly equal.\n- Use when: a child is expensive to render and its props don't change often.\n- Don't use blindly \u2014 the comparison itself has a cost.\n\n**`useMemo`** \u2014 memoizes a computed **value**.\n- Use when: a calculation is expensive (e.g., sorting a large list).\n- Not for: cheap calculations \u2014 the overhead often exceeds the savings.\n\n**`useCallback`** \u2014 memoizes a **function reference**.\n- Use when: passing callbacks to `React.memo`-wrapped children, or including a function in a `useEffect` dependency array.\n- Without it, `React.memo` on the child is defeated.\n\n```\nReact.memo   \u2192  prevents child re-render\nuseCallback  \u2192  stabilizes function references passed as props\nuseMemo      \u2192  stabilizes object references / expensive derived values\n```\n\nThey work together: `React.memo` is only effective if the props it receives have stable references.\n\n---\n\n### 3. Context Provider Pitfalls\n\nA context value re-renders **all consumers** when the value reference changes. The common mistake:\n\n```jsx\n// Bad: new object created on every render of AuthProvider\nfunction AuthProvider({ children }) {\n  const [user, setUser] = useState(null);\n  return (\n    <AuthContext.Provider value={{ user, setUser }}>\n      {children}\n    </AuthContext.Provider>\n  );\n}\n```\n\nEvery time `AuthProvider` re-renders (for any reason), `{ user, setUser }` is a new object \u2192 all consumers re-render.\n\nFix: memoize the context value:\n\n```jsx\nfunction AuthProvider({ children }) {\n  const [user, setUser] = useState(null);\n  const value = useMemo(() => ({ user, setUser }), [user]);\n  return (\n    <AuthContext.Provider value={value}>\n      {children}\n    </AuthContext.Provider>\n  );\n}\n```\n\nFor large contexts, also consider **splitting context** \u2014 separate `UserContext` from `UserDispatchContext` so components that only dispatch don't re-render when user data changes.\n\n---\n\n### 4. Before / After\n\n**Before** \u2014 `FilteredList` re-renders on every keystroke in the parent, even unrelated ones:\n\n```jsx\nfunction Parent() {\n  const [query, setQuery] = useState('');\n  const [unrelated, setUnrelated] = useState(0);\n\n  const items = [/* large array */];\n\n  return (\n    <>\n      <input onChange={e => setUnrelated(e.target.value.length)} />\n      <FilteredList\n        items={items}\n        filter={item => item.includes(query)}  // new function every render\n        style={{ margin: 16 }}                 // new object every render\n      />\n    </>\n  );\n}\n\nfunction FilteredList({ items, filter, style }) {\n  const visible = items.filter(filter); // runs on every re-render\n  return <ul style={style}>{visible.map(...)}</ul>;\n}\n```\n\n**After** \u2014 stable references, memoized computation:\n\n```jsx\nfunction Parent() {\n  const [query, setQuery] = useState('');\n  const [unrelated, setUnrelated] = useState(0);\n\n  const items = [/* large array */];\n  const style = useMemo(() => ({ margin: 16 }), []);\n  const filter = useCallback(item => item.includes(query), [query]);\n\n  return (\n    <>\n      <input onChange={e => setUnrelated(e.target.value.length)} />\n      <FilteredList items={items} filter={filter} style={style} />\n    </>\n  );\n}\n\nconst FilteredList = React.memo(function FilteredList({ items, filter, style }) {\n  const visible = useMemo(() => items.filter(filter), [items, filter]);\n  return <ul style={style}>{visible.map(...)}</ul>;\n});\n```\n\nNow `FilteredList` only re-renders when `query` or `items` changes \u2014 not when `unrelated` changes.\n\n---\n\n**Key principle:** optimization is opt-in for a reason. Profile first (`React DevTools Profiler`), then memoize. Adding `useMemo`/`useCallback` everywhere adds cognitive overhead and can hurt performance for cheap operations.",
+  "stop_reason": "end_turn",
+  "session_id": "a093ad73-4385-4298-b2b1-3d3440dd7f01",
+  "total_cost_usd": 0.024268699999999997,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17129,
+    "output_tokens": 1242,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 1242,
+        "cache_read_input_tokens": 17129,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 411,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000491,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 1242,
+      "cacheReadInputTokens": 17129,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0237777,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "7b86d8ce-4eb8-44cc-bd01-0ea0c0c3d197",
+  "_meta": {
+    "task": "explain_rerender",
+    "condition": "caveman",
+    "run_num": 17,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 24.86,
+    "timestamp": 1776582121,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

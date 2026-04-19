@@ -1,0 +1,78 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 20963,
+  "duration_api_ms": 22084,
+  "num_turns": 1,
+  "result": "## Unnecessary Re-renders in React\n\n---\n\n### 1. Reference Equality\n\nReact re-renders a component when its props change. Change is determined by `===` comparison \u2014 **not deep equality**.\n\nPrimitives compare by value (`\"hello\" === \"hello\"` \u2192 true), but objects and functions compare by reference. Every render creates a new reference:\n\n```jsx\n// New object reference on every render of Parent\n<Child config={{ theme: \"dark\" }} />\n\n// New function reference on every render of Parent\n<Child onClick={() => doSomething()} />\n```\n\nEven if the values are identical, `{} !== {}` and `() => {} !== () => {}`, so the child always sees \"new\" props and re-renders.\n\n---\n\n### 2. React.memo, useMemo, useCallback\n\n**`React.memo`** \u2014 wraps a component to skip re-rendering if props haven't changed (shallow comparison). Useless if you're passing unstable references.\n\n```jsx\nconst Child = React.memo(({ onClick, config }) => { ... });\n```\n\n**`useCallback`** \u2014 memoizes a function reference across renders. Use it when passing callbacks to memoized children or as effect dependencies.\n\n```jsx\n// Stable reference \u2014 only recreated when `id` changes\nconst handleClick = useCallback(() => doSomething(id), [id]);\n```\n\n**`useMemo`** \u2014 memoizes a computed value or object. Use it for expensive calculations, or to stabilize object references passed as props.\n\n```jsx\n// Stable reference \u2014 only recreated when `theme` changes\nconst config = useMemo(() => ({ theme, dense: true }), [theme]);\n```\n\n**When NOT to use them:** Don't reach for these by default. They add overhead (memory + comparison cost). Only memoize when you've identified a real re-render problem, or when a child is genuinely expensive to render.\n\n---\n\n### 3. Context Provider Pitfalls\n\nThe most common mistake: passing a new object literal as the context value.\n\n```jsx\n// Bad \u2014 new object on every render of App, all consumers re-render\n<UserContext.Provider value={{ user, setUser }}>\n```\n\nEvery component consuming this context re-renders whenever `App` re-renders, even if `user` and `setUser` haven't changed.\n\n**Fix:** memoize the value, or split into separate contexts (one for data, one for dispatch).\n\n```jsx\nconst value = useMemo(() => ({ user, setUser }), [user, setUser]);\n<UserContext.Provider value={value}>\n```\n\nSplitting contexts is often better \u2014 components that only call `setUser` won't re-render when `user` changes.\n\n---\n\n### 4. Before / After\n\n**Before \u2014 three problems at once:**\n\n```jsx\nfunction ProductList({ category }) {\n  const [items, setItems] = useState([]);\n\n  // New function reference every render\n  const fetchItems = async () => {\n    const data = await api.get(category);\n    setItems(data);\n  };\n\n  return (\n    <div>\n      {items.map(item => (\n        // New object prop + new handler every render\n        <ProductCard\n          key={item.id}\n          item={item}\n          style={{ padding: 8 }}           // new object\n          onSelect={() => select(item.id)} // new function\n        />\n      ))}\n    </div>\n  );\n}\n\nconst ProductCard = ({ item, style, onSelect }) => { ... };\n```\n\n**After \u2014 stable references, memoized child:**\n\n```jsx\nconst CARD_STYLE = { padding: 8 }; // stable: defined outside component\n\nfunction ProductList({ category }) {\n  const [items, setItems] = useState([]);\n\n  const fetchItems = useCallback(async () => {\n    const data = await api.get(category);\n    setItems(data);\n  }, [category]); // recreated only when category changes\n\n  return (\n    <div>\n      {items.map(item => (\n        <ProductCard\n          key={item.id}\n          item={item}\n          style={CARD_STYLE}\n          onSelect={item.onSelect} // pre-bound, or use useCallback per item\n        />\n      ))}\n    </div>\n  );\n}\n\n// Skips re-render if item, style, onSelect references are unchanged\nconst ProductCard = React.memo(({ item, style, onSelect }) => { ... });\n```\n\n---\n\n**Rule of thumb:** profile first (`React DevTools` \u2192 Profiler tab), then fix the hot spots. Premature memoization adds noise and rarely helps.",
+  "stop_reason": "end_turn",
+  "session_id": "92b58c78-454e-43cd-81d8-10d9714e2418",
+  "total_cost_usd": 0.0225287,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17129,
+    "output_tokens": 1126,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 1126,
+        "cache_read_input_tokens": 17129,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 411,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000491,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 1126,
+      "cacheReadInputTokens": 17129,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0220377,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "3b61615a-e9e9-4c29-9099-0edccfcac611",
+  "_meta": {
+    "task": "explain_rerender",
+    "condition": "caveman",
+    "run_num": 38,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 22.28,
+    "timestamp": 1776582165,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

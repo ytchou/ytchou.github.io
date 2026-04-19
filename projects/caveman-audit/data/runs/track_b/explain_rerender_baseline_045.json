@@ -1,0 +1,78 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 20414,
+  "duration_api_ms": 21452,
+  "num_turns": 1,
+  "result": "## Unnecessary Re-renders in React\n\n### 1. Reference Equality\n\nReact re-renders a component when its props change. For primitives, \"change\" means a different value. For objects and functions, it means a different **reference** \u2014 even if the contents are identical.\n\n```js\n// Every render creates a NEW object reference \u2192 child always re-renders\n<Child style={{ color: 'red' }} />\n\n// Every render creates a NEW function reference \u2192 child always re-renders\n<Child onClick={() => doSomething()} />\n```\n\nThis is because `{ color: 'red' } !== { color: 'red' }` in JavaScript \u2014 two object literals are never the same reference.\n\n---\n\n### 2. React.memo, useMemo, useCallback\n\n**`React.memo`** \u2014 wraps a component; skips re-render if props are shallowly equal.\n- Use when: a component is pure (output depends only on props) and re-renders are expensive.\n- Pointless if props include new object/function references every render (see below).\n\n**`useCallback`** \u2014 memoizes a function reference across renders.\n- Use when: passing a callback to a memoized child (`React.memo`) or as a `useEffect` dependency.\n- Don't use for every function \u2014 only when reference stability matters.\n\n**`useMemo`** \u2014 memoizes a computed value across renders.\n- Use when: the computation is expensive, **or** you're passing an object/array to a memoized child.\n- Don't use for cheap calculations; the overhead of memoization can exceed the savings.\n\n| Tool | Memoizes | Use for |\n|---|---|---|\n| `React.memo` | Component render | Pure components with stable props |\n| `useCallback` | Function reference | Callbacks passed to memoized children |\n| `useMemo` | Computed value | Expensive computations or stable object refs |\n\n---\n\n### 3. Context Provider Pitfalls\n\nEvery consumer of a context re-renders when the context **value** changes. The common trap: passing a new object literal as the value.\n\n```js\n// Bad: new object every render \u2192 ALL consumers re-render on every parent render\n<UserContext.Provider value={{ user, setUser }}>\n```\n\nFix: memoize the value object.\n\n```js\nconst value = useMemo(() => ({ user, setUser }), [user, setUser]);\n<UserContext.Provider value={value}>\n```\n\nA deeper fix: **split contexts** \u2014 separate read context from write context so components that only call setters don't re-render when data changes.\n\n---\n\n### 4. Before / After\n\n**Before** \u2014 `List` re-renders on every `App` render, even when `items` hasn't changed:\n\n```jsx\nfunction App() {\n  const [count, setCount] = useState(0);\n\n  // New function reference every render\n  const handleSelect = (id) => console.log('selected', id);\n\n  // New array reference every render\n  const config = { sortBy: 'name', limit: 10 };\n\n  return (\n    <>\n      <button onClick={() => setCount(c => c + 1)}>Count: {count}</button>\n      <List items={items} onSelect={handleSelect} config={config} />\n    </>\n  );\n}\n\nconst List = ({ items, onSelect, config }) => {\n  console.log('List rendered'); // fires on every count increment\n  return items.map(i => <Item key={i.id} item={i} onSelect={onSelect} />);\n};\n```\n\n**After** \u2014 `List` skips re-renders when `count` changes:\n\n```jsx\nfunction App() {\n  const [count, setCount] = useState(0);\n\n  // Stable reference across renders\n  const handleSelect = useCallback((id) => console.log('selected', id), []);\n\n  // Stable object reference across renders\n  const config = useMemo(() => ({ sortBy: 'name', limit: 10 }), []);\n\n  return (\n    <>\n      <button onClick={() => setCount(c => c + 1)}>Count: {count}</button>\n      <List items={items} onSelect={handleSelect} config={config} />\n    </>\n  );\n}\n\n// Skips render when props are shallowly equal\nconst List = React.memo(({ items, onSelect, config }) => {\n  console.log('List rendered'); // only fires when items/onSelect/config change\n  return items.map(i => <Item key={i.id} item={i} onSelect={onSelect} />);\n});\n```\n\n---\n\n**Key principle**: `React.memo` is only effective when all props have stable references. `useCallback` and `useMemo` exist to provide that stability \u2014 they're the prerequisite, not the solution on their own.",
+  "stop_reason": "end_turn",
+  "session_id": "5030daef-e102-4294-b031-500250c39392",
+  "total_cost_usd": 0.023473699999999997,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17129,
+    "output_tokens": 1189,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 1189,
+        "cache_read_input_tokens": 17129,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 411,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000491,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 1189,
+      "cacheReadInputTokens": 17129,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0229827,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "a93d4c5d-ee8f-4fb6-8a59-32867efdc1b5",
+  "_meta": {
+    "task": "explain_rerender",
+    "condition": "baseline",
+    "run_num": 45,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 21.81,
+    "timestamp": 1776582070,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

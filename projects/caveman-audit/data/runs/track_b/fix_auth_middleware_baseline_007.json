@@ -1,0 +1,78 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 22169,
+  "duration_api_ms": 23164,
+  "num_turns": 1,
+  "result": "**The bug:** The condition `decoded.exp < Date.now() / 1000` uses strict less-than, so when `exp === now` (token expiring at this exact second), the check passes and the token is accepted. It should be `<=`.\n\nThere's also a secondary issue: the `catch` block treats all JWT errors identically, hiding useful distinctions between expired tokens and genuinely invalid ones (e.g., bad signature, malformed).\n\nHere's the fixed middleware:\n\n```javascript\nconst jwt = require('jsonwebtoken');\n\nfunction authMiddleware(req, res, next) {\n  const token = req.headers.authorization?.split(' ')[1];\n\n  if (!token) {\n    return res.status(401).json({ error: 'No token provided' });\n  }\n\n  try {\n    const decoded = jwt.verify(token, process.env.JWT_SECRET);\n\n    // Fix: use <= so tokens expiring exactly at current time are rejected\n    if (decoded.exp <= Math.floor(Date.now() / 1000)) {\n      return res.status(401).json({ error: 'Token expired' });\n    }\n\n    req.user = decoded;\n    next();\n  } catch (err) {\n    if (err.name === 'TokenExpiredError') {\n      return res.status(401).json({ error: 'Token expired' });\n    }\n    if (err.name === 'JsonWebTokenError') {\n      return res.status(401).json({ error: 'Invalid token' });\n    }\n    if (err.name === 'NotBeforeError') {\n      return res.status(401).json({ error: 'Token not yet valid' });\n    }\n    // Unexpected errors shouldn't leak internals\n    next(err);\n  }\n}\n\nmodule.exports = authMiddleware;\n```\n\n**Two additional improvements:**\n\n1. `Math.floor(Date.now() / 1000)` instead of `Date.now() / 1000` \u2014 JWT `exp` is an integer (Unix seconds), so comparing against a float like `1713484800.123` could produce subtle off-by-one behavior. Flooring ensures the comparison is apples-to-apples.\n\n2. The `catch` now differentiates `TokenExpiredError`, `JsonWebTokenError`, and `NotBeforeError` (the three errors `jsonwebtoken` emits), and falls through to `next(err)` for anything unexpected rather than swallowing it silently.",
+  "stop_reason": "end_turn",
+  "session_id": "eaa01e4c-eff9-4ea0-b1d7-e5d97679da8a",
+  "total_cost_usd": 0.025391199999999996,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17304,
+    "output_tokens": 1302,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 1302,
+        "cache_read_input_tokens": 17304,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 586,
+      "outputTokens": 15,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000661,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 1302,
+      "cacheReadInputTokens": 17304,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.024730199999999997,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "f3fdbf0e-6555-43ab-92b7-c88efe362b43",
+  "_meta": {
+    "task": "fix_auth_middleware",
+    "condition": "baseline",
+    "run_num": 7,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 23.58,
+    "timestamp": 1776582208,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

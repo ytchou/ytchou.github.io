@@ -1,0 +1,78 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 18865,
+  "duration_api_ms": 20086,
+  "num_turns": 1,
+  "result": "## Unnecessary Re-renders in React\n\n### 1. Reference Equality\n\nReact re-renders a component when its props change. For primitives (`string`, `number`), change means a different value. For objects, arrays, and functions, React uses **referential equality** (`===`) \u2014 a new reference means a new prop, even if the content is identical.\n\n```jsx\n// Every render creates a new object literal \u2192 child always re-renders\n<Child style={{ color: 'red' }} />\n\n// Every render creates a new function \u2192 child always re-renders\n<Child onClick={() => doSomething()} />\n```\n\nBoth allocate a new object/function in memory on each render cycle, so `prevProp !== nextProp` is always `true`.\n\n---\n\n### 2. React.memo, useMemo, useCallback\n\n| Tool | What it memoizes | Use when |\n|------|-----------------|----------|\n| `React.memo` | A **component** \u2014 skips re-render if props are shallowly equal | Child is expensive to render and receives stable props |\n| `useMemo` | A **computed value** \u2014 recalculates only when deps change | Expensive derivation (sorting, filtering, transforming data) |\n| `useCallback` | A **function reference** \u2014 returns the same reference when deps are unchanged | Passing callbacks to memoized children or as effect deps |\n\n**Rule of thumb:** Don't reach for these by default. Memoization has overhead. Profile first; optimize second.\n\n`useCallback` is only useful if the receiving component is wrapped in `React.memo` (or the function is a dependency of `useEffect`/`useMemo`). Without that, you're paying the cost with no benefit.\n\n---\n\n### 3. Context Provider Pitfalls\n\nContext triggers a re-render in **every consumer** whenever the context value changes. The two common mistakes:\n\n**Pitfall 1 \u2014 Inline value object:**\n```jsx\n// New object on every parent render \u2192 all consumers re-render\n<AuthContext.Provider value={{ user, logout }}>\n```\n\n**Pitfall 2 \u2014 Coarse-grained context:** Putting frequently-changing state (e.g., a counter) alongside rarely-changing state (e.g., theme) in one context means theme consumers re-render on every counter tick.\n\n**Fixes:**\n- Memoize the context value with `useMemo`\n- Split large contexts into smaller, focused ones\n\n---\n\n### 4. Before / After\n\n**Before** \u2014 `ExpensiveList` re-renders on every keystroke because `filters` and `onSelect` are new references each time:\n\n```jsx\nfunction Dashboard() {\n  const [query, setQuery] = useState('');\n  const [items] = useState(largeDataset);\n\n  // New array reference every render\n  const filters = { query, active: true };\n\n  // New function reference every render\n  const handleSelect = (id) => console.log('selected', id);\n\n  return (\n    <>\n      <input value={query} onChange={e => setQuery(e.target.value)} />\n      <ExpensiveList items={items} filters={filters} onSelect={handleSelect} />\n    </>\n  );\n}\n\nconst ExpensiveList = ({ items, filters, onSelect }) => {\n  // expensive render...\n};\n```\n\n**After** \u2014 `ExpensiveList` only re-renders when `query` actually changes:\n\n```jsx\nfunction Dashboard() {\n  const [query, setQuery] = useState('');\n  const [items] = useState(largeDataset);\n\n  // Stable reference; only changes when query changes\n  const filters = useMemo(() => ({ query, active: true }), [query]);\n\n  // Stable reference; never changes (no deps)\n  const handleSelect = useCallback((id) => console.log('selected', id), []);\n\n  return (\n    <>\n      <input value={query} onChange={e => setQuery(e.target.value)} />\n      <ExpensiveList items={items} filters={filters} onSelect={handleSelect} />\n    </>\n  );\n}\n\n// Skips render entirely if props are shallowly equal\nconst ExpensiveList = React.memo(({ items, filters, onSelect }) => {\n  // expensive render...\n});\n```\n\n**Key insight:** `React.memo` + `useCallback`/`useMemo` work as a pair. One without the other is usually wasted effort.",
+  "stop_reason": "end_turn",
+  "session_id": "75478ec1-c761-47a2-a3f7-977c45914637",
+  "total_cost_usd": 0.0220137,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17129,
+    "output_tokens": 1092,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 1092,
+        "cache_read_input_tokens": 17129,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 411,
+      "outputTokens": 15,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000486,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 1092,
+      "cacheReadInputTokens": 17129,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0215277,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "6ab3c929-7bba-4780-9bb6-f4c03b34d6fe",
+  "_meta": {
+    "task": "explain_rerender",
+    "condition": "caveman",
+    "run_num": 43,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 20.17,
+    "timestamp": 1776582176,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

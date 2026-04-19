@@ -1,0 +1,78 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 18529,
+  "duration_api_ms": 19485,
+  "num_turns": 1,
+  "result": "## Unnecessary Re-renders in React\n\n### 1. Reference Equality\n\nReact re-renders a child when its props change. For primitives, \"change\" means a different value. For objects and functions, it means a different **reference** \u2014 and inline definitions create a new reference on every render.\n\n```jsx\n// Bad: new object reference every render \u2192 Child always re-renders\n<Child config={{ theme: 'dark' }} onClick={() => doSomething()} />\n\n// Bad: same problem with arrays\n<Child items={[1, 2, 3]} />\n```\n\nEven if the contents are identical, `{} !== {}` and `[] !== []` in JavaScript.\n\n---\n\n### 2. React.memo, useMemo, useCallback\n\n| Tool | What it memoizes | Use when |\n|---|---|---|\n| `React.memo` | A component's output | Child receives stable props but re-renders due to parent renders |\n| `useMemo` | A computed value | Expensive calculation; or you need a stable object/array reference |\n| `useCallback` | A function reference | Passing callbacks to memoized children or as effect dependencies |\n\n**Rules of thumb:**\n- `React.memo` is only useful if the props are actually stable \u2014 pairing it with inline objects/functions does nothing.\n- `useMemo`/`useCallback` add overhead. Don't reach for them preemptively; profile first.\n- Never memoize trivially cheap operations (e.g., a string concat).\n\n---\n\n### 3. Context Provider Pitfalls\n\nEvery consumer of a context re-renders when the context **value** changes reference.\n\n```jsx\n// Bad: new object every render \u2192 all consumers re-render on every parent render\nfunction App() {\n  return (\n    <ThemeContext.Provider value={{ theme, setTheme }}>\n      {children}\n    </ThemeContext.Provider>\n  );\n}\n```\n\n**Fixes:**\n- Memoize the value with `useMemo`.\n- Split contexts: separate rarely-changing state (config) from frequently-changing state (e.g., cursor position).\n- Colocate state as close as possible to where it's consumed.\n\n---\n\n### 4. Before / After\n\n**Before** \u2014 `List` re-renders on every `App` render even when `items` hasn't changed:\n\n```jsx\nfunction App() {\n  const [count, setCount] = useState(0);\n\n  const items = ['a', 'b', 'c'];           // new array every render\n  const handleSelect = (item) => {         // new function every render\n    console.log(item);\n  };\n\n  return (\n    <>\n      <button onClick={() => setCount(c => c + 1)}>Count: {count}</button>\n      <List items={items} onSelect={handleSelect} />\n    </>\n  );\n}\n\nconst List = React.memo(({ items, onSelect }) => {   // memo is useless here\n  console.log('List rendered');\n  return items.map(i => <div key={i} onClick={() => onSelect(i)}>{i}</div>);\n});\n```\n\n**After** \u2014 `List` only re-renders when `items` or `handleSelect` actually change:\n\n```jsx\nfunction App() {\n  const [count, setCount] = useState(0);\n\n  const items = useMemo(() => ['a', 'b', 'c'], []);  // stable reference\n  const handleSelect = useCallback((item) => {        // stable reference\n    console.log(item);\n  }, []);\n\n  return (\n    <>\n      <button onClick={() => setCount(c => c + 1)}>Count: {count}</button>\n      <List items={items} onSelect={handleSelect} />\n    </>\n  );\n}\n\nconst List = React.memo(({ items, onSelect }) => {   // now actually effective\n  console.log('List rendered');\n  return items.map(i => <div key={i} onClick={() => onSelect(i)}>{i}</div>);\n});\n```\n\n**Key insight:** `React.memo` is the gate; `useMemo`/`useCallback` are what make props stable enough to pass through that gate. Without both, neither works.",
+  "stop_reason": "end_turn",
+  "session_id": "ae0219d3-9200-4f1f-9d3d-71989f2d763a",
+  "total_cost_usd": 0.021343699999999997,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17129,
+    "output_tokens": 1047,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 1047,
+        "cache_read_input_tokens": 17129,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 411,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000491,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 1047,
+      "cacheReadInputTokens": 17129,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0208527,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "3df9381b-4a24-4c4d-81ce-d7396bd122ee",
+  "_meta": {
+    "task": "explain_rerender",
+    "condition": "baseline",
+    "run_num": 38,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 19.89,
+    "timestamp": 1776582048,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 21806,
+  "duration_api_ms": 22893,
+  "num_turns": 1,
+  "result": "## Unnecessary Re-renders in React\n\n---\n\n### 1. Reference Equality\n\nReact uses `Object.is` to compare props. Primitives compare by value, but **objects and functions compare by reference** \u2014 a new reference every render means a new prop, even if the content is identical.\n\n```jsx\n// Re-renders Child every time Parent renders, even if nothing changed\nfunction Parent() {\n  return <Child config={{ theme: 'dark' }} onClick={() => doSomething()} />;\n}\n```\n\nEach render creates a new object literal `{}` and a new arrow function `() => ...`, so Child always sees \"new\" props.\n\n---\n\n### 2. React.memo, useMemo, useCallback\n\n**`React.memo`** \u2014 wraps a component; skips re-render if props are shallowly equal.\nUse it when a component is expensive to render and its parent re-renders often for unrelated reasons.\n\n```jsx\nconst Child = React.memo(({ config, onClick }) => { /* ... */ });\n```\n\n**`useCallback`** \u2014 memoizes a function reference across renders.\nUse it when passing a callback to a memoized child (otherwise memo does nothing).\n\n```jsx\nconst handleClick = useCallback(() => doSomething(), []);\n```\n\n**`useMemo`** \u2014 memoizes a computed value or object reference.\nUse it for expensive calculations, or to stabilize an object/array passed as a prop.\n\n```jsx\nconst config = useMemo(() => ({ theme: 'dark' }), []);\n```\n\n**When NOT to use them:** don't wrap everything \u2014 memoization has its own cost (cache comparison on every render). Only apply when you have a measured problem or a clear structural reason.\n\n---\n\n### 3. Context Provider Pitfalls\n\nEvery consumer re-renders when the context **value reference** changes. The most common mistake is constructing the value inline:\n\n```jsx\n// Every Parent render creates a new object \u2192 all consumers re-render\n<MyContext.Provider value={{ user, setUser }}>\n```\n\nFix: stabilize the value with `useMemo`.\n\n```jsx\nconst value = useMemo(() => ({ user, setUser }), [user, setUser]);\n<MyContext.Provider value={value}>\n```\n\nA deeper fix: **split contexts** \u2014 a read context and a dispatch context. Dispatch never changes, so components that only call actions never re-render on state changes.\n\n---\n\n### 4. Before / After\n\n**Before** \u2014 `ExpensiveList` re-renders every time `Dashboard` does, even though its data hasn't changed.\n\n```jsx\nfunction Dashboard({ userId }) {\n  const [count, setCount] = useState(0);\n  const items = fetchItems(userId); // returns a new array reference each time\n\n  return (\n    <>\n      <button onClick={() => setCount(c => c + 1)}>Clicked {count}</button>\n      <ExpensiveList\n        items={items}\n        onSelect={(id) => console.log(id)}  // new function every render\n      />\n    </>\n  );\n}\n\nfunction ExpensiveList({ items, onSelect }) { /* slow render */ }\n```\n\n**After** \u2014 `ExpensiveList` only re-renders when `items` actually changes.\n\n```jsx\nfunction Dashboard({ userId }) {\n  const [count, setCount] = useState(0);\n\n  // Stable reference: only recomputes when userId changes\n  const items = useMemo(() => fetchItems(userId), [userId]);\n\n  // Stable reference: doesn't change between renders\n  const handleSelect = useCallback((id) => console.log(id), []);\n\n  return (\n    <>\n      <button onClick={() => setCount(c => c + 1)}>Clicked {count}</button>\n      <ExpensiveList items={items} onSelect={handleSelect} />\n    </>\n  );\n}\n\n// Skips render entirely if props are shallowly equal\nconst ExpensiveList = React.memo(function ExpensiveList({ items, onSelect }) {\n  /* slow render */\n});\n```\n\n**Key insight:** `React.memo` alone does nothing if the props are unstable references. The three tools work as a system: `memo` on the component + `useMemo`/`useCallback` on the values passed to it.",
+  "stop_reason": "end_turn",
+  "session_id": "c6a4e6ad-7fbd-436f-8bce-cc087f611740",
+  "total_cost_usd": 0.021358699999999998,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17129,
+    "output_tokens": 1048,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 1048,
+        "cache_read_input_tokens": 17129,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 411,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000491,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 1048,
+      "cacheReadInputTokens": 17129,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0208677,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "b9c5e272-a80c-49c8-838a-b36ab036762a",
+  "_meta": {
+    "task": "explain_rerender",
+    "condition": "baseline",
+    "run_num": 25,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 23.38,
+    "timestamp": 1776582028,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 20569,
+  "duration_api_ms": 21580,
+  "num_turns": 1,
+  "result": "## Unnecessary Re-renders in React\n\n---\n\n### 1. Reference Equality\n\nReact uses `Object.is` to compare props. Primitives compare by value; objects and functions compare by reference.\n\nEvery render creates **new references** for inline objects and functions, so even if the data is identical, the child sees a \"different\" prop and re-renders.\n\n```jsx\n// Bad: new object reference on every parent render\n<Child config={{ theme: 'dark' }} />\n\n// Bad: new function reference on every parent render\n<Child onClick={() => handleClick(id)} />\n```\n\nThe child component has no way to know the values are semantically the same \u2014 the reference changed, so it re-renders.\n\n---\n\n### 2. React.memo, useMemo, useCallback\n\n| Hook/API | What it memoizes | Use when |\n|---|---|---|\n| `React.memo` | The component itself | Child is expensive to render and receives stable props |\n| `useMemo` | A computed value | Computation is expensive or result is passed as prop |\n| `useCallback` | A function reference | Function is passed as prop to a memoized child |\n\n**Key rule:** `useCallback`/`useMemo` are only useful when the result goes to a `React.memo` component or another hook dependency array. Memoizing in isolation does nothing.\n\n```jsx\n// useCallback is pointless here \u2014 Child is not memoized\nconst onClick = useCallback(() => doThing(), []);\nreturn <Child onClick={onClick} />;  // Child still re-renders\n\n// useCallback is useful here \u2014 Child is memoized\nconst Child = React.memo(({ onClick }) => <button onClick={onClick} />);\nconst onClick = useCallback(() => doThing(), []);\nreturn <Child onClick={onClick} />;  // Child skips re-render \u2713\n```\n\n---\n\n### 3. Context Provider Pitfalls\n\nA context value is compared by reference too. If the provider creates a new object inline, **every consumer re-renders on every parent render** \u2014 even if the data didn't change.\n\n```jsx\n// Bad: new object every render \u2192 all consumers re-render\nfunction AuthProvider({ children }) {\n  const [user, setUser] = useState(null);\n  return (\n    <AuthContext.Provider value={{ user, setUser }}>\n      {children}\n    </AuthContext.Provider>\n  );\n}\n```\n\n**Fix:** memoize the context value, or split stable and volatile state into separate contexts.\n\n```jsx\n// Better: value only changes when user or setUser changes\nconst value = useMemo(() => ({ user, setUser }), [user]);\nreturn <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;\n\n// Best for large trees: split into two contexts\n// UserContext (changes) and UserDispatchContext (stable \u2014 setUser never changes)\n```\n\n---\n\n### 4. Before / After\n\n**Before** \u2014 `ExpensiveList` re-renders every time `Parent` re-renders, even when `items` hasn't changed.\n\n```jsx\nfunction Parent() {\n  const [count, setCount] = useState(0);\n\n  const filter = { active: true };               // new ref every render\n  const handleSelect = (id) => setSelected(id);  // new ref every render\n\n  return (\n    <>\n      <button onClick={() => setCount(c => c + 1)}>Click: {count}</button>\n      <ExpensiveList filter={filter} onSelect={handleSelect} />\n    </>\n  );\n}\n\nfunction ExpensiveList({ filter, onSelect }) {\n  console.log('rendered'); // fires on every parent render\n  // ...expensive work\n}\n```\n\n**After** \u2014 `ExpensiveList` only re-renders when `filter` or `onSelect` actually change.\n\n```jsx\nfunction Parent() {\n  const [count, setCount] = useState(0);\n\n  const filter = useMemo(() => ({ active: true }), []);       // stable ref\n  const handleSelect = useCallback((id) => setSelected(id), []); // stable ref\n\n  return (\n    <>\n      <button onClick={() => setCount(c => c + 1)}>Click: {count}</button>\n      <ExpensiveList filter={filter} onSelect={handleSelect} />\n    </>\n  );\n}\n\nconst ExpensiveList = React.memo(function ExpensiveList({ filter, onSelect }) {\n  console.log('rendered'); // only fires when filter or onSelect change\n  // ...expensive work\n});\n```\n\n---\n\n**Bottom line:** measure before optimizing \u2014 React DevTools Profiler shows which components re-render and why. Memoization adds complexity; only reach for it when a component is genuinely expensive or causes visible performance problems.",
+  "stop_reason": "end_turn",
+  "session_id": "dcd4ccad-d9c5-47eb-b193-df4344ee311f",
+  "total_cost_usd": 0.04192954999999999,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 5493,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 1156,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 5493,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 1156,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 5493,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 5493
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 411,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000491,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 1156,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 5493,
+      "webSearchRequests": 0,
+      "costUSD": 0.04143854999999999,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "a25be0c1-0c91-40c2-ac83-d438cc7f6538",
+  "_meta": {
+    "task": "explain_rerender",
+    "condition": "baseline",
+    "run_num": 1,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 22.9,
+    "timestamp": 1776581983,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

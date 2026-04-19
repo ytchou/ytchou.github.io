@@ -1,0 +1,78 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 22641,
+  "duration_api_ms": 24642,
+  "num_turns": 1,
+  "result": "## Unnecessary Re-renders in React\n\n### 1. Reference Equality\n\nReact re-renders a component when its props change. For primitives (`string`, `number`, `boolean`), change means value change. For objects and functions, change means **reference** change \u2014 and a new reference is created on every render.\n\n```jsx\n// Bad: new object reference on every parent render\n<Child style={{ color: 'red' }} />\n\n// Bad: new function reference on every parent render\n<Child onClick={() => doSomething()} />\n```\n\nEvery time the parent renders, `Child` receives a new prop reference even though the value is identical \u2014 React sees it as changed and re-renders `Child`.\n\n---\n\n### 2. React.memo, useMemo, useCallback\n\n**`React.memo`** \u2014 wraps a component; skips re-render if props are shallowly equal.\n\nUse it when: a component is expensive to render and its parent re-renders frequently for unrelated reasons.\n\n```jsx\nconst Child = React.memo(({ value, onClick }) => {\n  return <button onClick={onClick}>{value}</button>;\n});\n```\n\n**`useCallback`** \u2014 memoizes a function reference across renders.\n\nUse it when: passing a callback to a `memo`-wrapped child (otherwise `memo` is defeated by a new function ref each render).\n\n```jsx\nconst handleClick = useCallback(() => {\n  doSomething(id);\n}, [id]); // only changes when `id` changes\n```\n\n**`useMemo`** \u2014 memoizes a computed value across renders.\n\nUse it when: (a) passing an object/array to a `memo`-wrapped child, or (b) the computation itself is genuinely expensive.\n\n```jsx\nconst config = useMemo(() => ({ color: 'red', size: 12 }), []);\n```\n\n> **Don't over-memoize.** These have their own cost. Only apply them when you've confirmed a real performance problem or when the prop is going to a `memo`-wrapped child.\n\n---\n\n### 3. Context Provider Pitfalls\n\nA context consumer re-renders whenever the context **value** changes reference. Providers that recreate the value object inline are the most common culprit.\n\n```jsx\n// Bad: new object on every App render \u2192 all consumers re-render\nfunction App() {\n  const [user, setUser] = useState(null);\n  return (\n    <UserContext.Provider value={{ user, setUser }}>\n      <Tree />\n    </UserContext.Provider>\n  );\n}\n```\n\n**Fix:** memoize the value, or split contexts so stable values don't change with volatile ones.\n\n```jsx\nfunction App() {\n  const [user, setUser] = useState(null);\n  const value = useMemo(() => ({ user, setUser }), [user]);\n  return (\n    <UserContext.Provider value={value}>\n      <Tree />\n    </UserContext.Provider>\n  );\n}\n```\n\nOr split into `UserContext` (changes) and `UserDispatchContext` (stable `setUser`), so components that only dispatch never re-render on user changes.\n\n---\n\n### 4. Before/After Example\n\n**Before \u2014 `ExpensiveList` re-renders on every keystroke in the parent:**\n\n```jsx\nfunction Parent() {\n  const [query, setQuery] = useState('');\n  const [items] = useState(['apple', 'banana', 'cherry']);\n\n  // New function reference every render\n  const handleSelect = (item) => console.log('selected:', item);\n\n  // New array reference every render\n  const filtered = items.filter(i => i.includes(query));\n\n  return (\n    <>\n      <input value={query} onChange={e => setQuery(e.target.value)} />\n      <ExpensiveList items={filtered} onSelect={handleSelect} />\n    </>\n  );\n}\n\nfunction ExpensiveList({ items, onSelect }) {\n  console.log('ExpensiveList rendered'); // fires on every keystroke\n  return items.map(i => <div key={i} onClick={() => onSelect(i)}>{i}</div>);\n}\n```\n\n**After \u2014 `ExpensiveList` only re-renders when `filtered` actually changes:**\n\n```jsx\nfunction Parent() {\n  const [query, setQuery] = useState('');\n  const [items] = useState(['apple', 'banana', 'cherry']);\n\n  // Stable function reference\n  const handleSelect = useCallback((item) => {\n    console.log('selected:', item);\n  }, []);\n\n  // Only recomputes when query or items changes\n  const filtered = useMemo(\n    () => items.filter(i => i.includes(query)),\n    [items, query]\n  );\n\n  return (\n    <>\n      <input value={query} onChange={e => setQuery(e.target.value)} />\n      <ExpensiveList items={filtered} onSelect={handleSelect} />\n    </>\n  );\n}\n\n// Skips render when props are shallowly equal\nconst ExpensiveList = React.memo(function ExpensiveList({ items, onSelect }) {\n  console.log('ExpensiveList rendered'); // only fires when filtered changes\n  return items.map(i => <div key={i} onClick={() => onSelect(i)}>{i}</div>);\n});\n```\n\n---\n\n### Quick Decision Guide\n\n| Situation | Tool |\n|---|---|\n| Child renders too often from parent re-renders | `React.memo` |\n| Passing a callback to a memo'd child | `useCallback` |\n| Passing an object/array to a memo'd child | `useMemo` |\n| Context value recreated on every render | `useMemo` on the value |\n| Consumers of different context slices | Split contexts |",
+  "stop_reason": "end_turn",
+  "session_id": "c305488e-80da-4252-b63e-2510353c314b",
+  "total_cost_usd": 0.027058699999999998,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17129,
+    "output_tokens": 1428,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 1428,
+        "cache_read_input_tokens": 17129,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 411,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000491,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 1428,
+      "cacheReadInputTokens": 17129,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0265677,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "7c04d5d6-7ea0-49c4-a5cd-3c5205be5556",
+  "_meta": {
+    "task": "explain_rerender",
+    "condition": "baseline",
+    "run_num": 20,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 24.2,
+    "timestamp": 1776582010,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

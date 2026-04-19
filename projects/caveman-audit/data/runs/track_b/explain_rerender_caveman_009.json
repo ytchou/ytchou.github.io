@@ -1,0 +1,78 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 21437,
+  "duration_api_ms": 22711,
+  "num_turns": 1,
+  "result": "## Unnecessary Re-renders in React\n\n### 1. Reference Equality\n\nReact re-renders a component when its props change. Change is determined by `===` (referential equality), not deep equality.\n\n**The problem:** Every render creates *new* references for inline objects and functions, so props always appear \"changed\" even if the values are identical.\n\n```jsx\n// Parent re-renders \u2192 new `style` and `onClick` objects created every time\n<Child style={{ color: 'red' }} onClick={() => doSomething()} />\n```\n\nPrimitives (`string`, `number`, `boolean`) are compared by value, so they're safe inline. Objects, arrays, and functions are not.\n\n---\n\n### 2. React.memo, useMemo, useCallback\n\n| Tool | Memoizes | Use when |\n|---|---|---|\n| `React.memo` | A component's render output | Child receives stable props but parent re-renders often |\n| `useMemo` | A computed value | Expensive calculation, or object/array passed as prop |\n| `useCallback` | A function reference | Function passed as prop to a memoized child |\n\n**React.memo** wraps a component and skips re-render if props didn't change (shallow comparison):\n```jsx\nconst Child = React.memo(({ value }) => <div>{value}</div>);\n```\n\n**useMemo** memoizes a value across renders:\n```jsx\nconst filtered = useMemo(() => items.filter(i => i.active), [items]);\n```\n\n**useCallback** memoizes a function reference:\n```jsx\nconst handleClick = useCallback(() => doSomething(id), [id]);\n```\n\n**Key rule:** `useMemo`/`useCallback` only matter when the result is passed to a `React.memo`-wrapped child or used as a `useEffect` dependency. Memoizing for its own sake adds overhead without benefit.\n\n---\n\n### 3. Context Provider Pitfalls\n\nContext triggers a re-render in **every consumer** when the context value changes reference.\n\n```jsx\n// Bad: new object created every render \u2192 all consumers re-render\nfunction Provider({ children }) {\n  const [user, setUser] = useState(null);\n  return (\n    <UserContext.Provider value={{ user, setUser }}>\n      {children}\n    </UserContext.Provider>\n  );\n}\n```\n\n**Fix:** Memoize the value, or split context into separate providers (state vs. dispatch):\n\n```jsx\n// Good: split into two contexts\nconst UserStateContext = createContext();\nconst UserDispatchContext = createContext();\n\nfunction Provider({ children }) {\n  const [user, setUser] = useState(null);\n  return (\n    <UserDispatchContext.Provider value={setUser}>  {/* stable ref */}\n      <UserStateContext.Provider value={user}>\n        {children}\n      </UserStateContext.Provider>\n    </UserDispatchContext.Provider>\n  );\n}\n```\n\n`setUser` from `useState` has a stable identity \u2014 components that only need to dispatch won't re-render when state changes.\n\n---\n\n### 4. Before / After\n\n**Before \u2014 child re-renders on every parent render:**\n\n```jsx\nfunction Parent() {\n  const [count, setCount] = useState(0);\n\n  // New object reference every render\n  const config = { theme: 'dark', size: 'lg' };\n  // New function reference every render\n  const handleSave = () => save(config);\n\n  return (\n    <>\n      <button onClick={() => setCount(c => c + 1)}>+</button>\n      <ExpensiveChild config={config} onSave={handleSave} />\n    </>\n  );\n}\n\nconst ExpensiveChild = ({ config, onSave }) => {\n  console.log('rendered'); // fires on every count increment\n  return <button onClick={onSave}>{config.theme}</button>;\n};\n```\n\n**After \u2014 child only re-renders when its actual dependencies change:**\n\n```jsx\nfunction Parent() {\n  const [count, setCount] = useState(0);\n\n  // Stable reference \u2014 only changes if deps change\n  const config = useMemo(() => ({ theme: 'dark', size: 'lg' }), []);\n  const handleSave = useCallback(() => save(config), [config]);\n\n  return (\n    <>\n      <button onClick={() => setCount(c => c + 1)}>+</button>\n      <ExpensiveChild config={config} onSave={handleSave} />\n    </>\n  );\n}\n\nconst ExpensiveChild = React.memo(({ config, onSave }) => {\n  console.log('rendered'); // only fires when config or onSave changes\n  return <button onClick={onSave}>{config.theme}</button>;\n});\n```\n\n**The fix requires all three pieces together:** `useMemo` for the object, `useCallback` for the function, and `React.memo` on the child. Any one missing breaks the optimization.\n\n---\n\n**General heuristic:** Profile first with React DevTools Profiler before adding memoization. Premature memoization adds complexity and can itself be expensive if deps arrays are large or comparisons are frequent.",
+  "stop_reason": "end_turn",
+  "session_id": "904d382d-0258-466c-856d-d49040fea342",
+  "total_cost_usd": 0.024703699999999995,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17129,
+    "output_tokens": 1271,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 1271,
+        "cache_read_input_tokens": 17129,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 411,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000491,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 1271,
+      "cacheReadInputTokens": 17129,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.024212699999999997,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "35598b18-bd95-47f5-b832-7480e0cbe3cb",
+  "_meta": {
+    "task": "explain_rerender",
+    "condition": "caveman",
+    "run_num": 9,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 22.93,
+    "timestamp": 1776582096,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

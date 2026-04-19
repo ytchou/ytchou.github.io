@@ -1,0 +1,78 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 18640,
+  "duration_api_ms": 21550,
+  "num_turns": 1,
+  "result": "**The bug:** The condition `decoded.exp < Date.now() / 1000` uses strict less-than, so a token where `exp === now` passes \u2014 it should be `<=`. However, this manual check is also **redundant**: `jwt.verify` already rejects expired tokens internally (throwing `TokenExpiredError`). The real problem is the `catch` block treats all errors identically, hiding the distinction between expired vs. invalid tokens.\n\nHere's the fixed middleware:\n\n```javascript\nconst jwt = require('jsonwebtoken');\n\nfunction authMiddleware(req, res, next) {\n  const token = req.headers.authorization?.split(' ')[1];\n\n  if (!token) {\n    return res.status(401).json({ error: 'No token provided' });\n  }\n\n  try {\n    // jwt.verify already rejects tokens where exp <= now (including exact boundary)\n    const decoded = jwt.verify(token, process.env.JWT_SECRET);\n    req.user = decoded;\n    next();\n  } catch (err) {\n    if (err.name === 'TokenExpiredError') {\n      return res.status(401).json({ error: 'Token expired' });\n    }\n    if (err.name === 'JsonWebTokenError') {\n      return res.status(401).json({ error: 'Invalid token' });\n    }\n    // Unexpected errors (e.g. missing JWT_SECRET) should not leak internals\n    return res.status(500).json({ error: 'Authentication error' });\n  }\n}\n\nmodule.exports = authMiddleware;\n```\n\n**What changed:**\n\n1. **Removed the redundant manual expiry check** \u2014 `jwt.verify` internally uses `clockTimestamp >= payload.exp`, which correctly rejects tokens at the exact expiry boundary. Your manual `<` check was both wrong and unreachable for valid JWTs.\n\n2. **Split error handling by type** \u2014 `TokenExpiredError` vs `JsonWebTokenError` now return distinct client messages, useful for clients that want to trigger a token refresh flow on expiry specifically.\n\n3. **Added a 500 fallback** \u2014 unexpected errors (e.g., `process.env.JWT_SECRET` is undefined, causing `jwt.verify` to throw a generic `Error`) no longer silently return a misleading 401.",
+  "stop_reason": "end_turn",
+  "session_id": "56b4ae0c-1128-4cc9-9ca8-cf5009f89fec",
+  "total_cost_usd": 0.0204112,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17304,
+    "output_tokens": 970,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 970,
+        "cache_read_input_tokens": 17304,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 586,
+      "outputTokens": 15,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000661,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 970,
+      "cacheReadInputTokens": 17304,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.019750200000000002,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "75d04b61-7f00-4e2f-91df-db3885641d5f",
+  "_meta": {
+    "task": "fix_auth_middleware",
+    "condition": "baseline",
+    "run_num": 21,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 20.11,
+    "timestamp": 1776582235,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

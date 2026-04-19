@@ -1,0 +1,78 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 18244,
+  "duration_api_ms": 19481,
+  "num_turns": 1,
+  "result": "## Unnecessary Re-renders in React\n\n---\n\n### 1. Reference Equality\n\nReact uses `Object.is` to compare props. Primitives compare by value; objects and functions compare by **reference**.\n\n```jsx\n// New object created every render \u2192 child always re-renders\n<Child config={{ theme: 'dark' }} />\n\n// New function created every render \u2192 same problem\n<Child onClick={() => doSomething()} />\n```\n\nEvery render of the parent creates a *new* reference, even if the value is logically identical. React sees a different prop and re-renders the child.\n\n---\n\n### 2. The Three Tools\n\n| Hook | Memoizes | Use when |\n|------|----------|----------|\n| `React.memo` | A **component** | Child is pure and re-renders with same props |\n| `useMemo` | A **computed value** | Expensive calculation; value passed as prop |\n| `useCallback` | A **function reference** | Function passed as prop to a memoized child |\n\n**`useCallback` without `React.memo` on the child is useless** \u2014 stabilizing the reference only matters if the child actually bails out on equal props.\n\n```jsx\n// useMemo: expensive calculation\nconst sorted = useMemo(() => heavySort(items), [items]);\n\n// useCallback: stable function reference\nconst handleClick = useCallback((id) => dispatch(remove(id)), [dispatch]);\n```\n\nOnly memoize when there's a measurable cost. Memoization itself has overhead.\n\n---\n\n### 3. Context Provider Pitfalls\n\nEvery consumer re-renders when the context **value reference** changes \u2014 even if the data is the same.\n\n```jsx\n// BAD: new object every render\nfunction Provider({ children }) {\n  const [user, setUser] = useState(null);\n  return (\n    <UserContext.Provider value={{ user, setUser }}>\n      {children}\n    </UserContext.Provider>\n  );\n}\n```\n\nThe `{ user, setUser }` object literal is recreated on every render. Fix it with `useMemo`:\n\n```jsx\n// GOOD: stable reference unless user changes\nfunction Provider({ children }) {\n  const [user, setUser] = useState(null);\n  const value = useMemo(() => ({ user, setUser }), [user]);\n  return (\n    <UserContext.Provider value={value}>\n      {children}\n    </UserContext.Provider>\n  );\n}\n```\n\nA deeper fix: **split read and write contexts** so components that only call `setUser` never re-render when `user` changes.\n\n---\n\n### 4. Before / After\n\n**Before** \u2014 `List` re-renders on every keystroke in the parent's input:\n\n```jsx\nfunction Parent() {\n  const [query, setQuery] = useState('');\n  const [items, setItems] = useState([...]);\n\n  const filtered = items.filter(i => i.active);   // new array every render\n  const handleRemove = (id) => setItems(prev =>    // new function every render\n    prev.filter(i => i.id !== id)\n  );\n\n  return (\n    <>\n      <input value={query} onChange={e => setQuery(e.target.value)} />\n      <List items={filtered} onRemove={handleRemove} />\n    </>\n  );\n}\n\nfunction List({ items, onRemove }) { /* ... */ }\n```\n\n**After** \u2014 `List` only re-renders when `items` actually changes:\n\n```jsx\nfunction Parent() {\n  const [query, setQuery] = useState('');\n  const [items, setItems] = useState([...]);\n\n  const filtered = useMemo(\n    () => items.filter(i => i.active),\n    [items]                                        // stable unless items changes\n  );\n\n  const handleRemove = useCallback(\n    (id) => setItems(prev => prev.filter(i => i.id !== id)),\n    []                                             // stable forever\n  );\n\n  return (\n    <>\n      <input value={query} onChange={e => setQuery(e.target.value)} />\n      <List items={filtered} onRemove={handleRemove} />\n    </>\n  );\n}\n\nconst List = React.memo(function List({ items, onRemove }) { /* ... */ });\n//    ^^^^ bails out when props are referentially equal\n```\n\nThe `query` state changes on every keystroke, but `List` now skips re-rendering because `filtered` and `handleRemove` references are stable.\n\n---\n\n**Rule of thumb:** profile first with React DevTools Profiler, then memoize only the components that show up as expensive or frequently re-rendering.",
+  "stop_reason": "end_turn",
+  "session_id": "d8186795-0543-4107-9615-3b401e91ea80",
+  "total_cost_usd": 0.022828699999999997,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17129,
+    "output_tokens": 1146,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 1146,
+        "cache_read_input_tokens": 17129,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 411,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000491,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 1146,
+      "cacheReadInputTokens": 17129,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0223377,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "38eb9c77-acfb-4f6e-adce-8e93dc034c8c",
+  "_meta": {
+    "task": "explain_rerender",
+    "condition": "caveman",
+    "run_num": 12,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 19.62,
+    "timestamp": 1776582108,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

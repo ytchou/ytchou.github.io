@@ -1,0 +1,78 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 20538,
+  "duration_api_ms": 21772,
+  "num_turns": 1,
+  "result": "## Unnecessary Re-renders in React\n\n---\n\n### 1. Reference Equality\n\nReact uses `Object.is` to compare props. Primitives compare by value; objects and functions compare by reference.\n\nEvery render creates **new references** for inline objects and functions, so even if the data is identical, the child sees a \"changed\" prop.\n\n```jsx\n// Bad: new object reference on every parent render\n<Child config={{ theme: 'dark' }} />\n\n// Bad: new function reference on every parent render\n<Child onClick={() => handleClick(id)} />\n```\n\nThis is the root cause of most unnecessary re-renders.\n\n---\n\n### 2. React.memo, useMemo, useCallback\n\n**`React.memo`** \u2014 wraps a component. Skips re-render if all props pass a shallow equality check.\n- Use when: a child is expensive to render and receives stable props.\n- Don't use when: props change almost every render anyway \u2014 the comparison cost isn't free.\n\n**`useCallback`** \u2014 memoizes a function reference across renders.\n- Use when: passing a callback to a `memo`-wrapped child, or as a dependency of `useEffect`.\n- Not useful without `React.memo` on the receiver \u2014 the child re-renders regardless.\n\n**`useMemo`** \u2014 memoizes a computed value.\n- Use when: computation is expensive (sorting large arrays, heavy transformations).\n- Don't use for cheap computations \u2014 the overhead exceeds the savings.\n\nRule of thumb: **`React.memo` + `useCallback`/`useMemo` are a package deal**. One without the other is usually pointless.\n\n---\n\n### 3. Context Provider Pitfalls\n\nEvery consumer re-renders whenever the context value changes by reference \u2014 even if the consumer only uses part of the value.\n\n```jsx\n// Bad: new object on every render that wraps Provider\nfunction App() {\n  const [user, setUser] = useState(null);\n  return (\n    // This object literal is recreated every render\n    <AuthContext.Provider value={{ user, setUser }}>\n      <Tree />\n    </AuthContext.Provider>\n  );\n}\n```\n\nFixes:\n- **`useMemo`** the context value.\n- **Split contexts** \u2014 separate frequently-changing state from stable values so consumers only subscribe to what they need.\n- Put the `Provider` high enough that its parent rarely re-renders.\n\n---\n\n### 4. Before / After\n\n**Before** \u2014 `ProductList` re-renders on every `App` render, even when `products` hasn't changed:\n\n```jsx\nfunction App() {\n  const [cart, setCart] = useState([]);\n\n  // New function reference every render\n  const handleAddToCart = (item) => {\n    setCart(prev => [...prev, item]);\n  };\n\n  return (\n    <>\n      <CartSummary cart={cart} />\n      {/* Re-renders every time cart changes, even though products didn't */}\n      <ProductList products={products} onAdd={handleAddToCart} />\n    </>\n  );\n}\n\nfunction ProductList({ products, onAdd }) {\n  console.log('ProductList rendered');\n  return products.map(p => <Product key={p.id} product={p} onAdd={onAdd} />);\n}\n```\n\n**After** \u2014 `ProductList` only re-renders when `products` changes:\n\n```jsx\nfunction App() {\n  const [cart, setCart] = useState([]);\n\n  // Stable reference \u2014 only recreated if dependencies change\n  const handleAddToCart = useCallback((item) => {\n    setCart(prev => [...prev, item]);\n  }, []); // no deps: setCart is stable from useState\n\n  return (\n    <>\n      <CartSummary cart={cart} />\n      <ProductList products={products} onAdd={handleAddToCart} />\n    </>\n  );\n}\n\n// Skips re-render if products and onAdd references are the same\nconst ProductList = React.memo(function ProductList({ products, onAdd }) {\n  console.log('ProductList rendered');\n  return products.map(p => <Product key={p.id} product={p} onAdd={onAdd} />);\n});\n```\n\nKey changes: `useCallback` stabilizes the function reference; `React.memo` makes `ProductList` check whether to bail out. Neither alone would work.\n\n---\n\n**Practical heuristic**: profile first (React DevTools Profiler), optimize second. Premature memoization adds complexity without measurable benefit in most cases.",
+  "stop_reason": "end_turn",
+  "session_id": "25ad6b7b-f44f-4702-ae21-68bda25ed5a7",
+  "total_cost_usd": 0.022198699999999995,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17129,
+    "output_tokens": 1104,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 1104,
+        "cache_read_input_tokens": 17129,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 411,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000491,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 1104,
+      "cacheReadInputTokens": 17129,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.021707699999999996,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "733ca7d0-a8c7-4fa4-b6ac-be0d6d140cb4",
+  "_meta": {
+    "task": "explain_rerender",
+    "condition": "baseline",
+    "run_num": 31,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 22.14,
+    "timestamp": 1776582048,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

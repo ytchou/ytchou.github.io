@@ -1,0 +1,78 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 18621,
+  "duration_api_ms": 19552,
+  "num_turns": 1,
+  "result": "## Unnecessary Re-renders in React\n\n### 1. Reference Equality\n\nReact uses `===` to compare props. Primitives compare by value, but **objects and functions compare by identity** \u2014 a new reference is created on every render even if the contents are identical.\n\n```jsx\n// Re-renders Child on every Parent render \u2014 new object reference each time\nfunction Parent() {\n  return <Child style={{ color: 'red' }} onClick={() => doSomething()} />;\n}\n```\n\nEvery render of `Parent` creates a brand-new `{}` and `() => {}`, so from React's perspective the props always changed.\n\n---\n\n### 2. React.memo, useMemo, useCallback\n\n| Tool | What it memoizes | Use when |\n|---|---|---|\n| `React.memo` | Component output | Child receives stable props but re-renders due to parent updates |\n| `useMemo` | A computed value | Expensive calculation, or object/array passed as prop |\n| `useCallback` | A function reference | Function passed as prop to a memoized child |\n\n**`React.memo`** \u2014 wraps a component, skips re-render if props are shallowly equal:\n```jsx\nconst Child = React.memo(({ value }) => <div>{value}</div>);\n```\n\n**`useMemo`** \u2014 stabilizes an object/array reference or memoizes a heavy computation:\n```jsx\nconst config = useMemo(() => ({ theme: 'dark', size: 'lg' }), []);\n```\n\n**`useCallback`** \u2014 stabilizes a function reference:\n```jsx\nconst handleClick = useCallback(() => doSomething(id), [id]);\n```\n\n> **Rule of thumb:** don't memoize by default. Profile first. `useMemo`/`useCallback` have their own overhead and add cognitive noise. They pay off when (a) a child is wrapped in `React.memo`, or (b) the computation is measurably expensive.\n\n---\n\n### 3. Context Provider Pitfalls\n\nA context value that's a new object on every render causes **every consumer to re-render**, regardless of whether the data changed.\n\n```jsx\n// Bad \u2014 new object on every render of App\nfunction App() {\n  const [user, setUser] = useState(null);\n  return (\n    <UserContext.Provider value={{ user, setUser }}>\n      {children}\n    </UserContext.Provider>\n  );\n}\n```\n\n**Two fixes:**\n\n**Option A \u2014 memoize the value:**\n```jsx\nconst value = useMemo(() => ({ user, setUser }), [user]);\n```\n\n**Option B (preferred) \u2014 split into separate contexts** so that consumers of stable data (e.g. `setUser`) don't re-render when `user` changes:\n```jsx\n<UserDispatchContext.Provider value={setUser}>\n  <UserStateContext.Provider value={user}>\n    {children}\n  </UserStateContext.Provider>\n</UserDispatchContext.Provider>\n```\n\n---\n\n### 4. Before / After\n\n**Before \u2014 `ExpensiveList` re-renders every time `Parent` renders, even if `items` didn't change:**\n\n```jsx\nfunction Parent({ items }) {\n  const [count, setCount] = useState(0);\n\n  const filtered = items.filter(i => i.active);     // new array every render\n  const handleSelect = (id) => selectItem(id);       // new function every render\n\n  return (\n    <>\n      <button onClick={() => setCount(c => c + 1)}>Count: {count}</button>\n      <ExpensiveList items={filtered} onSelect={handleSelect} />\n    </>\n  );\n}\n\nfunction ExpensiveList({ items, onSelect }) { /* ... */ }\n```\n\n**After \u2014 `ExpensiveList` only re-renders when `items` actually changes:**\n\n```jsx\nfunction Parent({ items }) {\n  const [count, setCount] = useState(0);\n\n  const filtered = useMemo(\n    () => items.filter(i => i.active),\n    [items]                                          // stable reference when items unchanged\n  );\n\n  const handleSelect = useCallback((id) => selectItem(id), []); // stable function\n\n  return (\n    <>\n      <button onClick={() => setCount(c => c + 1)}>Count: {count}</button>\n      <ExpensiveList items={filtered} onSelect={handleSelect} />\n    </>\n  );\n}\n\nconst ExpensiveList = React.memo(function ExpensiveList({ items, onSelect }) {\n  /* now skipped entirely when count changes */\n});\n```\n\nThe three pieces work together: `React.memo` opts the component into prop comparison, `useMemo` stabilizes the array reference, and `useCallback` stabilizes the function. Remove any one of them and the optimization collapses.",
+  "stop_reason": "end_turn",
+  "session_id": "e20a38ce-df05-4e0f-8a02-7af2e82b28b4",
+  "total_cost_usd": 0.042274549999999994,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 5493,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 1179,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 5493,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 1179,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 5493,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 5493
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 411,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000491,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 1179,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 5493,
+      "webSearchRequests": 0,
+      "costUSD": 0.041783549999999996,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "3bffc90d-7edf-4d29-84af-092934c5d3b9",
+  "_meta": {
+    "task": "explain_rerender",
+    "condition": "baseline",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 21.08,
+    "timestamp": 1776581981,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

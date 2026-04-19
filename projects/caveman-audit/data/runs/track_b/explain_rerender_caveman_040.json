@@ -1,0 +1,78 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 24007,
+  "duration_api_ms": 25255,
+  "num_turns": 1,
+  "result": "## Unnecessary Re-renders in React\n\n### 1. Reference Equality\n\nReact re-renders a component when its props change. For primitives, change means a different value. For objects and functions, change means a different **reference** \u2014 even if the contents are identical.\n\n```js\n// New object created on every render \u2192 child always re-renders\n<Child config={{ theme: 'dark' }} />\n\n// New function created on every render \u2192 child always re-renders\n<Child onClick={() => doSomething()} />\n```\n\nJavaScript's `{} !== {}` and `() => {} !== () => {}`, so React sees new props every time the parent renders.\n\n---\n\n### 2. React.memo, useMemo, useCallback\n\n**`React.memo`** \u2014 wraps a component; skips re-render if props are shallowly equal.\n- Use when: a child is expensive to render and its props are stable.\n- Useless without stable prop references (pairs with `useCallback`/`useMemo`).\n\n**`useCallback`** \u2014 memoizes a function reference across renders.\n- Use when: passing a callback to a `memo`-wrapped child, or as a `useEffect` dependency.\n- Not for every function \u2014 only when reference stability matters.\n\n**`useMemo`** \u2014 memoizes a computed value.\n- Use when: the computation is expensive, or you need a stable object/array reference for a prop/dependency.\n- Not for cheap calculations \u2014 memoization has its own cost.\n\n```js\n// Rule of thumb:\n// useMemo  \u2192 stable *value*   (object, array, derived data)\n// useCallback \u2192 stable *function*\n// React.memo  \u2192 skip *component* render\n```\n\n---\n\n### 3. Context Provider Pitfalls\n\nEvery consumer re-renders when the context **value reference** changes. The most common mistake:\n\n```js\n// Bad: new object on every Parent render \u2192 all consumers re-render\nfunction Parent() {\n  return (\n    <Ctx.Provider value={{ user, setUser }}>\n      {children}\n    </Ctx.Provider>\n  );\n}\n```\n\nThe `{ user, setUser }` object is re-created each render, so every `useContext(Ctx)` call triggers a re-render even if `user` didn't change.\n\nFix: memoize the value.\n\n```js\nfunction Parent() {\n  const value = useMemo(() => ({ user, setUser }), [user, setUser]);\n  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;\n}\n```\n\nAlso consider **splitting contexts** by update frequency \u2014 a `UserCtx` and a separate `ThemeCtx` so a theme change doesn't re-render user-dependent components.\n\n---\n\n### 4. Before / After Example\n\n**Before** \u2014 `List` re-renders on every keystroke in the search input, even though items didn't change.\n\n```jsx\nfunction App() {\n  const [query, setQuery] = useState('');\n  const [items, setItems] = useState([...]);\n\n  // New function reference every render\n  const handleDelete = (id) => setItems(i => i.filter(x => x.id !== id));\n\n  return (\n    <>\n      <input value={query} onChange={e => setQuery(e.target.value)} />\n      <List items={items} onDelete={handleDelete} />\n    </>\n  );\n}\n\n// No memo \u2192 re-renders whenever App re-renders\nfunction List({ items, onDelete }) {\n  return items.map(item => (\n    <Item key={item.id} item={item} onDelete={onDelete} />\n  ));\n}\n```\n\n**After** \u2014 `List` only re-renders when `items` or `handleDelete` actually change.\n\n```jsx\nfunction App() {\n  const [query, setQuery] = useState('');\n  const [items, setItems] = useState([...]);\n\n  // Stable reference \u2014 only changes if setItems changes (never)\n  const handleDelete = useCallback(\n    (id) => setItems(i => i.filter(x => x.id !== id)),\n    []\n  );\n\n  return (\n    <>\n      <input value={query} onChange={e => setQuery(e.target.value)} />\n      <List items={items} onDelete={handleDelete} />\n    </>\n  );\n}\n\n// Skips re-render when props are shallowly equal\nconst List = React.memo(function List({ items, onDelete }) {\n  return items.map(item => (\n    <Item key={item.id} item={item} onDelete={onDelete} />\n  ));\n});\n```\n\nTyping in the input no longer re-renders `List` because `items` is unchanged and `handleDelete` has a stable reference.\n\n---\n\n**Key mental model:** `React.memo` is the gate; `useCallback`/`useMemo` are what keep props stable enough for the gate to hold. Applying `memo` without stabilizing props accomplishes nothing.",
+  "stop_reason": "end_turn",
+  "session_id": "7929ea3f-f1fc-496b-9d85-baacf7af041f",
+  "total_cost_usd": 0.0241887,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17129,
+    "output_tokens": 1237,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 1237,
+        "cache_read_input_tokens": 17129,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 411,
+      "outputTokens": 15,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000486,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 1237,
+      "cacheReadInputTokens": 17129,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0237027,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "bfb8c422-2379-4339-99a6-b794712d269a",
+  "_meta": {
+    "task": "explain_rerender",
+    "condition": "caveman",
+    "run_num": 40,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 25.41,
+    "timestamp": 1776582176,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

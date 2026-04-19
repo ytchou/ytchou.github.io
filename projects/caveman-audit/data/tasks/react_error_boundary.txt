@@ -1,0 +1,7 @@
+Implement a React error boundary component in TypeScript that:
+1. Catches rendering errors in child components
+2. Shows a fallback UI with the error message
+3. Includes a "Try Again" button that resets the error state
+4. Logs errors to console with component stack trace
+
+Write the complete component with proper TypeScript types.

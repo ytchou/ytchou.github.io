@@ -1,0 +1,78 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 19207,
+  "duration_api_ms": 20391,
+  "num_turns": 1,
+  "result": "## Unnecessary Re-renders in React\n\n### 1. Reference Equality\n\nReact uses `Object.is` to compare props. Primitives compare by value; objects/functions compare by reference.\n\n```jsx\n// New object reference every render \u2192 child always re-renders\n<Child style={{ color: 'red' }} />\n<Child onClick={() => doSomething()} />\n```\n\nEvery render of the parent creates a *new* object/function literal, so the child sees a changed prop even though the data is identical.\n\n### 2. React.memo, useMemo, useCallback\n\n**`React.memo`** \u2014 wrap a component to skip re-renders when props haven't changed (shallow comparison). Only useful if you also stabilize the props being passed.\n\n```jsx\nconst Child = React.memo(({ onClick, data }) => <button onClick={onClick}>{data.label}</button>);\n```\n\n**`useCallback`** \u2014 memoizes a function reference across renders.\n\n```jsx\nconst handleClick = useCallback(() => doSomething(id), [id]);\n```\n\n**`useMemo`** \u2014 memoizes a computed value or object reference.\n\n```jsx\nconst style = useMemo(() => ({ color: theme.primary }), [theme.primary]);\nconst filtered = useMemo(() => items.filter(x => x.active), [items]);\n```\n\n**When to reach for each:**\n| Tool | Use when |\n|------|----------|\n| `React.memo` | Child is expensive to render and receives stable props |\n| `useCallback` | Passing a callback to a memoized child or as a `useEffect` dep |\n| `useMemo` | Computing an expensive value, or stabilizing an object/array reference |\n\n**Don't over-memoize.** These have their own cost (memory, comparison overhead). Skip them for cheap components or frequently-changing deps.\n\n### 3. Context Provider Pitfalls\n\nEvery consumer re-renders when the context *value reference* changes \u2014 even if the data inside is the same.\n\n```jsx\n// Bad: new object every render\n<MyContext.Provider value={{ user, logout }}>\n```\n\n```jsx\n// Better: memoize the value\nconst value = useMemo(() => ({ user, logout }), [user, logout]);\n<MyContext.Provider value={value}>\n```\n\nAlso split contexts by update frequency. A single `AppContext` holding both static config and frequently-changing auth state forces every consumer to re-render on auth changes.\n\n### 4. Before / After\n\n**Before** \u2014 `ExpensiveList` re-renders on every parent render, even when `items` hasn't changed:\n\n```jsx\nfunction Parent() {\n  const [count, setCount] = useState(0);\n\n  const handleSelect = (id) => console.log('selected', id); // new ref each render\n  const config = { sortBy: 'name' };                         // new ref each render\n\n  return (\n    <>\n      <button onClick={() => setCount(c => c + 1)}>+{count}</button>\n      <ExpensiveList items={items} onSelect={handleSelect} config={config} />\n    </>\n  );\n}\n\nfunction ExpensiveList({ items, onSelect, config }) {\n  console.log('ExpensiveList rendered'); // fires on every parent render\n  return items.map(item => <Item key={item.id} item={item} onSelect={onSelect} />);\n}\n```\n\n**After** \u2014 `ExpensiveList` only re-renders when `items` actually changes:\n\n```jsx\nfunction Parent() {\n  const [count, setCount] = useState(0);\n\n  const handleSelect = useCallback((id) => console.log('selected', id), []); // stable ref\n  const config = useMemo(() => ({ sortBy: 'name' }), []);                     // stable ref\n\n  return (\n    <>\n      <button onClick={() => setCount(c => c + 1)}>+{count}</button>\n      <ExpensiveList items={items} onSelect={handleSelect} config={config} />\n    </>\n  );\n}\n\nconst ExpensiveList = React.memo(function ExpensiveList({ items, onSelect, config }) {\n  console.log('ExpensiveList rendered'); // only fires when items/onSelect/config change\n  return items.map(item => <Item key={item.id} item={item} onSelect={onSelect} />);\n});\n```\n\n**The mental model:** `React.memo` is the gate; `useCallback`/`useMemo` are what make the props stable enough for the gate to hold.",
+  "stop_reason": "end_turn",
+  "session_id": "7cbc30a0-b991-41b4-8c91-fcc7d8002b44",
+  "total_cost_usd": 0.022633699999999996,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17129,
+    "output_tokens": 1133,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 1133,
+        "cache_read_input_tokens": 17129,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 411,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000491,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 1133,
+      "cacheReadInputTokens": 17129,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.022142699999999998,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "a5b4385c-bd4a-44fb-97a3-b498369fb7f1",
+  "_meta": {
+    "task": "explain_rerender",
+    "condition": "caveman",
+    "run_num": 41,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 20.6,
+    "timestamp": 1776582172,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

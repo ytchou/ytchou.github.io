@@ -1,0 +1,78 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 18546,
+  "duration_api_ms": 19550,
+  "num_turns": 1,
+  "result": "## Unnecessary Re-renders in React\n\n### 1. Reference Equality\n\nReact re-renders a component when its props change. For primitives, \"change\" means a different value. For objects and functions, it means a different **reference** \u2014 and in JavaScript, `{} !== {}`.\n\n```jsx\n// This creates a NEW object on every render of Parent\n<Child config={{ theme: 'dark' }} />\n\n// This creates a NEW function on every render of Parent\n<Child onClick={() => handleClick(id)} />\n```\n\nEvery time `Parent` renders, `Child` sees \"new\" props and re-renders too \u2014 even if the data is identical.\n\n---\n\n### 2. React.memo, useMemo, useCallback\n\n| Tool | What it memoizes | Use when |\n|---|---|---|\n| `React.memo` | Component output | Child is pure and re-renders are expensive |\n| `useMemo` | Computed value | Computation is expensive, or value is passed as prop/context |\n| `useCallback` | Function reference | Function is a prop to a memoized child, or a dependency in another hook |\n\n**React.memo** wraps a component and skips re-render if props are shallowly equal:\n```jsx\nconst Child = React.memo(({ onClick, label }) => <button onClick={onClick}>{label}</button>);\n```\n\n**useCallback** stabilizes a function reference:\n```jsx\nconst handleClick = useCallback(() => setCount(c => c + 1), []); // stable across renders\n```\n\n**useMemo** stabilizes an object/computed value:\n```jsx\nconst config = useMemo(() => ({ theme, fontSize }), [theme, fontSize]);\n```\n\n**Don't overuse them.** Memoization has overhead. Only add it when you can measure a real problem or when the pattern clearly warrants it (e.g., passing callbacks deep into a memoized subtree).\n\n---\n\n### 3. Context Provider Pitfalls\n\nContext triggers a re-render in **every consumer** when the context value changes reference. The common mistake:\n\n```jsx\n// BAD: new object every render \u2192 all consumers re-render\nfunction AuthProvider({ children }) {\n  const [user, setUser] = useState(null);\n  return (\n    <AuthContext.Provider value={{ user, setUser }}>\n      {children}\n    </AuthContext.Provider>\n  );\n}\n```\n\nFix with `useMemo`:\n```jsx\n// GOOD: stable reference unless user actually changes\nfunction AuthProvider({ children }) {\n  const [user, setUser] = useState(null);\n  const value = useMemo(() => ({ user, setUser }), [user]);\n  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;\n}\n```\n\nBetter still: **split contexts** \u2014 separate the rarely-changing state (auth object) from the stable dispatch functions so consumers only subscribe to what they need.\n\n---\n\n### 4. Before / After\n\n**Before \u2014 every keystroke re-renders the expensive list:**\n\n```jsx\nfunction SearchPage() {\n  const [query, setQuery] = useState('');\n\n  const filters = { active: true, limit: 50 }; // new ref every render\n  const handleSelect = (item) => console.log(item); // new ref every render\n\n  return (\n    <>\n      <input value={query} onChange={e => setQuery(e.target.value)} />\n      <ExpensiveList filters={filters} onSelect={handleSelect} />\n    </>\n  );\n}\n\nconst ExpensiveList = ({ filters, onSelect }) => {\n  // renders 500 rows \u2014 slow\n};\n```\n\n**After \u2014 `ExpensiveList` only re-renders when `filters` or `handleSelect` actually change:**\n\n```jsx\nfunction SearchPage() {\n  const [query, setQuery] = useState('');\n\n  // stable reference \u2014 never changes\n  const filters = useMemo(() => ({ active: true, limit: 50 }), []);\n  const handleSelect = useCallback((item) => console.log(item), []);\n\n  return (\n    <>\n      <input value={query} onChange={e => setQuery(e.target.value)} />\n      <ExpensiveList filters={filters} onSelect={handleSelect} />\n    </>\n  );\n}\n\nconst ExpensiveList = React.memo(({ filters, onSelect }) => {\n  // now skipped entirely on query keystrokes\n});\n```\n\n**Key insight:** `React.memo` on `ExpensiveList` is worthless without `useMemo`/`useCallback` on its props \u2014 you need both sides of the contract.",
+  "stop_reason": "end_turn",
+  "session_id": "8e0f4187-f6bc-464f-810d-3c03ac11c5b0",
+  "total_cost_usd": 0.0225237,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17129,
+    "output_tokens": 1126,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 1126,
+        "cache_read_input_tokens": 17129,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 411,
+      "outputTokens": 15,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000486,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 1126,
+      "cacheReadInputTokens": 17129,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0220377,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "1515dad8-c708-4154-b179-f8194164e2a8",
+  "_meta": {
+    "task": "explain_rerender",
+    "condition": "caveman",
+    "run_num": 19,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 19.99,
+    "timestamp": 1776582119,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

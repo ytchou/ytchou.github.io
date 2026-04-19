@@ -1,0 +1,78 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 20973,
+  "duration_api_ms": 22145,
+  "num_turns": 1,
+  "result": "## Unnecessary Re-renders in React\n\n### 1. Reference Equality\n\nReact re-renders a component when its props change. For primitives, change means value difference. For objects and functions, React uses **referential equality** (`===`) \u2014 two objects with identical contents are still different references.\n\n```jsx\n// Re-renders Child on every Parent render \u2014 new object reference each time\nfunction Parent() {\n  return <Child config={{ theme: 'dark' }} />;\n}\n\n// Re-renders Child on every Parent render \u2014 new function reference each time\nfunction Parent() {\n  const handleClick = () => doSomething();\n  return <Child onClick={handleClick} />;\n}\n```\n\nEvery render of `Parent` creates a new `{}` and a new `() => {}`, so `Child` always sees \"new\" props.\n\n---\n\n### 2. React.memo, useMemo, useCallback\n\n**`React.memo`** \u2014 wraps a component, skips re-render if props are shallowly equal.\n\n```jsx\nconst Child = React.memo(({ config, onClick }) => {\n  return <button onClick={onClick}>{config.label}</button>;\n});\n```\n\nUseless without stable references \u2014 `memo` only helps if the props you pass don't change on every render.\n\n---\n\n**`useCallback`** \u2014 memoizes a function, returns the same reference across renders unless deps change.\n\n```jsx\nconst handleClick = useCallback(() => {\n  doSomething(id);\n}, [id]); // only recreates when `id` changes\n```\n\nUse when passing callbacks to memoized children or as effect dependencies.\n\n---\n\n**`useMemo`** \u2014 memoizes a computed value or object.\n\n```jsx\nconst config = useMemo(() => ({ theme: 'dark', size: 'lg' }), []);\n```\n\nUse for expensive computations or to stabilize object/array references passed as props.\n\n**When NOT to use them:** On every value by default. They add overhead (cache storage, dep comparison). Only apply when you've identified an actual re-render problem \u2014 premature memoization is its own cost.\n\n---\n\n### 3. Context Provider Pitfalls\n\nA context value change re-renders **every consumer**, even if they only use part of the value.\n\n```jsx\n// Bad \u2014 new object on every render, all consumers re-render\nfunction AppProvider({ children }) {\n  const [user, setUser] = useState(null);\n  const [theme, setTheme] = useState('light');\n\n  return (\n    <AppContext.Provider value={{ user, setUser, theme, setTheme }}>\n      {children}\n    </AppContext.Provider>\n  );\n}\n```\n\n**Fixes:**\n- **Split contexts** by concern (UserContext, ThemeContext) so a theme change doesn't re-render user consumers.\n- **Memoize the value** when you can't split:\n\n```jsx\nconst value = useMemo(\n  () => ({ user, setUser, theme, setTheme }),\n  [user, theme]\n);\nreturn <AppContext.Provider value={value}>{children}</AppContext.Provider>;\n```\n\n---\n\n### 4. Before/After Example\n\n**Before** \u2014 `ExpensiveList` re-renders on every `Page` render:\n\n```jsx\nfunction Page({ userId }) {\n  const [count, setCount] = useState(0);\n\n  const filters = { active: true, userId }; // new ref every render\n  const handleSelect = (id) => selectItem(id); // new ref every render\n\n  return (\n    <>\n      <button onClick={() => setCount(c => c + 1)}>Count: {count}</button>\n      <ExpensiveList filters={filters} onSelect={handleSelect} />\n    </>\n  );\n}\n\nconst ExpensiveList = ({ filters, onSelect }) => {\n  console.log('rendered'); // fires on every count increment\n  return <div>...</div>;\n};\n```\n\n**After** \u2014 `ExpensiveList` only re-renders when `userId` changes:\n\n```jsx\nfunction Page({ userId }) {\n  const [count, setCount] = useState(0);\n\n  const filters = useMemo(() => ({ active: true, userId }), [userId]);\n  const handleSelect = useCallback((id) => selectItem(id), []);\n\n  return (\n    <>\n      <button onClick={() => setCount(c => c + 1)}>Count: {count}</button>\n      <ExpensiveList filters={filters} onSelect={handleSelect} />\n    </>\n  );\n}\n\nconst ExpensiveList = React.memo(({ filters, onSelect }) => {\n  console.log('rendered'); // only fires when userId changes\n  return <div>...</div>;\n});\n```\n\n**The pattern:** `React.memo` on the child + stable references from the parent (`useMemo`/`useCallback`) \u2014 all three work together. Any missing piece breaks the optimization.",
+  "stop_reason": "end_turn",
+  "session_id": "c5afbce9-daae-49ae-ab2b-88a345681592",
+  "total_cost_usd": 0.023848699999999997,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17129,
+    "output_tokens": 1214,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 1214,
+        "cache_read_input_tokens": 17129,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 411,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000491,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 1214,
+      "cacheReadInputTokens": 17129,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0233577,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "a176afd5-f548-48c8-927a-cba4d09c9cef",
+  "_meta": {
+    "task": "explain_rerender",
+    "condition": "caveman",
+    "run_num": 22,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 22.3,
+    "timestamp": 1776582131,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

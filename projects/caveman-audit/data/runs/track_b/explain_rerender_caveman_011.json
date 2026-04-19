@@ -1,0 +1,78 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 19262,
+  "duration_api_ms": 22216,
+  "num_turns": 1,
+  "result": "## Unnecessary Re-renders in React\n\n### 1. Reference Equality\n\nReact uses `Object.is` to compare props. Primitives compare by value (`42 === 42`), but objects and functions compare by reference \u2014 a new object literal is always a new reference, even if its contents are identical.\n\n```jsx\n// Re-renders Child on every Parent render \u2014 new object reference each time\n<Child style={{ color: \"red\" }} />\n<Child onClick={() => doSomething()} />\n```\n\nEvery render of the parent creates a fresh `{}` and `() => {}`, so React sees new props and re-renders the child.\n\n---\n\n### 2. React.memo, useMemo, useCallback\n\n| Tool | What it memoizes | Use when |\n|---|---|---|\n| `React.memo` | A component's render output | Child receives stable props and renders are expensive |\n| `useMemo` | A computed value | Computing a value is expensive, or you need a stable object reference |\n| `useCallback` | A function reference | Passing a callback to a memoized child or into a dependency array |\n\n**Rules of thumb:**\n- `useCallback` is only useful if the receiving component is wrapped in `React.memo` (otherwise the stable reference is never checked).\n- Don't memoize everything \u2014 the overhead of memoization itself isn't free. Profile first.\n- `useMemo` is worth it when the calculation is genuinely expensive (sorting large arrays, heavy transforms), not for `{ a: 1 }`.\n\n---\n\n### 3. Context Provider Pitfalls\n\nContext triggers a re-render in **every consumer** whenever the value reference changes.\n\n```jsx\n// Bad \u2014 new object on every render\nfunction AuthProvider({ children }) {\n  const [user, setUser] = useState(null);\n  return (\n    <AuthContext.Provider value={{ user, setUser }}>\n      {children}\n    </AuthContext.Provider>\n  );\n}\n```\n\n`{ user, setUser }` is a new object each render, so all consumers re-render even if `user` didn't change.\n\n**Fixes:**\n- Memoize the value: `useMemo(() => ({ user, setUser }), [user])`\n- Split contexts \u2014 separate a rarely-changing \"auth state\" context from a frequently-changing one\n- Keep context values as primitives where possible\n\n---\n\n### 4. Before / After\n\n**Before** \u2014 `ExpensiveList` re-renders on every keystroke in the input:\n\n```jsx\nfunction Parent() {\n  const [query, setQuery] = useState(\"\");\n  const [items] = useState([\"apple\", \"banana\", \"cherry\"]);\n\n  const filtered = items.filter(i => i.includes(query)); // recomputed each render\n  const handleSelect = (item) => console.log(\"selected\", item); // new ref each render\n\n  return (\n    <>\n      <input value={query} onChange={e => setQuery(e.target.value)} />\n      <ExpensiveList items={filtered} onSelect={handleSelect} />\n    </>\n  );\n}\n\nconst ExpensiveList = ({ items, onSelect }) => { /* expensive render */ };\n```\n\n**After** \u2014 `ExpensiveList` only re-renders when `filtered` actually changes:\n\n```jsx\nfunction Parent() {\n  const [query, setQuery] = useState(\"\");\n  const [items] = useState([\"apple\", \"banana\", \"cherry\"]);\n\n  const filtered = useMemo(\n    () => items.filter(i => i.includes(query)),\n    [items, query]\n  );\n\n  const handleSelect = useCallback(\n    (item) => console.log(\"selected\", item),\n    [] // stable \u2014 no deps\n  );\n\n  return (\n    <>\n      <input value={query} onChange={e => setQuery(e.target.value)} />\n      <ExpensiveList items={filtered} onSelect={handleSelect} />\n    </>\n  );\n}\n\nconst ExpensiveList = React.memo(({ items, onSelect }) => { /* expensive render */ });\n```\n\n**Key insight:** `React.memo` + `useCallback` + `useMemo` form a triangle \u2014 they're only effective together. `React.memo` without stable props does nothing; stable props without `React.memo` are never checked.",
+  "stop_reason": "end_turn",
+  "session_id": "25038af0-e5c8-419f-89e4-4b33b576fd7e",
+  "total_cost_usd": 0.0214437,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17129,
+    "output_tokens": 1054,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 1054,
+        "cache_read_input_tokens": 17129,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 411,
+      "outputTokens": 15,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000486,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 1054,
+      "cacheReadInputTokens": 17129,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0209577,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "4ec1202f-a925-471c-9e40-1ab06c2be556",
+  "_meta": {
+    "task": "explain_rerender",
+    "condition": "caveman",
+    "run_num": 11,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 20.67,
+    "timestamp": 1776582108,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

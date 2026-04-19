@@ -1,0 +1,78 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 28534,
+  "duration_api_ms": 29573,
+  "num_turns": 1,
+  "result": "## Unnecessary Re-renders in React\n\n---\n\n### 1. Reference Equality\n\nReact re-renders a child when its props change. Change is determined by `===` (reference equality), not deep equality.\n\nPrimitives compare by value \u2014 `\"hello\" === \"hello\"` is `true`. But objects and functions are compared by reference \u2014 a new object literal `{}` is never `===` to another `{}`, even with identical contents.\n\nThis means every render of a parent creates *new* references for inline objects and functions, making them always appear \"changed\" to children:\n\n```jsx\n// Every parent render creates a new object \u2192 child always re-renders\n<Child style={{ color: 'red' }} />\n\n// Every parent render creates a new function \u2192 child always re-renders\n<Child onClick={() => doSomething()} />\n```\n\n---\n\n### 2. React.memo, useMemo, useCallback\n\nThese are tools to stabilize references and skip work. Use them *only when you have a measured perf problem* \u2014 premature memoization adds complexity and its own overhead.\n\n**`React.memo`** \u2014 wraps a component. Skips re-render if all props are shallowly equal.\n- Use when: a child is expensive to render and its parent re-renders often for unrelated reasons.\n- Useless if the parent passes unstable object/function props (see below).\n\n**`useMemo`** \u2014 memoizes a *computed value* between renders.\n- Use when: a computation is expensive (sorting large arrays, heavy transforms) and its inputs rarely change.\n- Not for every object literal \u2014 the overhead isn't worth it for cheap computations.\n\n**`useCallback`** \u2014 memoizes a *function reference* between renders.\n- Use when: passing a callback to a `React.memo`-wrapped child, or a callback is a dependency of `useEffect`/`useMemo`.\n- `useCallback(fn, deps)` is equivalent to `useMemo(() => fn, deps)`.\n\n```\nReact.memo   \u2192 stabilizes at the component boundary (skip render)\nuseMemo      \u2192 stabilizes a value inside a component\nuseCallback  \u2192 stabilizes a function reference inside a component\n```\n\n---\n\n### 3. Context Provider Pitfalls\n\nContext triggers a re-render in **every consumer** when the context value changes reference. A common mistake is creating a new object inline in the provider:\n\n```jsx\n// Bad \u2014 new object every render \u2192 all consumers re-render\nfunction App() {\n  const [user, setUser] = useState(null);\n  return (\n    <UserContext.Provider value={{ user, setUser }}>\n      ...\n    </UserContext.Provider>\n  );\n}\n```\n\nFix: memoize the value, or split context into \"data\" and \"dispatch\" contexts (dispatch from `useReducer` is stable).\n\n```jsx\n// Good \u2014 value only changes when user changes\nfunction App() {\n  const [user, setUser] = useState(null);\n  const value = useMemo(() => ({ user, setUser }), [user]);\n  return (\n    <UserContext.Provider value={value}>\n      ...\n    </UserContext.Provider>\n  );\n}\n```\n\nA deeper fix for large apps: separate the stable dispatch from the changing state so components that only dispatch never re-render on state changes.\n\n---\n\n### 4. Before / After\n\n**Scenario:** A `TodoList` passes a callback and a config object to a memoized `TodoItem`. Despite `React.memo`, items re-render on every keystroke in an unrelated search input.\n\n**Before \u2014 broken memoization:**\n\n```jsx\nfunction TodoList({ todos }) {\n  const [search, setSearch] = useState('');\n\n  // New function reference every render\n  const handleDelete = (id) => deleteTodo(id);\n\n  // New object reference every render\n  const itemStyle = { fontSize: 14, padding: 8 };\n\n  return (\n    <>\n      <input value={search} onChange={e => setSearch(e.target.value)} />\n      {todos.map(todo => (\n        <TodoItem\n          key={todo.id}\n          todo={todo}\n          onDelete={handleDelete}  // always new ref\n          style={itemStyle}         // always new ref\n        />\n      ))}\n    </>\n  );\n}\n\nconst TodoItem = React.memo(({ todo, onDelete, style }) => {\n  console.log('render', todo.id); // fires on every keystroke\n  return (\n    <div style={style}>\n      {todo.text}\n      <button onClick={() => onDelete(todo.id)}>Delete</button>\n    </div>\n  );\n});\n```\n\n**After \u2014 stable references:**\n\n```jsx\n// Defined outside component \u2014 stable forever, no closure needed\nconst ITEM_STYLE = { fontSize: 14, padding: 8 };\n\nfunction TodoList({ todos }) {\n  const [search, setSearch] = useState('');\n\n  // Stable reference \u2014 only changes if deleteTodo changes\n  const handleDelete = useCallback((id) => deleteTodo(id), []);\n\n  return (\n    <>\n      <input value={search} onChange={e => setSearch(e.target.value)} />\n      {todos.map(todo => (\n        <TodoItem\n          key={todo.id}\n          todo={todo}\n          onDelete={handleDelete}  // stable ref\n          style={ITEM_STYLE}       // stable ref (module constant)\n        />\n      ))}\n    </>\n  );\n}\n\nconst TodoItem = React.memo(({ todo, onDelete, style }) => {\n  console.log('render', todo.id); // only fires when todo changes\n  return (\n    <div style={style}>\n      {todo.text}\n      <button onClick={() => onDelete(todo.id)}>Delete</button>\n    </div>\n  );\n});\n```\n\n**Key insight:** `React.memo` only works when the props it receives are stable. If you pass unstable references, memo adds cost (the shallow comparison) with no benefit.\n\n---\n\n### Decision Checklist\n\n| Symptom | Tool |\n|---|---|\n| Expensive child re-renders when unrelated parent state changes | `React.memo` + stable props |\n| Inline function prop breaks memo | `useCallback` |\n| Inline object prop breaks memo | `useMemo` or module-level constant |\n| All context consumers re-render too often | `useMemo` on provider value, or split context |\n| Heavy derived computation recalculates every render | `useMemo` |\n\nAlways profile first with React DevTools Profiler \u2014 memoization that isn't needed is just noise.",
+  "stop_reason": "end_turn",
+  "session_id": "93fcfaee-e471-44a6-8152-5104311ff6f5",
+  "total_cost_usd": 0.029818699999999997,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17129,
+    "output_tokens": 1612,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 1612,
+        "cache_read_input_tokens": 17129,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 411,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000491,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 1612,
+      "cacheReadInputTokens": 17129,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.029327699999999998,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "43d01d26-e2c8-4c9b-b520-6334c5189583",
+  "_meta": {
+    "task": "explain_rerender",
+    "condition": "caveman",
+    "run_num": 20,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 30.29,
+    "timestamp": 1776582130,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

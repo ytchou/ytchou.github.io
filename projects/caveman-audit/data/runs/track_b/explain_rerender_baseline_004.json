@@ -1,0 +1,78 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 21275,
+  "duration_api_ms": 22780,
+  "num_turns": 1,
+  "result": "## React Re-renders: Causes and Prevention\n\n### 1. Reference Equality\n\nReact re-renders a component when its props or state change. For primitives (`string`, `number`), change means value change. For objects and functions, React uses **referential equality** (`===`) \u2014 a new reference means a new prop, even if the content is identical.\n\n```jsx\n// Every render creates a new object reference \u2192 child always re-renders\n<Child style={{ color: 'red' }} />\n\n// Every render creates a new function reference \u2192 child always re-renders\n<Child onClick={() => doSomething()} />\n```\n\nThe root cause: JSX is compiled to `React.createElement(...)` calls, so inline literals are re-created on every render of the parent.\n\n---\n\n### 2. React.memo, useMemo, useCallback\n\n| Tool | Memoizes | Use when |\n|---|---|---|\n| `React.memo` | A component's render | Child is pure and receives stable props |\n| `useMemo` | A computed value | Expensive calculation, or object/array passed as prop |\n| `useCallback` | A function reference | Function passed as prop to a memoized child |\n\n**`React.memo`** \u2014 wraps a component; skips re-render if props are shallowly equal:\n```jsx\nconst Child = React.memo(({ onClick, items }) => { ... });\n```\n\n**`useMemo`** \u2014 stabilizes an object or expensive value:\n```jsx\nconst config = useMemo(() => ({ color: 'red' }), []); // stable reference\n```\n\n**`useCallback`** \u2014 stabilizes a function reference:\n```jsx\nconst handleClick = useCallback(() => doSomething(id), [id]);\n```\n\n**Don't over-memoize.** These add overhead. Only reach for them when profiling confirms a problem, or when passing callbacks/objects to `React.memo`-wrapped children.\n\n---\n\n### 3. Context Provider Pitfalls\n\nA context value re-renders **all consumers** whenever the provider re-renders \u2014 even if the consumed value didn't change.\n\n**Pitfall 1 \u2014 inline value object:**\n```jsx\n// Creates a new object every render \u2192 all consumers re-render\n<MyContext.Provider value={{ user, setUser }}>\n```\n\n**Pitfall 2 \u2014 provider lives in a component with unrelated state:**\n```jsx\nfunction App() {\n  const [unrelated, setUnrelated] = useState(false);\n  // toggling `unrelated` re-renders App \u2192 new context value \u2192 all consumers re-render\n  return <MyContext.Provider value={{ user }}>...</MyContext.Provider>;\n}\n```\n\n**Fixes:**\n- Memoize the context value with `useMemo`\n- Split contexts by update frequency (separate `UserContext` from `ThemeContext`)\n- Push providers down the tree so fewer components sit above them\n\n---\n\n### 4. Before / After\n\n**Before \u2014 child re-renders on every parent render:**\n\n```jsx\nfunction Parent() {\n  const [count, setCount] = useState(0);\n\n  return (\n    <div>\n      <button onClick={() => setCount(c => c + 1)}>Increment</button>\n      {/* New object + new function on every render */}\n      <ExpensiveChild\n        style={{ marginTop: 8 }}\n        onSave={() => saveToServer(count)}\n      />\n    </div>\n  );\n}\n\nfunction ExpensiveChild({ style, onSave }) {\n  console.log('ExpensiveChild rendered'); // fires every time Parent renders\n  return <button style={style} onClick={onSave}>Save</button>;\n}\n```\n\n**After \u2014 child only re-renders when `count` changes:**\n\n```jsx\n// 1. Wrap child in React.memo so it can skip renders\nconst ExpensiveChild = React.memo(function ExpensiveChild({ style, onSave }) {\n  console.log('ExpensiveChild rendered'); // only fires when props actually change\n  return <button style={style} onClick={onSave}>Save</button>;\n});\n\nfunction Parent() {\n  const [count, setCount] = useState(0);\n\n  // 2. Stable object reference \u2014 only changes if deps change\n  const style = useMemo(() => ({ marginTop: 8 }), []);\n\n  // 3. Stable function reference \u2014 only changes when count changes\n  const handleSave = useCallback(() => saveToServer(count), [count]);\n\n  return (\n    <div>\n      <button onClick={() => setCount(c => c + 1)}>Increment</button>\n      <ExpensiveChild style={style} onSave={handleSave} />\n    </div>\n  );\n}\n```\n\n**Key principle:** `useMemo`/`useCallback` alone do nothing without `React.memo` on the child \u2014 the memoized values are only useful if the child can actually bail out of rendering.",
+  "stop_reason": "end_turn",
+  "session_id": "c98d35f5-4e17-4e12-b206-d5d1e6d743df",
+  "total_cost_usd": 0.04281454999999999,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 5493,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 1215,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 5493,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 1215,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 5493,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 5493
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 411,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000491,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 1215,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 5493,
+      "webSearchRequests": 0,
+      "costUSD": 0.042323549999999995,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "48ea8e2b-b7be-4f9e-94a3-9574669d0d15",
+  "_meta": {
+    "task": "explain_rerender",
+    "condition": "baseline",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 23.75,
+    "timestamp": 1776581984,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

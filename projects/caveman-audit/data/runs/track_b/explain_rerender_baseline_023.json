@@ -1,0 +1,78 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 20390,
+  "duration_api_ms": 21566,
+  "num_turns": 1,
+  "result": "## Unnecessary Re-renders in React\n\n### 1. Reference Equality\n\nReact re-renders a component when its props or state change. For primitives, change means a different value. For objects, arrays, and functions, change means a **different reference** \u2014 even if the contents are identical.\n\n```js\n// Every render creates a new object reference \u2192 child always re-renders\n<Child style={{ color: 'red' }} />\n\n// Every render creates a new function reference \u2192 same problem\n<Child onClick={() => doSomething()} />\n```\n\nJavaScript's `===` compares references, not structure. `{} === {}` is `false`. React's shallow prop comparison uses `===`, so new reference = changed prop = re-render.\n\n---\n\n### 2. React.memo, useMemo, useCallback\n\n**`React.memo`** \u2014 wraps a component to skip re-rendering when props haven't changed (shallow comparison). Use it on components that:\n- Render often but receive the same props frequently\n- Are expensive to render\n\n```js\nconst Child = React.memo(({ value, onClick }) => {\n  return <button onClick={onClick}>{value}</button>;\n});\n```\n\nWithout stable `onClick`, `React.memo` is useless \u2014 the function reference changes every render anyway.\n\n---\n\n**`useCallback`** \u2014 memoizes a function reference across renders. Use it when passing callbacks to memoized child components.\n\n```js\nconst handleClick = useCallback(() => {\n  doSomething(id);\n}, [id]); // only changes when `id` changes\n```\n\n---\n\n**`useMemo`** \u2014 memoizes a computed value. Use it for:\n- Expensive computations you don't want to repeat\n- Stable object/array references passed as props\n\n```js\nconst config = useMemo(() => ({ theme, locale }), [theme, locale]);\n```\n\n**Rule of thumb:** Don't reach for these by default. Profile first. Memoization has a cost too \u2014 the dependency comparison overhead and the added complexity. Premature memoization often makes things worse.\n\n---\n\n### 3. Context Provider Pitfalls\n\nEvery consumer of a context re-renders whenever the context value changes. The common mistake is constructing the value inline:\n\n```js\n// BAD: new object reference on every parent render\n<UserContext.Provider value={{ user, logout }}>\n```\n\nEven if `user` and `logout` haven't changed, the object `{ user, logout }` is new each render, so every consumer re-renders.\n\n**Fixes:**\n- Memoize the value with `useMemo`\n- Split contexts by update frequency (rarely-changing data vs. frequently-changing data)\n\n```js\nconst value = useMemo(() => ({ user, logout }), [user, logout]);\n<UserContext.Provider value={value}>\n```\n\n---\n\n### 4. Before / After\n\n**Before** \u2014 `ExpensiveList` re-renders on every parent render, even when its data hasn't changed:\n\n```jsx\nfunction Dashboard() {\n  const [count, setCount] = useState(0);\n\n  const items = [1, 2, 3]; // new array every render\n  const handleSelect = (id) => console.log(id); // new fn every render\n\n  return (\n    <>\n      <button onClick={() => setCount(c => c + 1)}>{count}</button>\n      <ExpensiveList items={items} onSelect={handleSelect} />\n    </>\n  );\n}\n\nfunction ExpensiveList({ items, onSelect }) { /* ... */ }\n```\n\n**After** \u2014 stable references mean `ExpensiveList` only re-renders when `items` actually changes:\n\n```jsx\nfunction Dashboard() {\n  const [count, setCount] = useState(0);\n\n  const items = useMemo(() => [1, 2, 3], []); // stable reference\n  const handleSelect = useCallback((id) => console.log(id), []); // stable fn\n\n  return (\n    <>\n      <button onClick={() => setCount(c => c + 1)}>{count}</button>\n      <ExpensiveList items={items} onSelect={handleSelect} />\n    </>\n  );\n}\n\nconst ExpensiveList = React.memo(function ExpensiveList({ items, onSelect }) {\n  /* ... */\n});\n```\n\nThe fix requires **all three** working together: `React.memo` on the child, `useMemo` for objects, and `useCallback` for functions. Any one missing and the others are wasted effort.",
+  "stop_reason": "end_turn",
+  "session_id": "fdb5d752-bf0e-43fc-9f56-e43583aee361",
+  "total_cost_usd": 0.022243699999999995,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17129,
+    "output_tokens": 1107,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 1107,
+        "cache_read_input_tokens": 17129,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 411,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000491,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 1107,
+      "cacheReadInputTokens": 17129,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.021752699999999996,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "f429bfb9-93ed-4fa3-940b-54b8f8086df1",
+  "_meta": {
+    "task": "explain_rerender",
+    "condition": "baseline",
+    "run_num": 23,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 21.91,
+    "timestamp": 1776582025,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}
