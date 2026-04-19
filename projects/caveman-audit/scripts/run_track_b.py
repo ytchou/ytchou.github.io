@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 """Track B automated runner: parallel headless claude -p runs.
 
+Uses the same 10 prompts as Track C (`data/fixtures/prompts.json`) so results
+are directly comparable. Only difference vs Track C: harness (Claude Code CLI
+vs Anthropic API direct).
+
 Config via environment variables:
-  RUNS_PER_CONDITION  runs per task/condition pair (default: 30)
+  RUNS_PER_CONDITION  runs per prompt/condition pair (default: 10)
   MODEL               claude model to use (default: claude-sonnet-4-6)
   MAX_WORKERS         parallel claude processes (default: 5)
   CLAUDE_CONFIG_DIR   claude config dir (default: ~/.claude-clean)
@@ -23,36 +27,42 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 
 from utils.runner import run_claude
 
-PROJECT_DIR = Path(__file__).parent.parent
-OUTPUT_DIR = PROJECT_DIR / "data" / "runs" / "track_b"
-TASKS_DIR = PROJECT_DIR / "data" / "tasks"
+from _config import (
+    CONDITIONS,
+    DEFAULT_MAX_WORKERS,
+    DEFAULT_MODEL,
+    DEFAULT_RUNS_PER_CONDITION,
+    MAX_RETRIES,
+    RETRY_BACKOFF,
+    RUNS_DIR,
+    load_prompts,
+    output_path,
+)
 
-RUNS_PER_CONDITION = int(os.environ.get("RUNS_PER_CONDITION", "30"))
-MODEL = os.environ.get("MODEL", "claude-sonnet-4-6")
-MAX_WORKERS = int(os.environ.get("MAX_WORKERS", "5"))
+OUTPUT_DIR = RUNS_DIR / "track_b"
+
+RUNS_PER_CONDITION = int(os.environ.get("RUNS_PER_CONDITION", str(DEFAULT_RUNS_PER_CONDITION)))
+MODEL = os.environ.get("MODEL", DEFAULT_MODEL)
+MAX_WORKERS = int(os.environ.get("MAX_WORKERS", str(DEFAULT_MAX_WORKERS)))
 CLAUDE_CONFIG_DIR = os.environ.get("CLAUDE_CONFIG_DIR", str(Path.home() / ".claude-clean"))
 
 DISABLE_CAVEMAN = {"enabledPlugins": {"caveman@caveman": False}}
 
 
-MAX_RETRIES = 3
-RETRY_BACKOFF = [5, 15, 30]  # seconds between attempts
-
-
-def run_one(task: str, condition: str, run_num: int) -> str:
-    """Run a single session. Returns status string for tqdm postfix."""
-    outfile = OUTPUT_DIR / f"{task}_{condition}_{run_num:03d}.json"
+def run_one(prompt_entry: dict, condition: str, run_num: int) -> str:
+    pid = prompt_entry["id"]
+    outfile = output_path(OUTPUT_DIR, pid, condition, run_num)
     if outfile.exists():
         return "skip"
 
     settings = DISABLE_CAVEMAN if condition == "baseline" else None
-    prompt = (TASKS_DIR / f"{task}.txt").read_text()
+    prompt = prompt_entry["prompt"]
 
     last_err: Exception | None = None
     for attempt in range(MAX_RETRIES):
         if attempt > 0:
             delay = RETRY_BACKOFF[attempt - 1]
-            tqdm.write(f"  retry {attempt}/{MAX_RETRIES - 1} for {task}/{condition}/{run_num:03d} (wait {delay}s)")
+            tqdm.write(f"  retry {attempt}/{MAX_RETRIES - 1} for {pid}/{condition}/{run_num:03d} (wait {delay}s)")
             time.sleep(delay)
         try:
             data, wall_clock = run_claude(
@@ -63,7 +73,9 @@ def run_one(task: str, condition: str, run_num: int) -> str:
                 env={"CLAUDE_CONFIG_DIR": CLAUDE_CONFIG_DIR},
             )
             data["_meta"] = {
-                "task": task,
+                "track": "B",
+                "task": pid,
+                "category": prompt_entry["category"],
                 "condition": condition,
                 "run_num": run_num,
                 "model": MODEL,
@@ -82,22 +94,21 @@ def run_one(task: str, condition: str, run_num: int) -> str:
 def main() -> None:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    tasks = sorted(p.stem for p in TASKS_DIR.glob("*.txt"))
-    if not tasks:
-        print(f"ERROR: no task files in {TASKS_DIR}", file=sys.stderr)
+    prompts = load_prompts()
+    if not prompts:
+        print("ERROR: no prompts loaded", file=sys.stderr)
         sys.exit(1)
 
-    conditions = ["baseline", "caveman"]
     work = [
-        (task, condition, i)
-        for task in tasks
-        for condition in conditions
+        (p, cond, i)
+        for p in prompts
+        for cond in CONDITIONS
         for i in range(1, RUNS_PER_CONDITION + 1)
     ]
     total = len(work)
 
-    print("=== Track B Runner ===")
-    print(f"Tasks:              {tasks}")
+    print("=== Track B Runner (Claude Code CLI, Track C prompts) ===")
+    print(f"Prompts:            {len(prompts)}")
     print(f"Runs per condition: {RUNS_PER_CONDITION}")
     print(f"Max workers:        {MAX_WORKERS}")
     print(f"Model:              {MODEL}")
@@ -109,16 +120,19 @@ def main() -> None:
     start = time.monotonic()
 
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as pool:
-        futures = {pool.submit(run_one, task, cond, num): (task, cond, num) for task, cond, num in work}
+        futures = {
+            pool.submit(run_one, p, cond, i): (p["id"], cond, i)
+            for p, cond, i in work
+        }
 
         with tqdm(total=total, unit="run", dynamic_ncols=True) as bar:
             for future in as_completed(futures):
-                task, cond, num = futures[future]
+                pid, cond, i = futures[future]
                 try:
                     status = future.result()
                 except Exception as e:
                     status = "fail"
-                    tqdm.write(f"FAIL {task}/{cond}/{num:03d}: {e}", file=sys.stderr)
+                    tqdm.write(f"FAIL {pid}/{cond}/{i:03d}: {e}", file=sys.stderr)
 
                 counts[status] += 1
                 bar.update(1)

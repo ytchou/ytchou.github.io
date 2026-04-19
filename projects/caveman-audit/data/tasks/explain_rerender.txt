@@ -1,5 +1,0 @@
-Explain what causes unnecessary re-renders in React and how to prevent them. Cover:
-1. Reference equality and why inline objects/functions cause re-renders
-2. React.memo, useMemo, and useCallback — when to use each
-3. Context provider pitfalls
-4. A concrete before/after code example showing a fix

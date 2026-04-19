@@ -2,111 +2,147 @@
 
 ## What We're Testing
 
-The [Caveman plugin](https://github.com/ytchou/caveman) injects a system prompt instructing Claude to respond tersely — dropping articles, filler words, and pleasantries while preserving all technical substance. The audit measures whether this actually reduces output tokens, at what cost, and whether quality holds.
+The [Caveman plugin](https://github.com/JuliusBrussee/caveman) injects a system prompt instructing Claude to respond tersely — dropping articles, filler words, and pleasantries while preserving all technical substance. The audit measures whether this actually reduces output tokens, at what cost, across different harnesses (direct API vs Claude Code), and how the effect scales with input context size.
+
+---
+
+## Three-track design
+
+Three tracks isolate different dimensions of the Caveman effect.
+
+| Track | Harness | Baseline system prompt | Role |
+|---|---|---|---|
+| **A** | Anthropic API direct (`anthropic` SDK) | `"You are a helpful assistant."` (~6 tok) | Default / author's setup. Reproduces claim. |
+| **B** | Claude Code CLI (`claude -p`) | Full Claude Code context (~18k tok) | Harness variation. Same prompts, different runtime. |
+| **C** | Both — padded context | Varied from ~30 → ~80k tok | Context sweep. Measures compression vs input size curve. |
+
+Tracks A and B share the same 10 prompts (from [`data/fixtures/prompts.json`](data/fixtures/prompts.json)), same model (`claude-sonnet-4-6`), same trial count. Only harness differs. Track C uses a subset of those prompts at varied context sizes.
 
 ---
 
 ## Primary Questions
 
-### Q1: Does Caveman reduce output tokens?
+### Q1: Does Caveman reduce output tokens under author's methodology?
 
-Compare `output_tokens` between `caveman` and `baseline` runs on identical prompts.
+Reproduce author's claim on direct API with minimal baseline.
 
-- **Metric:** mean output tokens per condition
+- **Track:** A
+- **Metric:** median `output_tokens` per condition per task
 - **Signal:** caveman < baseline → compression working
-- **Expected:** yes, measurably
+- **Comparison:** match author's per-task savings % within ±10pp
 
-### Q2: What is the net cost delta?
+### Q2: Does the effect survive inside Claude Code CLI?
 
-Caveman injects ~1000 extra input tokens (system prompt). Does the output reduction offset this?
+Same prompts, same model, same trial count — only harness changes.
 
-- **Metric:** `cost_usd` (API-equivalent, used as normalized comparison)
-- **Signal:** caveman cost < baseline cost → net savings
-- **Caveat:** `cost_usd` is not actual billing on subscription plans; used as compute-effort proxy
+- **Track:** B
+- **Metric:** output token delta (caveman − baseline) per task, Welch t-test
+- **Signal:** caveman < baseline at p<0.05 → effect generalizes across harnesses
+- **Hypothesis:** effect smaller or absent under CLI (~18k baseline system) vs API (~6 tok baseline)
 
-### Q3: Is the effect consistent across runs?
+### Q3: How does compression scale with baseline context size?
 
-With N=10 runs per condition per task, measure variance.
+If the effect exists at minimal context (Track A) but vanishes at 18k (Track B), what does the curve look like between?
 
-- **Metric:** `std(output_tokens)` per condition
-- **Signal:** low std → Caveman effect is reliable, not noise
+- **Track:** C
+- **Setup:**
+  - **API leg:** 5 log-spaced context levels from ~30 → ~18k tok, padded via prepended filler
+  - **CLI leg:** 5 log-spaced levels from ~18k → ~80k tok, padded via `CLAUDE.md` filler
+  - Overlap point at ~18k — both harnesses at same input size
+- **Metric:** x = measured `total_input_tokens`, y = output savings %
+- **Hypothesis:** monotonic decay. Compression strongest at minimal context, weakens as input grows
+- **Alternative:** step discontinuity at CC system prompt boundary → harness itself matters beyond size
 
-### Q4: Does the effect vary by task type?
+### Q4: Does the harness add effect beyond context size?
 
-Three tasks span different output types: explanation, debugging, implementation.
+The overlap point in Track C (API padded to 18k vs CLI at native 18k) is a direct control.
 
-- **Metric:** output token delta broken out by task
-- **Signal:** some tasks compress more than others → actionable guidance on where Caveman helps most
+- **Metric:** output savings % at matched input token counts
+- **Signal:**
+  - Match → harness irrelevant. Context size dominant. Effect purely dilution-driven.
+  - Diverge → CC system prompt has specific suppression beyond token volume. Content shape matters, not just size.
 
 ---
 
 ## Secondary Questions
 
-### Q5: Does context size affect Caveman's efficacy?
+### Q5: Does the effect vary by task type?
 
-As input context grows (1k → 5k → 20k → 50k tokens), does output compression change?
+10 tasks span debugging, bugfix, explanation, refactor, architecture, code-review, devops, implementation.
 
-- **Setup:** `pad_prompt()` inflates prompt to target token counts; same base task run at each level
-- **Metric:** x = `total_input_tokens`, y = output token savings %
-- **Hypothesis:** Caveman effect is prompt-independent — savings % stays roughly constant
+- **Tracks:** A, B
+- **Metric:** per-task output delta
+- **Signal:** prose-heavy tasks (explanation, architecture) compress more than code-heavy ones (implementation, refactor) → Caveman's `BOUNDARIES: Code/commits/PRs written in normal English` rule observable in data
 
-### Q6: Does result quality suffer?
+### Q6: Is the effect consistent across runs?
+
+At n=10 runs per cell, measure variance.
+
+- **Tracks:** A, B
+- **Metric:** `std(output_tokens)` per condition per task
+- **Signal:** low std relative to mean delta → reliable effect, not noise
+
+### Q7: What is the net cost delta?
+
+Caveman adds ~1000 input tokens (SKILL.md system). Output savings must offset to be net positive.
+
+- **Tracks:** A, B
+- **Metric:** `cost_usd` (API-equivalent; normalized proxy — not actual billing on subscription plans)
+- **Signal:** caveman cost < baseline cost → net savings
+- **Note:** `cost_usd` absent from direct API output (Track A). Compute from token counts + published pricing
+
+### Q8: Does result quality suffer?
 
 Terse output may drop useful content, not just filler.
 
-- **Setup:** human rating post-hoc (Track A), batch rating in Phase 2
-- **Metric:** 1–5 quality score, rated blind (condition hidden)
-- **Signal:** caveman quality ≥ baseline → compression is safe
-
-### Q7: Does tool call behavior change?
-
-Does Caveman's terse mode affect how many tool calls Claude makes?
-
-- **Metric:** `total_tool_calls`, `tool_calls` breakdown by type (via `stream-json` format)
-- **Signal:** fewer tool calls with Caveman → model working more efficiently, or cutting corners
-
-### Q8: Do interactive (Track A) and automated (Track B) results agree?
-
-Validates that automated measurement generalizes to real interactive usage.
-
-- **Metric:** compare output token delta across tracks for same tasks
-- **Signal:** same direction + similar magnitude → Track B results are representative
+- **Tracks:** A, B (manual review of sample)
+- **Metric:** blind 1–5 quality score on subset
+- **Signal:** caveman quality ≥ baseline → compression safe
 
 ---
 
 ## Tasks
 
-See [data/tasks/](data/tasks/) for full prompts. Three tasks chosen to cover distinct output types:
+10 prompts from author's benchmark, frozen at upstream commit `84cc3c14fa1e`. See [`data/fixtures/prompts.json`](data/fixtures/prompts.json), provenance in [`data/fixtures/PROVENANCE.md`](data/fixtures/PROVENANCE.md).
 
-### `react_error_boundary` — Implementation
+| Task | Category |
+|---|---|
+| `react-rerender` | debugging |
+| `auth-middleware-fix` | bugfix |
+| `postgres-pool` | setup |
+| `git-rebase-merge` | explanation |
+| `async-refactor` | refactor |
+| `microservices-monolith` | architecture |
+| `pr-security-review` | code-review |
+| `docker-multi-stage` | devops |
+| `race-condition-debug` | debugging |
+| `error-boundary` | implementation |
 
-Implement a TypeScript React error boundary component with specific requirements (error catch, fallback UI, reset button, console logging).
-
-**Why this task:** Pure code generation. Long, structured output. Tests whether Caveman compresses implementation responses without dropping required features.
-
-### `fix_auth_middleware` — Debug + Fix
-
-Given a buggy Express JWT middleware (off-by-one on token expiry), identify the bug, fix it, and add error handling.
-
-**Why this task:** Mixed output — code + explanation. Tests whether Caveman compresses the prose explanation while keeping the code correct. The bug is subtle enough to require real reasoning.
-
-### `explain_rerender` — Explanation
-
-Explain React re-render causes and prevention across four specific subtopics, with a concrete before/after example.
-
-**Why this task:** Prose-heavy, no code correctness requirement. Highest compression potential. Tests whether Caveman produces a genuinely shorter explanation or just drops important detail.
+**Why author's prompts:** direct reproducibility. Track A becomes a faithful replication of the original benchmark. Track B becomes a paired variation (only harness differs), enabling clean attribution of the delta to harness rather than prompt mix. Track C subsets these 10 for context sweep (high/med/low compression picks from Track A results).
 
 ---
 
 ## Design
 
-| Variable | Values |
-|----------|--------|
-| Track | A (interactive), B (automated) |
-| Condition | baseline, caveman |
-| Task | react_error_boundary, fix_auth_middleware, explain_rerender |
-| Runs per cell | 10 |
+| Variable | Track A | Track B | Track C (API leg) | Track C (CLI leg) |
+|---|---|---|---|---|
+| Harness | API direct | CC CLI | API direct | CC CLI |
+| Prompts | All 10 | All 10 | Subset (3, TBD) | Subset (3, TBD) |
+| Context levels | 1 (native) | 1 (native ~18k) | 5 log-spaced, ~30 → ~18k | 5 log-spaced, ~18k → ~80k |
+| Conditions | baseline, caveman | baseline, caveman | baseline, caveman | baseline, caveman |
+| Runs per cell | 10 | 10 | 10 | 10 |
+| **Total runs** | 200 | 200 | 300 | 300 |
 
-- **Track B total:** 3 tasks × 2 conditions × 10 runs = 60 runs
-- **Track A total:** 3 tasks × 2 conditions × 10 sessions = 60 sessions
-- Each run is a fresh session — no context carryover between runs
+Each run is a fresh session — no context carryover between runs within a cell.
+
+**Track C padding mechanism (pending design discussion):**
+- API leg: prepend filler prose to user prompt. Simple, controlled.
+- CLI leg: `CLAUDE.md` with filler (loaded as project context, closest to "enlarged system prompt"). Alternative: prior-turn `--resume` (more realistic, higher variance).
+
+---
+
+## Out of scope
+
+- **Interactive multi-turn sessions.** Previously scoped as a separate track. Dropped — Track C's synthetic context accumulation covers the same hypothesis (does the effect change as context grows?) more cleanly than manual interactive runs.
+- **Non-author tasks.** Sticking to author's 10 prompts keeps the claim reproduction tight. Pure-prose tasks (design docs, reviews) could extend the work but aren't needed to answer the primary questions.
+- **Tool call behavior.** Originally scoped. `num_turns` median is 1 in Track B — no meaningful agent loop to analyze at this task scope.
