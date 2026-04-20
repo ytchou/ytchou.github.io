@@ -1,0 +1,121 @@
+## Tool: Grep
+
+A powerful search tool built on ripgrep.
+
+Usage:
+- ALWAYS use Grep for search tasks. NEVER invoke grep or rg as a Bash command. The Grep tool has been optimized for correct permissions and access.
+- Supports full regex syntax (e.g., "log.*Error", "function\\s+\\w+")
+- Filter files with glob parameter (e.g., "*.js", "**/*.tsx") or type parameter (e.g., "js", "py", "rust")
+- Output modes: "content" shows matching lines, "files_with_matches" shows only file paths (default), "count" shows match counts
+- Use Agent tool for open-ended searches requiring multiple rounds
+- Pattern syntax: Uses ripgrep (not grep) - literal braces need escaping (use `interface\\{\\}` to find `interface{}` in Go code)
+- Multiline matching: By default patterns match within single lines only. For cross-line patterns like `struct \\{[\\s\\S]*?field`, use multiline: true
+
+Parameters (JSON Schema):
+{
+  "type": "object",
+  "required": ["pattern"],
+  "additionalProperties": false,
+  "properties": {
+    "pattern": {
+      "type": "string",
+      "description": "The regular expression pattern to search for in file contents"
+    },
+    "path": {
+      "type": "string",
+      "description": "File or directory to search in (rg PATH). Defaults to current working directory."
+    },
+    "glob": {
+      "type": "string",
+      "description": "Glob pattern to filter files (e.g. '*.js', '*.{ts,tsx}') - maps to rg --glob"
+    },
+    "type": {
+      "type": "string",
+      "description": "File type to search (rg --type). Common types: js, py, rust, go, java, etc."
+    },
+    "output_mode": {
+      "type": "string",
+      "enum": ["content", "files_with_matches", "count"],
+      "description": "Output mode. Defaults to files_with_matches."
+    },
+    "-i": {
+      "type": "boolean",
+      "description": "Case insensitive search (rg -i)"
+    },
+    "-n": {
+      "type": "boolean",
+      "description": "Show line numbers in output (rg -n). Defaults to true."
+    },
+    "-A": {
+      "type": "number",
+      "description": "Number of lines to show after each match (rg -A)"
+    },
+    "-B": {
+      "type": "number",
+      "description": "Number of lines to show before each match (rg -B)"
+    },
+    "-C": {
+      "type": "number",
+      "description": "Alias for context."
+    },
+    "context": {
+      "type": "number",
+      "description": "Number of lines to show before and after each match (rg -C)"
+    },
+    "multiline": {
+      "type": "boolean",
+      "description": "Enable multiline mode where . matches newlines. Default: false."
+    },
+    "head_limit": {
+      "type": "number",
+      "description": "Limit output to first N lines/entries. Defaults to 250."
+    },
+    "offset": {
+      "type": "number",
+      "description": "Skip first N lines/entries before applying head_limit. Defaults to 0."
+    }
+  }
+}
+
+## Tool: Read
+
+Reads a file from the local filesystem. You can access any file directly by using this tool. Assume this tool is able to read all files on the machine.
+
+Usage:
+- The file_path parameter must be an absolute path, not a relative path
+- By default, it reads up to 2000 lines starting from the beginning of the file
+- When you already know which part of the file you need, only read that part. This can be important for larger files.
+- Results are returned using cat -n format, with line numbers starting at 1
+- This tool allows Claude Code to read images (eg PNG, JPG, etc). When reading an image file the contents are presented visually as Claude Code is a multimodal LLM.
+- This tool can read PDF files (.pdf). For large PDFs (more than 10 pages), you MUST provide the pages parameter to read specific page ranges. Maximum 20 pages per request.
+- This tool can read Jupyter notebooks (.ipynb files) and returns all cells with their outputs, combining code, text, and visualizations.
+- This tool can only read files, not directories. To read a directory, use an ls command via the Bash tool.
+- You will regularly be asked to read screenshots. If the user provides a path to a screenshot, ALWAYS use this tool to view the file.
+- Do NOT re-read a file you just edited to verify — Edit/Write would have errored if the change failed.
+
+Parameters (JSON Schema):
+{
+  "type": "object",
+  "required": ["file_path"],
+  "additionalProperties": false,
+  "properties": {
+    "file_path": {
+      "type": "string",
+      "description": "The absolute path to the file to read"
+    },
+    "limit": {
+      "type": "integer",
+      "description": "The number of lines to read. Only provide if the file is too large to read at once.",
+      "exclusiveMinimum": 0
+    },
+    "offset": {
+      "type": "integer",
+      "description": "The line number to start reading from. Only provide if the file is too large.",
+      "minimum": 0
+    },
+    "pages": {
+      "type": "string",
+      "description": "Page range for PDF files (e.g., '1-5', '3', '10-20'). Only applicable to PDF files."
+    }
+  }
+}

@@ -12,31 +12,44 @@ from utils.models import UsageRecord
 
 
 def extract_usage(data: dict[str, Any]) -> UsageRecord:
-    """Extract a UsageRecord from Claude Code JSON output.
+    """Extract a UsageRecord from either Claude Code CLI JSON or direct Anthropic API JSON.
 
-    Works with --output-format json output. Tool call fields will be empty
-    (not available in json format — use parse_stream_json for those).
+    Schema detection:
+      - Claude Code CLI: token counts nested under `usage`, result text in `result`
+      - Direct API: token counts at top level, result text in `text`
+
+    Tool call fields left empty (use parse_stream_json for those).
     """
-    usage = data.get("usage", {})
-    model_usage = data.get("modelUsage", {})
+    usage = data.get("usage") or {}
 
-    primary_model = ""
-    for model_id, model_data in model_usage.items():
-        if not primary_model or model_data.get("outputTokens", 0) > model_usage.get(primary_model, {}).get("outputTokens", 0):
-            primary_model = model_id
-
-    input_tokens = usage.get("input_tokens", 0)
-    cache_creation = usage.get("cache_creation_input_tokens", 0)
-    cache_read = usage.get("cache_read_input_tokens", 0)
+    if usage:
+        input_tokens = usage.get("input_tokens", 0)
+        output_tokens = usage.get("output_tokens", 0)
+        cache_creation = usage.get("cache_creation_input_tokens", 0)
+        cache_read = usage.get("cache_read_input_tokens", 0)
+    else:
+        input_tokens = data.get("input_tokens", 0)
+        output_tokens = data.get("output_tokens", 0)
+        cache_creation = data.get("cache_creation_input_tokens", 0)
+        cache_read = data.get("cache_read_input_tokens", 0)
 
     total_input = input_tokens + cache_creation + cache_read
     effective_input = input_tokens + (cache_creation * 1.25) + (cache_read * 0.1)
 
-    iterations = usage.get("iterations", [])
+    model_usage = data.get("modelUsage", {})
+    primary_model = ""
+    for model_id, model_data in model_usage.items():
+        if not primary_model or model_data.get("outputTokens", 0) > model_usage.get(primary_model, {}).get("outputTokens", 0):
+            primary_model = model_id
+    if not primary_model:
+        primary_model = data.get("_meta", {}).get("model", "")
+
+    iterations = usage.get("iterations", []) if usage else []
+    result_text = data.get("result") or data.get("text") or ""
 
     return UsageRecord(
         input_tokens=input_tokens,
-        output_tokens=usage.get("output_tokens", 0),
+        output_tokens=output_tokens,
         cache_creation_tokens=cache_creation,
         cache_read_tokens=cache_read,
         total_input_tokens=total_input,
@@ -48,7 +61,7 @@ def extract_usage(data: dict[str, Any]) -> UsageRecord:
         cost_usd=data.get("total_cost_usd", 0.0),
         model=primary_model,
         stop_reason=data.get("stop_reason", ""),
-        result_length=len(data.get("result", "")),
+        result_length=len(result_text),
         session_id=data.get("session_id", ""),
         is_error=data.get("is_error", False),
     )

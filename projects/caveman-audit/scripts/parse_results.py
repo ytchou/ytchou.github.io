@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""Parse Track A, B, and C JSON outputs into a unified pandas DataFrame / CSV."""
+"""Parse Track A, A', B, and C JSON outputs into a unified pandas DataFrame / CSV."""
 
+import json
 import sys
 from pathlib import Path
 
@@ -15,13 +16,18 @@ def main():
     project_dir = Path(__file__).parent.parent
     rows = []
 
-    for track, dirname in [("A", "track_a"), ("B", "track_b"), ("C", "track_c")]:
+    for track, dirname in [
+        ("A", "track_a"),
+        ("A_prime", "track_a_prime"),
+        ("B", "track_b"),
+        ("C", "track_c"),
+    ]:
         run_dir = project_dir / "outputs" / "runs" / dirname
         results = parse_run_directory(run_dir)
         for record, raw in results:
             meta = raw.get("_meta", {})
             wall_clock = meta.get("wall_clock_sec") or raw.get("wall_clock_sec") or 0
-            rows.append({
+            row = {
                 "run_id": Path(raw.get("_file", "")).stem,
                 "track": track,
                 "task": meta.get("task", Path(raw.get("_file", "")).stem.rsplit("_", 2)[0]),
@@ -30,7 +36,13 @@ def main():
                 **record.to_dict(),
                 "wall_clock_sec": wall_clock,
                 "file": raw.get("_file", ""),
-            })
+            }
+            if meta.get("level") is not None:
+                row["level"] = meta["level"]
+                row["num_chunks"] = meta.get("num_chunks", 0)
+                row["ordering"] = json.dumps(meta.get("ordering", []))
+                row["chunks_present"] = json.dumps(meta.get("chunks_present", []))
+            rows.append(row)
 
     if not rows:
         print("No data to process.", file=sys.stderr)

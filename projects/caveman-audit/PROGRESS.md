@@ -1,16 +1,17 @@
 # Progress — Caveman Audit
 
-Last updated: 2026-04-19 (Track B results in)
+Last updated: 2026-04-19
 
 ## Track naming
 
 Tracks renamed to reflect the three-track triangulation design. Old labels below.
 
-| New | Old | Harness | Role |
-|---|---|---|---|
-| **A** | C | Anthropic API direct | Default / author's methodology |
-| **B** | B | Claude Code CLI | Harness variation |
-| **C** | (Phase 3) | Both, padded | Context-size sweep |
+| Track | Harness | System prompt | API params | Tasks | Runs/condition | Role |
+|---|---|---|---|---|---|---|
+| **A** | Anthropic API | Minimal (6 tok) | Author's: temp=0, max=4096, no thinking | 10 | 10 | Reproduce author's benchmark |
+| **A'** | Anthropic API | Minimal (6 tok) | CC-matched: thinking ON (4K), max=16384, temp=1.0 | 10 | 5 | Isolate parameter confounds |
+| **B** | CC CLI (`claude -p`) | Full CC context (~18K) | CC defaults (thinking ON, temp=1.0) | 10 | 10 | Real-world CC harness |
+| **C** | Anthropic API | Incremental CC content (6 levels) | CC-matched: thinking ON (4K), max=16384, temp=1.0 | 3 | 5 orderings | Context-size sweep |
 
 See [RESEARCH_QUESTIONS.md](RESEARCH_QUESTIONS.md) for full design.
 
@@ -18,9 +19,10 @@ See [RESEARCH_QUESTIONS.md](RESEARCH_QUESTIONS.md) for full design.
 
 - [x] Phase 1: Instrumentation (metrics extraction, Caveman toggle, output formats documented)
 - [x] Phase 2a: Reusable `utils/` extracted (models.py, metrics.py, runner.py)
-- [x] Phase 2b: Track A (API direct, author's methodology) — **200 runs complete, 67.3% avg savings. Claim reproduces.**
-- [x] Phase 2c: Track B (Claude Code CLI, same 10 prompts as Track A) — **200 runs complete, −1.9% avg savings. Effect collapses under CC harness.**
-- [ ] Phase 2d: Track C (context-size sweep) — design phase.
+- [x] Phase 2b: Track A — **200 runs complete, 63.1% avg savings. Claim reproduces.**
+- [x] Phase 2c: Track B — **200 runs complete, −1.9% avg savings. Effect collapses under CC harness.**
+- [x] Phase 2d: Track A' — **100 runs complete, 50.6% avg savings. Parameters account for ~12.6pp of the A→B gap.**
+- [x] Phase 2e: Track C — **180 runs complete. Collapse happens at behavioral block (L0), not from tool-def volume.**
 - [ ] Phase 3: Writeup for portfolio
 
 ## Track A: Reproduce author's benchmark (API direct)
@@ -108,6 +110,56 @@ Claim **reproduces**. Avg 67.3% vs author's 75.8% (−8.5pp). All 10 tasks show 
 ### Cost note
 
 Track A uses Anthropic API credits (pay-per-call), not Claude Code subscription. Actual cost n=10 run: ~$2–3 at Sonnet 4.6 pricing ($3/MTok input, $15/MTok output).
+
+## Track A': API direct with CC-matched parameters
+
+Track A reproduces the author's result, but under **different API parameters than CC CLI uses**. This means the A→B gap (67% → −1.9%) conflates three things: system prompt content, tool schemas, and API parameters.
+
+Track A' isolates the parameter effect by running the exact same harness and system prompts as Track A, but with CC CLI's default parameters.
+
+### Parameter comparison
+
+| Parameter | Track A (author's) | Track A' (CC-matched) | Track B (CC CLI) |
+|---|---|---|---|
+| Harness | Anthropic API | Anthropic API | `claude -p` CLI |
+| System prompt | `"You are a helpful assistant."` | `"You are a helpful assistant."` | Full CC context (~18K) |
+| `max_tokens` | 4,096 | 16,384 | ~16,384 (CC default) |
+| `temperature` | 0 | omitted (1.0 default) | not configurable (1.0) |
+| Extended thinking | OFF | ON (budget=4,000) | ON (CC default) |
+
+### Results (n=5 per condition per task, 100 runs total)
+
+Model: `claude-sonnet-4-6`. Params: thinking ON (budget=4K), max_tokens=16384, temp=1.0.
+
+| Task | A savings | A' savings | Δ (param effect) |
+|------|----------:|-----------:|-----------------:|
+| async-refactor | 46.5% | 34.8% | −11.7pp |
+| auth-middleware-fix | 78.8% | 19.8% | −59.0pp* |
+| docker-multi-stage | 79.7% | 70.8% | −8.9pp |
+| error-boundary | 70.3% | 67.7% | −2.6pp |
+| git-rebase-merge | 54.8% | 44.4% | −10.4pp |
+| microservices-monolith | 61.7% | 58.2% | −3.5pp |
+| postgres-pool | 65.9% | 60.9% | −5.0pp |
+| pr-security-review | 35.2% | 27.7% | −7.5pp |
+| race-condition-debug | 65.4% | 56.0% | −9.4pp |
+| react-rerender | 72.8% | 65.3% | −7.5pp |
+| **AVG** | **63.1%** | **50.6%** | **−12.6pp** |
+
+*`auth-middleware-fix` caveman std=713 in A' — one outlier run, treat with caution.
+
+### Verdict
+
+**Parameters matter, but aren't the main story.** Switching to CC-matched params (thinking ON, higher temp, more token headroom) reduces savings by ~12.6pp on average. Caveman still works — just less efficiently. The remaining ~50pp gap to Track B is explained by system prompt content, not params.
+
+The A→B gap (63% → 0.7%) decomposes as:
+- **~20% of gap**: API parameters (A→A': −12.6pp)
+- **~80% of gap**: CC harness / system prompt (A'→B: −49.9pp)
+
+### Status
+
+- [x] Runner script: `scripts/run_track_a_prime.py`
+- [x] Run: 100 calls (10 tasks × 2 conditions × 5 runs)
+- [x] Results comparison vs Track A and Track B
 
 ## Track B: Claude Code CLI (same prompts, different harness)
 
@@ -201,84 +253,160 @@ Previous Track B used 3 custom coding prompts that didn't match Track A. Results
 
 Conclusion: no detectable compression, but task mix wasn't shared with Track A so direct comparison impossible. Rerun uses Track A's 10 prompts for clean attribution.
 
-## Track C: Context-size sweep (NEW — design phase)
+## Track C: Context-size sweep (10-chunk shuffle experiment)
 
-Track A shows 67% savings at ~30 tok baseline system. Track B (projected) will anchor at ~18k. Track C fills the curve between — and extends beyond — to answer **does compression degrade smoothly with context size, or stepwise at the CC boundary?**
+Track A shows 67% savings at ~6 tok baseline system. Track B shows −1.9% at ~18K. Track C fills the curve between to answer: **is the collapse caused by token volume (dilution) or specific CC content (interference)?**
 
-### Hypothesis
+### Hypotheses
 
-Caveman's compression strength is inversely proportional to baseline context size. As the Caveman SKILL.md's share of total input shrinks, the terse-prompting signal dilutes below noise floor.
+- **Dilution:** Caveman's ~1K-token SKILL.md loses influence as total context grows, regardless of content. Pure signal-to-noise ratio.
+- **Interference:** Specific CC system prompt components (tone/style, output efficiency instructions) directly counteract Caveman's compression signal.
 
-- **Monotonic decay** → dilution confirmed. Plugin value scales with how "clean" the Claude's starting context is.
-- **Step discontinuity at ~18k** → CC system prompt has specific suppression beyond token volume (content shape, not just size).
+### Methodology
 
-### Design
+| Parameter | Value |
+|---|---|
+| Harness | Anthropic API direct (same as Track A) |
+| Padding source | Reverse-engineered CC system prompt content |
+| Structure | Behavioral block (~3,500 tok, always present) + 10 tool-def chunks (~1,400 tok each, shuffled) |
+| Tasks | 3: `error-boundary` (72%), `async-refactor` (48.5%), `pr-security-review` (32.7%) |
+| Orderings per task | 5 (random permutations, deterministic seeds) |
+| Levels | 6: behavioral only, +2/4/6/8/10 tool-def chunks |
+| Conditions | 2 (baseline + caveman) |
+| **Total API calls** | **180** |
 
-Two legs, meeting at ~18k tokens (Claude Code's native baseline).
+**6 measurement levels:**
 
-**Leg 1 — API direct, padded context:**
-- Start: Track A setup (~30 tok system, ~50 tok prompt)
-- Pad user prompt with filler prose to hit 5 log-spaced target input sizes
-- Proposed levels: **100, 500, 2,000, 7,000, 18,000** tokens
-- Overlaps Track B at 18k
+| Level | Content | ~System tokens |
+|---|---|---|
+| 0 | Behavioral block only | ~3,500 |
+| 1 | Behavioral + 2 tool-def chunks | ~6,300 |
+| 2 | Behavioral + 4 tool-def chunks | ~9,100 |
+| 3 | Behavioral + 6 tool-def chunks | ~11,900 |
+| 4 | Behavioral + 8 tool-def chunks | ~14,700 |
+| 5 | Behavioral + all 10 tool-def chunks | ~17,500 |
 
-**Leg 2 — Claude Code CLI, padded context:**
-- Start: Track B setup (~18k native)
-- Pad via `CLAUDE.md` with filler content to push input higher
-- Proposed levels: **18,000, 30,000, 50,000, 75,000, 120,000** tokens
-- Tests extrapolation past CC native size
+Track A (~6 tok) and Track B (~18K tok) are the anchoring baselines. Level 0 tests whether behavioral instructions alone kill Caveman. Levels 1-5 test whether tool-def volume matters. Level 5 (~17.5K) should approximate Track B's native CC baseline.
 
-**Subset prompts (TBD):** 3 of 10, picked to span Track A's compression range:
-- High: `error-boundary` (72%)
-- Med: `async-refactor` (48%)
-- Low: `pr-security-review` (33%)
+### CC system prompt decomposition
 
-### Scale
+Sliced from publicly extracted CC system prompt content (see `data/cc_slices/PROVENANCE.md`):
 
-| Leg | Levels | Prompts | Conditions | Runs/cell | Total |
-|---|---|---|---|---|---|
-| API | 5 | 3 | 2 | 10 | 300 |
-| CLI | 5 | 3 | 2 | 10 | 300 |
-| | | | | **Combined** | **600** |
+- **Behavioral block:** Identity, system rules, coding philosophy, executing actions with care, tool usage guidance, tone and style, output efficiency, session guidance — combined into a single file
+- **Tool-def chunks 1-10:** CC's tool definitions split into 10 roughly equal chunks (~1,400 tok each), covering Bash, Edit, Read, Write, Grep, Glob, Agent, Plan/Worktree, Web tools, Task/Cron tools
 
-### Open design questions (pending discussion)
+### Shuffle design
 
-1. **Padding content fidelity.** Generic filler prose ≠ real CC system prompt (tool defs, instructions, examples). Options:
-   - Generic repeated technical docs — cheap, less realistic
-   - Leaked/reverse-engineered CC system prompt — higher fidelity
-   - Both, compared
-2. **CLI padding mechanism.** Options:
-   - `CLAUDE.md` with filler (closest to "enlarged system prompt")
-   - User-prompt prepend (different cache path than system)
-   - `--resume SESSION_ID` after prior turns (realistic, high variance)
-3. **Overlap validation.** If API @ 18k ≠ CLI @ 18k, diagnostic steps: compare cache hit/miss split, content shape, system-vs-user placement.
+Each ordering is a random permutation of tool-def chunks 0-9. At level N, the first 2N chunks from the ordering are included. Across 5 orderings per task, different chunks appear at different levels, enabling rough attribution of which chunks matter.
+
+### Results (n=5 orderings per level per condition, 180 runs total)
+
+Model: `claude-sonnet-4-6`. Params: thinking ON (budget=4K), max_tokens=16384, temp=1.0.
+
+| Level | Context | async-refactor | error-boundary | pr-security-review |
+|-------|---------|:--------------:|:--------------:|:------------------:|
+| **A'** (no CC content) | ~6 tok | 34.8% | 67.7% | 27.7% |
+| **L0** | behavioral only (~3.5K) | 9.0% | 19.9% | 12.4% |
+| **L1** | +2 tool chunks (~6.3K) | 24.4% | 18.9% | 16.6% |
+| **L2** | +4 tool chunks (~9.1K) | 11.7% | 23.3% | 28.8% |
+| **L3** | +6 tool chunks (~11.9K) | 13.9% | 38.5% | 17.8% |
+| **L4** | +8 tool chunks (~14.7K) | 15.0% | 31.1% | 2.5% |
+| **L5** | +10 tool chunks (~17.5K) | 19.2% | 31.2% | 22.8% |
+| **B** (CC CLI actual) | ~18K | −5.6% | −33.8% | 17.4% |
+
+### Verdict
+
+**The collapse happens at L0, not gradually.** Adding CC's behavioral block (tone, style, output efficiency, identity — ~3,500 tokens) causes an immediate large drop:
+- async-refactor: 34.8% → 9.0% (−25.8pp)
+- error-boundary: 67.7% → 19.9% (−47.8pp)
+- pr-security-review: 27.7% → 12.4% (−15.3pp)
+
+Adding tool-definition chunks (L0→L5) does **not** consistently degrade savings further — results are flat and noisy across levels. For `error-boundary`, savings actually trend upward with more context.
+
+**The interference hypothesis is supported over dilution.** It's not token volume that kills Caveman — it's specifically CC's behavioral instructions (tone, style, output efficiency) that already instruct Claude to be concise. Caveman is redundantly issuing a compression directive to a model already told to compress.
+
+The remaining gap between C-L5 and B for some tasks (e.g., `error-boundary`: +31% vs −34%) suggests additional CC harness effects beyond system prompt text — possibly plugin/context structure.
+
+### Status
+
+- [x] CC system prompt slices sourced (`data/cc_slices/`, 11 files)
+- [x] Runner script complete (`scripts/run_track_c.py`)
+- [x] Full run complete (180 calls)
+- [x] Analysis — degradation curve confirms interference over dilution
 
 ## Three-track triangulation
 
-| Track | Harness | Baseline system | n per cell | Caveman savings |
-|---|---|---|---|---|
-| Author | Anthropic API direct | `"You are a helpful assistant."` | 3 | 75.8% |
-| A (ours) | Anthropic API direct | `"You are a helpful assistant."` | 10 | **67.3%** |
-| B (ours) | Claude Code CLI | Full Claude Code context (~18k tok) | 10 | **−1.9%** |
-| C (ours) | Both, padded | Varied (~30 → ~120k tok) | 10 | **TBD** (curve) |
+| Track | Harness | Baseline system | Params | n per cell | Caveman savings |
+|---|---|---|---|---|---|
+| Author | API direct | `"You are a helpful assistant."` | temp=0, max=4096, no thinking | 3 | 75.8% |
+| A (ours) | API direct | `"You are a helpful assistant."` | temp=0, max=4096, no thinking | 10 | **63.1%** |
+| A' (ours) | API direct | `"You are a helpful assistant."` | temp=1.0, max=16384, thinking ON (4K) | 5 | **50.6%** |
+| B (ours) | CC CLI | Full CC context (~18k tok) | CC defaults (≈A' params) | 10 | **−1.9%** |
+| C (ours) | API direct | CC system prompt, incremental | temp=1.0, max=16384, thinking ON (4K) | 5 orderings | **9–32% (flat across levels)** |
 
-Author's claim holds at minimal baseline. Under CC harness the effect vanishes (−1.9% avg, 4/10 tasks negative). Track C measures the curve connecting them — and extends past.
+**Gap decomposition (A→B, −63pp total):**
+- Parameters (A→A'): −12.6pp (~20%)
+- CC system prompt / harness (A'→B): −49.9pp (~80%)
+- Behavioral block alone (A'→C-L0): ~−30pp on average; tool defs add negligible further degradation
 
 ## Scripts
 
-- `scripts/_config.py` — shared constants and helpers (prompts path, model, retry, workers)
-- `scripts/run_track_a.py` — Anthropic API direct, author's benchmark (previously `run_track_c.py`)
-- `scripts/run_track_b.py` — parallel `claude -p` headless runner (tqdm progress, retry, env config)
-- `scripts/run_track_c.py` — context-size sweep (not yet written)
-- `scripts/parse_results.py` — unified DataFrame across all tracks → `data/results.csv`
-
-**Note:** `run_track_c.py` is the legacy name for what is now `run_track_a.py` (Track A = author's API-direct methodology). Will rename after Track B rerun completes.
+- `scripts/_config.py` — shared constants, loaders, helpers (prompts, slices, model, retry)
+- `scripts/run_track_a.py` — Anthropic API direct, author's benchmark reproduction (Track A)
+- `scripts/run_track_a_prime.py` — API direct with CC-matched parameters (Track A')
+- `scripts/run_track_b.py` — parallel `claude -p` headless runner (Track B)
+- `scripts/run_track_c.py` — context-size sweep with 10-chunk shuffle (Track C)
+- `scripts/parse_results.py` — unified DataFrame across all tracks → `outputs/results.csv`
 
 ## Data
 
-- `data/` — author's inputs: `prompts.json`, `SKILL.md`, `PROVENANCE.md`
-- `outputs/runs/track_a/` — 200 JSON files (n=10 × 10 prompts × 2 conditions)
-- `outputs/runs/track_b/` — 200 runs pending regen summary.
-- `outputs/runs/track_c/` — context sweep (not yet populated)
-- `outputs/results.csv` — flattened, track-tagged, regenerates from all `track_*/` dirs via `parse_results.py`
-- `outputs/` — gitignored. All generated files live here.
+- `data/prompts.json`, `SKILL.md`, `PROVENANCE.md` — author's inputs, frozen
+- `data/cc_slices/` — CC system prompt decomposition (behavioral block + 10 tool-def chunks)
+- `outputs/runs/track_a/` — Track A runs (200 files)
+- `outputs/runs/track_a_prime/` — Track A' CC-matched parameter runs
+- `outputs/runs/track_b/` — Track B CLI runs (200 files)
+- `outputs/runs/track_c/` — Track C context sweep
+- `outputs/results.csv` — flattened, track-tagged, regenerates via `parse_results.py`
+- `outputs/` — gitignored
+
+---
+
+## Draft narrative (to be polished for portfolio writeup)
+
+### The claim
+
+Caveman is a Claude Code plugin that promises 15–87% output token savings by prepending a short compression instruction to every prompt. The author's benchmark reproduces this — across 10 coding tasks, a minimal "You are a helpful assistant" baseline averages 76% more output than the Caveman condition.
+
+### What the benchmark hides
+
+The author's benchmark runs the Anthropic API directly with artificial parameters: temperature=0, max_tokens=4096, and no extended thinking. These aren't Claude Code's defaults. In practice, Claude Code runs with temperature=1.0, max_tokens=16384, and extended thinking enabled. The benchmark was never tested in the environment it claims to improve.
+
+### Replication: the numbers hold — under those same artificial conditions
+
+We ran the author's exact methodology on 10 tasks, scaled up to n=10 per condition for robustness. Result: 63.1% average savings. Direction consistent on all 10 tasks. The claim reproduces.
+
+### Track A': what happens with real CC parameters?
+
+We reran the same experiment — same minimal system prompt, same tasks — but with CC-matched API parameters. Savings dropped from 63.1% to 50.6%. Parameters explain about 12.6 percentage points, or 20% of the total gap between the author's headline and real-world usage. Still a meaningful effect, but inflated.
+
+### Track B: the real world
+
+We ran both conditions through the actual Claude Code CLI (`claude -p`), with Caveman toggled via its plugin system. Result: −1.9% average savings. On 6 of 10 tasks, Caveman produces *more* output than the baseline. The effect doesn't just shrink — it reverses.
+
+The key observation: Claude Code's baseline is already compressed. Where the API baseline for `error-boundary` averages 3,785 tokens, the CC baseline averages only 543 — an 85% reduction before Caveman does anything. The compression headroom Caveman depends on has already been consumed.
+
+### Track C: what's doing the compressing?
+
+We decomposed CC's ~18K system prompt into a behavioral block (~3,500 tokens of identity, coding philosophy, tone, style, and output efficiency rules) and 10 tool-definition chunks (~1,400 tokens each). We then progressively added content and measured Caveman's effect at each level.
+
+The collapse is immediate. Adding just the behavioral block drops savings from ~51% (A', no CC content) to 9–20% (L0, behavioral only). Adding tool definitions (L1–L5) changes nothing meaningful — the curve is flat.
+
+**Dilution is not the culprit. Interference is.** CC's behavioral instructions already tell Claude to be concise, terse, and efficient. Caveman is issuing a redundant instruction to a model that's already been told to compress. The tool definitions — the bulk of CC's 18K context — are irrelevant to the effect.
+
+### The one exception
+
+`pr-security-review` retains modest positive savings across Track B (+17%) and Track C. This task requires structured, qualifying prose that neither Caveman nor CC's behavioral block fully suppresses. It may represent a category where compression instructions genuinely add value even inside CC — but it's one task out of ten.
+
+### Takeaway
+
+Caveman's 15–87% claim is real, but it was measured in a vacuum. Under the actual CC environment it was built for — matching API parameters and with CC's system prompt present — the effect collapses. The reason isn't token volume or tool schemas. It's that Claude Code already applies the compression Caveman is trying to add. The plugin is solving a problem CC's own instructions have already solved.

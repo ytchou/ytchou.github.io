@@ -1,0 +1,130 @@
+## Tool: Monitor
+
+Stream events from a background process. Each stdout line becomes a notification that is delivered to you. Use this to watch long-running processes like builds, tests, or servers without blocking your main execution.
+
+Usage:
+- Attach to a background process started with Bash run_in_background
+- Each line of output generates a notification delivered to you
+- Can set an "until" condition — a regex pattern that stops monitoring when matched
+- Useful for watching: test results, build output, server startup, deployment status
+- Automatically stops when the monitored process exits
+- Multiple monitors can run simultaneously for different processes
+- Monitor output is streamed — you see it as it happens, not all at once
+
+Parameters (JSON Schema):
+{
+  "type": "object",
+  "required": ["process_id"],
+  "additionalProperties": false,
+  "properties": {
+    "process_id": {
+      "type": "string",
+      "description": "The background process ID to monitor (returned by Bash run_in_background)"
+    },
+    "until": {
+      "type": "string",
+      "description": "Stop condition — regex pattern to match in output. Monitoring stops when this pattern is found."
+    },
+    "timeout": {
+      "type": "number",
+      "description": "Maximum monitoring time in milliseconds. Monitoring stops after this duration."
+    }
+  }
+}
+
+## Tool: NotebookEdit
+
+Edit Jupyter notebook cells. Supports adding, removing, modifying, and rearranging cells in .ipynb files. Works with both code and markdown cells.
+
+Available actions:
+- add_cell: Add a new cell (code or markdown) at a specific position in the notebook
+- remove_cell: Remove a cell at a given index
+- edit_cell: Modify the source content of an existing cell
+- move_cell: Move a cell from one position to another, shifting other cells as needed
+- change_type: Change a cell's type between code and markdown
+
+Usage:
+- Cell indices are 0-based
+- Adding a cell at index N pushes existing cells at N and beyond down by one
+- Removing a cell shifts subsequent cells up by one
+- The notebook file must exist — this tool cannot create new notebooks
+- After editing, the notebook maintains its kernel and metadata settings
+
+Parameters (JSON Schema):
+{
+  "type": "object",
+  "required": ["file_path", "action"],
+  "additionalProperties": false,
+  "properties": {
+    "file_path": {
+      "type": "string",
+      "description": "Absolute path to the .ipynb file"
+    },
+    "action": {
+      "type": "string",
+      "enum": ["add_cell", "remove_cell", "edit_cell", "move_cell", "change_type"],
+      "description": "The edit action to perform"
+    },
+    "cell_index": {
+      "type": "number",
+      "description": "Index of the cell to modify (0-based)"
+    },
+    "content": {
+      "type": "string",
+      "description": "New cell content (for add_cell and edit_cell)"
+    },
+    "cell_type": {
+      "type": "string",
+      "enum": ["code", "markdown"],
+      "description": "Cell type (for add_cell and change_type)"
+    },
+    "target_index": {
+      "type": "number",
+      "description": "Target position for move_cell"
+    }
+  }
+}
+
+## Tool: EnterWorktree
+
+Create a temporary git worktree for isolated work. The worktree is a separate checkout of the repository where changes can be made without affecting the main working tree. Useful for experimental changes, parallel development, or agent isolation.
+
+Usage:
+- Creates a new branch and worktree in a temporary directory
+- The worktree shares the same git history but has independent working files
+- Changes in the worktree do not affect the main working tree until merged
+- The worktree is automatically cleaned up if no changes are made (no new commits)
+- If changes are committed, the worktree path and branch name are returned for later use
+- Multiple worktrees can exist simultaneously for different tasks
+
+Parameters (JSON Schema):
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "branch_name": {
+      "type": "string",
+      "description": "Name for the worktree branch. Auto-generated if not specified."
+    },
+    "base_ref": {
+      "type": "string",
+      "description": "Base ref to create the worktree from (default: current HEAD)"
+    }
+  }
+}
+
+## Tool: ExitWorktree
+
+Exit and optionally clean up a git worktree created with EnterWorktree. Returns to the original working directory and branch.
+
+Parameters (JSON Schema):
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "keep_changes": {
+      "type": "boolean",
+      "description": "Whether to keep the worktree and its branch (default: true if commits were made)"
+    }
+  }
+}

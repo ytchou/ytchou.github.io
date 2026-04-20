@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-"""Track A (API direct): reproduce author's benchmark via Anthropic API.
+"""Track A' (API direct, CC-matched parameters).
 
-Mirrors JuliusBrussee/caveman/benchmarks/run.py methodology:
+Same harness as Track A but with parameters matching CC CLI defaults:
   - Anthropic SDK direct (not Claude Code CLI)
   - NORMAL_SYSTEM = "You are a helpful assistant."
   - Caveman system = full SKILL.md
-  - max_tokens=4096, temperature=0, no extended thinking
-  - median of N trials reported
+  - max_tokens=16384, extended thinking enabled (budget=4000)
+  - temperature omitted (required when thinking is enabled; defaults to 1.0)
 
-Differs from upstream: saves per-run JSON files matching Track B schema.
+Comparing A vs A' isolates the effect of API parameters (thinking, temperature,
+max_tokens) on Caveman's savings, independent of system prompt content.
 
 Requires:
   pip install anthropic
@@ -45,7 +46,7 @@ from _config import (
     output_path,
 )
 
-OUTPUT_DIR = RUNS_DIR / "track_a"
+OUTPUT_DIR = RUNS_DIR / "track_a_prime"
 
 _env_file = REPO_ROOT / ".env.local"
 if _env_file.exists():
@@ -60,8 +61,8 @@ MODEL = os.environ.get("MODEL", DEFAULT_MODEL)
 MAX_WORKERS = int(os.environ.get("MAX_WORKERS", "3"))
 
 NORMAL_SYSTEM = "You are a helpful assistant."
-MAX_TOKENS = 4096
-TEMPERATURE = 0
+MAX_TOKENS = 16384
+THINKING_BUDGET = 4000
 
 
 def load_caveman_system() -> str:
@@ -80,17 +81,25 @@ def call_api(client: anthropic.Anthropic, system: str, prompt: str) -> dict:
             response = client.messages.create(
                 model=MODEL,
                 max_tokens=MAX_TOKENS,
-                temperature=TEMPERATURE,
+                thinking={"type": "enabled", "budget_tokens": THINKING_BUDGET},
                 system=system,
                 messages=[{"role": "user", "content": prompt}],
             )
             wall_clock = time.monotonic() - t0
+            text = ""
+            thinking_text = ""
+            for block in response.content:
+                if block.type == "text":
+                    text = block.text
+                elif block.type == "thinking":
+                    thinking_text = block.thinking
             return {
                 "input_tokens": response.usage.input_tokens,
                 "output_tokens": response.usage.output_tokens,
                 "cache_creation_input_tokens": getattr(response.usage, "cache_creation_input_tokens", 0) or 0,
                 "cache_read_input_tokens": getattr(response.usage, "cache_read_input_tokens", 0) or 0,
-                "text": response.content[0].text,
+                "text": text,
+                "thinking_text": thinking_text,
                 "stop_reason": response.stop_reason,
                 "wall_clock_sec": round(wall_clock, 2),
             }
@@ -110,14 +119,14 @@ def run_one(client: anthropic.Anthropic, prompt_entry: dict, condition: str,
     result = call_api(client, system, prompt_entry["prompt"])
 
     result["_meta"] = {
-        "track": "A",
+        "track": "A_prime",
         "task": pid,
         "category": prompt_entry["category"],
         "condition": condition,
         "run_num": run_num,
         "model": MODEL,
         "max_tokens": MAX_TOKENS,
-        "temperature": TEMPERATURE,
+        "thinking_budget": THINKING_BUDGET,
         "system_len_chars": len(system),
         "timestamp": int(time.time()),
     }
@@ -144,7 +153,7 @@ def main() -> None:
     ]
     total = len(work)
 
-    print("=== Track A Runner (reproduce author's benchmark) ===")
+    print("=== Track A' Runner (API direct, CC-matched parameters) ===")
     print(f"Prompts:            {len(prompts)}")
     print(f"Runs per condition: {RUNS_PER_CONDITION}")
     print(f"Max workers:        {MAX_WORKERS}")

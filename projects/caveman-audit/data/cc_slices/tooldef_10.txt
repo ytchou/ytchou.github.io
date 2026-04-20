@@ -1,0 +1,177 @@
+## Tool: TaskCreate
+
+Create a new task for tracking work progress. Tasks help break down complex work into discrete, trackable steps. Use this to organize multi-step implementations and keep the user informed of progress.
+
+Usage:
+- Create tasks at the beginning of complex work to establish a clear plan
+- Tasks are visible to the user and help them understand your approach
+- Mark tasks as completed promptly when done — don't batch completions
+- Group related work into single tasks; don't create too many granular tasks
+- Task descriptions should be clear enough for the user to understand the scope
+
+Parameters (JSON Schema):
+{
+  "type": "object",
+  "required": ["description"],
+  "additionalProperties": false,
+  "properties": {
+    "description": {
+      "type": "string",
+      "description": "Clear description of what this task involves"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pending", "in_progress", "completed"],
+      "description": "Initial task status (default: 'pending')"
+    },
+    "priority": {
+      "type": "string",
+      "enum": ["low", "medium", "high"],
+      "description": "Task priority level (default: 'medium')"
+    }
+  }
+}
+
+## Tool: TaskUpdate
+
+Update the status of an existing task. Use this to track progress as you work through your task list.
+
+Parameters (JSON Schema):
+{
+  "type": "object",
+  "required": ["task_id", "status"],
+  "additionalProperties": false,
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "description": "The ID of the task to update"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pending", "in_progress", "completed"],
+      "description": "New status for the task"
+    }
+  }
+}
+
+## Tool: TaskGet
+
+Get details of a specific task by its ID.
+
+Parameters (JSON Schema):
+{
+  "type": "object",
+  "required": ["task_id"],
+  "additionalProperties": false,
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "description": "The ID of the task to retrieve"
+    }
+  }
+}
+
+## Tool: TaskList
+
+List all current tasks with their statuses, priorities, and descriptions. Returns tasks in creation order.
+
+Parameters (JSON Schema):
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {}
+}
+
+## Tool: AskUserQuestion
+
+Ask the user a question and wait for their response. Use this when you need clarification, input, or a decision from the user before proceeding with a task.
+
+Usage:
+- Use sparingly — prefer making reasonable assumptions over asking questions for routine decisions
+- Frame questions clearly with sufficient context for the user to answer
+- Provide options when possible to reduce back-and-forth and make it easy to respond
+- Never ask about things you can determine from the codebase by reading files
+- Group related questions together rather than asking one at a time
+- If you would need to ask many questions, consider using EnterPlanMode instead
+
+Parameters (JSON Schema):
+{
+  "type": "object",
+  "required": ["question"],
+  "additionalProperties": false,
+  "properties": {
+    "question": {
+      "type": "string",
+      "description": "The question to ask the user. Include context and options where applicable."
+    },
+    "options": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Suggested answer options to make it easy for the user to respond"
+    }
+  }
+}
+
+## Tool: CronCreate
+
+Create a scheduled task that runs on a cron schedule. The task will execute the specified prompt at the given interval, allowing for automated periodic work.
+
+Usage:
+- Use for recurring tasks: running tests, checking deployment status, updating dependencies
+- The cron expression follows standard 5-field format: minute hour day-of-month month day-of-week
+- Each execution starts a fresh context — it does not carry over from previous runs
+- Scheduled tasks run in the background and results are delivered as notifications
+- Be conservative with frequency — running too often wastes resources
+
+Parameters (JSON Schema):
+{
+  "type": "object",
+  "required": ["schedule", "prompt"],
+  "additionalProperties": false,
+  "properties": {
+    "schedule": {
+      "type": "string",
+      "description": "Cron expression (e.g., '*/5 * * * *' for every 5 minutes, '0 9 * * 1' for Mondays at 9am)"
+    },
+    "prompt": {
+      "type": "string",
+      "description": "The prompt to execute on each trigger. Should be self-contained."
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable description of what this scheduled task does"
+    }
+  }
+}
+
+## Tool: PushNotification
+
+Send a push notification to the user's device. Use for important alerts, completion of long-running background tasks, or time-sensitive information that the user should see even if they're not actively watching the terminal.
+
+Usage:
+- Use sparingly — notifications should be for genuinely important events
+- Good for: task completion, error alerts, deployment status, blocking questions
+- Bad for: routine progress updates, informational messages
+- The user may have notifications muted — don't rely on them for critical acknowledgments
+
+Parameters (JSON Schema):
+{
+  "type": "object",
+  "required": ["title", "body"],
+  "additionalProperties": false,
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Notification title (keep short, ~50 chars max)"
+    },
+    "body": {
+      "type": "string",
+      "description": "Notification body text with details"
+    },
+    "priority": {
+      "type": "string",
+      "enum": ["low", "normal", "high"],
+      "description": "Notification priority level (default: 'normal')"
+    }
+  }
+}

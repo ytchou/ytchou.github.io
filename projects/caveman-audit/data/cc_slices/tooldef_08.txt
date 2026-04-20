@@ -1,0 +1,128 @@
+## Tool: WebFetch
+
+Fetches content from a URL and returns it in a format suitable for LLM processing. Supports HTML pages (automatically converted to readable markdown), JSON APIs (parsed and formatted), plain text, and other common web formats.
+
+Usage:
+- Use for fetching web pages, API responses, documentation, package info, etc.
+- HTML content is automatically cleaned and converted to readable markdown, removing navigation, ads, and boilerplate
+- For REST APIs, the raw JSON/XML response is returned and can be parsed directly
+- Respects robots.txt directives and may be blocked by some sites that restrict automated access
+- Has a configurable timeout for slow-responding sites (default 30 seconds)
+- Content may be truncated for very large pages to fit within context limits
+- Supports custom HTTP headers for authentication or content negotiation
+- Follow redirects automatically (up to 5 hops)
+- User-Agent identifies as Claude Code for transparency
+
+Parameters (JSON Schema):
+{
+  "type": "object",
+  "required": ["url"],
+  "additionalProperties": false,
+  "properties": {
+    "url": {
+      "type": "string",
+      "description": "The URL to fetch content from"
+    },
+    "format": {
+      "type": "string",
+      "enum": ["text", "json"],
+      "description": "Expected response format. 'text' for HTML/markdown, 'json' for API responses."
+    },
+    "headers": {
+      "type": "object",
+      "description": "Additional HTTP headers to include in the request"
+    },
+    "max_length": {
+      "type": "number",
+      "description": "Maximum response length in characters. Content beyond this limit is truncated."
+    },
+    "timeout": {
+      "type": "number",
+      "description": "Request timeout in milliseconds (default 30000)"
+    }
+  }
+}
+
+## Tool: WebSearch
+
+Searches the web and returns relevant results with titles, URLs, and content snippets. Uses a search engine optimized for developer and technical queries.
+
+Usage:
+- Use for finding information not available in local files or documentation
+- Returns a ranked list of results with titles, URLs, and relevant snippets
+- Effective for finding: documentation, Stack Overflow answers, package info, API references, error messages
+- Results may not be exhaustive — try different query formulations if initial results aren't helpful
+- Can use standard search operators: site:, filetype:, "exact phrase", -exclude
+- Results include both organic web results and, where available, direct answers
+- For GitHub-specific searches, prefer gh CLI commands via Bash tool
+
+Parameters (JSON Schema):
+{
+  "type": "object",
+  "required": ["query"],
+  "additionalProperties": false,
+  "properties": {
+    "query": {
+      "type": "string",
+      "description": "The search query. Supports standard search operators."
+    },
+    "max_results": {
+      "type": "number",
+      "description": "Maximum number of results to return (default 10)"
+    },
+    "domain": {
+      "type": "string",
+      "description": "Restrict results to this domain (e.g., 'stackoverflow.com')"
+    }
+  }
+}
+
+## Tool: LSP
+
+Interact with a Language Server Protocol server for code intelligence features. Provides IDE-like capabilities for understanding and navigating code.
+
+Available actions:
+- diagnostics: Get errors, warnings, and info messages for a file from the language server
+- hover: Get type information, documentation, and signature at a specific position
+- definition: Jump to the definition of a symbol at the given position
+- references: Find all references to a symbol across the codebase
+- rename: Rename a symbol across all files in the project
+- completions: Get code completion suggestions at a position
+- signatureHelp: Get function/method signature information at a call site
+
+Usage:
+- Requires a running language server for the file's language
+- Line and character positions are 0-indexed (matching LSP specification)
+- For hover/definition/references, position the cursor on the symbol of interest
+- Rename affects all files in the workspace — review changes carefully
+- Diagnostics may take a moment to update after file changes
+
+Parameters (JSON Schema):
+{
+  "type": "object",
+  "required": ["action", "file_path"],
+  "additionalProperties": false,
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": ["diagnostics", "hover", "definition", "references", "rename", "completions", "signatureHelp"],
+      "description": "The LSP action to perform"
+    },
+    "file_path": {
+      "type": "string",
+      "description": "The absolute path to the file"
+    },
+    "line": {
+      "type": "number",
+      "description": "Line number (0-indexed)"
+    },
+    "character": {
+      "type": "number",
+      "description": "Character offset within the line (0-indexed)"
+    },
+    "new_name": {
+      "type": "string",
+      "description": "New name for the symbol (only for rename action)"
+    }
+  }
+}
