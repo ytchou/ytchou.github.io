@@ -9,26 +9,94 @@ interface Props {
 }
 const { project, lang = 'en' } = Astro.props;
 const t = useTranslations(lang);
+
+// Derive a deterministic accent color from the project title for the visual strip
+const palette = [
+  { bg: '#E8DDD4', stripe: '#C4B4A0' },
+  { bg: '#D9E3DC', stripe: '#B0C4B8' },
+  { bg: '#DDD8E8', stripe: '#B8B0C8' },
+  { bg: '#E8DDD9', stripe: '#C4B0A8' },
+  { bg: '#E3E0D9', stripe: '#C0BAB0' },
+];
+const colorIdx = project.title.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) % palette.length;
+const color = palette[colorIdx];
 ---
 
-<article class="group border border-[#E2DBD3] rounded-xl p-5 hover:border-[#C4B8AA] hover:shadow-sm hover:-translate-y-0.5 transition-all duration-200 flex flex-col gap-3">
-  <h3 class="font-semibold text-gray-900 group-hover:text-[#6B5B47] transition-colors mt-0">{project.title}</h3>
-  <p class="text-sm text-gray-500 leading-relaxed flex-1">{project.description}</p>
-  <ul class="flex flex-wrap gap-1.5 list-none p-0 m-0">
-    {project.tags.map(tag => (
-      <li class="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">{tag}</li>
-    ))}
-  </ul>
-  <div class="flex gap-3 pt-1">
-    {project.githubUrl && (
-      <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" class="text-xs font-medium text-gray-500 hover:text-[#6B5B47] transition-colors no-underline">
-        {t('projects.github')} ↗
-      </a>
-    )}
-    {project.liveUrl && (
-      <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" class="text-xs font-medium text-gray-500 hover:text-[#6B5B47] transition-colors no-underline">
-        {t('projects.live')} ↗
-      </a>
-    )}
+<article class="project-card group flex flex-col">
+  <!-- Visual image region -->
+  <div class="card-visual" style={`background-color: ${color.bg};`}>
+    <div class="card-visual-stripe" style={`background-color: ${color.stripe};`}></div>
+    <div class="card-visual-dot" style={`background-color: ${color.stripe};`}></div>
+  </div>
+
+  <div class="flex flex-col gap-3 flex-1 p-5">
+    <h3 class="project-title font-semibold mt-0 transition-colors">{project.title}</h3>
+    <p class="project-desc text-sm leading-relaxed flex-1">{project.description}</p>
+    <ul class="flex flex-wrap gap-1.5 list-none p-0 m-0">
+      {project.tags.map(tag => (
+        <li class="project-tag text-xs px-2 py-0.5 rounded-full">{tag}</li>
+      ))}
+    </ul>
+    <div class="flex gap-3 pt-1">
+      {project.githubUrl && (
+        <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" class="project-link text-xs font-medium transition-colors no-underline">
+          {t('projects.github')} ↗
+        </a>
+      )}
+      {project.liveUrl && (
+        <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" class="project-link text-xs font-medium transition-colors no-underline">
+          {t('projects.live')} ↗
+        </a>
+      )}
+    </div>
   </div>
 </article>
+
+<style>
+  .project-card {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+    transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
+  }
+  .project-card:hover {
+    border-color: var(--color-border-hover);
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-3px);
+  }
+  .card-visual {
+    position: relative;
+    height: 88px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .card-visual-stripe {
+    position: absolute;
+    top: 18px;
+    left: -10%;
+    width: 120%;
+    height: 28px;
+    opacity: 0.55;
+    transform: rotate(-4deg);
+    border-radius: 4px;
+  }
+  .card-visual-dot {
+    position: absolute;
+    bottom: 12px;
+    right: 16px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    opacity: 0.4;
+  }
+  .project-title { color: var(--color-text); }
+  .project-card:hover .project-title { color: var(--color-accent); }
+  .project-desc { color: var(--color-text-muted); }
+  .project-tag {
+    background-color: var(--color-surface-tag);
+    color: var(--color-tag-text);
+  }
+  .project-link { color: var(--color-text-muted); }
+  .project-link:hover { color: var(--color-accent); }
+</style>
