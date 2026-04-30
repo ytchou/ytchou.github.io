@@ -1,29 +1,242 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import BlogPostCard from '../../components/BlogPostCard.astro';
-import { useTranslations, sortPosts } from '../../i18n/utils';
+import { useTranslations, sortPosts, getPostSlug } from '../../i18n/utils';
 
 const t = useTranslations('en');
 
-const posts = sortPosts(await getCollection('blog', ({ data }) => data.lang === 'en' && !data.draft));
+const allPosts = sortPosts(await getCollection('blog', ({ data }) => data.lang === 'en' && !data.draft));
+const pinnedPosts = allPosts.filter(p => p.data.pinned);
+const regularPosts = allPosts.filter(p => !p.data.pinned);
 ---
 
-<BaseLayout title={`${t('blog.title')} — Yung-Tang Chou`} description={t('blog.subtitle')}>
-  <div class="mb-10">
-    <h1 class="text-3xl font-bold text-gray-900 tracking-tight mb-2">{t('blog.title')}</h1>
-    <p class="text-gray-500">{t('blog.subtitle')}</p>
+<BaseLayout title={`${t('blog.title')} — Patrick`} description={t('blog.subtitle')}>
+  <!-- Archive header -->
+  <div class="blog-header mb-12">
+    <div class="eyebrow">Archive</div>
+    <h1 class="font-display text-5xl font-bold text-[#2C2825] tracking-tight mt-1 mb-2" style="line-height: 1.05;">Writing</h1>
+    <p class="text-[#8C8078]">{t('blog.subtitle')}</p>
   </div>
-  <div>
-    {posts.map(post => (
-      <BlogPostCard
-        title={post.data.title}
-        description={post.data.description}
-        date={post.data.date}
-        id={post.id}
-        pinned={post.data.pinned}
-        lang="en"
-      />
-    ))}
-  </div>
+
+  <!-- Pinned / featured posts -->
+  {pinnedPosts.length > 0 && (
+    <section class="mb-12">
+      <div class="section-label mb-5">
+        <span>Featured</span>
+      </div>
+      <div class="featured-grid">
+        {pinnedPosts.map(post => {
+          const slug = getPostSlug(post.id);
+          const formatted = post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+          return (
+            <a href={`/blog/${slug}`} class="featured-card no-underline group" data-tags={post.data.tags?.join(',') ?? ''}>
+              <div class="featured-card-visual">
+                <div class="featured-card-rule"></div>
+                <span class="featured-badge">Featured</span>
+              </div>
+              <div class="featured-card-body">
+                <h2 class="font-display text-xl font-bold text-[#2C2825] leading-snug mb-2 group-hover:text-[#6B5B47] transition-colors">{post.data.title}</h2>
+                <p class="text-sm text-[#8C8078] line-clamp-2 mb-4">{post.data.description}</p>
+                <time class="text-xs text-[#A09088]" datetime={post.data.date.toISOString()}>{formatted}</time>
+              </div>
+            </a>
+          );
+        })}
+      </div>
+    </section>
+  )}
+
+  <!-- All other posts — archive list -->
+  {regularPosts.length > 0 && (
+    <section>
+      <div class="section-label mb-5">
+        <span>All posts</span>
+      </div>
+      <ul class="archive-list">
+        {regularPosts.map(post => {
+          const slug = getPostSlug(post.id);
+          const year = post.data.date.getFullYear();
+          const monthDay = post.data.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+          return (
+            <li class="archive-item">
+              <a href={`/blog/${slug}`} class="archive-link group no-underline">
+                <div class="archive-meta">
+                  <span class="archive-year">{year}</span>
+                  <span class="archive-date">{monthDay}</span>
+                </div>
+                <div class="archive-content">
+                  <h3 class="archive-title group-hover:text-[#6B5B47] transition-colors">{post.data.title}</h3>
+                  <p class="archive-desc">{post.data.description}</p>
+                </div>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  )}
+
+  {allPosts.length === 0 && (
+    <p class="text-[#8C8078] py-12 text-center">No posts yet — check back soon.</p>
+  )}
 </BaseLayout>
+
+<style>
+  .blog-header {
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 2rem;
+  }
+
+  .eyebrow {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .section-label span {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+    white-space: nowrap;
+  }
+  .section-label::after {
+    content: '';
+    display: block;
+    flex: 1;
+    height: 1px;
+    background: var(--color-border);
+  }
+
+  /* Featured grid */
+  .featured-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  @media (min-width: 640px) {
+    .featured-grid {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+  }
+
+  .featured-card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
+  }
+  .featured-card:hover {
+    border-color: var(--color-border-hover);
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-3px);
+  }
+
+  .featured-card-visual {
+    position: relative;
+    height: 72px;
+    background-color: #EDE4DA;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .featured-card-rule {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--color-accent);
+    opacity: 0.6;
+  }
+  .featured-badge {
+    position: absolute;
+    top: 14px;
+    left: 16px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    background: rgba(107, 91, 71, 0.1);
+    border: 1px solid rgba(107, 91, 71, 0.2);
+    padding: 0.2em 0.6em;
+    border-radius: 999px;
+  }
+
+  .featured-card-body {
+    padding: 1.25rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Archive list */
+  .archive-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .archive-item {
+    border-bottom: 1px solid var(--color-border);
+  }
+  .archive-item:last-child {
+    border-bottom: none;
+  }
+
+  .archive-link {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 1.25rem;
+    align-items: start;
+    padding: 1.1rem 0;
+    color: inherit;
+  }
+
+  .archive-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: 0.15rem;
+  }
+  .archive-year {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--color-text-subtle);
+    letter-spacing: 0.06em;
+  }
+  .archive-date {
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+    margin-top: 0.1rem;
+  }
+
+  .archive-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0 0 0.25rem;
+    line-height: 1.4;
+  }
+  .archive-desc {
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

@@ -15,19 +15,20 @@ const latestPosts = sortPosts(allPosts).slice(0, 3);
 const featuredProjects = projects.filter(p => p.featured);
 ---
 
-<BaseLayout title="Yung-Tang Chou" description={t('hero.tagline')}>
+<BaseLayout title="Patrick" description={t('hero.tagline')}>
   <!-- Hero -->
-  <section class="py-16 border-b border-[#E2DBD3]">
+  <section class="py-16 border-b" style="border-color: var(--color-border);">
     <div class="flex items-center justify-between gap-10">
       <div class="flex-1 min-w-0">
-        <h1 class="text-4xl font-bold text-[#2C2825] mb-3 tracking-tight">Yung-Tang Chou</h1>
-        <p class="text-lg text-[#8C8078] mb-1">{t('hero.tagline')}</p>
-        <p class="text-lg text-[#8C8078] mb-8">{t('hero.sub')}</p>
-        <div class="flex gap-3">
-          <a href="/projects" class="inline-flex items-center gap-1.5 px-4 py-2 bg-[#6B5B47] text-white text-sm font-medium rounded-lg hover:bg-[#5A4A3A] transition-colors no-underline">
+        <p class="eyebrow mb-3">Product Designer &amp; Analyst</p>
+        <h1 class="font-display text-5xl font-bold tracking-tight mb-3" style="line-height: 1.05; color: var(--color-text);">Patrick</h1>
+        <p class="text-lg mb-1" style="color: var(--color-muted); line-height: 1.6;">{t('hero.tagline')}</p>
+        <p class="text-lg mb-8" style="color: var(--color-muted);">{t('hero.sub')}</p>
+        <div class="flex gap-3 flex-wrap">
+          <a href="/projects" class="cta-primary no-underline">
             {t('hero.cta.work')} ↗
           </a>
-          <a href="/contact" class="inline-flex items-center px-4 py-2 border border-[#E2DBD3] text-[#2C2825] text-sm font-medium rounded-lg hover:border-[#C4B8AA] hover:bg-[#EDE8E3] transition-colors no-underline">
+          <a href="/contact" class="cta-secondary no-underline">
             {t('hero.cta.contact')}
           </a>
         </div>
@@ -35,7 +36,7 @@ const featuredProjects = projects.filter(p => p.featured);
       <div class="shrink-0">
         <Image
           src={headshot}
-          alt="Yung-Tang Chou"
+          alt="Patrick"
           width={160}
           height={160}
           class="w-32 h-32 sm:w-40 sm:h-40 rounded-full object-cover object-top"
@@ -45,30 +46,77 @@ const featuredProjects = projects.filter(p => p.featured);
   </section>
 
   <!-- Recent Writing -->
-  <section class="py-12 border-b border-gray-100">
-    <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-6">{t('home.writing')}</h2>
-    <ul class="space-y-0">
+  <section class="py-12 border-b" style="border-color: var(--color-border);">
+    <div class="flex items-baseline justify-between mb-6">
+      <h2 class="font-display text-[28px] font-normal" style="color: var(--color-text);">{t('home.writing')}</h2>
+      <a href="/blog" class="text-sm font-medium no-underline" style="color: var(--color-accent);">{t('home.all-posts')} →</a>
+    </div>
+    <ul style="margin: 0; padding: 0; list-style: none;">
       {latestPosts.map(post => (
-        <li class="flex items-baseline justify-between py-3 border-b border-gray-50 last:border-0 group">
-          <a href={`/blog/${post.id}`} class="text-gray-800 hover:text-[#6B5B47] transition-colors font-medium no-underline group-hover:underline underline-offset-4">
-            {post.data.pinned && <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#6B5B47] mr-2 mb-0.5 align-middle"></span>}
+        <li class="flex items-baseline justify-between py-3 border-b last:border-0 group" style="border-color: #F5F2EE;">
+          <a href={`/blog/${post.id}`} class="post-title-link no-underline font-medium" style="font-size: 0.9375rem;">
+            {post.data.pinned && <span class="inline-block w-1.5 h-1.5 rounded-full mr-2 mb-0.5 align-middle" style="background: var(--color-accent);"></span>}
             {post.data.title}
           </a>
-          <time class="text-sm text-gray-400 ml-4 shrink-0" datetime={post.data.date.toISOString()}>
+          <time class="shrink-0 ml-4" style="font-size: 0.8125rem; color: #9ca3af;" datetime={post.data.date.toISOString()}>
             {post.data.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
           </time>
         </li>
       ))}
     </ul>
-    <a href="/blog" class="inline-block mt-5 text-sm text-[#6B5B47] hover:text-[#5A4A3A] font-medium no-underline">{t('home.all-posts')} →</a>
   </section>
 
   <!-- Featured Projects -->
-  <section class="py-12">
-    <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-6">{t('home.projects')}</h2>
+  <section class="py-12 -mx-6 px-6" style="background: var(--color-surface);">
+    <div class="flex items-baseline justify-between mb-6">
+      <h2 class="font-display text-[28px] font-normal" style="color: var(--color-text);">{t('home.projects')}</h2>
+      <a href="/projects" class="text-sm font-medium no-underline" style="color: var(--color-accent);">{t('home.all-projects')} →</a>
+    </div>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       {featuredProjects.map(project => <ProjectCard project={project} />)}
     </div>
-    <a href="/projects" class="inline-block mt-5 text-sm text-[#6B5B47] hover:text-[#5A4A3A] font-medium no-underline">{t('home.all-projects')} →</a>
   </section>
 </BaseLayout>
+
+<style>
+  .eyebrow {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+  .cta-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.5rem 1rem;
+    background: var(--color-accent);
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: background var(--transition-base);
+  }
+  .cta-primary:hover { background: var(--color-accent-hover); }
+  .cta-secondary {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: border-color var(--transition-base), background var(--transition-base);
+  }
+  .cta-secondary:hover {
+    border-color: var(--color-border-hover);
+    background: var(--color-surface);
+  }
+  .post-title-link {
+    color: var(--color-text);
+    transition: color var(--transition-base);
+  }
+  .post-title-link:hover { color: var(--color-accent); }
+</style>

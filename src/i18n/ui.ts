@@ -8,7 +8,7 @@ export const defaultLang: Lang = 'en';
 
 export const ui = {
   en: {
-    'nav.home': 'Yung-Tang Chou',
+    'nav.home': 'Patrick',
     'nav.about': 'About',
     'nav.projects': 'Projects',
     'nav.blog': 'Blog',
@@ -23,7 +23,7 @@ export const ui = {
     'home.projects': 'Featured Projects',
     'home.all-projects': 'All projects',
     'blog.title': 'Blog',
-    'blog.subtitle': 'Writing on software, products, and ideas.',
+    'blog.subtitle': 'Notes on software, products, and ideas.',
     'blog.pinned': 'Pinned',
     'projects.title': 'Projects',
     'projects.subtitle': "A selection of things I've built.",
@@ -38,7 +38,7 @@ export const ui = {
     'contact.link.email': 'Email',
     'contact.link.github': 'GitHub',
     'contact.link.linkedin': 'LinkedIn',
-    'footer.rights': '© {year} Yung-Tang Chou',
+    'footer.rights': '© {year} Patrick',
   },
   zh: {
     'nav.home': '周永堂',
