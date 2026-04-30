@@ -47,6 +47,7 @@ MAX_WORKERS = int(os.environ.get("MAX_WORKERS", str(DEFAULT_MAX_WORKERS)))
 CLAUDE_CONFIG_DIR = os.environ.get("CLAUDE_CONFIG_DIR", str(Path.home() / ".claude-clean"))
 
 DISABLE_CAVEMAN = {"enabledPlugins": {"caveman@caveman": False}}
+ENABLE_CAVEMAN = {"enabledPlugins": {"caveman@caveman": True}}
 
 
 def run_one(prompt_entry: dict, condition: str, run_num: int) -> str:
@@ -55,7 +56,7 @@ def run_one(prompt_entry: dict, condition: str, run_num: int) -> str:
     if outfile.exists():
         return "skip"
 
-    settings = DISABLE_CAVEMAN if condition == "baseline" else None
+    settings = DISABLE_CAVEMAN if condition == "baseline" else ENABLE_CAVEMAN
     prompt = prompt_entry["prompt"]
 
     last_err: Exception | None = None

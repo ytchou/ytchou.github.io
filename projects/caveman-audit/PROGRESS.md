@@ -1,6 +1,6 @@
 # Progress — Caveman Audit
 
-Last updated: 2026-04-19
+Last updated: 2026-04-21
 
 ## Track naming
 
@@ -10,7 +10,7 @@ Tracks renamed to reflect the three-track triangulation design. Old labels below
 |---|---|---|---|---|---|---|
 | **A** | Anthropic API | Minimal (6 tok) | Author's: temp=0, max=4096, no thinking | 10 | 10 | Reproduce author's benchmark |
 | **A'** | Anthropic API | Minimal (6 tok) | CC-matched: thinking ON (4K), max=16384, temp=1.0 | 10 | 5 | Isolate parameter confounds |
-| **B** | CC CLI (`claude -p`) | Full CC context (~18K) | CC defaults (thinking ON, temp=1.0) | 10 | 10 | Real-world CC harness |
+| **B** | CC CLI (`claude -p`) | Full CC context (~18K) | CC defaults (thinking ON, temp=1.0) | 10 | 5 | Real-world CC harness |
 | **C** | Anthropic API | Incremental CC content (6 levels) | CC-matched: thinking ON (4K), max=16384, temp=1.0 | 3 | 5 orderings | Context-size sweep |
 
 See [RESEARCH_QUESTIONS.md](RESEARCH_QUESTIONS.md) for full design.
@@ -20,7 +20,7 @@ See [RESEARCH_QUESTIONS.md](RESEARCH_QUESTIONS.md) for full design.
 - [x] Phase 1: Instrumentation (metrics extraction, Caveman toggle, output formats documented)
 - [x] Phase 2a: Reusable `utils/` extracted (models.py, metrics.py, runner.py)
 - [x] Phase 2b: Track A — **200 runs complete, 63.1% avg savings. Claim reproduces.**
-- [x] Phase 2c: Track B — **200 runs complete, −1.9% avg savings. Effect collapses under CC harness.**
+- [x] Phase 2c: Track B — **100 runs complete (rerun with Caveman verified active), +25.3% median savings. Effect reduced but still present in CC.**
 - [x] Phase 2d: Track A' — **100 runs complete, 50.6% avg savings. Parameters account for ~12.6pp of the A→B gap.**
 - [x] Phase 2e: Track C — **180 runs complete. Collapse happens at behavioral block (L0), not from tool-def volume.**
 - [ ] Phase 3: Writeup for portfolio
@@ -113,7 +113,7 @@ Track A uses Anthropic API credits (pay-per-call), not Claude Code subscription.
 
 ## Track A': API direct with CC-matched parameters
 
-Track A reproduces the author's result, but under **different API parameters than CC CLI uses**. This means the A→B gap (67% → −1.9%) conflates three things: system prompt content, tool schemas, and API parameters.
+Track A reproduces the author's result, but under **different API parameters than CC CLI uses**. This means the A→B gap (63% → 25%) conflates two things: system prompt content and API parameters.
 
 Track A' isolates the parameter effect by running the exact same harness and system prompts as Track A, but with CC CLI's default parameters.
 
@@ -149,11 +149,11 @@ Model: `claude-sonnet-4-6`. Params: thinking ON (budget=4K), max_tokens=16384, t
 
 ### Verdict
 
-**Parameters matter, but aren't the main story.** Switching to CC-matched params (thinking ON, higher temp, more token headroom) reduces savings by ~12.6pp on average. Caveman still works — just less efficiently. The remaining ~50pp gap to Track B is explained by system prompt content, not params.
+**Parameters matter, but aren't the main story.** Switching to CC-matched params (thinking ON, higher temp, more token headroom) reduces savings by ~12.6pp on average. Caveman still works — just less efficiently. The remaining ~25pp gap to Track B is explained by system prompt content, not params.
 
-The A→B gap (63% → 0.7%) decomposes as:
-- **~20% of gap**: API parameters (A→A': −12.6pp)
-- **~80% of gap**: CC harness / system prompt (A'→B: −49.9pp)
+The A→B gap (63% → 25%) decomposes as:
+- **~33% of gap**: API parameters (A→A': −12.6pp)
+- **~67% of gap**: CC harness / system prompt (A'→B: −25.3pp)
 
 ### Status
 
@@ -170,92 +170,80 @@ Track B mirrors Track A's design with only the harness changed — `claude -p` s
 | Parameter | Value |
 |---|---|
 | Harness | `claude -p --output-format json` subprocess (parallel via `ThreadPoolExecutor`) |
-| Baseline condition | Full Claude Code context; Caveman plugin **disabled** via `{"enabledPlugins": {"caveman@caveman": false}}` |
-| Caveman condition | Full Claude Code context; Caveman plugin **enabled** (default) |
+| Baseline condition | Full CC context; Caveman plugin **explicitly disabled** via `{"enabledPlugins": {"caveman@caveman": false}}` |
+| Caveman condition | Full CC context; Caveman plugin **explicitly enabled** via `{"enabledPlugins": {"caveman@caveman": true}}` |
 | Config dir | `~/.claude-clean` (isolated — no user CLAUDE.md pollution) |
 | Model | `claude-sonnet-4-6` (matches Track A) |
-| Trials | 10 per prompt per mode |
+| Trials | 5 per prompt per mode |
 | Prompts | Same 10 as Track A (`data/prompts.json`) |
+
+**Validation:** Caveman injection verified by input token delta — caveman runs show ~1,000 more input tokens than baseline (17,088 vs 18,077), consistent with SKILL.md being prepended.
 
 ### Status
 
-- [x] `scripts/run_track_b.py` rewritten to use Track A's 10 prompts (was 3 custom prompts)
-- [x] Shared config extracted to `scripts/_config.py` (DRY between Track A and B)
-- [x] Stale 3-task data (300 runs, `explain_rerender` / `fix_auth_middleware` / `react_error_boundary`) discarded
-- [x] Rerun complete: n=10 × 10 prompts × 2 conditions = 200 runs
-- [x] Results table vs Track A (apples-to-apples) — see below
+- [x] `scripts/run_track_b.py` — Caveman explicitly enabled/disabled via `--settings` flag
+- [x] Run complete: n=5 × 10 prompts × 2 conditions = 100 runs
+- [x] Caveman injection verified via input token delta
 
-### Results (n=10 per condition per task, 200 runs total)
+**Note on prior invalid run:** An earlier Track B run (200 files, n=10) had a bug where the caveman condition passed no `--settings` flag, relying on the default config which did **not** have Caveman enabled. Both conditions had identical input token counts (17,914), confirming Caveman was never injected. That data was discarded and the run repeated with explicit plugin toggling.
 
-Model: `claude-sonnet-4-6`. Harness: `claude -p --output-format json`, isolated config dir (`~/.claude-clean`), Caveman toggled via `enabledPlugins`.
+### Results (n=5 per condition per task, 100 runs total)
 
-| Task | Base median | Caveman median | Saved (B) | Saved (A) | Δ B vs A |
-|------|------------:|---------------:|----------:|----------:|---------:|
-| async-refactor | 165 | 201 | −21.8% | 48.5% | −70.3pp |
-| auth-middleware-fix | 395 | 348 | +11.9% | 80.6% | −68.7pp |
-| docker-multi-stage | 402 | 394 | +1.9% | 81.4% | −79.5pp |
-| error-boundary | 543 | 762 | −40.3% | 72.0% | −112.3pp |
-| git-rebase-merge | 424 | 434 | −2.2% | 55.5% | −57.7pp |
-| microservices-monolith | 353 | 366 | −3.8% | 60.1% | −63.9pp |
-| postgres-pool | 502 | 448 | +10.9% | 65.4% | −54.6pp |
-| pr-security-review | 433 | 351 | **+19.0%** | 32.7% | −13.7pp |
-| race-condition-debug | 510 | 493 | +3.3% | 62.4% | −59.0pp |
-| react-rerender | 437 | 425 | +2.7% | 73.5% | −70.8pp |
-| **AVG of medians** | **476** | **422** | **−1.9%** | **63.2%** | **−65.1pp** |
+Model: `claude-sonnet-4-6`. Harness: `claude -p --output-format json`, isolated config dir (`~/.claude-clean`). Median-based savings used for robustness against outliers (n=5 is small; one `pr-security-review` caveman run hit 6,853 tokens from a tool-use loop).
+
+| Task | B saved (median) | B saved (mean) | A saved | Δ B vs A |
+|------|------------------:|---------------:|--------:|---------:|
+| auth-middleware-fix | +57.5% | −27.3%* | 78.8% | −21.3pp |
+| error-boundary | +45.3% | +21.4% | 70.3% | −25.0pp |
+| react-rerender | +43.4% | +44.1% | 72.8% | −29.4pp |
+| race-condition-debug | +32.2% | +39.2% | 65.4% | −33.2pp |
+| git-rebase-merge | +31.9% | +30.3% | 54.8% | −22.9pp |
+| async-refactor | +19.5% | +10.8% | 46.5% | −27.0pp |
+| microservices-monolith | +11.0% | +11.9% | 61.7% | −50.7pp |
+| docker-multi-stage | +11.0% | +7.2% | 79.7% | −68.7pp |
+| postgres-pool | +1.7% | +5.5% | 65.9% | −64.2pp |
+| pr-security-review | −0.4% | −224.9%* | 35.2% | −35.6pp |
+| **AVG of medians** | **+25.3%** | | **63.1%** | **−37.8pp** |
+
+*Mean distorted by single outlier runs. Median is the reliable measure at n=5.
 
 ### Verdict
 
-**Effect collapses.** Track A avg 63.2% → Track B avg −1.9%. On 4/10 tasks Caveman produces *more* output than baseline. Only `pr-security-review` retains meaningful positive savings (+19%).
+**Caveman still works in CC, but at roughly half its isolated effectiveness.** Median savings average +25.3% across 10 tasks, down from 63.1% in Track A. 9 of 10 tasks show positive median savings. Only `pr-security-review` is essentially flat (−0.4%).
 
-This is a stronger portfolio story than "Caveman works" — author's claim is methodology-dependent, not harness-invariant.
+The effect is real but diminished. The author's headline of 65–76% savings is inflated by both artificial API parameters (~13pp) and the absence of CC's system prompt context (~25pp).
 
 ### Key finding: baselines already compressed in CC harness
 
 Per-task, Track B baseline output is systematically shorter than Track A baseline output (same prompt, same model, only harness differs).
 
-| Task | A baseline median | B baseline median | B_base shorter by | Caveman B saved |
-|---|--:|--:|--:|--:|
-| error-boundary | 3777 | 543 | 85.6% | −40.3% |
-| docker-multi-stage | 2450 | 402 | 83.6% | +1.9% |
-| microservices-monolith | 1452 | 353 | 75.7% | −3.8% |
-| postgres-pool | 1985 | 502 | 74.7% | +10.9% |
-| async-refactor | 567 | 165 | 70.9% | −21.8% |
-| race-condition-debug | 1400 | 510 | 63.6% | +3.3% |
-| auth-middleware-fix | 1082 | 395 | 63.5% | +11.9% |
-| git-rebase-merge | 927 | 424 | 54.3% | −2.2% |
-| react-rerender | 872 | 437 | 50.0% | +2.7% |
-| pr-security-review | 853 | 433 | 49.3% | **+19.0%** |
+| Task | A baseline mean | B baseline mean | B_base shorter by |
+|---|--:|--:|--:|
+| docker-multi-stage | 2,445 | 484 | 80.2% |
+| microservices-monolith | 1,486 | 512 | 65.6% |
+| postgres-pool | 1,998 | 699 | 65.0% |
+| race-condition-debug | 1,421 | 612 | 56.9% |
+| async-refactor | 563 | 250 | 55.5% |
+| auth-middleware-fix | 1,086 | 491 | 54.8% |
+| react-rerender | 870 | 483 | 44.4% |
+| git-rebase-merge | 921 | 587 | 36.2% |
+| pr-security-review | 860 | 569 | 33.9% |
+| error-boundary | 3,785 | 2,585 | 31.7% |
 
-The tasks CC shortens most (error-boundary, docker-multi-stage) are where Caveman's Track B effect is smallest or most negative. The task CC shortens least (pr-security-review) is where Caveman retains the most headroom.
+CC's own system prompt already compresses responses by 32–80% before Caveman does anything. This consumes much of the headroom Caveman depends on.
 
-### Working hypothesis
+### Variance and outliers
 
-**Caveman and CC both push toward terse responses. Their effects do not stack — they overlap.** Whatever in CC's ~18k-token harness context shortens responses (instructions, framing, tool definitions — cause unknown) already consumes most of the compression headroom Caveman would exploit.
+With n=5, individual runs can swing results substantially:
+- `auth-middleware-fix`: median +57.5%, mean −27.3% (one caveman run produced ~3x more tokens)
+- `pr-security-review`: one caveman run hit 6,853 tokens (vs ~400–600 typical) — likely a tool-use loop
+- `error-boundary`: high variance in both conditions (baseline range 1,225–3,331; caveman range 350–3,411)
 
-- Where CC shortens hard (code-heavy tasks) → Caveman adds nothing or interferes
-- Where CC shortens less (review/explanation prose) → Caveman still has room, but far less than Track A
-
-**Category hypothesis — partial support:**
-
-In Track A, code-heavy tasks (devops, bugfix, implementation) were highest savers (72–81%). I initially framed this as "Caveman wins on code-heavy tasks." Track B reveals a subtler mechanism: Caveman wins on code-heavy tasks *when nothing else is compressing them*. In CC's harness, the baseline already strips the framing Caveman would have stripped. Low savers in Track A (code-review, refactor) remain low in B, but for a different reason: those tasks need qualifying prose regardless of harness.
-
-### Open questions for Track C
-
-1. **Does the curve smooth from 67% → −2% as context pads from ~30 tok to ~18k?** Track C Leg 1 (API, padded) answers this.
-2. **Is the mechanism token volume or content shape?** If `API @ 18k filler prose` ≠ `CLI @ 18k native` at the Leg overlap point, CC's content does something filler doesn't. Volume alone wouldn't explain it.
-3. **Does `pr-security-review` retain its edge across all Track C context levels, or is that a spurious Track B anomaly?**
-
-### Stale Track B data (discarded)
-
-Previous Track B used 3 custom coding prompts that didn't match Track A. Results summary retained here as a footnote:
-
-> n=50 per cell, 300 runs total. No task reached statistical significance on output tokens (p<0.05). Effect size <2% across all cases, inconsistent direction. Mean output deltas: `explain_rerender` +7 tok (+0.6%), `fix_auth_middleware` −72 tok (−6.6%), `react_error_boundary` +8 tok (+1.3%).
-
-Conclusion: no detectable compression, but task mix wasn't shared with Track A so direct comparison impossible. Rerun uses Track A's 10 prompts for clean attribution.
+These outliers suggest CC's multi-turn tool-use behavior introduces variance not present in the single-turn API tracks.
 
 ## Track C: Context-size sweep (10-chunk shuffle experiment)
 
-Track A shows 67% savings at ~6 tok baseline system. Track B shows −1.9% at ~18K. Track C fills the curve between to answer: **is the collapse caused by token volume (dilution) or specific CC content (interference)?**
+Track A shows 63% savings at ~6 tok baseline system. Track B shows +25% at ~18K. Track C fills the curve between to answer: **where does the degradation happen — gradually (dilution) or at a specific content boundary (interference)?**
 
 ### Hypotheses
 
@@ -312,7 +300,7 @@ Model: `claude-sonnet-4-6`. Params: thinking ON (budget=4K), max_tokens=16384, t
 | **L3** | +6 tool chunks (~11.9K) | 13.9% | 38.5% | 17.8% |
 | **L4** | +8 tool chunks (~14.7K) | 15.0% | 31.1% | 2.5% |
 | **L5** | +10 tool chunks (~17.5K) | 19.2% | 31.2% | 22.8% |
-| **B** (CC CLI actual) | ~18K | −5.6% | −33.8% | 17.4% |
+| **B** (CC CLI actual) | ~18K | +19.5% | +45.3% | −0.4% |
 
 ### Verdict
 
@@ -325,7 +313,7 @@ Adding tool-definition chunks (L0→L5) does **not** consistently degrade saving
 
 **The interference hypothesis is supported over dilution.** It's not token volume that kills Caveman — it's specifically CC's behavioral instructions (tone, style, output efficiency) that already instruct Claude to be concise. Caveman is redundantly issuing a compression directive to a model already told to compress.
 
-The remaining gap between C-L5 and B for some tasks (e.g., `error-boundary`: +31% vs −34%) suggests additional CC harness effects beyond system prompt text — possibly plugin/context structure.
+Track C levels (9–32% savings) and Track B medians (+25.3%) are now broadly consistent — Caveman retains partial effectiveness when CC system prompt content is present. The behavioral block accounts for the largest single drop; tool definitions and the full CC harness add incremental noise but not a systematic further reduction.
 
 ### Status
 
@@ -341,12 +329,12 @@ The remaining gap between C-L5 and B for some tasks (e.g., `error-boundary`: +31
 | Author | API direct | `"You are a helpful assistant."` | temp=0, max=4096, no thinking | 3 | 75.8% |
 | A (ours) | API direct | `"You are a helpful assistant."` | temp=0, max=4096, no thinking | 10 | **63.1%** |
 | A' (ours) | API direct | `"You are a helpful assistant."` | temp=1.0, max=16384, thinking ON (4K) | 5 | **50.6%** |
-| B (ours) | CC CLI | Full CC context (~18k tok) | CC defaults (≈A' params) | 10 | **−1.9%** |
+| B (ours) | CC CLI | Full CC context (~18k tok) | CC defaults (≈A' params) | 5 | **+25.3%** (median) |
 | C (ours) | API direct | CC system prompt, incremental | temp=1.0, max=16384, thinking ON (4K) | 5 orderings | **9–32% (flat across levels)** |
 
-**Gap decomposition (A→B, −63pp total):**
-- Parameters (A→A'): −12.6pp (~20%)
-- CC system prompt / harness (A'→B): −49.9pp (~80%)
+**Gap decomposition (A→B, ~38pp total):**
+- Parameters (A→A'): −12.6pp (~33%)
+- CC system prompt / harness (A'→B): −25.3pp (~67%)
 - Behavioral block alone (A'→C-L0): ~−30pp on average; tool defs add negligible further degradation
 
 ## Scripts
@@ -364,7 +352,7 @@ The remaining gap between C-L5 and B for some tasks (e.g., `error-boundary`: +31
 - `data/cc_slices/` — CC system prompt decomposition (behavioral block + 10 tool-def chunks)
 - `outputs/runs/track_a/` — Track A runs (200 files)
 - `outputs/runs/track_a_prime/` — Track A' CC-matched parameter runs
-- `outputs/runs/track_b/` — Track B CLI runs (200 files)
+- `outputs/runs/track_b/` — Track B CLI runs (100 files, rerun with verified Caveman injection)
 - `outputs/runs/track_c/` — Track C context sweep
 - `outputs/results.csv` — flattened, track-tagged, regenerates via `parse_results.py`
 - `outputs/` — gitignored
@@ -375,38 +363,53 @@ The remaining gap between C-L5 and B for some tasks (e.g., `error-boundary`: +31
 
 ### The claim
 
-Caveman is a Claude Code plugin that promises 15–87% output token savings by prepending a short compression instruction to every prompt. The author's benchmark reproduces this — across 10 coding tasks, a minimal "You are a helpful assistant" baseline averages 76% more output than the Caveman condition.
+Caveman is a Claude Code plugin that promises 15–87% output token savings by prepending a short compression instruction to every prompt. The author's benchmark backs this up — across 10 coding tasks, a minimal "You are a helpful assistant" baseline averages 76% more output than the Caveman condition.
 
 ### What the benchmark hides
 
-The author's benchmark runs the Anthropic API directly with artificial parameters: temperature=0, max_tokens=4096, and no extended thinking. These aren't Claude Code's defaults. In practice, Claude Code runs with temperature=1.0, max_tokens=16384, and extended thinking enabled. The benchmark was never tested in the environment it claims to improve.
+The author's benchmark runs the Anthropic API directly with artificial parameters: temperature=0, max_tokens=4096, and no extended thinking. These aren't Claude Code's defaults. In practice, Claude Code runs with temperature=1.0, max_tokens=16384, and extended thinking enabled. The benchmark was never tested under the conditions of the environment it claims to improve.
 
-### Replication: the numbers hold — under those same artificial conditions
+### Track A: replication — the numbers hold, in isolation
 
-We ran the author's exact methodology on 10 tasks, scaled up to n=10 per condition for robustness. Result: 63.1% average savings. Direction consistent on all 10 tasks. The claim reproduces.
+We ran the author's exact methodology on 10 tasks, scaled up to n=10 per condition. Result: 63.1% average savings. Direction consistent on all 10 tasks. The claim reproduces.
 
 ### Track A': what happens with real CC parameters?
 
-We reran the same experiment — same minimal system prompt, same tasks — but with CC-matched API parameters. Savings dropped from 63.1% to 50.6%. Parameters explain about 12.6 percentage points, or 20% of the total gap between the author's headline and real-world usage. Still a meaningful effect, but inflated.
+Same minimal system prompt, same tasks — but with CC-matched API parameters (thinking enabled, temp=1.0, max_tokens=16384). Savings dropped from 63.1% to 50.6%. The author's artificial params inflate results by about 12.6 percentage points, or a third of the total gap to real-world usage.
 
-### Track B: the real world
+### Track B: the real CC environment
 
-We ran both conditions through the actual Claude Code CLI (`claude -p`), with Caveman toggled via its plugin system. Result: −1.9% average savings. On 6 of 10 tasks, Caveman produces *more* output than the baseline. The effect doesn't just shrink — it reverses.
+We ran both conditions through the actual Claude Code CLI, toggling Caveman via `--settings '{"enabledPlugins": {"caveman@caveman": true/false}}'`. We verified Caveman was active by checking input token counts (~1,000 token delta, matching SKILL.md size).
 
-The key observation: Claude Code's baseline is already compressed. Where the API baseline for `error-boundary` averages 3,785 tokens, the CC baseline averages only 543 — an 85% reduction before Caveman does anything. The compression headroom Caveman depends on has already been consumed.
+Result: **+25.3% median savings** — down from 63% in Track A, but still meaningful. 9 of 10 tasks show positive median compression. The effect is real in CC, but roughly halved.
 
-### Track C: what's doing the compressing?
+Two important caveats at n=5: variance is high, and outlier runs from multi-turn tool-use loops can distort means dramatically (one `pr-security-review` run hit 6,853 tokens when the typical range is 400–600). Medians are the reliable measure here.
 
-We decomposed CC's ~18K system prompt into a behavioral block (~3,500 tokens of identity, coding philosophy, tone, style, and output efficiency rules) and 10 tool-definition chunks (~1,400 tokens each). We then progressively added content and measured Caveman's effect at each level.
+CC's baseline is also already compressed: the same prompts produce 32–80% fewer tokens through `claude -p` than through the raw API. CC's system prompt already does much of what Caveman tries to do.
 
-The collapse is immediate. Adding just the behavioral block drops savings from ~51% (A', no CC content) to 9–20% (L0, behavioral only). Adding tool definitions (L1–L5) changes nothing meaningful — the curve is flat.
+### Track C: where does the degradation happen?
 
-**Dilution is not the culprit. Interference is.** CC's behavioral instructions already tell Claude to be concise, terse, and efficient. Caveman is issuing a redundant instruction to a model that's already been told to compress. The tool definitions — the bulk of CC's 18K context — are irrelevant to the effect.
+We decomposed CC's ~18K system prompt into a behavioral block (~3,500 tokens of identity, coding philosophy, tone, and output efficiency rules) and 10 tool-definition chunks (~1,400 tokens each). We progressively added content and measured Caveman's savings at each level.
 
-### The one exception
+The degradation is immediate and front-loaded. Adding just the behavioral block drops savings from ~51% (A', no CC content) to 9–20% (L0). Adding tool definitions (L1→L5) does not reduce savings further — the curve is flat.
 
-`pr-security-review` retains modest positive savings across Track B (+17%) and Track C. This task requires structured, qualifying prose that neither Caveman nor CC's behavioral block fully suppresses. It may represent a category where compression instructions genuinely add value even inside CC — but it's one task out of ten.
+This is interference, not dilution. CC's behavioral instructions already tell Claude to be concise. Caveman's compression directive is partially redundant. The tool definitions — which make up the bulk of CC's 18K system prompt — are irrelevant to the compression effect.
+
+### The full picture
+
+| Track | System context | Savings |
+|-------|---------------|--------:|
+| Author | Minimal prompt, artificial params | 76% |
+| A (ours) | Minimal prompt, artificial params | 63% |
+| A' | Minimal prompt, CC-matched params | 51% |
+| C L0 | CC behavioral block, CC params | 9–20% |
+| C L5 | Full CC system prompt, CC params | 19–31% |
+| B | Full CC CLI (actual) | 25% (median) |
+
+The degradation curve: 63% → 51% → ~15% → ~25%. The biggest single drop is from the minimal prompt to CC's behavioral block (A' → C-L0). API parameters account for ~13pp. Tool definitions account for nothing. The remaining gap between C-L5 and Track B is noise, not a systematic effect.
 
 ### Takeaway
 
-Caveman's 15–87% claim is real, but it was measured in a vacuum. Under the actual CC environment it was built for — matching API parameters and with CC's system prompt present — the effect collapses. The reason isn't token volume or tool schemas. It's that Claude Code already applies the compression Caveman is trying to add. The plugin is solving a problem CC's own instructions have already solved.
+Caveman works. The author's 65–76% claim reproduces in isolation and the effect is real. But the headline number is inflated by about 38 percentage points through a combination of artificial API parameters (~13pp) and the absence of CC's own system prompt (~25pp). In practice, inside Claude Code, Caveman saves roughly 25% of output tokens — a useful but more modest effect than advertised.
+
+The mechanism is straightforward: CC's behavioral instructions already push Claude toward concise output. Caveman adds a stronger compression signal, but it's partially redundant. The more CC has already compressed the baseline, the less room Caveman has to work with.
