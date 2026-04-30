@@ -1,27 +1,284 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { Image } from 'astro:assets';
+import headshot from '../assets/headshot.jpeg';
 import { useTranslations } from '../i18n/utils';
 
 const t = useTranslations('en');
-const skills = ['TypeScript', 'Python', 'React', 'Node.js', 'SQL', 'Docker'];
+
+const skills = [
+  { category: 'Languages', items: ['TypeScript', 'Python', 'SQL'] },
+  { category: 'Frameworks', items: ['React', 'Node.js', 'FastAPI'] },
+  { category: 'Infrastructure', items: ['Docker', 'PostgreSQL', 'Supabase'] },
+];
+
+const interests = ['Sabermetrics', 'Baseball analytics', 'Product design', 'Writing'];
 ---
 
-<BaseLayout title={`${t('about.title')} — Yung-Tang Chou`} description="A bit about me.">
-  <h1 class="text-3xl font-bold text-gray-900 tracking-tight mb-8">{t('about.title')}</h1>
+<BaseLayout title={`${t('about.title')} — Patrick`} description="A bit about me.">
+  <!-- Page header with inline headshot -->
+  <div class="about-hero mb-12">
+    <div class="eyebrow">About</div>
+    <div class="about-hero-body">
+      <div class="about-hero-text">
+        <h1 class="font-display text-5xl font-bold text-[#2C2825] tracking-tight mt-1 mb-4" style="line-height: 1.05;">Patrick</h1>
+        <p class="about-lead">
+          Data scientist based in Taipei, Taiwan. I work at the intersection of data,
+          software, and product — building tools that help people make better decisions.
+        </p>
+        <p class="about-lead">
+          Alum of UPenn and NTU. I spend my off-hours thinking about baseball, writing,
+          and the craft of making things that matter.
+        </p>
+      </div>
+      <div class="about-headshot-wrap">
+        <Image
+          src={headshot}
+          alt="Patrick"
+          width={120}
+          height={120}
+          class="about-headshot"
+        />
+      </div>
+    </div>
+  </div>
 
-  <section class="mb-10 space-y-4 text-gray-600 leading-relaxed">
+  <!-- Divider label -->
+  <div class="section-label mb-6">
+    <span>Background</span>
+  </div>
+
+  <!-- Longer bio section -->
+  <section class="about-bio mb-12">
     <p>
-      I'm a data scientist based in Taipei, Taiwan. I work on [what you do].
-      Alum at UPenn and NTU. I care about [values/interests].
+      I started my career in quantitative research, which gave me a deep appreciation for
+      data quality and the cost of bad assumptions. Over time I drifted toward building the
+      tools that produce the data in the first place — APIs, pipelines, and the dashboards
+      people actually use.
+    </p>
+    <p>
+      I care about clean interfaces, honest metrics, and code that's easy to delete. The
+      best systems I've worked on were the ones nobody had to think about.
+    </p>
+    <p>
+      Outside of work I'm a serious baseball fan with a side interest in sabermetrics.
+      I write here occasionally — mostly to think things through, not to perform expertise.
     </p>
   </section>
 
-  <section>
-    <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Skills</h2>
-    <ul class="flex flex-wrap gap-2 list-none p-0 m-0">
-      {skills.map(skill => (
-        <li class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full">{skill}</li>
-      ))}
-    </ul>
+  <!-- Skills -->
+  <div class="section-label mb-6">
+    <span>Stack</span>
+  </div>
+
+  <section class="skills-grid mb-12">
+    {skills.map(group => (
+      <div class="skill-group">
+        <h3 class="skill-category">{group.category}</h3>
+        <ul class="skill-list">
+          {group.items.map(s => <li class="skill-tag">{s}</li>)}
+        </ul>
+      </div>
+    ))}
+  </section>
+
+  <!-- Interests -->
+  <div class="section-label mb-6">
+    <span>Outside work</span>
+  </div>
+
+  <section class="interests-row mb-12">
+    {interests.map(interest => (
+      <span class="interest-chip">{interest}</span>
+    ))}
+  </section>
+
+  <!-- Elsewhere -->
+  <div class="section-label mb-6">
+    <span>Elsewhere</span>
+  </div>
+
+  <section class="elsewhere-list">
+    <a href="mailto:patrick.ytchou@gmail.com" class="elsewhere-link no-underline">
+      <span class="elsewhere-label">Email</span>
+      <span class="elsewhere-value">patrick.ytchou@gmail.com ↗</span>
+    </a>
+    <a href="https://github.com/ytchou" target="_blank" rel="noopener noreferrer" class="elsewhere-link no-underline">
+      <span class="elsewhere-label">GitHub</span>
+      <span class="elsewhere-value">github.com/ytchou ↗</span>
+    </a>
+    <a href="https://linkedin.com/in/ytchou" target="_blank" rel="noopener noreferrer" class="elsewhere-link no-underline">
+      <span class="elsewhere-label">LinkedIn</span>
+      <span class="elsewhere-value">linkedin.com/in/ytchou ↗</span>
+    </a>
   </section>
 </BaseLayout>
+
+<style>
+  .eyebrow {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .about-hero {
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 2.5rem;
+  }
+
+  .about-hero-body {
+    display: flex;
+    align-items: flex-start;
+    gap: 2rem;
+    justify-content: space-between;
+  }
+
+  .about-hero-text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .about-headshot-wrap {
+    flex-shrink: 0;
+  }
+
+  .about-headshot {
+    width: 96px;
+    height: 96px;
+    border-radius: var(--radius-card);
+    object-fit: cover;
+    object-position: top;
+    border: 1px solid var(--color-border);
+  }
+
+  .about-lead {
+    color: var(--color-text-secondary);
+    line-height: 1.75;
+    margin: 0 0 0.9rem;
+    font-size: 1rem;
+  }
+
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .section-label span {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+    white-space: nowrap;
+  }
+  .section-label::after {
+    content: '';
+    display: block;
+    flex: 1;
+    height: 1px;
+    background: var(--color-border);
+  }
+
+  /* Bio */
+  .about-bio p {
+    color: var(--color-text-secondary);
+    line-height: 1.8;
+    margin: 0 0 1.1rem;
+    font-size: 0.95rem;
+  }
+  .about-bio p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Skills */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .skill-category {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+    margin: 0 0 0.6rem;
+  }
+
+  .skill-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .skill-tag {
+    font-size: 0.82rem;
+    color: var(--color-text);
+    padding: 0.3em 0.75em;
+    background: var(--color-surface-tag);
+    border-radius: 999px;
+    display: inline-block;
+    width: fit-content;
+  }
+
+  /* Interests */
+  .interests-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .interest-chip {
+    font-size: 0.8125rem;
+    color: var(--color-accent);
+    padding: 0.4em 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: transparent;
+  }
+
+  /* Elsewhere */
+  .elsewhere-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .elsewhere-link {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--color-border);
+    gap: 1rem;
+    transition: color var(--transition-base);
+  }
+  .elsewhere-link:last-child {
+    border-bottom: none;
+  }
+  .elsewhere-link:hover .elsewhere-value {
+    color: var(--color-accent-hover);
+  }
+
+  .elsewhere-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+    width: 64px;
+    flex-shrink: 0;
+  }
+
+  .elsewhere-value {
+    font-size: 0.875rem;
+    color: var(--color-accent);
+    transition: color var(--transition-base);
+  }
+</style>

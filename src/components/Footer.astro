@@ -1,15 +1,46 @@
 ---
 import { getLangFromUrl, useTranslations } from '../i18n/utils';
+import { contactLinks } from '../data/contact';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const year = new Date().getFullYear();
 const rights = t('footer.rights').replace('{year}', String(year));
+
+const socialLinks = contactLinks.filter(
+  l => l.labelKey === 'contact.link.github' || l.labelKey === 'contact.link.linkedin'
+);
 ---
 
-<footer class="border-t border-gray-100 mt-20">
-  <div class="max-w-[720px] mx-auto px-6 py-8 flex items-center justify-between">
-    <p class="text-sm text-gray-400">{rights}</p>
-    <p class="text-sm text-gray-400">Yung-Tang Chou · 周永堂</p>
+<footer style="background: var(--color-text); margin-top: 5rem;">
+  <div class="max-w-[720px] mx-auto px-6 py-7 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <p class="footer-copy">{rights}</p>
+    <div class="flex items-center gap-5">
+      {socialLinks.map(link => (
+        <a
+          href={link.href}
+          target={link.external ? '_blank' : undefined}
+          rel={link.external ? 'noopener noreferrer' : undefined}
+          class="footer-link"
+        >
+          {link.display}
+        </a>
+      ))}
+    </div>
   </div>
 </footer>
+
+<style>
+  .footer-copy {
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+    margin: 0;
+  }
+  .footer-link {
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+    text-decoration: none;
+    transition: color var(--transition-base);
+  }
+  .footer-link:hover { color: var(--color-bg); }
+</style>
