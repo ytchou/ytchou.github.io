@@ -12,8 +12,8 @@ const socialLinks = contactLinks.filter(
 );
 ---
 
-<footer style="background: var(--color-text); margin-top: 5rem;">
-  <div class="max-w-[1024px] mx-auto px-6 py-7 flex flex-col sm:flex-row items-center justify-between gap-4">
+<footer style="border-top: 1px solid var(--color-border); margin-top: 2rem;">
+  <div class="max-w-[1152px] mx-auto px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
     <p class="footer-copy">{rights}</p>
     <div class="flex items-center gap-5">
       {socialLinks.map(link => (
@@ -42,5 +42,5 @@ const socialLinks = contactLinks.filter(
     text-decoration: none;
     transition: color var(--transition-base);
   }
-  .footer-link:hover { color: var(--color-bg); }
+  .footer-link:hover { color: var(--color-text); }
 </style>

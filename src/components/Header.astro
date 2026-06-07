@@ -7,28 +7,105 @@ const altLangUrl = getAlternateLangUrl(Astro.url, lang === 'en' ? 'zh' : 'en');
 const base = lang === 'zh' ? '/zh' : '';
 ---
 
-<header class="sticky top-0 z-10 border-b" style="background: rgba(245,242,238,0.95); backdrop-filter: blur(4px); border-color: var(--color-border);">
-  <nav class="max-w-[1024px] mx-auto px-6 py-4 flex items-center justify-between">
+<header class="sticky top-0 z-10 border-b" style="background: color-mix(in srgb, var(--color-bg) 97%, transparent); backdrop-filter: blur(8px); border-color: var(--color-border);">
+  <nav class="max-w-[1152px] mx-auto px-8 py-4 flex items-center justify-between gap-6">
     <a href={`${base}/`} class="nav-logo font-display">
       {t('nav.home')}
     </a>
-    <a href={altLangUrl} class="lang-toggle">
-      {t('nav.lang-toggle')}
-    </a>
+
+    <div class="flex items-center gap-1 sm:gap-4">
+      <!-- Section anchor links (hidden on very small screens) -->
+      <div class="hidden sm:flex items-center gap-4">
+        <a href={`${base}/#journey`} class="nav-link">{t('nav.journey')}</a>
+        <a href={`${base}/#writing`} class="nav-link">{t('nav.writing')}</a>
+        <a href={`${base}/#building`} class="nav-link">{t('nav.building')}</a>
+        <a href={`${base}/#about`} class="nav-link">{t('nav.about')}</a>
+        <a href={`${base}/#contact`} class="nav-link">{t('nav.contact')}</a>
+      </div>
+
+      <!-- Dark mode toggle -->
+      <button id="theme-toggle" aria-label="Toggle dark mode" class="theme-btn">
+        <span class="icon-sun">&#x2600;</span>
+        <span class="icon-moon">&#x263E;</span>
+      </button>
+
+      <!-- Lang toggle -->
+      <a href={altLangUrl} class="lang-toggle">
+        {t('nav.lang-toggle')}
+      </a>
+    </div>
   </nav>
 </header>
+
+<script>
+  const toggle = document.getElementById('theme-toggle');
+  const html = document.documentElement;
+
+  function getTheme() {
+    return html.getAttribute('data-theme') ||
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  }
+
+  function setTheme(theme: string) {
+    html.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }
+
+  toggle?.addEventListener('click', () => {
+    setTheme(getTheme() === 'dark' ? 'light' : 'dark');
+  });
+</script>
 
 <style>
   .nav-logo {
     font-size: 17px;
-    font-weight: 500;
+    font-weight: 600;
     color: var(--color-text);
     text-decoration: none;
+    flex-shrink: 0;
+    transition: opacity var(--transition-base);
+  }
+  .nav-logo:hover { opacity: 0.6; }
+
+  .nav-link {
+    font-size: 0.875rem;
+    color: var(--color-muted);
+    text-decoration: none;
     transition: color var(--transition-base);
+    white-space: nowrap;
   }
-  .nav-logo:hover {
-    color: var(--color-accent);
+  .nav-link:hover { color: var(--color-text); }
+
+  .theme-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--color-border);
+    background: transparent;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--color-muted);
+    transition: border-color var(--transition-base), color var(--transition-base);
+    flex-shrink: 0;
   }
+  .theme-btn:hover {
+    border-color: var(--color-border-hover);
+    color: var(--color-text);
+  }
+
+  /* Show sun in dark mode, moon in light mode */
+  :global([data-theme="light"]) .icon-moon { display: none; }
+  :global([data-theme="light"]) .icon-sun { display: inline; }
+  :global([data-theme="dark"]) .icon-sun { display: none; }
+  :global([data-theme="dark"]) .icon-moon { display: inline; }
+
+  /* Default fallback (before JS runs) — hide moon, show sun */
+  :global(:root:not([data-theme])) .icon-moon { display: none; }
+  :global(:root:not([data-theme])) .icon-sun { display: inline; }
+
   .lang-toggle {
     font-size: 0.75rem;
     font-weight: 500;
@@ -38,9 +115,10 @@ const base = lang === 'zh' ? '/zh' : '';
     color: var(--color-muted);
     text-decoration: none;
     transition: border-color var(--transition-base), color var(--transition-base);
+    white-space: nowrap;
   }
   .lang-toggle:hover {
-    border-color: var(--color-accent);
-    color: var(--color-accent);
+    border-color: var(--color-border-hover);
+    color: var(--color-text);
   }
 </style>

@@ -36,3 +36,10 @@ export function getAlternateLangUrl(url: URL, lang: Lang): string {
   }
   return isZhPath ? path.slice(3) || '/' : path;
 }
+
+/** Estimate reading time in minutes from raw markdown content. */
+export function getReadingTime(content: string | undefined): number {
+  if (!content) return 1;
+  const words = content.trim().split(/\s+/).length;
+  return Math.max(1, Math.round(words / 200));
+}

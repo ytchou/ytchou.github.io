@@ -10,25 +10,9 @@ interface Props {
 const { project, lang = 'en' } = Astro.props;
 const t = useTranslations(lang);
 
-// Derive a deterministic accent color from the project title for the visual strip
-const palette = [
-  { bg: '#E8DDD4', stripe: '#C4B4A0' },
-  { bg: '#D9E3DC', stripe: '#B0C4B8' },
-  { bg: '#DDD8E8', stripe: '#B8B0C8' },
-  { bg: '#E8DDD9', stripe: '#C4B0A8' },
-  { bg: '#E3E0D9', stripe: '#C0BAB0' },
-];
-const colorIdx = project.title.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) % palette.length;
-const color = palette[colorIdx];
 ---
 
 <article class="project-card group flex flex-col">
-  <!-- Visual image region -->
-  <div class="card-visual" style={`background-color: ${color.bg};`}>
-    <div class="card-visual-stripe" style={`background-color: ${color.stripe};`}></div>
-    <div class="card-visual-dot" style={`background-color: ${color.stripe};`}></div>
-  </div>
-
   <div class="flex flex-col gap-3 flex-1 p-5">
     <h3 class="project-title font-semibold mt-0 transition-colors">{project.title}</h3>
     <p class="project-desc text-sm leading-relaxed flex-1">{project.description}</p>
@@ -54,49 +38,26 @@ const color = palette[colorIdx];
 
 <style>
   .project-card {
+    background: transparent;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-card);
     box-shadow: var(--shadow-card);
     overflow: hidden;
-    transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
+    transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base), background var(--transition-base);
   }
   .project-card:hover {
+    background: var(--color-surface);
     border-color: var(--color-border-hover);
     box-shadow: var(--shadow-card-hover);
     transform: translateY(-3px);
   }
-  .card-visual {
-    position: relative;
-    height: 88px;
-    overflow: hidden;
-    flex-shrink: 0;
-  }
-  .card-visual-stripe {
-    position: absolute;
-    top: 18px;
-    left: -10%;
-    width: 120%;
-    height: 28px;
-    opacity: 0.55;
-    transform: rotate(-4deg);
-    border-radius: 4px;
-  }
-  .card-visual-dot {
-    position: absolute;
-    bottom: 12px;
-    right: 16px;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    opacity: 0.4;
-  }
-  .project-title { color: var(--color-text); }
-  .project-card:hover .project-title { color: var(--color-accent); }
+  .project-title { color: var(--color-text); transition: opacity var(--transition-base); }
+  .project-card:hover .project-title { opacity: 0.7; }
   .project-desc { color: var(--color-text-muted); }
   .project-tag {
     background-color: var(--color-surface-tag);
     color: var(--color-tag-text);
   }
-  .project-link { color: var(--color-text-muted); }
-  .project-link:hover { color: var(--color-accent); }
+  .project-link { color: var(--color-text-muted); transition: color var(--transition-base); }
+  .project-link:hover { color: var(--color-text); }
 </style>

@@ -1,53 +1,112 @@
 @import "tailwindcss";
 @import "@fontsource-variable/inter";
-@import "@fontsource-variable/playfair-display";
 
-@theme {
-  /* Brand colors */
-  --color-bg: #F5F2EE;
-  --color-text: #2C2825;
-  --color-accent: #6B5B47;
-  --color-accent-hover: #5A4A3A;
-  --color-muted: #8C8078;
+/* ─── Light mode (default) ──────────────────────────────── */
+:root {
+  --color-bg:           #F8F7F4;
+  --color-text:         #18181B;
+  --color-muted:        #71717A;
+  --color-border:       #E4E4E7;
+  --color-border-hover: #D4D4D8;
+  --color-surface:      #F4F4F5;
+  --color-surface-tag:  #F4F4F5;
+  --color-tag-text:     #3F3F46;
+  --color-accent:       #6B7F3A;
+  --color-accent-soft:  #A3B86C;
+  --color-accent-hover: #27272A;
+  --color-border-strong: #D4D4D8;
+  --color-text-secondary: #52525B;
+  --color-text-muted:   #71717A;
+  --color-text-subtle:  #A1A1AA;
 
-  /* Borders */
-  --color-border: #E2DBD3;
-  --color-border-hover: #C4B8AA;
+  --font-sans:    'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
 
-  /* Surfaces */
-  --color-surface: #EDE8E3;
-  --color-surface-tag: #EDEBE8;
-  --color-tag-text: #6B6057;
+  --shadow-card:       0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.04);
+  --shadow-card-hover: 0 4px 12px 0 rgb(0 0 0 / 0.10), 0 2px 4px -1px rgb(0 0 0 / 0.06);
 
-  /* Text scale */
-  --color-text-secondary: #6B6057;
-  --color-text-muted: #8C8078;
-  --color-text-subtle: #A09088;
-
-  /* Fonts */
-  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
-  --font-display: 'Playfair Display Variable', Georgia, serif;
-
-  /* Shadows */
-  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.04), 0 1px 2px -1px rgb(0 0 0 / 0.04);
-  --shadow-card-hover: 0 4px 12px 0 rgb(0 0 0 / 0.08), 0 2px 4px -1px rgb(0 0 0 / 0.04);
-
-  /* Radii */
-  --radius-card: 12px;
-  --radius-sm: 6px;
-  --radius-tag: 999px;
-
-  /* Transitions */
+  --radius-card: 10px;
+  --radius-sm:   6px;
+  --radius-tag:  999px;
   --transition-base: 200ms ease;
+}
+
+/* ─── Dark mode ─────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg:           #0F0F0F;
+    --color-text:         #F5F5F5;
+    --color-muted:        #9CA3AF;
+    --color-border:       #262626;
+    --color-border-hover: #404040;
+    --color-surface:      #1A1A1A;
+    --color-surface-tag:  #1F1F1F;
+    --color-tag-text:     #9CA3AF;
+    --color-accent:       #A3B86C;
+    --color-accent-soft:  #C5D89D;
+    --color-accent-hover: #D1D5DB;
+    --color-border-strong: rgba(255, 255, 255, 0.15);
+    --color-text-secondary: #A1A1AA;
+    --color-text-muted:   #9CA3AF;
+    --color-text-subtle:  #6B7280;
+
+    --shadow-card:       0 1px 3px 0 rgb(0 0 0 / 0.3);
+    --shadow-card-hover: 0 4px 12px 0 rgb(0 0 0 / 0.4);
+  }
+}
+
+[data-theme="dark"] {
+  --color-bg:           #0F0F0F;
+  --color-text:         #F5F5F5;
+  --color-muted:        #9CA3AF;
+  --color-border:       #262626;
+  --color-border-hover: #404040;
+  --color-surface:      #1A1A1A;
+  --color-surface-tag:  #1F1F1F;
+  --color-tag-text:     #9CA3AF;
+  --color-accent:       #A3B86C;
+  --color-accent-soft:  #C5D89D;
+  --color-accent-hover: #D1D5DB;
+  --color-border-strong: rgba(255, 255, 255, 0.15);
+  --color-text-secondary: #A1A1AA;
+  --color-text-muted:   #9CA3AF;
+  --color-text-subtle:  #6B7280;
+
+  --shadow-card:       0 1px 3px 0 rgb(0 0 0 / 0.3);
+  --shadow-card-hover: 0 4px 12px 0 rgb(0 0 0 / 0.4);
+}
+
+[data-theme="light"] {
+  --color-bg:           #F8F7F4;
+  --color-text:         #18181B;
+  --color-muted:        #71717A;
+  --color-border:       #E4E4E7;
+  --color-border-hover: #D4D4D8;
+  --color-surface:      #F4F4F5;
+  --color-surface-tag:  #F4F4F5;
+  --color-tag-text:     #3F3F46;
+  --color-accent:       #6B7F3A;
+  --color-accent-soft:  #A3B86C;
+  --color-accent-hover: #27272A;
+  --color-border-strong: #D4D4D8;
+  --color-text-secondary: #52525B;
+  --color-text-muted:   #71717A;
+  --color-text-subtle:  #A1A1AA;
+
+  --shadow-card:       0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.04);
+  --shadow-card-hover: 0 4px 12px 0 rgb(0 0 0 / 0.10), 0 2px 4px -1px rgb(0 0 0 / 0.06);
 }
 
 html {
   background-color: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-sans);
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 200ms ease, color 200ms ease;
+  scroll-behavior: smooth;
+  scroll-padding-top: 72px;
 }
 
 body {
@@ -57,32 +116,36 @@ body {
   flex-direction: column;
 }
 
-main {
-  flex: 1;
-}
+main { flex: 1; }
 
-a {
-  color: inherit;
-}
+a { color: inherit; }
 
-.font-display {
-  font-family: var(--font-display);
-}
+.font-display { font-family: var(--font-display); }
 
 /* Prose styles for blog post content */
 .prose h1,
 .prose h2,
 .prose h3 {
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   line-height: 1.25;
   margin-top: 2rem;
   margin-bottom: 0.5rem;
 }
 .prose p { margin-bottom: 1.25rem; }
-.prose a { color: var(--color-accent); text-decoration: underline; text-underline-offset: 3px; }
+.prose a { color: var(--color-text); text-decoration: underline; text-underline-offset: 3px; }
 .prose code { font-size: 0.875em; background: var(--color-surface); padding: 0.15em 0.4em; border-radius: var(--radius-sm); }
 .prose pre { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-card); padding: 1.25rem; overflow-x: auto; margin-bottom: 1.5rem; }
 .prose pre code { background: none; padding: 0; font-size: 0.875em; }
 .prose blockquote { border-left: 3px solid var(--color-border); padding-left: 1rem; color: var(--color-muted); margin: 1.5rem 0; }
 .prose ul, .prose ol { padding-left: 1.5rem; margin-bottom: 1.25rem; }
 .prose img { border-radius: var(--radius-card); }
+
+/* ─── Shared kicker label ───────────────────────────────── */
+.section-kicker {
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: 1rem;
+}
