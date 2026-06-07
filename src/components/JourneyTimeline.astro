@@ -1,0 +1,171 @@
+---
+import { milestones } from '../data/journey';
+
+interface Props {
+  lang?: 'en' | 'zh';
+}
+
+const { lang = 'en' } = Astro.props;
+---
+
+<div class="timeline-shell">
+  <div class="timeline-prompt">
+    patrick@journey:~$ git log --milestones
+  </div>
+  <ol class="timeline-list">
+    {milestones.map((m) => (
+      <li class={`timeline-entry ${m.isHead ? 'is-head' : ''}`}>
+        <span class="timeline-line" aria-hidden="true"></span>
+        <span class={`timeline-dot ${m.isHead ? 'dot-head' : 'dot-accent'}`}></span>
+        <span class={`timeline-hash ${m.isHead ? 'hash-head' : 'hash-accent'}`}>
+          {m.hash}
+        </span>
+        <span class="timeline-desc">
+          {lang === 'zh' ? m.descriptionZh : m.description}
+          {' '}
+          <span class="timeline-year">
+            ({m.year === 'NOW' ? 'NOW' : m.year})
+          </span>
+          {m.isHead && (
+            <span class="timeline-badge">HEAD → now</span>
+          )}
+        </span>
+      </li>
+    ))}
+  </ol>
+</div>
+
+<style>
+  .timeline-shell {
+    margin-top: 2rem;
+    overflow: hidden;
+    border-radius: 1rem;
+    border: 1px solid var(--color-border);
+  }
+
+  .timeline-prompt {
+    border-bottom: 1px solid var(--color-border);
+    padding: 0.75rem 1rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.75rem;
+    color: var(--color-muted);
+  }
+
+  .timeline-list {
+    list-style: none;
+    margin: 0;
+    padding: 0.5rem;
+  }
+
+  .timeline-entry {
+    position: relative;
+    display: grid;
+    grid-template-columns: 22px 72px 1fr;
+    gap: 0.75rem;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px;
+    transition: background-color 150ms ease;
+  }
+
+  @media (min-width: 640px) {
+    .timeline-entry {
+      font-size: 12px;
+    }
+  }
+
+  .timeline-entry:hover {
+    background-color: var(--color-surface);
+  }
+
+  /* Vertical connecting line */
+  .timeline-line {
+    position: absolute;
+    left: 11px;
+    top: 1rem;
+    bottom: -0.5rem;
+    width: 1px;
+    transform: translateX(-50%);
+    background: var(--color-border);
+  }
+
+  /* Hide line on last entry */
+  .timeline-entry:last-child .timeline-line {
+    display: none;
+  }
+
+  /* Dot */
+  .timeline-dot {
+    position: relative;
+    z-index: 1;
+    margin-top: 3px;
+    height: 8px;
+    width: 8px;
+    flex-shrink: 0;
+    border-radius: 50%;
+  }
+
+  .dot-head {
+    background-color: #3b82f6;
+  }
+
+  .dot-accent {
+    background-color: var(--color-accent);
+  }
+
+  /* Hash */
+  .timeline-hash {
+    letter-spacing: 0.05em;
+  }
+
+  .hash-head {
+    color: #3b82f6;
+  }
+
+  .hash-accent {
+    color: var(--color-accent);
+  }
+
+  :global([data-theme="dark"]) .hash-head {
+    color: #60a5fa;
+  }
+
+  :global([data-theme="dark"]) .dot-head {
+    background-color: #60a5fa;
+  }
+
+  :global([data-theme="dark"]) .hash-accent {
+    color: var(--color-accent-soft);
+  }
+
+  :global([data-theme="dark"]) .dot-accent {
+    background-color: var(--color-accent-soft);
+  }
+
+  /* Description */
+  .timeline-desc {
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  .timeline-year {
+    color: var(--color-muted);
+  }
+
+  /* HEAD badge */
+  .timeline-badge {
+    display: inline-block;
+    margin-left: 0.5rem;
+    padding: 0.125rem 0.375rem;
+    font-size: 10px;
+    border: 1px solid rgba(59, 130, 246, 0.4);
+    border-radius: 0.25rem;
+    color: #2563eb;
+  }
+
+  :global([data-theme="dark"]) .timeline-badge {
+    color: #60a5fa;
+    border-color: rgba(96, 165, 250, 0.4);
+  }
+</style>

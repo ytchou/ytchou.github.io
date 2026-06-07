@@ -14,7 +14,7 @@ const allTags = [...new Set(projects.flatMap(p => p.tags))].sort();
   <!-- Page header -->
   <div class="projects-header mb-10">
     <div class="eyebrow">作品集</div>
-    <h1 class="font-display text-5xl font-bold text-[#2C2825] tracking-tight mt-1 mb-2" style="line-height: 1.05;">{t('projects.title')}</h1>
+    <h1 class="font-display text-5xl font-bold tracking-tight mt-1 mb-2" style="line-height: 1.05; color: var(--color-text);">{t('projects.title')}</h1>
     <p style="color: var(--color-muted);">{t('projects.subtitle')}</p>
   </div>
 
@@ -50,11 +50,12 @@ const allTags = [...new Set(projects.flatMap(p => p.tags))].sort();
   }
 
   .eyebrow {
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--color-accent);
+    margin-bottom: 1rem;
   }
 
   .filter-bar {
@@ -82,7 +83,7 @@ const allTags = [...new Set(projects.flatMap(p => p.tags))].sort();
   .filter-pill.active {
     background: var(--color-accent);
     border-color: var(--color-accent);
-    color: #fff;
+    color: var(--color-bg);
   }
 
   .projects-grid {

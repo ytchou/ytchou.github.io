@@ -14,8 +14,8 @@ const regularPosts = allPosts.filter(p => !p.data.pinned);
   <!-- Archive header -->
   <div class="blog-header mb-12">
     <div class="eyebrow">Archive</div>
-    <h1 class="font-display text-5xl font-bold text-[#2C2825] tracking-tight mt-1 mb-2" style="line-height: 1.05;">Writing</h1>
-    <p class="text-[#8C8078]">{t('blog.subtitle')}</p>
+    <h1 class="font-display text-5xl font-bold tracking-tight mt-1 mb-2" style="line-height: 1.05; color: var(--color-text);">Writing</h1>
+    <p style="color: var(--color-muted);">{t('blog.subtitle')}</p>
   </div>
 
   <!-- Pinned / featured posts -->
@@ -35,9 +35,9 @@ const regularPosts = allPosts.filter(p => !p.data.pinned);
                 <span class="featured-badge">Featured</span>
               </div>
               <div class="featured-card-body">
-                <h2 class="font-display text-xl font-bold text-[#2C2825] leading-snug mb-2 group-hover:text-[#6B5B47] transition-colors">{post.data.title}</h2>
-                <p class="text-sm text-[#8C8078] line-clamp-2 mb-4">{post.data.description}</p>
-                <time class="text-xs text-[#A09088]" datetime={post.data.date.toISOString()}>{formatted}</time>
+                <h2 class="featured-title font-display text-xl font-bold leading-snug mb-2">{post.data.title}</h2>
+                <p class="text-sm line-clamp-2 mb-4" style="color: var(--color-muted);">{post.data.description}</p>
+                <time class="text-xs" style="color: var(--color-text-subtle);" datetime={post.data.date.toISOString()}>{formatted}</time>
               </div>
             </a>
           );
@@ -65,7 +65,7 @@ const regularPosts = allPosts.filter(p => !p.data.pinned);
                   <span class="archive-date">{monthDay}</span>
                 </div>
                 <div class="archive-content">
-                  <h3 class="archive-title group-hover:text-[#6B5B47] transition-colors">{post.data.title}</h3>
+                  <h3 class="archive-title">{post.data.title}</h3>
                   <p class="archive-desc">{post.data.description}</p>
                 </div>
               </a>
@@ -77,7 +77,7 @@ const regularPosts = allPosts.filter(p => !p.data.pinned);
   )}
 
   {allPosts.length === 0 && (
-    <p class="text-[#8C8078] py-12 text-center">No posts yet — check back soon.</p>
+    <p class="py-12 text-center" style="color: var(--color-muted);">No posts yet — check back soon.</p>
   )}
 </BaseLayout>
 
@@ -88,11 +88,12 @@ const regularPosts = allPosts.filter(p => !p.data.pinned);
   }
 
   .eyebrow {
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--color-accent);
+    margin-bottom: 1rem;
   }
 
   .section-label {
@@ -146,7 +147,7 @@ const regularPosts = allPosts.filter(p => !p.data.pinned);
   .featured-card-visual {
     position: relative;
     height: 72px;
-    background-color: #EDE4DA;
+    background-color: var(--color-surface);
     overflow: hidden;
     flex-shrink: 0;
   }
@@ -168,8 +169,8 @@ const regularPosts = allPosts.filter(p => !p.data.pinned);
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--color-accent);
-    background: rgba(107, 91, 71, 0.1);
-    border: 1px solid rgba(107, 91, 71, 0.2);
+    background: var(--color-surface-tag);
+    border: 1px solid var(--color-border);
     padding: 0.2em 0.6em;
     border-radius: 999px;
   }
@@ -228,6 +229,10 @@ const regularPosts = allPosts.filter(p => !p.data.pinned);
     color: var(--color-text);
     margin: 0 0 0.25rem;
     line-height: 1.4;
+    transition: color 200ms ease;
+  }
+  .archive-link:hover .archive-title {
+    color: var(--color-muted);
   }
   .archive-desc {
     font-size: 0.82rem;
@@ -238,5 +243,13 @@ const regularPosts = allPosts.filter(p => !p.data.pinned);
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+
+  .featured-title {
+    color: var(--color-text);
+    transition: color 200ms ease;
+  }
+  .featured-card:hover .featured-title {
+    color: var(--color-muted);
   }
 </style>

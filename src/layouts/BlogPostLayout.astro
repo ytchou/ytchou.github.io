@@ -14,18 +14,23 @@ const { title, description, date, tags, lang = 'en' } = Astro.props;
 const formatted = date.toLocaleDateString(lang === 'zh' ? 'zh-TW' : 'en-US', {
   year: 'numeric', month: 'long', day: 'numeric'
 });
+const backHref = lang === 'zh' ? '/zh/blog' : '/blog';
+const backLabel = lang === 'zh' ? '← 所有文章' : '← All posts';
+const kicker = lang === 'zh' ? '部落格' : 'Blog';
 ---
 
 <BaseLayout title={`${title} — ${SITE_TITLE}`} description={description}>
   <article>
-    <header class="mb-10 pb-8 border-b border-gray-100">
-      <h1 class="text-3xl font-bold text-gray-900 tracking-tight mb-3">{title}</h1>
+    <a href={backHref} class="back-link">{backLabel}</a>
+    <header class="mb-10 pb-8 border-b" style="border-color: var(--color-border);">
+      <p class="section-kicker">{kicker}</p>
+      <h1 class="post-title">{title}</h1>
       <div class="flex items-center gap-4 flex-wrap">
-        <time class="text-sm text-gray-400" datetime={date.toISOString()}>{formatted}</time>
+        <time class="post-date" datetime={date.toISOString()}>{formatted}</time>
         {tags.length > 0 && (
           <ul class="flex flex-wrap gap-1.5 list-none p-0 m-0">
             {tags.map(tag => (
-              <li class="text-xs px-2 py-0.5 bg-gray-100 text-gray-500 rounded-full">{tag}</li>
+              <li class="post-tag">{tag}</li>
             ))}
           </ul>
         )}
@@ -36,3 +41,42 @@ const formatted = date.toLocaleDateString(lang === 'zh' ? 'zh-TW' : 'en-US', {
     </div>
   </article>
 </BaseLayout>
+
+<style>
+  .back-link {
+    display: inline-block;
+    font-size: 0.875rem;
+    color: var(--color-muted);
+    text-decoration: none;
+    margin-bottom: 2.5rem;
+    transition: color 150ms ease;
+  }
+  .back-link:hover {
+    color: var(--color-text);
+  }
+
+  .post-title {
+    font-size: 2.25rem;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    color: var(--color-text);
+    margin: 0 0 0.75rem;
+  }
+
+  .post-date {
+    font-size: 0.875rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: var(--color-text-subtle);
+  }
+
+  .post-tag {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    padding: 0.25rem 0.625rem;
+    border-radius: 9999px;
+    border: 1px solid var(--color-border-strong);
+    color: var(--color-text-secondary);
+    background: transparent;
+  }
+</style>

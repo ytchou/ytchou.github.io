@@ -20,10 +20,19 @@ const htmlLang = lang === 'zh' ? 'zh-TW' : 'en';
 <html lang={htmlLang}>
   <head>
     <BaseHead title={title} description={description} />
+    <script is:inline>
+      // Apply saved theme immediately to prevent flash
+      (function() {
+        const saved = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = saved || 'light';
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
   </head>
   <body>
     <Header />
-    <main class="w-full max-w-[1024px] mx-auto px-6 pt-16 pb-12">
+    <main class="w-full max-w-[1152px] mx-auto px-8 pt-16 pb-24">
       <slot />
     </main>
     <Footer />
