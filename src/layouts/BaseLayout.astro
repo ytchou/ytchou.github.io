@@ -36,5 +36,18 @@ const htmlLang = lang === 'zh' ? 'zh-TW' : 'en';
       <slot />
     </main>
     <Footer />
+    <script>
+      if (import.meta.env.DEV) {
+        const [{ createRoot }, React, { Agentation }] = await Promise.all([
+          import('react-dom/client'),
+          import('react'),
+          import('agentation'),
+        ]);
+        const mount = document.createElement('div');
+        mount.id = 'agentation-root';
+        document.body.appendChild(mount);
+        createRoot(mount).render(React.createElement(Agentation));
+      }
+    </script>
   </body>
 </html>
