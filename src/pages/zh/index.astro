@@ -19,11 +19,11 @@ const featuredProjects = projects.filter(p => p.featured);
 <BaseLayout title="周永堂" description={t('hero.tagline')}>
 
   <!-- ── Hero ─────────────────────────────────────────── -->
-  <section class="pt-4 pb-24">
+  <section class="pt-4 pb-16">
     <div class="flex items-start justify-between gap-8 mb-8">
       <div class="flex-1 min-w-0">
         <h1 class="name-heading mb-2">周永堂</h1>
-        <p class="role-label mb-6">產品設計師 &amp; 資料科學家</p>
+        <p class="role-label mb-6">產品打造者 &amp; 資料科學家</p>
         <p class="text-base mb-1" style="color: var(--color-muted);">{t('hero.tagline')}</p>
         <p class="text-base" style="color: var(--color-muted);">{t('hero.sub')}</p>
       </div>
@@ -54,14 +54,14 @@ const featuredProjects = projects.filter(p => p.featured);
   </section>
 
   <!-- ── Journey ──────────────────────────────────────── -->
-  <section id="journey" class="py-24" style="border-top: 1px solid var(--color-border);">
+  <section id="journey" class="py-16" style="border-top: 1px solid var(--color-border);">
     <p class="section-kicker">旅程</p>
     <h2 class="section-title">我在打造什麼</h2>
     <JourneyTimeline lang="zh" />
   </section>
 
   <!-- ── Writing ───────────────────────────────────────── -->
-  <section id="writing" class="py-24" style="border-top: 1px solid var(--color-border);">
+  <section id="writing" class="py-16" style="border-top: 1px solid var(--color-border);">
     <p class="section-kicker">文章</p>
     <div class="section-header">
       <h2 class="section-title">{t('nav.writing')}</h2>
@@ -103,7 +103,7 @@ const featuredProjects = projects.filter(p => p.featured);
   </section>
 
   <!-- ── Building / Projects ───────────────────────────── -->
-  <section id="building" class="py-24" style="border-top: 1px solid var(--color-border);">
+  <section id="building" class="py-16" style="border-top: 1px solid var(--color-border);">
     <p class="section-kicker">專案</p>
     <div class="section-header">
       <h2 class="section-title">{t('nav.building')}</h2>
@@ -115,7 +115,7 @@ const featuredProjects = projects.filter(p => p.featured);
   </section>
 
   <!-- ── About ─────────────────────────────────────────── -->
-  <section id="about" class="py-24" style="border-top: 1px solid var(--color-border);">
+  <section id="about" class="py-16" style="border-top: 1px solid var(--color-border);">
     <p class="section-kicker">關於</p>
     <h2 class="section-title mb-6">{t('home.about')}</h2>
     <p class="about-body">{t('home.about-p1')}</p>
@@ -124,28 +124,6 @@ const featuredProjects = projects.filter(p => p.featured);
     <a href="/zh/about" class="read-more-link">完整介紹 &rarr;</a>
   </section>
 
-  <!-- ── Contact ───────────────────────────────────────── -->
-  <section id="contact" class="py-24" style="border-top: 1px solid var(--color-border);">
-    <p class="section-kicker">聯繫</p>
-    <h2 class="section-title mb-4">{t('home.contact')}</h2>
-    <p class="about-body mb-8">{t('home.contact-intro')}</p>
-    <ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0.75rem;">
-      {contactLinks.map(link => (
-        <li>
-          <a
-            href={link.href}
-            class="contact-row"
-            target={link.external ? '_blank' : undefined}
-            rel={link.external ? 'noopener noreferrer' : undefined}
-          >
-            <span class="contact-label" style="color: var(--color-muted);">{t(link.labelKey)}</span>
-            <span class="contact-value">{link.display}</span>
-            {link.external && <span aria-hidden="true" style="color: var(--color-muted); font-size: 0.75rem;">&#x2197;</span>}
-          </a>
-        </li>
-      ))}
-    </ul>
-  </section>
 
 </BaseLayout>
 
@@ -284,22 +262,4 @@ const featuredProjects = projects.filter(p => p.featured);
   }
   .read-more-link:hover { border-color: var(--color-text); }
 
-  /* Contact rows */
-  .contact-row {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    text-decoration: none;
-    transition: opacity var(--transition-base);
-  }
-  .contact-row:hover { opacity: 0.7; }
-  .contact-label {
-    font-size: 0.8125rem;
-    width: 72px;
-    flex-shrink: 0;
-  }
-  .contact-value {
-    font-size: 0.9375rem;
-    color: var(--color-text);
-  }
 </style>
