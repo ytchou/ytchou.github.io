@@ -16,21 +16,39 @@ const latestPosts = sortPosts(allPosts).slice(0, 3);
 const featuredProjects = projects.filter(p => p.featured);
 ---
 
-<BaseLayout title="Patrick" description={t('hero.tagline')}>
+<BaseLayout title="Patrick C." description={t('hero.tagline')}>
+<script>
+  (async () => {
+    const pref = localStorage.getItem('lang-pref');
+    if (pref === 'zh') { window.location.replace('/zh/'); return; }
+    if (pref === 'en') return;
+    try {
+      const res = await fetch('https://ipapi.co/country/');
+      const country = (await res.text()).trim();
+      if (country === 'TW') {
+        localStorage.setItem('lang-pref', 'zh');
+        window.location.replace('/zh/');
+      } else {
+        localStorage.setItem('lang-pref', 'en');
+      }
+    } catch {
+      // API unavailable — stay on EN
+    }
+  })();
+</script>
 
   <!-- ── Hero ─────────────────────────────────────────── -->
   <section class="pt-4 pb-16">
     <div class="flex items-start justify-between gap-8 mb-8">
       <div class="flex-1 min-w-0">
-        <h1 class="name-heading mb-2">Patrick</h1>
-        <p class="role-label mb-6">Product Builder &amp; Data Scientist</p>
-        <p class="text-base mb-1" style="color: var(--color-muted);">{t('hero.tagline')}</p>
-        <p class="text-base" style="color: var(--color-muted);">{t('hero.sub')}</p>
+        <h1 class="name-heading mb-2">Patrick C.</h1>
+        <p class="role-label mb-6">{t('hero.role')}</p>
+        <p class="text-base" style="color: var(--color-muted);">{t('hero.tagline')}</p>
       </div>
       <div class="shrink-0 pt-1">
         <Image
           src={headshot}
-          alt="Patrick"
+          alt="Patrick C."
           width={120}
           height={120}
           class="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover object-top"
@@ -56,7 +74,7 @@ const featuredProjects = projects.filter(p => p.featured);
   <!-- ── Journey ──────────────────────────────────────── -->
   <section id="journey" class="py-16" style="border-top: 1px solid var(--color-border);">
     <p class="section-kicker">Journey</p>
-    <h2 class="section-title">What I'm Building</h2>
+    <h2 class="section-title">{t('home.journey-title')}</h2>
     <JourneyTimeline lang="en" />
   </section>
 
@@ -64,7 +82,7 @@ const featuredProjects = projects.filter(p => p.featured);
   <section id="writing" class="py-16" style="border-top: 1px solid var(--color-border);">
     <p class="section-kicker">Writing</p>
     <div class="section-header">
-      <h2 class="section-title">{t('nav.writing')}</h2>
+      <h2 class="section-title">{t('home.writing')}</h2>
       <a href="/blog" class="section-more">{t('home.all-posts')}</a>
     </div>
     <div class="flex flex-col gap-4">
@@ -90,7 +108,7 @@ const featuredProjects = projects.filter(p => p.featured);
           {post.data.tags && post.data.tags.length > 0 && (
             <div class="post-card-tags">
               {post.data.tags.map(tag => (
-                <span class="post-tag">{tag}</span>
+                <span class="tag">{tag}</span>
               ))}
             </div>
           )}
@@ -103,22 +121,12 @@ const featuredProjects = projects.filter(p => p.featured);
   <section id="building" class="py-16" style="border-top: 1px solid var(--color-border);">
     <p class="section-kicker">Projects</p>
     <div class="section-header">
-      <h2 class="section-title">{t('nav.building')}</h2>
+      <h2 class="section-title">{t('home.projects-title')}</h2>
       <a href="/projects" class="section-more">{t('home.all-projects')}</a>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       {featuredProjects.map(project => <ProjectCard project={project} />)}
     </div>
-  </section>
-
-  <!-- ── About ─────────────────────────────────────────── -->
-  <section id="about" class="py-16" style="border-top: 1px solid var(--color-border);">
-    <p class="section-kicker">About</p>
-    <h2 class="section-title mb-6">{t('home.about')}</h2>
-    <p class="about-body">{t('home.about-p1')}</p>
-    <p class="about-body">{t('home.about-p2')}</p>
-    <p class="about-body">{t('home.about-p3')}</p>
-    <a href="/about" class="read-more-link">Full story &rarr;</a>
   </section>
 
 
@@ -231,32 +239,6 @@ const featuredProjects = projects.filter(p => p.featured);
     gap: 0.375rem;
     margin-top: 0.75rem;
   }
-  .post-tag {
-    font-size: 0.6875rem;
-    font-weight: 500;
-    padding: 0.25rem 0.625rem;
-    border-radius: 9999px;
-    border: 1px solid var(--color-border-strong);
-    color: var(--color-tag-text);
-    background: transparent;
-  }
 
-  /* About & contact text */
-  .about-body {
-    font-size: 1rem;
-    line-height: 1.75;
-    color: var(--color-muted);
-    max-width: 60ch;
-    margin: 0 0 1.25rem;
-  }
-  .read-more-link {
-    font-size: 0.875rem;
-    color: var(--color-text);
-    text-decoration: none;
-    border-bottom: 1px solid var(--color-border);
-    padding-bottom: 1px;
-    transition: border-color var(--transition-base);
-  }
-  .read-more-link:hover { border-color: var(--color-text); }
 
 </style>
