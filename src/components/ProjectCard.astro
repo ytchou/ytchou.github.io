@@ -2,6 +2,7 @@
 import type { Project } from '../data/projects';
 import { useTranslations } from '../i18n/utils';
 import type { Lang } from '../i18n/ui';
+import { Image } from 'astro:assets';
 
 interface Props {
   project: Project;
@@ -9,16 +10,20 @@ interface Props {
 }
 const { project, lang = 'en' } = Astro.props;
 const t = useTranslations(lang);
-
 ---
 
 <article class="project-card group flex flex-col">
+  {project.image && (
+    <div class="project-image-wrap">
+      <Image src={project.image} alt={project.title} class="project-image" width={800} height={450} />
+    </div>
+  )}
   <div class="flex flex-col gap-3 flex-1 p-5">
     <h3 class="project-title font-semibold mt-0 transition-colors">{project.title}</h3>
-    <p class="project-desc text-sm leading-relaxed flex-1">{project.description}</p>
+    <p class="project-desc text-sm leading-relaxed flex-1">{lang === 'zh' && project.descriptionZh ? project.descriptionZh : project.description}</p>
     <ul class="flex flex-wrap gap-1.5 list-none p-0 m-0">
       {project.tags.map(tag => (
-        <li class="project-tag text-xs px-2 py-0.5 rounded-full">{tag}</li>
+        <li class="tag">{tag}</li>
       ))}
     </ul>
     <div class="flex gap-3 pt-1">
@@ -37,6 +42,23 @@ const t = useTranslations(lang);
 </article>
 
 <style>
+  .project-image-wrap {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .project-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 400ms ease;
+  }
+  .project-card:hover .project-image {
+    transform: scale(1.03);
+  }
+
   .project-card {
     background: transparent;
     border: 1px solid var(--color-border);
@@ -54,10 +76,6 @@ const t = useTranslations(lang);
   .project-title { color: var(--color-text); transition: opacity var(--transition-base); }
   .project-card:hover .project-title { opacity: 0.7; }
   .project-desc { color: var(--color-text-muted); }
-  .project-tag {
-    background-color: var(--color-surface-tag);
-    color: var(--color-tag-text);
-  }
   .project-link { color: var(--color-text-muted); transition: color var(--transition-base); }
   .project-link:hover { color: var(--color-text); }
 </style>

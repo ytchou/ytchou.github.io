@@ -19,7 +19,6 @@ const base = lang === 'zh' ? '/zh' : '';
         <a href={`${base}/#journey`} class="nav-link">{t('nav.journey')}</a>
         <a href={`${base}/#writing`} class="nav-link">{t('nav.writing')}</a>
         <a href={`${base}/#building`} class="nav-link">{t('nav.building')}</a>
-        <a href={`${base}/#about`} class="nav-link">{t('nav.about')}</a>
       </div>
 
       <!-- Dark mode toggle -->
@@ -29,7 +28,7 @@ const base = lang === 'zh' ? '/zh' : '';
       </button>
 
       <!-- Lang toggle -->
-      <a href={altLangUrl} class="lang-toggle">
+      <a href={altLangUrl} id="lang-toggle" class="lang-toggle">
         {t('nav.lang-toggle')}
       </a>
     </div>
@@ -52,6 +51,11 @@ const base = lang === 'zh' ? '/zh' : '';
 
   toggle?.addEventListener('click', () => {
     setTheme(getTheme() === 'dark' ? 'light' : 'dark');
+  });
+
+  document.getElementById('lang-toggle')?.addEventListener('click', () => {
+    const dest = document.documentElement.lang === 'en' ? 'zh' : 'en';
+    localStorage.setItem('lang-pref', dest);
   });
 </script>
 
