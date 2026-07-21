@@ -8,7 +8,7 @@
  * - Unpublished items: phase synced from latest existing phase file
  */
 
-import { readFileSync, readdirSync, existsSync } from 'node:fs';
+import { readdirSync, existsSync } from 'node:fs';
 import { join, basename } from 'node:path';
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
@@ -25,29 +25,16 @@ const BLOG_ZH_DIR = 'src/content/blog/zh';
 const BASE_URL = 'https://ytchou.github.io';
 
 // Phase files in priority order (highest first)
-const PHASE_FILES = ['final.md', 'reviewed.md', 'draft.md'];
+const PHASE_FILES = ['zh.md', 'final.md', 'reviewed.md', 'draft.md'];
 const PHASE_MAP = {
+  'zh.md': 'translate',
   'final.md': 'humanize',
   'reviewed.md': 'review',
   'draft.md': 'draft',
 };
 
-function parseFrontmatter(content) {
-  const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-  if (!match) return {};
-  const fm = {};
-  for (const line of match[1].split('\n')) {
-    const idx = line.indexOf(':');
-    if (idx === -1) continue;
-    const key = line.slice(0, idx).trim();
-    const val = line.slice(idx + 1).trim().replace(/^["']|["']$/g, '');
-    if (key) fm[key] = val;
-  }
-  return fm;
-}
-
 async function patchItem(slug, data) {
-  const url = `${SUPABASE_URL}/rest/v1/content_items?id=eq.portfolio/${slug}`;
+  const url = `${SUPABASE_URL}/rest/v1/content_items?item_path=eq.content/items/${slug}`;
   const res = await fetch(url, {
     method: 'PATCH',
     headers: {
