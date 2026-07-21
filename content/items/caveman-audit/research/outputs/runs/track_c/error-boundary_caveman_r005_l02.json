@@ -1,0 +1,44 @@
+{
+  "input_tokens": 8829,
+  "output_tokens": 1166,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "<system-reminder>\nAvailable user-invocable skills:\n- caveman (description: Ultra-compressed communication mode. Cuts token usage ~75% by speaking like caveman while keeping full technical accuracy. Supports intensity levels: lite, full (default), ultra, wenyan-lite, wenyan-full, wenyan-ultra.\n  Use when user says \"caveman mode\", \"talk like caveman\", \"use caveman\", \"less tokens\",\n  \"be brief\", or invokes /caveman. Also auto-triggers when token efficiency is requested.)\n\n</system-reminder>\n\nI'll create a React error boundary component with fallback UI, retry logic, and error logging.\n\n**`ErrorBoundary.tsx`**\n\n```tsx\nimport React, { Component, ErrorInfo, ReactNode } from \"react\";\n\ninterface Props {\n  children: ReactNode;\n  fallback?: (error: Error, reset: () => void) => ReactNode;\n  onError?: (error: Error, info: ErrorInfo) => void;\n}\n\ninterface State {\n  error: Error | null;\n}\n\nexport class ErrorBoundary extends Component<Props, State> {\n  state: State = { error: null };\n\n  static getDerivedStateFromError(error: Error): State {\n    return { error };\n  }\n\n  componentDidCatch(error: Error, info: ErrorInfo) {\n    const { onError } = this.props;\n\n    console.error(\"[ErrorBoundary] Uncaught render error:\", {\n      message: error.message,\n      stack: error.stack,\n      componentStack: info.componentStack,\n    });\n\n    onError?.(error, info);\n  }\n\n  reset = () => this.setState({ error: null });\n\n  render() {\n    const { error } = this.state;\n    const { children, fallback } = this.props;\n\n    if (!error) return children;\n\n    if (fallback) return fallback(error, this.reset);\n\n    return <DefaultFallback error={error} onRetry={this.reset} />;\n  }\n}\n\nfunction DefaultFallback({ error, onRetry }: { error: Error; onRetry: () => void }) {\n  return (\n    <div role=\"alert\" style={styles.container}>\n      <h2 style={styles.title}>Something went wrong</h2>\n      <pre style={styles.message}>{error.message}</pre>\n      <button onClick={onRetry} style={styles.button}>\n        Try again\n      </button>\n    </div>\n  );\n}\n\nconst styles: Record<string, React.CSSProperties> = {\n  container: {\n    display: \"flex\",\n    flexDirection: \"column\",\n    alignItems: \"center\",\n    gap: 12,\n    padding: 32,\n    border: \"1px solid #f5c6cb\",\n    borderRadius: 8,\n    backgroundColor: \"#fff5f5\",\n    color: \"#721c24\",\n    fontFamily: \"sans-serif\",\n  },\n  title: { margin: 0, fontSize: 18 },\n  message: {\n    margin: 0,\n    padding: \"8px 12px\",\n    background: \"#ffe0e0\",\n    borderRadius: 4,\n    fontSize: 13,\n    maxWidth: 480,\n    overflowX: \"auto\",\n    whiteSpace: \"pre-wrap\",\n    wordBreak: \"break-word\",\n  },\n  button: {\n    padding: \"8px 20px\",\n    border: \"none\",\n    borderRadius: 4,\n    background: \"#c0392b\",\n    color: \"#fff\",\n    fontSize: 14,\n    cursor: \"pointer\",\n  },\n};\n```\n\n**Usage examples:**\n\n```tsx\n// Default fallback\n<ErrorBoundary>\n  <MyComponent />\n</ErrorBoundary>\n\n// Custom fallback UI\n<ErrorBoundary\n  fallback={(error, reset) => (\n    <div>\n      <p>Oops: {error.message}</p>\n      <button onClick={reset}>Retry</button>\n    </div>\n  )}\n  onError={(error, info) => reportToSentry(error, info)}\n>\n  <MyComponent />\n</ErrorBoundary>\n```\n\n**Key design decisions:**\n- `reset` calls `setState({ error: null })` \u2014 re-renders children from scratch, which is the correct retry semantics\n- `onError` prop lets callers plug in Sentry / Datadog without coupling the component to any SDK\n- `fallback` render prop gives full control over the error UI when the default isn't suitable\n- `role=\"alert\"` on the default fallback ensures screen readers announce the error",
+  "thinking_text": "Let me implement a React error boundary component. This is a relatively straightforward task with clear requirements, so I can proceed directly without entering plan mode.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 42.33,
+  "_meta": {
+    "track": "C",
+    "task": "error-boundary",
+    "category": "implementation",
+    "condition": "caveman",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 35830,
+    "timestamp": 1776611946,
+    "level": 2,
+    "ordering": [
+      5,
+      6,
+      9,
+      7,
+      1,
+      8,
+      3,
+      0,
+      2,
+      4
+    ],
+    "chunks_present": [
+      5,
+      6,
+      7,
+      9
+    ],
+    "num_chunks": 4,
+    "behavioral_chars": 12880,
+    "chunk_chars": 19421
+  }
+}

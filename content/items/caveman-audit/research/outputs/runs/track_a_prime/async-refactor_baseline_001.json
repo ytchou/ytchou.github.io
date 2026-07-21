@@ -1,0 +1,22 @@
+{
+  "input_tokens": 138,
+  "output_tokens": 547,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## Refactored with Async/Await\n\n```javascript\nasync function getUser(id) {\n  const rows = await db.query('SELECT * FROM users WHERE id = ?', [id]);\n\n  if (!rows.length) {\n    throw new Error(`User with id \"${id}\" not found`);\n  }\n\n  return rows[0];\n}\n```\n\n### Usage Example\n\n```javascript\n// \u2705 Using try/catch for error handling\nasync function handleRequest(userId) {\n  try {\n    const user = await getUser(userId);\n    console.log('Found user:', user);\n  } catch (err) {\n    console.error('Error:', err.message);\n  }\n}\n\n// \u2705 Using .catch() for error handling\ngetUser(userId)\n  .then(user => console.log('Found user:', user))\n  .catch(err => console.error('Error:', err.message));\n```\n\n---\n\n### Key Changes\n\n| Before | After |\n|---|---|\n| `callback(err)` | `throw new Error(...)` |\n| `callback(null, rows[0])` | `return rows[0]` |\n| Caller handles `err` param | Caller uses `try/catch` |\n| Nested callbacks | Linear, readable flow |\n\n---\n\n### Important Caveat\n\nThis assumes `db.query` **already returns a Promise**. Many modern drivers (like `mysql2/promise`, `pg`, `knex`) do this natively.\n\nIf your driver only supports **callbacks**, wrap it first with `util.promisify`:\n\n```javascript\nconst { promisify } = require('util');\nconst dbQuery = promisify(db.query).bind(db);\n\nasync function getUser(id) {\n  const rows = await dbQuery('SELECT * FROM users WHERE id = ?', [id]);\n\n  if (!rows.length) {\n    throw new Error(`User with id \"${id}\" not found`);\n  }\n\n  return rows[0];\n}\n```\n\n> **Tip:** If `util.promisify` doesn't work cleanly (e.g., the callback signature is non-standard), you can manually wrap it in a `new Promise(...)` as a fallback.",
+  "thinking_text": "The user wants to refactor the callback-based function to use async/await.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 8.48,
+  "_meta": {
+    "track": "A_prime",
+    "task": "async-refactor",
+    "category": "refactor",
+    "condition": "baseline",
+    "run_num": 1,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 28,
+    "timestamp": 1776610603
+  }
+}

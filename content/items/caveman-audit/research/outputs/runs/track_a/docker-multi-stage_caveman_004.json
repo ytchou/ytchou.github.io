@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1063,
+  "output_tokens": 639,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "```dockerfile\n# syntax=docker/dockerfile:1\n\n# \u2500\u2500 Stage 1: deps \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nFROM node:20-alpine AS deps\nWORKDIR /app\n\nCOPY package*.json ./\nRUN npm ci --ignore-scripts\n\n# \u2500\u2500 Stage 2: build \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nFROM node:20-alpine AS build\nWORKDIR /app\n\nCOPY --from=deps /app/node_modules ./node_modules\nCOPY . .\nRUN npm run build          # tsc \u2192 dist/\n\n# prune to prod deps only\nRUN npm ci --omit=dev --ignore-scripts\n\n# \u2500\u2500 Stage 3: runtime \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nFROM node:20-alpine AS runtime\nWORKDIR /app\n\nENV NODE_ENV=production\n\n# non-root user (alpine ships this)\nUSER node\n\nCOPY --from=build --chown=node:node /app/node_modules ./node_modules\nCOPY --from=build --chown=node:node /app/dist          ./dist\nCOPY --from=build --chown=node:node /app/package.json  ./\n\nEXPOSE 3000\nCMD [\"node\", \"dist/index.js\"]\n```\n\n## Why each choice\n\n| Decision | Reason |\n|---|---|\n| `alpine` base | ~50 MB vs ~900 MB full node image |\n| Stage 1 deps | Cache npm install layer; rebuild only when `package*.json` change |\n| Stage 2 build | `tsc` + all devDeps present; discarded after |\n| `npm ci` not `npm install` | Lockfile-exact, faster, no package.json mutation |\n| `--omit=dev` prune | Strip devDeps before copy to runtime |\n| Stage 3 copies only `dist/` + `node_modules` | No src, no tsconfig, no devDeps in final image |\n| `USER node` | No root in prod. Alpine node image includes `node` user |\n| `--chown` on COPY | Files owned by `node` user from the start; no extra `chown` layer |\n\n## Typical size result\n\n```\ndeps     \u2192  ~250 MB  (discarded)\nbuild    \u2192  ~400 MB  (discarded)\nruntime  \u2192   ~80 MB  \u2713\n```\n\n## Assumed `tsconfig.json` output\n\n```json\n{ \"compilerOptions\": { \"outDir\": \"dist\", \"rootDir\": \"src\" } }\n```\n\nChange `dist/index.js` in CMD if `outDir` differ.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 11.73,
+  "_meta": {
+    "track": "C",
+    "task": "docker-multi-stage",
+    "category": "devops",
+    "condition": "caveman",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776586007
+  }
+}

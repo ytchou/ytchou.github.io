@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1049,
+  "output_tokens": 749,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Use `pg` pool. Key config:\n\n```js\nimport { Pool } from 'pg';\n\nconst pool = new Pool({\n  connectionString: process.env.DATABASE_URL,\n\n  // Pool sizing\n  max: 20,          // max connections (default 10)\n  min: 2,           // keep alive when idle\n  idleTimeoutMillis: 30_000,    // kill idle conn after 30s\n  connectionTimeoutMillis: 5_000, // fail fast if can't connect in 5s\n\n  // Optional: SSL in prod\n  ssl: process.env.NODE_ENV === 'production'\n    ? { rejectUnauthorized: true }\n    : false,\n});\n\n// Catch pool-level errors (e.g. DB restart)\npool.on('error', (err, client) => {\n  console.error('Idle client error:', err.message);\n});\n```\n\n**Query wrapper with error handling:**\n\n```js\nexport async function query(sql, params) {\n  const start = Date.now();\n  try {\n    const res = await pool.query(sql, params);\n    console.debug(`Query took ${Date.now() - start}ms, rows: ${res.rowCount}`);\n    return res;\n  } catch (err) {\n    console.error('Query failed:', { sql, params, err: err.message });\n    throw err;  // let caller handle\n  }\n}\n```\n\n**Transaction wrapper:**\n\n```js\nexport async function withTransaction(fn) {\n  const client = await pool.connect();\n  try {\n    await client.query('BEGIN');\n    const result = await fn(client);\n    await client.query('COMMIT');\n    return result;\n  } catch (err) {\n    await client.query('ROLLBACK');\n    throw err;\n  } finally {\n    client.release();  // ALWAYS release, even on error\n  }\n}\n```\n\n**Usage:**\n\n```js\n// Simple query\nconst { rows } = await query('SELECT * FROM users WHERE id = $1', [userId]);\n\n// Transaction\nawait withTransaction(async (client) => {\n  await client.query('UPDATE accounts SET balance = balance - $1 WHERE id = $2', [amount, fromId]);\n  await client.query('UPDATE accounts SET balance = balance + $1 WHERE id = $2', [amount, toId]);\n});\n```\n\n**Key points:**\n\n| Thing | Why |\n|-------|-----|\n| `max: 20` | Match DB `max_connections` minus headroom for admin |\n| `connectionTimeoutMillis` | Prevent request hang when pool exhausted |\n| `idleTimeoutMillis` | Avoid stale conn on DB-side timeout |\n| `pool.on('error')` | Without this, idle client error = unhandled exception = crash |\n| `client.release()` in `finally` | Leak conn = pool exhaustion = app freeze |\n\n**Graceful shutdown:**\n\n```js\nprocess.on('SIGTERM', async () => {\n  await pool.end();  // drain active queries, then close\n  process.exit(0);\n});\n```",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 31.28,
+  "_meta": {
+    "track": "C",
+    "task": "postgres-pool",
+    "category": "setup",
+    "condition": "caveman",
+    "run_num": 1,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585342
+  }
+}

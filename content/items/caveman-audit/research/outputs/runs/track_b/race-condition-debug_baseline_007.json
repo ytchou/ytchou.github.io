@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 10751,
+  "duration_api_ms": 16771,
+  "num_turns": 1,
+  "result": "The classic read-modify-write race: two requests both read the same value before either writes back.\n\n**Root cause:** You're likely doing this:\n```js\nconst { rows } = await db.query('SELECT count FROM counters WHERE id = $1', [id]);\nconst newCount = rows[0].count + 1;\nawait db.query('UPDATE counters SET count = $1 WHERE id = $2', [newCount, id]);\n```\n\nBoth concurrent requests read the same `count`, both compute `count + 1`, and both write the same value back.\n\n---\n\n**Fix 1 \u2014 Atomic UPDATE (simplest, usually correct):**\n```js\nconst { rows } = await db.query(\n  'UPDATE counters SET count = count + 1 WHERE id = $1 RETURNING count',\n  [id]\n);\nreturn rows[0].count;\n```\nPostgreSQL serializes row-level writes, so `count + 1` is evaluated atomically. No application-level locking needed.\n\n---\n\n**Fix 2 \u2014 `SELECT ... FOR UPDATE` inside a transaction (if you need to read first):**\n```js\nawait db.query('BEGIN');\nconst { rows } = await db.query(\n  'SELECT count FROM counters WHERE id = $1 FOR UPDATE',\n  [id]\n);\nconst newCount = rows[0].count + 1;\nawait db.query('UPDATE counters SET count = $1 WHERE id = $2', [newCount, id]);\nawait db.query('COMMIT');\nreturn newCount;\n```\n`FOR UPDATE` acquires a row lock so concurrent reads block until the transaction commits. Use this when you need to do computation in application code based on the current value.\n\n---\n\n**Fix 3 \u2014 `INSERT ... ON CONFLICT` with upsert (if counters may not exist yet):**\n```js\nconst { rows } = await db.query(`\n  INSERT INTO counters (id, count) VALUES ($1, 1)\n  ON CONFLICT (id) DO UPDATE SET count = counters.count + 1\n  RETURNING count\n`, [id]);\nreturn rows[0].count;\n```\n\n---\n\n**Recommendation:** Use Fix 1 unless you have logic between the read and write that can't be expressed in SQL. Fix 2 is correct but adds lock contention; Fix 1 has no application-level coordination overhead.",
+  "stop_reason": "end_turn",
+  "session_id": "c550e5fa-0913-4124-8502-bcc024c232a6",
+  "total_cost_usd": 0.015504500000000003,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17055,
+    "output_tokens": 662,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 662,
+        "cache_read_input_tokens": 17055,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 369,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000449,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 662,
+      "cacheReadInputTokens": 17055,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.015055500000000003,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "89ca39aa-db0b-452b-83cf-799a0349d526",
+  "_meta": {
+    "track": "B",
+    "task": "race-condition-debug",
+    "category": "debugging",
+    "condition": "baseline",
+    "run_num": 7,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 12.41,
+    "timestamp": 1776776554,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

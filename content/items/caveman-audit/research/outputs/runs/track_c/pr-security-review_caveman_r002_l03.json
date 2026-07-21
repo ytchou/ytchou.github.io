@@ -1,0 +1,46 @@
+{
+  "input_tokens": 11209,
+  "output_tokens": 322,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "**SQL injection** \u2014 critical. `req.params.id` goes straight into query string. Attacker passes `1 OR 1=1` \u2192 dumps all users. `1; DROP TABLE users` \u2192 data loss.\n\n**Fix:**\n\n```js\napp.get('/api/users/:id', async (req, res) => {\n  const id = parseInt(req.params.id, 10);\n  if (isNaN(id)) return res.status(400).json({ error: 'Invalid ID' });\n\n  try {\n    const user = await db.query('SELECT * FROM users WHERE id = ?', [id]);\n    if (!user) return res.status(404).json({ error: 'Not found' });\n    res.json(user);\n  } catch {\n    res.status(500).json({ error: 'Server error' });\n  }\n});\n```\n\n**Changes:**\n- Parameterized query \u2014 DB driver escapes input, injection impossible\n- Input validation \u2014 reject non-integers early\n- 404 on missing user \u2014 no data leak\n- Error handling \u2014 no stack traces to client\n- `async/await` \u2014 unhandled rejection fix\n\nAlso check: auth middleware (`req.user` has permission to view this ID?), rate limiting, and `SELECT *` \u2014 return only needed columns.",
+  "thinking_text": "Security review of this Express route handler.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 7.08,
+  "_meta": {
+    "track": "C",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "caveman",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 44414,
+    "timestamp": 1776613621,
+    "level": 3,
+    "ordering": [
+      3,
+      2,
+      9,
+      6,
+      4,
+      0,
+      5,
+      1,
+      7,
+      8
+    ],
+    "chunks_present": [
+      0,
+      2,
+      3,
+      4,
+      6,
+      9
+    ],
+    "num_chunks": 6,
+    "behavioral_chars": 12880,
+    "chunk_chars": 28001
+  }
+}

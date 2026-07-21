@@ -1,0 +1,22 @@
+{
+  "input_tokens": 111,
+  "output_tokens": 1005,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## Security Issues Found\n\n### 1. \ud83d\udea8 Critical: SQL Injection\nThe most severe issue \u2014 user input is directly interpolated into the SQL query.\n\n```javascript\n// Attacker can pass: id = \"1 OR 1=1\" \u2192 dumps entire users table\n// id = \"1; DROP TABLE users\" \u2192 destroys data\nconst query = `SELECT * FROM users WHERE id = ${req.params.id}`;\n```\n\n**Fix: Use parameterized queries**\n```javascript\nconst query = 'SELECT * FROM users WHERE id = ?'; // MySQL\n// or 'SELECT * FROM users WHERE id = $1'         // PostgreSQL\ndb.query(query, [req.params.id]);\n```\n\n---\n\n### 2. \ud83d\udea8 Critical: No Authentication or Authorization\nAny unauthenticated user can query **any** user's data.\n\n```javascript\n// Fix: Add auth middleware and ownership check\napp.get('/api/users/:id', authenticate, async (req, res) => {\n  if (req.user.id !== req.params.id && !req.user.isAdmin) {\n    return res.status(403).json({ error: 'Forbidden' });\n  }\n  // ...\n});\n```\n\n---\n\n### 3. \ud83d\udd34 High: No Input Validation\n`req.params.id` is never validated, allowing unexpected values.\n\n```javascript\n// Fix: Validate before use\nconst { id } = req.params;\nif (!/^\\d+$/.test(id)) {\n  return res.status(400).json({ error: 'Invalid ID format' });\n}\n```\n\n---\n\n### 4. \ud83d\udd34 High: No Error Handling\nUnhandled promise rejections can crash the server or leak stack traces.\n\n```javascript\n// Fix: Add try/catch and safe error response\ntry {\n  const user = await db.query(query, [req.params.id]);\n  if (!user) return res.status(404).json({ error: 'Not found' });\n  res.json(user);\n} catch (err) {\n  console.error(err);                          // Log internally\n  res.status(500).json({ error: 'Server error' }); // Don't expose details\n}\n```\n\n---\n\n### 5. \ud83d\udfe1 Medium: Over-fetching with `SELECT *`\nReturning all columns risks exposing sensitive fields like **passwords, tokens, PII**.\n\n```javascript\n// Fix: Select only needed fields\nconst query = 'SELECT id, name, email FROM users WHERE id = $1';\n```\n\n---\n\n## Secure Revised Version\n\n```javascript\napp.get('/api/users/:id', authenticate, async (req, res) => {\n  const { id } = req.params;\n\n  // 1. Validate input\n  if (!/^\\d+$/.test(id)) {\n    return res.status(400).json({ error: 'Invalid ID format' });\n  }\n\n  // 2. Authorization check\n  if (req.user.id !== id && !req.user.isAdmin) {\n    return res.status(403).json({ error: 'Forbidden' });\n  }\n\n  try {\n    // 3. Parameterized query with explicit columns\n    const query = 'SELECT id, name, email FROM users WHERE id = $1';\n    const user = await db.query(query, [id]);\n\n    if (!user) {\n      return res.status(404).json({ error: 'User not found' });\n    }\n\n    res.json(user);\n  } catch (err) {\n    console.error('Database error:', err);\n    res.status(500).json({ error: 'Internal server error' });\n  }\n});\n```\n\n---\n\n## Summary\n\n| Issue | Severity | Impact |\n|---|---|---|\n| SQL Injection | Critical | Full DB compromise |\n| No Auth/Authz | Critical | Unauthorized data access |\n| No Input Validation | High | Unexpected behavior |\n| No Error Handling | High | Server crash / info leak |\n| SELECT * | Medium | Sensitive data exposure |",
+  "thinking_text": "The user wants me to review this Express route handler for security issues. Let me analyze it carefully.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 12.5,
+  "_meta": {
+    "track": "A_prime",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "baseline",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 28,
+    "timestamp": 1776610718
+  }
+}

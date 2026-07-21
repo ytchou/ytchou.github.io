@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 20374,
+  "duration_api_ms": 19806,
+  "num_turns": 3,
+  "result": "The skill ran a full branch security review (no relevant findings in that Python research codebase). Here's the answer to your actual question:\n\n---\n\n# Security Issues: Express Route Handler\n\n## 1. SQL Injection \u2014 `Critical`\n\n```javascript\nconst query = `SELECT * FROM users WHERE id = ${req.params.id}`;\n```\n\n`req.params.id` flows directly into SQL string. No sanitization.\n\n**Exploit:** `GET /api/users/1 OR 1=1` dumps all users. `GET /api/users/1; DROP TABLE users--` destroys table.\n\n**Fix:** Parameterized query.\n```javascript\nconst query = 'SELECT * FROM users WHERE id = ?';\ndb.query(query, [req.params.id]).then(user => res.json(user));\n```\n\n---\n\n## 2. `SELECT *` Data Overexposure \u2014 `Medium`\n\nReturns entire row \u2014 password hashes, internal flags, PII \u2014 directly to client.\n\n**Fix:** Explicit column list.\n```javascript\n'SELECT id, name, email FROM users WHERE id = ?'\n```\n\n---\n\n## 3. No Error Handling \u2014 `Low`\n\n`.then()` without `.catch()` leaks unhandled rejection \u2192 may expose stack trace or crash process.\n\n**Fix:**\n```javascript\ndb.query(query, [req.params.id])\n  .then(user => res.json(user))\n  .catch(() => res.status(500).json({ error: 'Internal error' }));\n```\n\n---\n\n**Priority:** Fix SQL injection first \u2014 directly exploitable RCE/data breach path.",
+  "stop_reason": "end_turn",
+  "session_id": "f7c60537-4477-4337-b9f3-4f441ffe506b",
+  "total_cost_usd": 0.0859071,
+  "usage": {
+    "input_tokens": 6,
+    "cache_creation_input_tokens": 17214,
+    "cache_read_input_tokens": 23272,
+    "output_tokens": 957,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 17214,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 880,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 10776,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 10776
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 6,
+      "outputTokens": 957,
+      "cacheReadInputTokens": 23272,
+      "cacheCreationInputTokens": 17214,
+      "webSearchRequests": 0,
+      "costUSD": 0.0859071,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "0b833575-bb0c-4a81-8b7c-4a33125d256a",
+  "_meta": {
+    "track": "B",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "caveman",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 21.81,
+    "timestamp": 1776774827,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

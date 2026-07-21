@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 11987,
+  "duration_api_ms": 11922,
+  "num_turns": 1,
+  "result": "## Merge vs Rebase\n\n**Merge**: joins two branches by creating new \"merge commit\". History shows exactly what happened \u2014 parallel work, then join point.\n\n**Rebase**: replays your commits on top of target branch. History looks linear, as if you branched from current tip.\n\n---\n\n### Merge\n```\n      A---B---C  feature\n     /         \\\nD---E---F---G---H  main (merge commit H)\n```\n- Preserves real history\n- Non-destructive (no commit SHA change)\n- Adds merge commit noise on busy repos\n\n### Rebase\n```\n              A'--B'--C'  feature (replayed)\n             /\nD---E---F---G  main\n```\n- Clean linear history\n- Rewrites SHAs \u2014 **never rebase shared/public branches**\n- Conflicts resolved commit-by-commit (more granular, also more annoying)\n\n---\n\n### When to use\n\n| Situation | Use |\n|-----------|-----|\n| Feature branch \u2192 main (team repo) | **Merge** (preserves context, safe) |\n| Updating local feature branch with main changes | **Rebase** (cleaner, not yet pushed) |\n| Already pushed branch others depend on | **Merge** (rebase rewrites = force push = pain) |\n| Personal/solo branch, want clean log | **Rebase** |\n| Bisecting bugs, audit trail matters | **Merge** (real timestamps/parents) |\n\n---\n\n### Core rule\n\n> Never rebase commits that exist outside your local repo.\n\nOnce SHA changes, anyone else with old SHA has diverged history. Force push required. Teammates cursed.\n\n**Short answer**: rebase for clean local history before PR, merge for integrating into shared branches.",
+  "stop_reason": "end_turn",
+  "session_id": "8481e39b-5468-49ee-b58b-69b1a4d4aaad",
+  "total_cost_usd": 0.03429105,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6403,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 452,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6403,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 452,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6403,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6403
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 452,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6403,
+      "webSearchRequests": 0,
+      "costUSD": 0.03429105,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "93e0693a-11ca-4287-8c06-6d0b79a1794d",
+  "_meta": {
+    "track": "B",
+    "task": "git-rebase-merge",
+    "category": "explanation",
+    "condition": "caveman",
+    "run_num": 7,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 13.73,
+    "timestamp": 1776776352,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

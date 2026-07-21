@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 8804,
+  "duration_api_ms": 8746,
+  "num_turns": 1,
+  "result": "New object ref each render. Inline object literal = new identity every time = child re-renders even if values same.\n\n**Common culprits:**\n\n```jsx\n// Bad \u2014 new object every render\n<Child config={{ theme: 'dark', size: 'lg' }} />\n\n// Bad \u2014 new object every render\nconst options = { a: 1 };\n<Child options={options} />  // defined inside component body\n```\n\n**Fixes:**\n\n1. **`useMemo`** \u2014 memoize object inside component:\n```jsx\nconst config = useMemo(() => ({ theme: 'dark', size: 'lg' }), []);\n<Child config={config} />\n```\n\n2. **Move outside component** \u2014 if no dependencies on props/state:\n```jsx\nconst CONFIG = { theme: 'dark', size: 'lg' }; // stable ref\n\nfunction Parent() {\n  return <Child config={CONFIG} />;\n}\n```\n\n3. **`React.memo`** on child + custom comparator** \u2014 if object shape is predictable:\n```jsx\nconst Child = React.memo(MyChild, (prev, next) =>\n  prev.config.theme === next.config.theme &&\n  prev.config.size === next.config.size\n);\n```\n\n4. **Flatten props** \u2014 pass primitives instead:\n```jsx\n<Child theme=\"dark\" size=\"lg\" />  // primitives compare by value\n```\n\nRoot cause: JS `===` on objects compares refs, not values. `{}` === `{}` is `false`. React's `memo`/`shouldComponentUpdate` use `===` per prop.\n\nBest fix: `useMemo` with correct deps array, or move static config outside component.",
+  "stop_reason": "end_turn",
+  "session_id": "726ce056-76cd-43e9-aae1-20136092c508",
+  "total_cost_usd": 0.0114966,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 18042,
+    "output_tokens": 405,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 405,
+        "cache_read_input_tokens": 18042,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 405,
+      "cacheReadInputTokens": 18042,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0114966,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "93e8ae9e-fb2e-4d44-b077-4c28e37c3434",
+  "_meta": {
+    "track": "B",
+    "task": "react-rerender",
+    "category": "debugging",
+    "condition": "caveman",
+    "run_num": 14,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 10.37,
+    "timestamp": 1776776202,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

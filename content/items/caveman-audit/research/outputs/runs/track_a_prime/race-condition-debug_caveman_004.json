@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1087,
+  "output_tokens": 1038,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## Root Cause\n\nClassic **read-modify-write race**:\n\n```\nRequest A: READ counter (5)\nRequest B: READ counter (5)   \u2190 reads before A writes\nRequest A: WRITE counter = 6\nRequest B: WRITE counter = 6  \u2190 overwrites A, loses an increment\n```\n\n---\n\n## Fix 1: Atomic UPDATE (Best \u2014 simplest, fastest)\n\nDon't read then write. Let Postgres do math atomically:\n\n```js\n// \u274c Broken \u2014 two round trips, race window between them\nconst { rows } = await db.query('SELECT value FROM counters WHERE id = $1', [id]);\nconst newVal = rows[0].value + 1;\nawait db.query('UPDATE counters SET value = $1 WHERE id = $2', [newVal, id]);\n\n// \u2705 Fixed \u2014 single atomic operation\nconst { rows } = await db.query(\n  'UPDATE counters SET value = value + 1 WHERE id = $1 RETURNING value',\n  [id]\n);\nreturn rows[0].value;\n```\n\nPostgres executes `value + 1` as one atomic step. No race window.\n\n---\n\n## Fix 2: `SELECT FOR UPDATE` (Use when you need to read first)\n\nIf your logic requires reading the value before deciding how to update it:\n\n```js\nconst client = await db.connect();\ntry {\n  await client.query('BEGIN');\n\n  // Locks the row \u2014 concurrent requests block here until this transaction commits\n  const { rows } = await client.query(\n    'SELECT value FROM counters WHERE id = $1 FOR UPDATE',\n    [id]\n  );\n\n  const newVal = rows[0].value + 1; // or any complex logic\n  await client.query(\n    'UPDATE counters SET value = $1 WHERE id = $2',\n    [newVal, id]\n  );\n\n  await client.query('COMMIT');\n  return newVal;\n} catch (err) {\n  await client.query('ROLLBACK');\n  throw err;\n} finally {\n  client.release();\n}\n```\n\nConcurrent requests serialize at the lock \u2014 they queue up and each sees the previous request's committed value.\n\n---\n\n## Fix 3: Advisory Locks (Use for app-level coordination)\n\nWhen you can't modify the query structure:\n\n```js\nconst lockId = 12345; // stable integer key for this resource\n\nawait db.query('SELECT pg_advisory_xact_lock($1)', [lockId]);\n// now safe to do read-modify-write within this transaction\n```\n\n---\n\n## Which to Use\n\n| Scenario | Solution |\n|---|---|\n| Simple increment/decrement | **Fix 1** \u2014 atomic UPDATE |\n| Complex conditional logic on current value | **Fix 2** \u2014 SELECT FOR UPDATE |\n| Coordinating across multiple tables/resources | **Fix 3** \u2014 advisory locks |\n\nFor a counter, **Fix 1** is almost always the right answer. It's one round trip, no explicit transaction needed, and Postgres handles everything.\n\n---\n\n## Also Check\n\n- **Connection pool exhaustion** \u2014 if you're using `pg-pool`, ensure pool size is configured appropriately; queued requests waiting for connections can mask but not fix races\n- **Default isolation level** (`READ COMMITTED`) is fine for Fix 1 and Fix 2; you don't need `SERIALIZABLE` here",
+  "thinking_text": "The user is asking about a race condition in a PostgreSQL counter increment. They haven't explicitly invoked caveman mode, but the system prompt says to auto-trigger when token efficiency is requested or when user says \"less tokens\" etc. Actually, re-reading: \"Use when user says 'caveman mode'... or invokes /caveman. Also auto-triggers when token efficiency is requested.\"\n\nThe user hasn't requested caveman mode or token efficiency. So I should respond normally.\n\nLet me give a thorough answer about fixing race conditions in PostgreSQL counter increments.\n\nThe issue is a classic read-modify-write race condition. The fix options:\n\n\n- An atomic UPDATE statement that increments the value directly in a single operation is the cleanest approach\n- SELECT FOR UPDATE can lock the row before reading to prevent concurrent modifications\n- Serializable transaction isolation provides the strictest guarantees but with performance overhead\n- Advisory locks offer application-level control when needed\n\nThe atomic UPDATE is usually the best choice for this use case.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 19.56,
+  "_meta": {
+    "track": "A_prime",
+    "task": "race-condition-debug",
+    "category": "debugging",
+    "condition": "caveman",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776610952
+  }
+}

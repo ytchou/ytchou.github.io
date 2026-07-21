@@ -1,0 +1,21 @@
+{
+  "input_tokens": 109,
+  "output_tokens": 684,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## Refactored with Async/Await\n\nHere's the refactored version with several improvements:\n\n```javascript\nasync function getUser(id) {\n  const rows = await db.query('SELECT * FROM users WHERE id = ?', [id]);\n\n  if (!rows.length) {\n    throw new Error(`User with id \"${id}\" not found`);\n  }\n\n  return rows[0];\n}\n```\n\n### Usage Example\n\n```javascript\n// Basic usage\ntry {\n  const user = await getUser(1);\n  console.log(user);\n} catch (err) {\n  console.error('Failed to get user:', err.message);\n}\n\n// Or with .then()/.catch() if not in an async context\ngetUser(1)\n  .then(user => console.log(user))\n  .catch(err => console.error(err.message));\n```\n\n---\n\n### Key Changes\n\n| Before | After |\n|---|---|\n| Callback parameter `(err, result)` | Returns a **Promise** implicitly |\n| Manual `if (err) return callback(err)` | `await` **re-throws** rejected promises automatically |\n| `callback(null, rows[0])` to return data | Plain `return rows[0]` |\n| Errors passed to callback | Errors handled with `try/catch` |\n\n---\n\n### Important Caveat\n\nThis assumes `db.query()` **already returns a Promise**. If it only supports callbacks (e.g., older `mysql` package), you need to promisify it first:\n\n```javascript\n// Option 1: Use Node's built-in util.promisify\nconst { promisify } = require('util');\nconst dbQuery = promisify(db.query.bind(db));\n\nasync function getUser(id) {\n  const rows = await dbQuery('SELECT * FROM users WHERE id = ?', [id]);\n  if (!rows.length) throw new Error(`User with id \"${id}\" not found`);\n  return rows[0];\n}\n\n// Option 2: Wrap manually in a Promise\nasync function getUser(id) {\n  const rows = await new Promise((resolve, reject) => {\n    db.query('SELECT * FROM users WHERE id = ?', [id], (err, rows) => {\n      if (err) reject(err);\n      else resolve(rows);\n    });\n  });\n\n  if (!rows.length) throw new Error(`User with id \"${id}\" not found`);\n  return rows[0];\n}\n\n// Option 3: Use a Promise-native driver (recommended for new projects)\n// e.g., mysql2/promise, pg with promise support, or an ORM like Prisma/Knex\nimport mysql from 'mysql2/promise';\n```\n\n> **Recommendation:** Use a Promise-native database driver like **`mysql2/promise`** or **`pg`** to avoid manual promisification entirely.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 15.15,
+  "_meta": {
+    "track": "C",
+    "task": "async-refactor",
+    "category": "refactor",
+    "condition": "baseline",
+    "run_num": 7,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 28,
+    "timestamp": 1776585524
+  }
+}

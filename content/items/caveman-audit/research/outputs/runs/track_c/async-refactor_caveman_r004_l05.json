@@ -1,0 +1,50 @@
+{
+  "input_tokens": 15838,
+  "output_tokens": 262,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "```js\nasync function getUser(id) {\n  const rows = await db.query('SELECT * FROM users WHERE id = ?', [id]);\n  if (!rows.length) throw new Error('Not found');\n  return rows[0];\n}\n```\n\nAssumes `db.query` returns a promise. If it's still callback-based, wrap it first:\n\n```js\nconst query = (sql, params) => new Promise((resolve, reject) =>\n  db.query(sql, params, (err, rows) => err ? reject(err) : resolve(rows))\n);\n\nasync function getUser(id) {\n  const rows = await query('SELECT * FROM users WHERE id = ?', [id]);\n  if (!rows.length) throw new Error('Not found');\n  return rows[0];\n}\n```\n\nCallers use `try/catch` instead of checking the error argument:\n\n```js\ntry {\n  const user = await getUser(42);\n} catch (err) {\n  console.error(err);\n}\n```",
+  "thinking_text": "Simple refactor, no need for plan mode.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 5.24,
+  "_meta": {
+    "track": "C",
+    "task": "async-refactor",
+    "category": "refactor",
+    "condition": "caveman",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 63097,
+    "timestamp": 1776613019,
+    "level": 5,
+    "ordering": [
+      4,
+      1,
+      5,
+      7,
+      2,
+      9,
+      6,
+      3,
+      8,
+      0
+    ],
+    "chunks_present": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "num_chunks": 10,
+    "behavioral_chars": 12880,
+    "chunk_chars": 46676
+  }
+}

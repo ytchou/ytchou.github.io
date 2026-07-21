@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 6923,
+  "duration_api_ms": 6864,
+  "num_turns": 1,
+  "result": "New object ref created each render. Even if object content same, `{}` !== `{}` in JS \u2014 reference equality fail.\n\n**Fix options:**\n\n1. **`useMemo`** \u2014 memoize object in parent:\n```js\nconst config = useMemo(() => ({ key: value }), [value]);\n```\n\n2. **`React.memo`** \u2014 skip re-render if props shallow-equal:\n```js\nexport default React.memo(MyComponent);\n```\n\n3. **`React.memo` + custom comparator** \u2014 for deep equality:\n```js\nexport default React.memo(MyComponent, (prev, next) => \n  prev.obj.key === next.obj.key\n);\n```\n\n4. **Move object outside component** \u2014 if static:\n```js\nconst CONFIG = { key: value }; // defined once, stable ref\nfunction Parent() { return <Child config={CONFIG} />; }\n```\n\nRoot cause: inline object prop (`<Child config={{ key: val }} />`) creates new ref every parent render. `React.memo` alone won't help without stable ref \u2014 combine both.",
+  "stop_reason": "end_turn",
+  "session_id": "de13dbcb-8293-42b2-a06a-867dfce32a01",
+  "total_cost_usd": 0.0313923,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6406,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 258,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6406,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 258,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6406,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6406
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 258,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6406,
+      "webSearchRequests": 0,
+      "costUSD": 0.0313923,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "7bade427-bdad-4219-92d8-684121407d7e",
+  "_meta": {
+    "track": "B",
+    "task": "react-rerender",
+    "category": "debugging",
+    "condition": "caveman",
+    "run_num": 10,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 9.2,
+    "timestamp": 1776776191,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 11471,
+  "duration_api_ms": 11412,
+  "num_turns": 1,
+  "result": "Key factors:\n\n**Split only if you have these problems:**\n- Team size >15 engineers stepping on each other\n- Independent scaling needs (e.g., image processing hogs CPU, API stays cheap)\n- Deploy velocity blocked \u2014 one team's change holds everyone's release\n- Clear domain boundaries already exist in code\n\n**Red flags that say \"not yet\":**\n- Can't draw clean domain lines without cross-cutting DB queries\n- No observability (traces, metrics) \u2014 debugging distributed calls becomes nightmare\n- Small team \u2014 microservices multiply operational burden fast\n- Django ORM doing heavy joins across would-be service boundaries \u2014 data ownership unclear\n\n**Real cost of splitting:**\n- Network latency replaces function calls\n- Distributed transactions (no more DB ACID across services)\n- Need service discovery, circuit breakers, retries\n- Each service = own deploy pipeline, secrets, infra\n\n**Django-specific checks:**\n- Where are your N+1 queries? Fix those first \u2014 cheap wins\n- Profile with `django-silk` or `py-spy` \u2014 slow monolith often means slow queries, not architecture\n- Can you extract a service via async task queue (Celery) first? Lower risk than full split\n\n**Recommended path:**\n1. Profile \u2014 confirm architecture *is* the bottleneck\n2. Add caching, DB indexes, query optimization\n3. Extract async workers for heavy jobs\n4. If still blocked: split one bounded context first, prove the model\n\nMost Django monoliths are slow from missing indexes and N+1s, not architecture. Measure before splitting.",
+  "stop_reason": "end_turn",
+  "session_id": "da4e1e8a-7299-4f6e-9244-f80e5e654888",
+  "total_cost_usd": 0.0336423,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6406,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 408,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6406,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 408,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6406,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6406
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 408,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6406,
+      "webSearchRequests": 0,
+      "costUSD": 0.0336423,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "7fedebb8-0adb-411d-a18d-036fcfe6c646",
+  "_meta": {
+    "track": "B",
+    "task": "microservices-monolith",
+    "category": "architecture",
+    "condition": "caveman",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 13.08,
+    "timestamp": 1776774792,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

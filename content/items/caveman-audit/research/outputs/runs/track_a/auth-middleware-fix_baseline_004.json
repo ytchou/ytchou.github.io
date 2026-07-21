@@ -1,0 +1,21 @@
+{
+  "input_tokens": 52,
+  "output_tokens": 1100,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## JWT Expiry Check Bug\n\nThe most common cause is a **units mismatch**. JWT `exp` is in **seconds**, but `Date.now()` returns **milliseconds**.\n\n---\n\n### The Bug\n\n```javascript\n// \u274c BROKEN - comparing milliseconds to seconds\nconst isExpired = Date.now() > payload.exp;\n\n// Example values that make this clear:\n// Date.now()    = 1703980800000  (milliseconds)\n// payload.exp   = 1703980800     (seconds)\n// 1703980800000 > 1703980800 is ALWAYS true... \n// wait, that would block everything\n\n// The opposite mistake is also common:\nconst isExpired = Math.floor(Date.now() / 1000) < payload.exp; // logic inverted\n// This passes when token IS expired\n```\n\nThe two failure modes:\n\n| Mistake | Result |\n|---|---|\n| `Date.now() > payload.exp` | Always expired (blocks valid tokens) |\n| `Date.now() < payload.exp` | **Always valid (lets expired tokens through)** \u2190 your bug |\n| Correct units but inverted logic | Same problems |\n\n---\n\n### The Fix\n\n```javascript\n// \u2705 CORRECT - convert Date.now() to seconds, check properly\nfunction isTokenExpired(payload) {\n  const nowInSeconds = Math.floor(Date.now() / 1000);\n  return nowInSeconds > payload.exp;\n}\n\n// Middleware\nfunction authenticateToken(req, res, next) {\n  const authHeader = req.headers['authorization'];\n  const token = authHeader && authHeader.split(' ')[1];\n\n  if (!token) {\n    return res.status(401).json({ error: 'No token provided' });\n  }\n\n  try {\n    const payload = jwt.verify(token, process.env.JWT_SECRET);\n    \n    // jwt.verify() already checks expiry if you used jsonwebtoken library\n    // but if you're manually decoding:\n    const nowInSeconds = Math.floor(Date.now() / 1000);\n    \n    if (nowInSeconds > payload.exp) {\n      return res.status(401).json({ error: 'Token expired' });\n    }\n\n    req.user = payload;\n    next();\n  } catch (err) {\n    return res.status(403).json({ error: 'Invalid token' });\n  }\n}\n```\n\n---\n\n### Better Approach: Let the Library Handle It\n\nIf you're using `jsonwebtoken`, **don't check expiry manually** \u2014 `jwt.verify()` does it automatically:\n\n```javascript\n// \u2705 PREFERRED - jsonwebtoken handles expiry automatically\nfunction authenticateToken(req, res, next) {\n  const token = req.headers['authorization']?.split(' ')[1];\n\n  if (!token) {\n    return res.status(401).json({ error: 'No token provided' });\n  }\n\n  try {\n    // Throws TokenExpiredError if exp has passed\n    const payload = jwt.verify(token, process.env.JWT_SECRET);\n    req.user = payload;\n    next();\n  } catch (err) {\n    // Distinguish between expired and invalid for better UX\n    if (err.name === 'TokenExpiredError') {\n      return res.status(401).json({ \n        error: 'Token expired',\n        expiredAt: err.expiredAt  // useful for debugging\n      });\n    }\n    return res.status(403).json({ error: 'Invalid token' });\n  }\n}\n```\n\n---\n\n### Quick Diagnostic\n\nAdd this temporarily to see what you're actually comparing:\n\n```javascript\nconst nowMs = Date.now();\nconst nowSec = Math.floor(nowMs / 1000);\nconsole.log({\n  'Date.now()': nowMs,          // e.g. 1703980800000\n  'nowInSeconds': nowSec,       // e.g. 1703980800\n  'payload.exp': payload.exp,   // e.g. 1703977200\n  'difference': nowSec - payload.exp  // positive = expired\n});\n```\n\n---\n\n### Summary\n\n1. **Root cause**: `Date.now()` (ms) compared directly to `payload.exp` (seconds) with wrong logic\n2. **Quick fix**: Use `Math.floor(Date.now() / 1000) > payload.exp`\n3. **Best fix**: Use `jwt.verify()` and catch `TokenExpiredError` \u2014 don't reimplement what the library already does correctly",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 16.82,
+  "_meta": {
+    "track": "C",
+    "task": "auth-middleware-fix",
+    "category": "bugfix",
+    "condition": "baseline",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 28,
+    "timestamp": 1776585159
+  }
+}

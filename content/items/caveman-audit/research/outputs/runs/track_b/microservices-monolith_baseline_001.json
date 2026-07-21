@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 14205,
+  "duration_api_ms": 16517,
+  "num_turns": 1,
+  "result": "The honest answer: most teams split too early. Here are the key factors that actually matter:\n\n## When splitting makes sense\n\n**Team size and ownership** \u2014 Microservices pay off when different teams own different domains and need independent deploy cadences. If it's one team, you're adding coordination overhead without the benefit.\n\n**Bottleneck isolation** \u2014 Is the slowness in one specific area (e.g., a heavy reporting module, a CPU-intensive job)? You can often extract *just that part* rather than splitting the whole thing.\n\n**Independent scaling needs** \u2014 If one domain (e.g., image processing, search) needs 10x the resources of everything else, splitting lets you scale it independently.\n\n## Costs you'll absorb immediately\n\n- **Distributed systems complexity**: network failures, eventual consistency, distributed tracing\n- **Operational burden**: multiple deployments, separate CI/CD pipelines, service discovery, health checks\n- **Data boundaries**: cross-service queries become API calls or eventual sync \u2014 Django's ORM won't save you\n- **Testing**: integration testing across services is much harder than a single test suite\n\n## What to do first\n\nBefore considering microservices, exhaust these:\n\n1. **Profile the Django app** \u2014 `django-silk`, `django-debug-toolbar`, or APM (Datadog, Sentry). You likely have N+1 queries or missing indexes.\n2. **Add caching** \u2014 Redis for hot paths, `select_related`/`prefetch_related` for ORM queries.\n3. **Async task offloading** \u2014 Celery for slow synchronous paths.\n4. **Modular monolith** \u2014 Split into well-bounded Django apps with clear internal APIs first. This gets you the domain clarity without the distributed systems tax.\n\n**My recommendation**: profile first, fix the obvious bottlenecks, then consider extracting *one* high-isolation service (e.g., notifications, file processing) as a pilot before committing to a full split. The cost of reversing a premature microservices decision is very high.",
+  "stop_reason": "end_turn",
+  "session_id": "3a571e6f-5963-44f7-971f-0637afc79bce",
+  "total_cost_usd": 0.03206755,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 5417,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 519,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 5417,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 519,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 5417,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 5417
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 374,
+      "outputTokens": 19,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000469,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 519,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 5417,
+      "webSearchRequests": 0,
+      "costUSD": 0.03159855,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "8ccadf2a-791a-4f5d-a58e-554b066c6513",
+  "_meta": {
+    "track": "B",
+    "task": "microservices-monolith",
+    "category": "architecture",
+    "condition": "baseline",
+    "run_num": 1,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 16.04,
+    "timestamp": 1776774775,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

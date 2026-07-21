@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 11444,
+  "duration_api_ms": 11391,
+  "num_turns": 1,
+  "result": "Key factors:\n\n**Split only if monolith actually hurts**\n- Where is slow? DB queries? CPU? Memory? Profile first. Microservices don't fix bad queries.\n\n**Team structure**\n- Conway's Law: org structure becomes system structure. Split services only if teams can own them independently. Small team + many services = coordination hell.\n\n**Data boundaries**\n- Hardest part. Identify bounded contexts where data ownership is clean. Cross-service transactions = distributed transaction nightmare (sagas, 2PC, eventual consistency). If data is deeply shared, splitting causes pain.\n\n**Operational maturity**\n- Microservices need: service discovery, distributed tracing, centralized logging, container orchestration, API gateways, health checks. Already have this? Cost is lower. Starting from zero? Add months.\n\n**Django-specific pain points**\n- ORM relations cross bounded contexts? Hard to split.\n- Shared `models.py` everywhere? Signal debt = hidden coupling.\n- Which apps are actually slow vs. just coupled?\n\n**Traffic patterns**\n- One hot endpoint? Extract just that. Don't split everything because one part needs scale.\n\n**Recommended approach: strangler fig**\n- Don't rewrite. Extract one service at a time. Start with least-coupled, highest-value boundary (often: auth, billing, notifications \u2014 things with clean I/O contracts).\n\n**When monolith is still right**\n- Team < 8 engineers\n- < 1M requests/day\n- Single deployment cadence\n- Shared DB schema with no clean seams\n\nProfile first, map data boundaries second. Most Django monolith slowness dies with read replicas + query optimization + caching \u2014 before splitting anything.",
+  "stop_reason": "end_turn",
+  "session_id": "129ed100-ec15-4750-808e-17fe82ea08cb",
+  "total_cost_usd": 0.011933699999999998,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 18049,
+    "output_tokens": 434,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 434,
+        "cache_read_input_tokens": 18049,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 434,
+      "cacheReadInputTokens": 18049,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.011933699999999998,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "b1d57a32-06c3-470d-8438-d590d5ce0b19",
+  "_meta": {
+    "track": "B",
+    "task": "microservices-monolith",
+    "category": "architecture",
+    "condition": "caveman",
+    "run_num": 15,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 13.02,
+    "timestamp": 1776776456,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

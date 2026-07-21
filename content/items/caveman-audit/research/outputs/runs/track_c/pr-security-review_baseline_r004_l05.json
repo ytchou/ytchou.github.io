@@ -1,0 +1,50 @@
+{
+  "input_tokens": 14791,
+  "output_tokens": 463,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Two issues here:\n\n## 1. SQL Injection (Critical)\n\nString interpolation puts user input directly into the query. An attacker can pass `1 OR 1=1` to dump all users, or `1; DROP TABLE users--` for destructive impact.\n\n**Fix:** Use a parameterized query:\n```js\napp.get('/api/users/:id', (req, res) => {\n  db.query('SELECT * FROM users WHERE id = ?', [req.params.id])\n    .then(user => res.json(user));\n});\n```\n\n## 2. Missing Authorization (High)\n\nAny authenticated (or unauthenticated) caller can fetch any user by ID \u2014 classic IDOR (Insecure Direct Object Reference). There's no check that the requester is allowed to see that record.\n\n**Fix:** Verify the requester owns the resource or has a privileged role:\n```js\napp.get('/api/users/:id', requireAuth, (req, res) => {\n  if (req.user.id !== req.params.id && !req.user.isAdmin) {\n    return res.status(403).json({ error: 'Forbidden' });\n  }\n  db.query('SELECT id, name, email FROM users WHERE id = ?', [req.params.id])\n    .then(user => res.json(user));\n});\n```\n\n## 3. Over-exposure (Medium)\n\n`SELECT *` returns every column \u2014 likely including `password_hash`, `mfa_secret`, tokens, etc. Enumerate only the columns the client actually needs.\n\n## 4. No Error Handling (Low)\n\nA rejected promise surfaces a 500 with a raw stack trace, leaking implementation details. Add `.catch(err => res.status(500).json({ error: 'Internal server error' }))` \u2014 log the real error server-side only.",
+  "thinking_text": "The user wants a security review of this Express route handler. Let me analyze it.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 27.58,
+  "_meta": {
+    "track": "C",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "baseline",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 59576,
+    "timestamp": 1776614109,
+    "level": 5,
+    "ordering": [
+      2,
+      9,
+      6,
+      1,
+      5,
+      4,
+      0,
+      8,
+      7,
+      3
+    ],
+    "chunks_present": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "num_chunks": 10,
+    "behavioral_chars": 12880,
+    "chunk_chars": 46676
+  }
+}

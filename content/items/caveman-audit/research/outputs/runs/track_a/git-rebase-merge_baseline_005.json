@@ -1,0 +1,21 @@
+{
+  "input_tokens": 40,
+  "output_tokens": 924,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "# Git Merge vs Git Rebase\n\n## What They Do\n\n**`git merge`** combines two branches by creating a new \"merge commit\" that has two parents, preserving the exact history of how branches diverged and came back together.\n\n**`git rebase`** moves or replays your commits on top of another branch, rewriting history to appear as if you branched from a different point.\n\n---\n\n## Visual Comparison\n\n**Starting state:**\n```\nmain:    A --- B --- C\n                \\\nfeature:         D --- E\n```\n\n**After `git merge main` (from feature):**\n```\nmain:    A --- B --- C\n                \\       \\\nfeature:         D --- E --- M   \u2190 merge commit (has 2 parents)\n```\n\n**After `git rebase main` (from feature):**\n```\nmain:    A --- B --- C\n                         \\\nfeature:                  D' --- E'   \u2190 commits replayed, new hashes\n```\n\n---\n\n## Key Differences\n\n| Aspect | Merge | Rebase |\n|--------|-------|--------|\n| History | Preserves exact history | Rewrites history (new commit hashes) |\n| Merge commit | Yes, creates one | No extra commits |\n| Conflicts | Resolved once | Resolved per-commit being replayed |\n| Safety | Safe on shared branches | **Dangerous on shared branches** |\n| Traceability | Shows when/where branches diverged | Linear, harder to see original branch point |\n\n---\n\n## When to Use Each\n\n### Use `merge` when:\n- Working on **shared/public branches** (main, develop)\n- You want to **preserve the true history** of when work happened\n- Merging a completed feature back into main\n- Working with a team and others have pulled your branch\n\n```bash\n# Standard feature branch workflow\ngit checkout main\ngit merge feature/my-feature\n```\n\n### Use `rebase` when:\n- **Updating a local feature branch** with latest changes from main\n- You want a **clean, linear history** before merging\n- Cleaning up messy local commits before sharing (`rebase -i`)\n- Working on a **private branch** nobody else has\n\n```bash\n# Keep your feature branch current\ngit checkout feature/my-feature\ngit rebase main\n\n# Interactive rebase to clean up commits\ngit rebase -i HEAD~3\n```\n\n---\n\n## The Golden Rule\n\n> **Never rebase commits that have been pushed to a shared repository**\n\nWhen you rebase, commits get new SHA hashes. If others have based work on the old commits, their history diverges from yours, causing serious problems.\n\n```bash\n# DANGEROUS if others have pulled this branch\ngit push origin feature\ngit rebase main          # rewrites history\ngit push --force origin feature  # now teammates are in trouble\n```\n\n---\n\n## Common Workflows\n\n**Option 1: Merge everything (GitHub default)**\n```bash\ngit checkout main\ngit merge feature/login\n# Preserves all history, shows merge points clearly\n```\n\n**Option 2: Rebase then merge (clean history)**\n```bash\ngit checkout feature/login\ngit rebase main          # update with latest main\ngit checkout main\ngit merge feature/login  # now fast-forward, no merge commit needed\n```\n\n**Option 3: Squash merge (one commit per feature)**\n```bash\ngit merge --squash feature/login\ngit commit -m \"Add login feature\"\n# Collapses all feature commits into one\n```\n\n---\n\n## Practical Recommendation\n\n- **Daily workflow:** `rebase` to keep your local feature branch updated with main\n- **Finishing a feature:** `merge` (or squash merge) into main\n- **Cleaning up before PR:** `rebase -i` to squash/reorder your commits\n- **Shared branches:** always `merge`, never `rebase`\n\nThe teams that get into trouble are usually those who rebase inconsistently or rebase shared branches \u2014 pick a convention and stick to it.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 21.75,
+  "_meta": {
+    "track": "C",
+    "task": "git-rebase-merge",
+    "category": "explanation",
+    "condition": "baseline",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 28,
+    "timestamp": 1776585430
+  }
+}

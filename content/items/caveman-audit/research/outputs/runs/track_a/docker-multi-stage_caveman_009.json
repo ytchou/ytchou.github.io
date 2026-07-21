@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1063,
+  "output_tokens": 457,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "```dockerfile\n# Stage 1: deps\nFROM node:20-alpine AS deps\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci --ignore-scripts\n\n# Stage 2: build\nFROM node:20-alpine AS build\nWORKDIR /app\nCOPY --from=deps /app/node_modules ./node_modules\nCOPY . .\nRUN npx tsc --noEmit false \\\n && npm prune --omit=dev\n\n# Stage 3: runtime\nFROM node:20-alpine AS runtime\nENV NODE_ENV=production\nWORKDIR /app\nRUN addgroup -S app && adduser -S app -G app\nCOPY --from=build --chown=app:app /app/dist ./dist\nCOPY --from=build --chown=app:app /app/node_modules ./node_modules\nCOPY --from=build --chown=app:app /app/package.json ./\nUSER app\nEXPOSE 3000\nCMD [\"node\", \"dist/index.js\"]\n```\n\nKey moves:\n\n| Choice | Why |\n|--------|-----|\n| `alpine` base | ~5MB vs ~300MB slim |\n| Stage 1 deps separate | Layer cache survives src changes |\n| `npm ci` not `install` | Lockfile-exact, faster |\n| `npm prune --omit=dev` | Strip devDeps before copy |\n| Only `dist/` + `node_modules/` copied | No src/ts/config in final |\n| Non-root user | Security. Alpine needs `addgroup`/`adduser` not `useradd` |\n| `--ignore-scripts` in deps stage | Skip postinstall in throwaway stage |\n\n**Typical size result:** ~150\u2013180MB final vs ~1GB+ naive single-stage.\n\nAssumes `tsconfig.json` has `\"outDir\": \"./dist\"`. Adjust `CMD` if entry point differ.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 13.83,
+  "_meta": {
+    "track": "C",
+    "task": "docker-multi-stage",
+    "category": "devops",
+    "condition": "caveman",
+    "run_num": 9,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776586039
+  }
+}

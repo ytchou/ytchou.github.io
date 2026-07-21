@@ -1,0 +1,21 @@
+{
+  "input_tokens": 109,
+  "output_tokens": 567,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## Refactored with Async/Await\n\nHere's the refactored version with several improvements:\n\n```javascript\nasync function getUser(id) {\n  const rows = await db.query('SELECT * FROM users WHERE id = ?', [id]);\n\n  if (!rows.length) {\n    throw new Error(`User with id \"${id}\" not found`);\n  }\n\n  return rows[0];\n}\n```\n\n### Usage Example\n\n```javascript\n// Basic usage\ntry {\n  const user = await getUser(1);\n  console.log(user);\n} catch (err) {\n  console.error('Failed to get user:', err.message);\n}\n\n// Or with .then()/.catch() if not in an async context\ngetUser(1)\n  .then(user => console.log(user))\n  .catch(err => console.error(err.message));\n```\n\n---\n\n### What Changed and Why\n\n| Before | After | Reason |\n|---|---|---|\n| `callback(err)` | `throw new Error(...)` | Async functions reject the returned Promise on throw |\n| `callback(null, rows[0])` | `return rows[0]` | Return value becomes the Promise's resolved value |\n| `callback(new Error(...))` | `throw new Error(...)` | Consistent error handling via try/catch |\n| Generic `'Not found'` message | `User with id \"${id}\" not found` | More descriptive error message |\n\n---\n\n### Important Caveat\n\nThis assumes `db.query()` **already returns a Promise**. If it's still callback-based, wrap it first:\n\n```javascript\n// Wrap once, reuse everywhere\nconst query = (sql, params) =>\n  new Promise((resolve, reject) => {\n    db.query(sql, params, (err, rows) => {\n      if (err) reject(err);\n      else resolve(rows);\n    });\n  });\n\n// Then use it cleanly\nasync function getUser(id) {\n  const rows = await query('SELECT * FROM users WHERE id = ?', [id]);\n\n  if (!rows.length) {\n    throw new Error(`User with id \"${id}\" not found`);\n  }\n\n  return rows[0];\n}\n```\n\n> **Tip:** Many modern database libraries (like `mysql2/promise`, `pg`, `knex`) expose Promise-based APIs natively \u2014 prefer those over manual wrapping.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 9.75,
+  "_meta": {
+    "track": "C",
+    "task": "async-refactor",
+    "category": "refactor",
+    "condition": "baseline",
+    "run_num": 9,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 28,
+    "timestamp": 1776585530
+  }
+}

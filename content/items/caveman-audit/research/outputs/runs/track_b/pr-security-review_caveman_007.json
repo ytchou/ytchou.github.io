@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 7313,
+  "duration_api_ms": 7258,
+  "num_turns": 1,
+  "result": "**SQL injection.** `req.params.id` injected directly into query string. Attacker sends `1 OR 1=1` \u2192 dumps all users. Sends `1; DROP TABLE users--` \u2192 data loss.\n\nFix with parameterized query:\n\n```js\napp.get('/api/users/:id', (req, res) => {\n  db.query('SELECT * FROM users WHERE id = $1', [req.params.id])\n    .then(user => res.json(user))\n    .catch(err => res.status(500).json({ error: 'Internal server error' }));\n});\n```\n\nOther issues in original:\n\n- **No error handling** \u2014 unhandled promise rejection crashes or leaks stack traces to client\n- **No auth check** \u2014 any caller reads any user's data\n- **`SELECT *`** \u2014 returns all columns including password hashes, tokens, PII\n\nMinimal hardened version:\n\n```js\napp.get('/api/users/:id', requireAuth, (req, res) => {\n  const id = parseInt(req.params.id, 10);\n  if (isNaN(id)) return res.status(400).json({ error: 'Invalid id' });\n\n  db.query('SELECT id, name, email FROM users WHERE id = $1', [id])\n    .then(user => user ? res.json(user) : res.status(404).end())\n    .catch(() => res.status(500).end());\n});\n```\n\nPriority: fix SQL injection first \u2014 it's critical and trivially exploitable.",
+  "stop_reason": "end_turn",
+  "session_id": "9522d879-cc55-479b-b425-0343770f2c0c",
+  "total_cost_usd": 0.03351855,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6445,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 390,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6445,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 390,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6445,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6445
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 390,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6445,
+      "webSearchRequests": 0,
+      "costUSD": 0.03351855,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "bd2abca5-b71c-42e2-9c05-ce2344c4d3df",
+  "_meta": {
+    "track": "B",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "caveman",
+    "run_num": 7,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 8.88,
+    "timestamp": 1776776487,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

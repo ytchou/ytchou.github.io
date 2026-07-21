@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1063,
+  "output_tokens": 580,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## Monolith \u2192 Microservices: Consider First\n\n**Split only if monolith actually broken.** Most teams split too early.\n\n---\n\n### Diagnose First\n\nRun profiling. Slow \u2260 wrong architecture. Often:\n- Missing DB indexes\n- N+1 queries\n- No caching\n- Sync tasks that should be async (Celery)\n\nFix cheap stuff first. Microservices won't fix bad queries.\n\n---\n\n### Real Factors\n\n**Team size & ownership**\nConway's Law real. Small team + microservices = coordination hell. Need clear domain ownership per service. Under ~20 devs: usually not worth it.\n\n**Deployment independence**\nDo different parts need different release cadences? If yes, split helps. If whole team deploys together anyway, gain nothing.\n\n**Scale bottlenecks are isolated**\nOne component gets 100x traffic of others? Split that piece. Scaling whole monolith for one hot path = waste.\n\n**Domain boundaries are clear**\nFuzzy domains \u2192 distributed monolith (worst of both). Need clean seams: auth, billing, notifications, etc. If everything touches everything, splitting creates nightmare joins across network.\n\n**Org can handle distributed systems**\nMicroservices add: service discovery, network failures, distributed tracing, eventual consistency, API versioning, inter-service auth. Team need skills + tooling for all of it.\n\n**Data ownership**\nEach service own its DB. Shared DB = not real microservices. Cross-service transactions = hard. If data model tightly coupled, split is painful.\n\n---\n\n### Middle Path (Often Better)\n\nBefore full split:\n\n| Step | What |\n|------|------|\n| Modular monolith | Enforce domain boundaries inside single app |\n| Extract async work | Celery for heavy tasks |\n| Read replicas + caching | Redis, DB replicas |\n| Extract one service | Pick least-coupled domain, prove the pattern |\n\n---\n\n### Split When\n\n- Specific domain needs independent scale\n- Teams blocked by each other constantly\n- Different services need different tech (ML model serving, etc.)\n- Compliance requires isolation (PCI, HIPAA)\n\n### Don't Split When\n\n- Just slow (profile first)\n- Team small / domains fuzzy\n- No DevOps maturity for distributed systems\n- Deadline pressure (complexity explodes mid-migration)\n\n---\n\n**Bottom line:** Identify *which* part is slow and *why*. Microservices solve org/scale problems, not code quality problems.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 15.97,
+  "_meta": {
+    "track": "C",
+    "task": "microservices-monolith",
+    "category": "architecture",
+    "condition": "caveman",
+    "run_num": 6,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585704
+  }
+}

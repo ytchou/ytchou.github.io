@@ -1,0 +1,22 @@
+{
+  "input_tokens": 74,
+  "output_tokens": 1069,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## The Race Condition Problem\n\nThe typical cause is a **read-modify-write** pattern done in application code:\n\n```javascript\n// \u274c BROKEN - Race condition\nconst result = await db.query('SELECT counter FROM table WHERE id = $1', [id]);\nconst newValue = result.rows[0].counter + 1;  // Another request reads here too!\nawait db.query('UPDATE table SET counter = $1 WHERE id = $2', [newValue, id]);\n```\n\nTwo concurrent requests both read the same value (e.g., `5`), both write `6`, and one increment is lost.\n\n---\n\n## Solutions\n\n### 1. Atomic UPDATE (Best for simple increments)\n\n```javascript\n// \u2705 Let PostgreSQL do the math atomically\nconst result = await db.query(\n  'UPDATE counters SET counter = counter + 1 WHERE id = $1 RETURNING counter',\n  [id]\n);\nreturn result.rows[0].counter;\n```\n\nThis is a single atomic operation \u2014 no race condition possible.\n\n---\n\n### 2. SELECT FOR UPDATE (Best when you need the value first)\n\n```javascript\n// \u2705 Pessimistic locking\nconst client = await pool.connect();\ntry {\n  await client.query('BEGIN');\n  \n  const result = await client.query(\n    'SELECT counter FROM counters WHERE id = $1 FOR UPDATE',\n    [id]\n  );\n  // Row is locked \u2014 other transactions wait here\n  const newValue = result.rows[0].counter + 1;\n  \n  await client.query(\n    'UPDATE counters SET counter = $1 WHERE id = $2',\n    [newValue, id]\n  );\n  \n  await client.query('COMMIT');\n  return newValue;\n} catch (err) {\n  await client.query('ROLLBACK');\n  throw err;\n} finally {\n  client.release();\n}\n```\n\n---\n\n### 3. Optimistic Locking with Retry (Best for high-read, low-conflict scenarios)\n\n```javascript\n// \u2705 Optimistic locking using version column\n// Schema: ALTER TABLE counters ADD COLUMN version INTEGER DEFAULT 0;\n\nasync function incrementWithRetry(id, maxRetries = 3) {\n  for (let attempt = 0; attempt < maxRetries; attempt++) {\n    const { rows } = await db.query(\n      'SELECT counter, version FROM counters WHERE id = $1',\n      [id]\n    );\n    \n    const { counter, version } = rows[0];\n    \n    const updateResult = await db.query(\n      `UPDATE counters \n       SET counter = $1, version = $2 \n       WHERE id = $3 AND version = $4  -- Only update if version unchanged\n       RETURNING counter`,\n      [counter + 1, version + 1, id, version]\n    );\n    \n    if (updateResult.rowCount > 0) {\n      return updateResult.rows[0].counter; // Success\n    }\n    // Version mismatch \u2014 another request updated first, retry\n    await new Promise(r => setTimeout(r, Math.random() * 50));\n  }\n  throw new Error('Max retries exceeded');\n}\n```\n\n---\n\n## Quick Comparison\n\n| Approach | Best For | Throughput | Complexity |\n|---|---|---|---|\n| Atomic UPDATE | Simple increments | High | Low |\n| SELECT FOR UPDATE | Complex logic needed | Medium | Medium |\n| Optimistic Locking | Read-heavy, rare conflicts | High | High |\n\n---\n\n## Key Principles\n\n```\n\u274c Never:  Read \u2192 Modify in JS \u2192 Write  (classic race condition)\n\u2705 Always: Either modify in SQL atomically, OR lock the row first\n```\n\n**For your case, the atomic `UPDATE counter = counter + 1` is almost certainly the right solution** \u2014 it's simple, correct, and performant. Only reach for the more complex patterns if you need to read the value and apply logic before updating.",
+  "thinking_text": "The user is asking about a race condition in a Node.js API endpoint that increments a counter in PostgreSQL. This is a classic concurrency problem. Let me explain the issue and provide solutions.\n\nThe common mistake is doing a read-then-write operation:\n1. SELECT counter FROM table WHERE id = 1\n2. counter + 1 in application code\n3. UPDATE table SET counter = newValue WHERE id = 1\n\nThis creates a race condition. Let me provide proper solutions.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 23.69,
+  "_meta": {
+    "track": "A_prime",
+    "task": "race-condition-debug",
+    "category": "debugging",
+    "condition": "baseline",
+    "run_num": 1,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 28,
+    "timestamp": 1776610888
+  }
+}

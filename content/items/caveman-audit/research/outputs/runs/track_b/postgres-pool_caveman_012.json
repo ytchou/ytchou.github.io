@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 12716,
+  "duration_api_ms": 12655,
+  "num_turns": 1,
+  "result": "Use `pg` (node-postgres). `Pool` handles connection reuse.\n\n```bash\nnpm install pg\n```\n\n```js\nconst { Pool } = require('pg');\n\nconst pool = new Pool({\n  connectionString: process.env.DATABASE_URL,\n  // or individual fields:\n  // host, port, database, user, password\n\n  max: 20,                  // max connections in pool\n  min: 2,                   // keep alive minimum\n  idleTimeoutMillis: 30000, // close idle conn after 30s\n  connectionTimeoutMillis: 2000, // fail if no conn available in 2s\n  allowExitOnIdle: false,   // don't let pool drain on idle\n});\n\n// Error on idle clients \u2014 prevents silent crashes\npool.on('error', (err, client) => {\n  console.error('Idle client error:', err);\n  process.exit(-1); // or alert + let process manager restart\n});\n```\n\n**Query with proper handling:**\n\n```js\nasync function query(text, params) {\n  const client = await pool.connect();\n  try {\n    const res = await client.query(text, params);\n    return res;\n  } finally {\n    client.release(); // always release, even on error\n  }\n}\n```\n\n**Or simpler \u2014 use `pool.query` for one-shot queries:**\n\n```js\n// Pool auto-acquires and releases client\nconst res = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);\n```\n\nUse `pool.query` when no transaction needed. Use `pool.connect()` + manual `release()` for transactions or multi-statement sequences.\n\n**Transaction pattern:**\n\n```js\nasync function withTransaction(fn) {\n  const client = await pool.connect();\n  try {\n    await client.query('BEGIN');\n    const result = await fn(client);\n    await client.query('COMMIT');\n    return result;\n  } catch (err) {\n    await client.query('ROLLBACK');\n    throw err;\n  } finally {\n    client.release();\n  }\n}\n\n// Usage\nawait withTransaction(async (client) => {\n  await client.query('UPDATE accounts SET balance = balance - $1 WHERE id = $2', [amount, fromId]);\n  await client.query('UPDATE accounts SET balance = balance + $1 WHERE id = $2', [amount, toId]);\n});\n```\n\n**Shutdown clean:**\n\n```js\nprocess.on('SIGTERM', async () => {\n  await pool.end(); // drain pool before exit\n});\n```\n\nKey config values depend on DB server `max_connections` \u2014 `pool.max` across all app instances must stay under that limit.",
+  "stop_reason": "end_turn",
+  "session_id": "75aaa5ba-727b-497e-b9fb-5856a8bfc08f",
+  "total_cost_usd": 0.03810105,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6399,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 707,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6399,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 707,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6399,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6399
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 707,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6399,
+      "webSearchRequests": 0,
+      "costUSD": 0.03810105,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "95fd1688-7d73-4704-90ea-57752dbbfd65",
+  "_meta": {
+    "track": "B",
+    "task": "postgres-pool",
+    "category": "setup",
+    "condition": "caveman",
+    "run_num": 12,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 14.33,
+    "timestamp": 1776776303,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

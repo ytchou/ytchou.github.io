@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1082,
+  "output_tokens": 472,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Both integrate changes from one branch into another. Different history shape.\n\n## Merge\n\n```\nmain:    A\u2500B\u2500C\u2500\u2500\u2500\u2500\u2500\u2500\u2500M\nfeature:      D\u2500E\u2500F\u2500\u256f\n```\n\nCreates new \"merge commit\" M. Both branch histories preserved. Easy to see where branch started/ended.\n\n**Use when:**\n- Working on shared/public branches\n- Want honest history (\"this was a feature branch\")\n- Collaborating \u2014 others may have cloned your branch\n\n**Tradeoffs:**\n- \u2705 Safe, non-destructive\n- \u2705 Conflict once at merge point\n- \u274c History gets noisy with many merge commits\n- \u274c Hard to read `git log` on big projects\n\n## Rebase\n\n```\nmain:    A\u2500B\u2500C\nfeature:      D'\u2500E'\u2500F'  (replayed on top of C)\n```\n\nReplays your commits on top of target. Linear history. Commits get new hashes (D\u2192D').\n\n**Use when:**\n- Cleaning up local/private feature branch before PR\n- Want linear `git log`\n- Keeping feature branch current with main\n\n**Tradeoffs:**\n- \u2705 Clean, linear history\n- \u2705 Easy `git bisect` + blame\n- \u274c Rewrites history \u2014 dangerous on shared branches\n- \u274c Multiple conflict rounds (one per replayed commit)\n- \u274c Force push required \u2192 teammates get confused\n\n## Quick rule\n\n| Situation | Use |\n|-----------|-----|\n| Merge feature \u2192 main | merge |\n| Update feature with latest main | rebase |\n| Cleaning commits before PR | rebase |\n| Shared branch others use | merge |\n| Public branch (never rewrite) | merge |\n\n**Golden rule:** Never rebase commits already pushed to shared branch. Rewrites hashes \u2192 everyone else branch break.",
+  "thinking_text": "The user wants an explanation of git rebase vs git merge. I'm in caveman mode (full by default).",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 12.42,
+  "_meta": {
+    "track": "A_prime",
+    "task": "git-rebase-merge",
+    "category": "explanation",
+    "condition": "caveman",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776610605
+  }
+}

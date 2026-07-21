@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 8532,
+  "duration_api_ms": 8479,
+  "num_turns": 1,
+  "result": "**SQL injection** \u2014 critical.\n\n`req.params.id` goes directly into query string. Attacker sends `/api/users/1 OR 1=1` \u2192 dumps entire table. Or `1; DROP TABLE users` \u2192 data loss.\n\n**Fix:**\n\n```js\napp.get('/api/users/:id', (req, res) => {\n  db.query('SELECT * FROM users WHERE id = ?', [req.params.id])\n    .then(user => {\n      if (!user) return res.status(404).json({ error: 'Not found' });\n      res.json(user);\n    })\n    .catch(err => {\n      console.error(err);\n      res.status(500).json({ error: 'Internal server error' });\n    });\n});\n```\n\n**Other issues:**\n\n| Issue | Risk | Fix |\n|-------|------|-----|\n| No input validation on `id` | Malformed input, unexpected behavior | Validate `id` is integer before query |\n| No auth/authz check | Any user fetches any user's data (IDOR) | Verify `req.user.id === req.params.id` or admin role |\n| Raw DB errors exposed to client | Info leak (table names, schema) | Catch errors, return generic message |\n| `SELECT *` returns all columns | Password hash/sensitive fields leak to client | Select only needed columns |\n\n**Priority order:** SQL injection first (RCE-level risk), then IDOR (data breach), then error handling.",
+  "stop_reason": "end_turn",
+  "session_id": "2ed5ed6e-3cc2-4795-8022-3357afa9bd90",
+  "total_cost_usd": 0.03338355,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6445,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 381,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6445,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 381,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6445,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6445
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 381,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6445,
+      "webSearchRequests": 0,
+      "costUSD": 0.03338355,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "db821f1b-82fc-43e5-9336-8f325363288e",
+  "_meta": {
+    "track": "B",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "caveman",
+    "run_num": 8,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 10.22,
+    "timestamp": 1776776489,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

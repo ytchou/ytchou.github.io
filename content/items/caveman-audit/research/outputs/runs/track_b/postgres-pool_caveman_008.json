@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 10724,
+  "duration_api_ms": 10668,
+  "num_turns": 1,
+  "result": "Use `pg` (node-postgres) with `Pool`:\n\n```javascript\nconst { Pool } = require('pg');\n\nconst pool = new Pool({\n  connectionString: process.env.DATABASE_URL,\n  // Pool sizing\n  max: 20,                    // max connections\n  min: 2,                     // keep alive connections\n  idleTimeoutMillis: 30000,   // close idle connections after 30s\n  connectionTimeoutMillis: 5000, // fail fast if can't connect in 5s\n  // Per-query timeout\n  statement_timeout: 10000,   // 10s query timeout\n  query_timeout: 10000,\n});\n\n// Catch idle client errors (network drops, DB restart)\npool.on('error', (err, client) => {\n  console.error('Idle client error:', err.message);\n});\n```\n\n**Query pattern with proper cleanup:**\n\n```javascript\nasync function query(text, params) {\n  const client = await pool.connect();\n  try {\n    const result = await client.query(text, params);\n    return result;\n  } catch (err) {\n    // Log with query context, rethrow\n    console.error('Query failed:', { text, err: err.message });\n    throw err;\n  } finally {\n    client.release(); // always release, even on error\n  }\n}\n```\n\n**Transaction pattern:**\n\n```javascript\nasync function withTransaction(fn) {\n  const client = await pool.connect();\n  try {\n    await client.query('BEGIN');\n    const result = await fn(client);\n    await client.query('COMMIT');\n    return result;\n  } catch (err) {\n    await client.query('ROLLBACK');\n    throw err;\n  } finally {\n    client.release();\n  }\n}\n\n// Usage\nawait withTransaction(async (client) => {\n  await client.query('INSERT INTO ...', [...]);\n  await client.query('UPDATE ...', [...]);\n});\n```\n\n**Graceful shutdown:**\n\n```javascript\nprocess.on('SIGTERM', async () => {\n  await pool.end(); // drains pool, waits for in-flight queries\n  process.exit(0);\n});\n```\n\nKey points:\n- `connectionTimeoutMillis` fails fast when pool exhausted \u2014 catches traffic spikes early\n- `idleTimeoutMillis` prevents stale connections after DB-side timeouts (e.g. RDS default 8hr)\n- `statement_timeout` set at pool level applies to all queries; override per-client if needed\n- Always `release()` in `finally` \u2014 leaked clients exhaust pool silently",
+  "stop_reason": "end_turn",
+  "session_id": "5dbc0cee-33e3-42c5-a92a-5b520ba870fc",
+  "total_cost_usd": 0.037636050000000004,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6399,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 676,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6399,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 676,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6399,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6399
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 676,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6399,
+      "webSearchRequests": 0,
+      "costUSD": 0.037636050000000004,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "90f9292c-c0e7-4867-9d5b-1399e1190f93",
+  "_meta": {
+    "track": "B",
+    "task": "postgres-pool",
+    "category": "setup",
+    "condition": "caveman",
+    "run_num": 8,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 12.33,
+    "timestamp": 1776776289,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 13175,
+  "duration_api_ms": 14449,
+  "num_turns": 1,
+  "result": "Use the `pg` library's `Pool` class \u2014 here's a production-ready setup:\n\n```javascript\nimport { Pool } from 'pg';\n\nconst pool = new Pool({\n  connectionString: process.env.DATABASE_URL,\n  // Pool sizing\n  max: 20,                    // max connections (default: 10)\n  min: 2,                     // keep alive minimum connections\n  // Timeouts (all in milliseconds)\n  connectionTimeoutMillis: 5000,   // fail fast if no connection available\n  idleTimeoutMillis: 30000,        // release idle connections after 30s\n  query_timeout: 10000,            // per-query timeout\n  statement_timeout: 10000,        // postgres-side statement timeout\n  // SSL (for production/cloud DBs)\n  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: true } : false,\n});\n\n// Catch pool-level errors (e.g. dropped connections) \u2014 without this,\n// uncaught errors crash the process\npool.on('error', (err) => {\n  console.error('Unexpected pool error', err);\n});\n```\n\n**For individual queries:**\n\n```javascript\nasync function query(text, params) {\n  const start = Date.now();\n  try {\n    const result = await pool.query(text, params);\n    return result;\n  } catch (err) {\n    // pg error codes: https://www.postgresql.org/docs/current/errcodes-appendix.html\n    if (err.code === '57014') throw new Error('Query timed out');\n    if (err.code === '08006') throw new Error('DB connection lost');\n    throw err;\n  } finally {\n    // optional: log slow queries\n    const duration = Date.now() - start;\n    if (duration > 1000) console.warn('Slow query', { text, duration });\n  }\n}\n```\n\n**For transactions (must use a dedicated client):**\n\n```javascript\nasync function withTransaction(fn) {\n  const client = await pool.connect();\n  try {\n    await client.query('BEGIN');\n    const result = await fn(client);\n    await client.query('COMMIT');\n    return result;\n  } catch (err) {\n    await client.query('ROLLBACK');\n    throw err;\n  } finally {\n    client.release(); // always release back to pool\n  }\n}\n\n// Usage:\nawait withTransaction(async (client) => {\n  await client.query('INSERT INTO orders ...', [...]);\n  await client.query('UPDATE inventory ...', [...]);\n});\n```\n\n**Key things to get right:**\n\n- `pool.on('error')` is mandatory \u2014 without it, idle client errors are unhandled exceptions\n- Always `release()` in a `finally` block or you'll exhaust the pool\n- `connectionTimeoutMillis` is what you actually want for \"slow DB\" detection; `idleTimeoutMillis` is about reclaiming unused connections\n- For serverless (Lambda, Vercel), use `pg-pool` with `max: 1` or switch to `@neondatabase/serverless` / `postgres` (the `postgres` npm package handles serverless better than `pg`)",
+  "stop_reason": "end_turn",
+  "session_id": "683a6f8a-fed4-457d-9d23-7e500a2c10ff",
+  "total_cost_usd": 0.017857799999999997,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17046,
+    "output_tokens": 819,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 819,
+        "cache_read_input_tokens": 17046,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 360,
+      "outputTokens": 18,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.00045000000000000004,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 819,
+      "cacheReadInputTokens": 17046,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.017407799999999998,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "ead3fe10-1343-4e51-b55f-ced8c28fef65",
+  "_meta": {
+    "track": "B",
+    "task": "postgres-pool",
+    "category": "setup",
+    "condition": "baseline",
+    "run_num": 8,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 14.98,
+    "timestamp": 1776776260,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

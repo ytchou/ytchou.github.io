@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1095,
+  "output_tokens": 514,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "**3 critical issues:**\n\n**1. SQL injection** (critical)\nDirect param interpolation. Attacker sends `1 OR 1=1` \u2192 dumps all users. Or `1; DROP TABLE users` \u2192 data loss.\n\nFix \u2014 parameterized query:\n```js\nconst query = 'SELECT * FROM users WHERE id = ?';\ndb.query(query, [req.params.id]).then(user => res.json(user));\n```\n\n**2. No auth/authz**\nAny request hits user data. No token check, no \"is requester allowed to see this ID?\"\n\nFix:\n```js\napp.get('/api/users/:id', authenticateToken, authorizeUser, (req, res) => { ... });\n```\n\n**3. No error handling**\nDB fail \u2192 unhandled rejection \u2192 crash or silent hang. Error may leak stack trace to client.\n\nFix:\n```js\ndb.query(query, [req.params.id])\n  .then(user => {\n    if (!user) return res.status(404).json({ error: 'Not found' });\n    res.json(user);\n  })\n  .catch(err => {\n    console.error(err);          // log internally\n    res.status(500).json({ error: 'Server error' }); // no leak\n  });\n```\n\n**Bonus: `SELECT *`**\nReturns all columns including password hashes, tokens, PII. Specify columns explicitly.\n\n```js\n'SELECT id, name, email FROM users WHERE id = ?'\n```\n\n---\n\n**Fixed route:**\n```js\napp.get('/api/users/:id', authenticateToken, authorizeUser, async (req, res) => {\n  try {\n    const user = await db.query(\n      'SELECT id, name, email FROM users WHERE id = ?',\n      [req.params.id]\n    );\n    if (!user) return res.status(404).json({ error: 'Not found' });\n    res.json(user);\n  } catch (err) {\n    console.error(err);\n    res.status(500).json({ error: 'Server error' });\n  }\n});\n```",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 11.9,
+  "_meta": {
+    "track": "C",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "caveman",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585800
+  }
+}

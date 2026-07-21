@@ -1,0 +1,42 @@
+{
+  "input_tokens": 6277,
+  "output_tokens": 302,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "**SQL injection.** Direct string interpolation lets attacker pass `1 OR 1=1` or `1; DROP TABLE users--`.\n\n**Fix:**\n\n```js\napp.get('/api/users/:id', (req, res) => {\n  const id = parseInt(req.params.id, 10);\n  if (isNaN(id)) return res.status(400).json({ error: 'Invalid ID' });\n\n  db.query('SELECT id, name, email FROM users WHERE id = ?', [id])\n    .then(user => {\n      if (!user) return res.status(404).json({ error: 'Not found' });\n      res.json(user);\n    })\n    .catch(() => res.status(500).json({ error: 'Server error' }));\n});\n```\n\nThree changes:\n1. **Parameterized query** \u2014 `?` placeholder, never interpolate user input\n2. **Explicit columns** \u2014 `SELECT *` leaks password hashes, tokens, internal fields\n3. **Input validation** \u2014 reject non-integers before they reach the DB\n\nAlso consider: auth middleware to verify the caller owns this `id` (IDOR risk), and rate limiting on the route.",
+  "thinking_text": "Security review of this Express route handler.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 14.58,
+  "_meta": {
+    "track": "C",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "caveman",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 24992,
+    "timestamp": 1776613508,
+    "level": 1,
+    "ordering": [
+      3,
+      2,
+      9,
+      6,
+      4,
+      0,
+      5,
+      1,
+      7,
+      8
+    ],
+    "chunks_present": [
+      2,
+      3
+    ],
+    "num_chunks": 2,
+    "behavioral_chars": 12880,
+    "chunk_chars": 8587
+  }
+}

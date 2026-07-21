@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 15235,
+  "duration_api_ms": 15179,
+  "num_turns": 1,
+  "result": "Key factors:\n\n**Split only if monolith has these problems:**\n- Independent scaling needs (one service drowns others)\n- Team size >20 devs stepping on each other\n- Deploy coupling causes risk/slowdowns\n- Clear domain boundaries already exist in code\n\n**Signals NOT ready to split:**\n- Can't draw clean domain lines without circular deps\n- No distributed systems experience on team\n- \"Slow\" = DB queries, not architecture (profile first)\n- Under ~50k req/day \u2014 monolith handles fine\n\n**Hidden costs team must accept:**\n- Network latency replaces function calls\n- Distributed transactions are hard (no more ACID across services)\n- Observability explodes in complexity (need tracing, correlation IDs)\n- Ops burden: N services \u00d7 (deploy + monitor + on-call)\n- Django ORM assumptions break when data splits across DBs\n\n**Better first moves:**\n1. Profile \u2014 slow is usually N+1 queries or missing indexes, not architecture\n2. Add read replicas + caching layer\n3. Extract async workers (Celery) for heavy tasks\n4. Modularize code internally (bounded contexts) without splitting deploy\n\n**When split makes sense:**\n- One domain has 10\u00d7 traffic of others\n- Compliance requires data isolation\n- Different teams need independent release cadence\n\nVerdict: most teams split too early. Fix DB + add async workers first. If still slow after that, split the one hot domain only \u2014 not everything.",
+  "stop_reason": "end_turn",
+  "session_id": "50e44155-5e01-48b6-b3ca-784b0379c955",
+  "total_cost_usd": 0.03338355,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6413,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 389,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6413,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 389,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6413,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6413
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 389,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6413,
+      "webSearchRequests": 0,
+      "costUSD": 0.03338355,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "515509d3-d2c5-4e98-8b07-42af60c001ac",
+  "_meta": {
+    "track": "B",
+    "task": "microservices-monolith",
+    "category": "architecture",
+    "condition": "caveman",
+    "run_num": 8,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 16.74,
+    "timestamp": 1776776439,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

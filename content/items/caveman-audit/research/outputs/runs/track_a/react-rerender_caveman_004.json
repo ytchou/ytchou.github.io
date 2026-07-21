@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1056,
+  "output_tokens": 287,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "New object literal created every render \u2192 new reference \u2192 child sees \"changed\" prop \u2192 re-render.\n\nJS compare objects by reference, not value. `{a: 1} === {a: 1}` \u2192 false.\n\n**Fix options:**\n\n1. **`useMemo`** \u2014 memoize object, stable ref:\n```js\nconst config = useMemo(() => ({ a: 1, b: 2 }), [a, b]);\n<Child config={config} />\n```\n\n2. **`React.memo`** \u2014 skip child re-render if props shallow-equal:\n```js\nconst Child = React.memo(({ config }) => { ... });\n```\n\n3. **Move object outside component** \u2014 if static, no deps:\n```js\nconst CONFIG = { a: 1, b: 2 }; // module level\nfunction Parent() { return <Child config={CONFIG} />; }\n```\n\n4. **Flatten props** \u2014 pass primitives, not object:\n```js\n<Child a={1} b={2} /> // primitives compare by value\n```\n\n**Best combo:** `useMemo` on parent + `React.memo` on child. Both needed \u2014 memo child useless if prop ref always new.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 7.31,
+  "_meta": {
+    "track": "C",
+    "task": "react-rerender",
+    "category": "debugging",
+    "condition": "caveman",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585116
+  }
+}

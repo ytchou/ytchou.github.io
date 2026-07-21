@@ -1,0 +1,22 @@
+{
+  "input_tokens": 72,
+  "output_tokens": 691,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## The Problem: Object Reference Equality\n\nWhen you pass an object as a prop, React uses **shallow comparison** (`===`) to check if props changed. Since objects are compared by reference, not value, a new object literal is always \"different\" even with identical contents.\n\n```javascript\n// This creates a NEW object reference on every render\nfunction ParentComponent() {\n  return <ChildComponent config={{ theme: \"dark\", size: 10 }} />;\n  //                     ^^^ new object every render!\n}\n```\n\n```javascript\n// Even with memo, this still re-renders\nconst ChildComponent = React.memo(({ config }) => {\n  return <div>{config.theme}</div>;\n});\n// memo's shallow comparison sees a new object reference \u2192 re-renders\n```\n\n---\n\n## Solutions\n\n### 1. Move the object outside the component (if it's static)\n```javascript\n// Defined once, same reference every time\nconst CONFIG = { theme: \"dark\", size: 10 };\n\nfunction ParentComponent() {\n  return <ChildComponent config={CONFIG} />;\n}\n```\n\n### 2. Use `useMemo` (if it depends on state/props)\n```javascript\nfunction ParentComponent({ theme, size }) {\n  const config = useMemo(() => ({\n    theme,\n    size\n  }), [theme, size]); // only new reference when dependencies change\n\n  return <ChildComponent config={config} />;\n}\n```\n\n### 3. Use `useCallback` for function props (same issue applies)\n```javascript\nfunction ParentComponent() {\n  const handleClick = useCallback(() => {\n    console.log(\"clicked\");\n  }, []); // stable reference\n\n  return <ChildComponent onClick={handleClick} />;\n}\n```\n\n### 4. Pass primitive values instead of objects\n```javascript\n// Instead of passing the whole object...\n<ChildComponent config={{ theme: \"dark\", size: 10 }} />\n\n// Pass primitives directly\n<ChildComponent theme=\"dark\" size={10} />\n// Now shallow comparison works correctly\n```\n\n---\n\n## Quick Diagnosis Checklist\n\n| Cause | Fix |\n|-------|-----|\n| Object/array literal in JSX | Move outside component or `useMemo` |\n| Function defined inline | `useCallback` |\n| Parent re-renders too often | Fix parent first |\n| `React.memo` not applied | Wrap child in `memo` |\n\n---\n\n## Important Note\n\n> Don't reach for `useMemo`/`useCallback` everywhere \u2014 only add them when you've **confirmed** unnecessary re-renders are causing a real performance problem. Premature optimization adds complexity without benefit.\n\nUse the **React DevTools Profiler** to confirm which components are re-rendering and why before optimizing.",
+  "thinking_text": "The user is asking about a common React performance issue where components re-render even when props haven't changed. This is a classic problem related to object reference equality in JavaScript.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 14.79,
+  "_meta": {
+    "track": "A_prime",
+    "task": "react-rerender",
+    "category": "debugging",
+    "condition": "baseline",
+    "run_num": 1,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 28,
+    "timestamp": 1776610335
+  }
+}

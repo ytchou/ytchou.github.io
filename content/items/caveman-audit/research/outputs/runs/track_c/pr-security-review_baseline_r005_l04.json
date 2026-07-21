@@ -1,0 +1,48 @@
+{
+  "input_tokens": 12665,
+  "output_tokens": 419,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Two critical issues:\n\n**1. SQL Injection (Critical)**\n\n`req.params.id` is interpolated directly into the query string. An attacker can pass `1 OR 1=1` or `1; DROP TABLE users--` as the `id` parameter.\n\nFix: use a parameterized query.\n\n```js\napp.get('/api/users/:id', (req, res) => {\n  db.query('SELECT * FROM users WHERE id = ?', [req.params.id])\n    .then(user => res.json(user));\n});\n```\n\n**2. Missing error handling (High)**\n\nA failed query rejects the promise with no `.catch()`, causing an unhandled rejection that leaks a stack trace to the client in some frameworks.\n\nFix: add error handling and avoid exposing internals.\n\n```js\napp.get('/api/users/:id', (req, res) => {\n  db.query('SELECT * FROM users WHERE id = ?', [req.params.id])\n    .then(user => {\n      if (!user) return res.status(404).json({ error: 'Not found' });\n      res.json(user);\n    })\n    .catch(() => res.status(500).json({ error: 'Internal server error' }));\n});\n```\n\n**3. Missing authorization (Medium)**\n\nAny authenticated (or unauthenticated) caller can fetch any user's record by iterating IDs. Add a middleware check that the requester is authorized to view the requested `id`.\n\n**4. `SELECT *` over-exposure (Low)**\n\nReturning all columns risks leaking `password_hash`, `ssn`, or other sensitive fields added later. Explicitly name the columns you need.",
+  "thinking_text": "The user wants a security review of this Express route handler.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 41.85,
+  "_meta": {
+    "track": "C",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "baseline",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 51166,
+    "timestamp": 1776614233,
+    "level": 4,
+    "ordering": [
+      3,
+      8,
+      5,
+      4,
+      1,
+      7,
+      6,
+      9,
+      2,
+      0
+    ],
+    "chunks_present": [
+      1,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "num_chunks": 8,
+    "behavioral_chars": 12880,
+    "chunk_chars": 38270
+  }
+}

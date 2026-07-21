@@ -1,0 +1,22 @@
+{
+  "input_tokens": 111,
+  "output_tokens": 1029,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## Security Issues Found\n\n### 1. \ud83d\udd34 Critical: SQL Injection\nThe most severe issue \u2014 user input is directly interpolated into the SQL query.\n\n```javascript\n// Attacker sends: /api/users/1 OR 1=1\n// Resulting query: SELECT * FROM users WHERE id = 1 OR 1=1\n// Returns ALL users in the database\n```\n\n**Fix: Use parameterized queries**\n```javascript\nconst query = 'SELECT * FROM users WHERE id = ?';\ndb.query(query, [req.params.id])\n```\n\n---\n\n### 2. \ud83d\udd34 Critical: No Authentication or Authorization\nAny unauthenticated user can query any user's data.\n\n```javascript\n// Add authentication middleware\nconst authenticate = require('../middleware/auth');\nconst authorize = require('../middleware/authorize');\n\napp.get('/api/users/:id', authenticate, authorize, (req, res) => {\n  // Only proceed if user is allowed to access this resource\n});\n```\n\n---\n\n### 3. \ud83d\udfe0 High: No Input Validation\nThe ID is never validated, allowing unexpected input types.\n\n```javascript\nconst { param, validationResult } = require('express-validator');\n\napp.get('/api/users/:id',\n  param('id').isInt({ min: 1 }).toInt(),\n  (req, res) => {\n    const errors = validationResult(req);\n    if (!errors.isEmpty()) {\n      return res.status(400).json({ errors: errors.array() });\n    }\n  }\n);\n```\n\n---\n\n### 4. \ud83d\udfe0 High: Over-fetching Data (`SELECT *`)\nReturning all columns risks exposing sensitive fields like passwords or tokens.\n\n```javascript\n// Explicitly select only needed fields\nconst query = 'SELECT id, name, email, created_at FROM users WHERE id = ?';\n```\n\n---\n\n### 5. \ud83d\udfe1 Medium: No Error Handling\nUnhandled rejections can crash the server or leak stack traces.\n\n```javascript\ndb.query(query, [req.params.id])\n  .then(user => {\n    if (!user) return res.status(404).json({ error: 'User not found' });\n    res.json(user);\n  })\n  .catch(err => {\n    console.error(err); // Log internally, don't expose to client\n    res.status(500).json({ error: 'Internal server error' });\n  });\n```\n\n---\n\n### Secure Revised Version\n\n```javascript\nconst { param, validationResult } = require('express-validator');\n\napp.get('/api/users/:id',\n  authenticate,\n  param('id').isInt({ min: 1 }).toInt(),\n  async (req, res) => {\n    const errors = validationResult(req);\n    if (!errors.isEmpty()) {\n      return res.status(400).json({ errors: errors.array() });\n    }\n\n    // Users can only access their own data (or admin can access any)\n    if (req.user.id !== req.params.id && !req.user.isAdmin) {\n      return res.status(403).json({ error: 'Forbidden' });\n    }\n\n    try {\n      const query = 'SELECT id, name, email, created_at FROM users WHERE id = ?';\n      const user = await db.query(query, [req.params.id]);\n\n      if (!user) return res.status(404).json({ error: 'User not found' });\n\n      res.json(user);\n    } catch (err) {\n      console.error(err);\n      res.status(500).json({ error: 'Internal server error' });\n    }\n  }\n);\n```\n\n---\n\n### Summary\n\n| Issue | Severity | Impact |\n|---|---|---|\n| SQL Injection | \ud83d\udd34 Critical | Full DB compromise |\n| No Auth/Authz | \ud83d\udd34 Critical | Unauthorized data access |\n| No Input Validation | \ud83d\udfe0 High | Unexpected behavior |\n| SELECT * | \ud83d\udfe0 High | Sensitive data exposure |\n| No Error Handling | \ud83d\udfe1 Medium | Info leakage / crashes |",
+  "thinking_text": "The user wants me to review this Express route handler for security issues. Let me analyze it thoroughly.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 24.04,
+  "_meta": {
+    "track": "A_prime",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "baseline",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 28,
+    "timestamp": 1776610742
+  }
+}

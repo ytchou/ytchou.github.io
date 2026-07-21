@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1082,
+  "output_tokens": 441,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Both integrate changes. Different history shape.\n\n## Merge\n\nJoins two branches, makes merge commit. History show exactly what happened.\n\n```\nA---B---C  main\n         \\\n          D---E---F  feature\n               \u2193 merge\nA---B---C---M  main\n     \\     /\n      D---E---F\n```\n\n## Rebase\n\nReplants feature commits on top of main. Linear history, no merge commit.\n\n```\nA---B---C  main\n         \\\n          D'--E'--F'  feature (replanted)\n```\n\n## When use each\n\n**Merge:**\n- Public/shared branches\n- Want preserve real history\n- Merging feature \u2192 main in team setting\n- Safety: never rewrites commits\n\n**Rebase:**\n- Local cleanup before PR\n- Want clean linear history\n- Pulling main updates into personal feature branch\n- Avoid \"noisy\" merge commits\n\n## Tradeoffs\n\n| | Merge | Rebase |\n|--|-------|--------|\n| History | Truthful, messy | Clean, linear |\n| Safety | Always safe | Dangerous on shared branches |\n| Conflicts | Resolve once | Resolve per commit |\n| Blame/bisect | Harder | Easier |\n\n## Golden rule\n\n**Never rebase shared branch.** Rewrites commit hashes \u2192 breaks everyone else's history.\n\nSafe pattern:\n```bash\n# Update feature branch with latest main\ngit checkout feature\ngit rebase main        # OK: only you use this branch\n\n# Integrate to main\ngit checkout main\ngit merge feature      # or merge --no-ff to preserve branch context\n```\n\nTL;DR: rebase for clean local work, merge for shared integration.",
+  "thinking_text": "The user wants an explanation of git rebase vs git merge. I'm in caveman mode (full by default) since the system prompt activates it.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 13.55,
+  "_meta": {
+    "track": "A_prime",
+    "task": "git-rebase-merge",
+    "category": "explanation",
+    "condition": "caveman",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776610593
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 11861,
+  "duration_api_ms": 11801,
+  "num_turns": 1,
+  "result": "Use `pg` (node-postgres) with `Pool`:\n\n```javascript\nimport { Pool } from 'pg';\n\nconst pool = new Pool({\n  connectionString: process.env.DATABASE_URL,\n  // Pool sizing\n  max: 20,                    // max connections (default 10)\n  min: 2,                     // keep alive minimum\n  // Timeouts (ms)\n  connectionTimeoutMillis: 5000,   // fail fast if can't get connection\n  idleTimeoutMillis: 30000,        // release idle connections after 30s\n  query_timeout: 10000,            // per-query timeout\n  statement_timeout: 10000,        // server-side statement timeout\n  // SSL (prod)\n  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: true } : false,\n});\n\n// Pool-level error \u2014 catch unclaimed client errors\npool.on('error', (err, client) => {\n  console.error('Idle client error:', err);\n});\n```\n\n**Query wrapper with proper release:**\n\n```javascript\nexport async function query(text, params) {\n  const client = await pool.connect();\n  try {\n    const result = await client.query(text, params);\n    return result;\n  } finally {\n    client.release();  // always release, even on error\n  }\n}\n```\n\n**Or use `pool.query` for one-shot queries** \u2014 handles acquire/release automatically:\n\n```javascript\nconst { rows } = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);\n```\n\n**Transaction pattern:**\n\n```javascript\nexport async function withTransaction(fn) {\n  const client = await pool.connect();\n  try {\n    await client.query('BEGIN');\n    const result = await fn(client);\n    await client.query('COMMIT');\n    return result;\n  } catch (err) {\n    await client.query('ROLLBACK');\n    throw err;\n  } finally {\n    client.release();\n  }\n}\n\n// Usage\nawait withTransaction(async (client) => {\n  await client.query('INSERT INTO orders ...', [...]);\n  await client.query('UPDATE inventory ...', [...]);\n});\n```\n\n**Graceful shutdown:**\n\n```javascript\nprocess.on('SIGTERM', async () => {\n  await pool.end();  // drains pool before exit\n  process.exit(0);\n});\n```\n\nKey points:\n- `connectionTimeoutMillis` \u2014 how long to wait for free slot in pool (not TCP connect)\n- `query_timeout` \u2014 client-side, throws if exceeded\n- `statement_timeout` \u2014 server-side, PostgreSQL cancels query\n- Always `release()` in `finally` \u2014 leaked clients exhaust pool silently\n- `pool.query` safer for simple queries; manual `connect()` needed for transactions",
+  "stop_reason": "end_turn",
+  "session_id": "bb21d62f-881c-4231-bc62-b7686893e94f",
+  "total_cost_usd": 0.0383898,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6392,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 728,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6392,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 728,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6392,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6392
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 728,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6392,
+      "webSearchRequests": 0,
+      "costUSD": 0.0383898,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "18e4c85a-4069-4ab9-9946-43c06e7377f1",
+  "_meta": {
+    "track": "B",
+    "task": "postgres-pool",
+    "category": "setup",
+    "condition": "caveman",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 13.53,
+    "timestamp": 1776774715,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

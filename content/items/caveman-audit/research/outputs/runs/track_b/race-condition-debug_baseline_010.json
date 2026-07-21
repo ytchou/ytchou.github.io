@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 10276,
+  "duration_api_ms": 11796,
+  "num_turns": 1,
+  "result": "The classic read-modify-write race: two requests read the same value before either writes back. The fix is to let PostgreSQL do the increment atomically.\n\n**The wrong pattern (causes the race):**\n```js\nconst { rows } = await pool.query('SELECT counter FROM items WHERE id = $1', [id]);\nconst next = rows[0].counter + 1;\nawait pool.query('UPDATE items SET counter = $1 WHERE id = $2', [next, id]);\nreturn next;\n```\n\n**Fix 1 \u2014 Atomic `UPDATE ... RETURNING` (simplest, usually sufficient):**\n```js\nconst { rows } = await pool.query(\n  'UPDATE items SET counter = counter + 1 WHERE id = $1 RETURNING counter',\n  [id]\n);\nreturn rows[0].counter;\n```\nA single statement is atomic in PostgreSQL. No transaction needed.\n\n**Fix 2 \u2014 `SELECT FOR UPDATE` inside a transaction (needed if you have conditional logic):**\n```js\nconst client = await pool.connect();\ntry {\n  await client.query('BEGIN');\n  const { rows } = await client.query(\n    'SELECT counter FROM items WHERE id = $1 FOR UPDATE',\n    [id]\n  );\n  const next = rows[0].counter + 1;\n  await client.query('UPDATE items SET counter = $1 WHERE id = $2', [next, id]);\n  await client.query('COMMIT');\n  return next;\n} catch (e) {\n  await client.query('ROLLBACK');\n  throw e;\n} finally {\n  client.release();\n}\n```\n`FOR UPDATE` row-locks the row, so concurrent requests queue up instead of racing.\n\n**Which to use:** Fix 1 covers the vast majority of counter cases. Use Fix 2 only when you need to read the value and apply logic before writing (e.g., capping at a max, conditional increments).",
+  "stop_reason": "end_turn",
+  "session_id": "dc6aa658-ad7e-449e-a46a-52f2482668e7",
+  "total_cost_usd": 0.014374499999999998,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17055,
+    "output_tokens": 587,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 587,
+        "cache_read_input_tokens": 17055,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 369,
+      "outputTokens": 15,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.00044400000000000006,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 587,
+      "cacheReadInputTokens": 17055,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.013930499999999998,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "7605824d-1481-40d4-bbcd-a97679afef08",
+  "_meta": {
+    "track": "B",
+    "task": "race-condition-debug",
+    "category": "debugging",
+    "condition": "baseline",
+    "run_num": 10,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 12.14,
+    "timestamp": 1776776561,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

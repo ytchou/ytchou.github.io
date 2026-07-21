@@ -1,0 +1,23 @@
+name: Content Reconcile
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'content/items/**'
+      - 'src/content/blog/**'
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Reconcile content status
+        env:
+          SUPABASE_URL: ${{ secrets.AGENT_HUB_SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.AGENT_HUB_SUPABASE_SERVICE_KEY }}
+        run: node scripts/content-reconcile.mjs

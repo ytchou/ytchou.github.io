@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1085,
+  "output_tokens": 305,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Object prop = new ref each render. React compare by ref, not value. Even same content = different object = re-render.\n\n**Cause:**\n```jsx\n// Bad: new object created every render\n<Child config={{ theme: 'dark', size: 'lg' }} />\n```\n\n**Fix 1 \u2014 `useMemo`** (object depend on state/props):\n```jsx\nconst config = useMemo(() => ({ theme: 'dark', size: 'lg' }), []);\n<Child config={config} />\n```\n\n**Fix 2 \u2014 move outside component** (static object):\n```jsx\nconst CONFIG = { theme: 'dark', size: 'lg' }; // defined once\n\nfunction Parent() {\n  return <Child config={CONFIG} />;\n}\n```\n\n**Fix 3 \u2014 `React.memo`** on child (skip re-render if props shallow-equal):\n```jsx\nconst Child = React.memo(({ config }) => { ... });\n```\n\nBut `memo` alone not fix inline object \u2014 still new ref. Need both.\n\n**Rule:** inline object literal in JSX = new ref every render. Hoist or memoize.",
+  "thinking_text": "The user is asking about React re-rendering. Caveman mode is active (default: full).",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 6.21,
+  "_meta": {
+    "track": "A_prime",
+    "task": "react-rerender",
+    "category": "debugging",
+    "condition": "caveman",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776610354
+  }
+}

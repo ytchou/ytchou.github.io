@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 11019,
+  "duration_api_ms": 12910,
+  "num_turns": 1,
+  "result": "This handler has a critical SQL injection vulnerability, plus a few other issues:\n\n## Critical: SQL Injection\n\n```js\n// Vulnerable \u2014 attacker can pass: id = \"1 OR 1=1\" to dump all users\nconst query = `SELECT * FROM users WHERE id = ${req.params.id}`;\n```\n\nAn attacker can craft a request like `GET /api/users/1;DROP TABLE users--` or `1 OR 1=1` to manipulate the query arbitrarily. Use a parameterized query instead:\n\n```js\nconst query = 'SELECT * FROM users WHERE id = $1';\ndb.query(query, [req.params.id]).then(user => res.json(user));\n```\n\n## Input Validation\n\n`req.params.id` is an unvalidated string. If your IDs are integers, reject non-numeric input early:\n\n```js\nconst id = parseInt(req.params.id, 10);\nif (isNaN(id)) return res.status(400).json({ error: 'Invalid ID' });\n```\n\n## No Error Handling\n\nA rejected promise will cause an unhandled rejection, potentially crashing the server or leaking a stack trace to the client:\n\n```js\ndb.query(query, [id])\n  .then(user => {\n    if (!user) return res.status(404).json({ error: 'Not found' });\n    res.json(user);\n  })\n  .catch(() => res.status(500).json({ error: 'Internal server error' }));\n```\n\n## `SELECT *` Over-fetches\n\nReturning all columns risks leaking sensitive fields like `password_hash`, `salt`, or `mfa_secret`. Select only what the client needs:\n\n```sql\nSELECT id, name, email, created_at FROM users WHERE id = $1\n```\n\n---\n\n**Fixed handler:**\n\n```js\napp.get('/api/users/:id', (req, res) => {\n  const id = parseInt(req.params.id, 10);\n  if (isNaN(id)) return res.status(400).json({ error: 'Invalid ID' });\n\n  db.query('SELECT id, name, email FROM users WHERE id = $1', [id])\n    .then(user => {\n      if (!user) return res.status(404).json({ error: 'Not found' });\n      res.json(user);\n    })\n    .catch(() => res.status(500).json({ error: 'Internal server error' }));\n});\n```\n\nThe SQL injection is the only **critical** issue here \u2014 the others are important hardening steps but the injection alone is a full compromise.",
+  "stop_reason": "end_turn",
+  "session_id": "a6a5b630-d072-459f-9308-0066500a2c76",
+  "total_cost_usd": 0.0342808,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 5456,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 656,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 5456,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 656,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 5456,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 5456
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 406,
+      "outputTokens": 15,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000481,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 656,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 5456,
+      "webSearchRequests": 0,
+      "costUSD": 0.0337998,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "0a0b00ea-a539-41f3-a475-7c59214f1830",
+  "_meta": {
+    "track": "B",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "baseline",
+    "run_num": 6,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 12.56,
+    "timestamp": 1776776460,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1092,
+  "output_tokens": 673,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "**Split monolith: think hard first. Most teams regret too early.**\n\n---\n\n**Diagnose before architect**\n\nSlow \u2260 need microservices. Profile first:\n- DB queries? \u2192 indexing, query opt, read replicas\n- N+1 problems? \u2192 `select_related`/`prefetch_related`\n- No caching? \u2192 Redis fixes 80% of \"slow\" complaints\n- Blocking tasks? \u2192 Celery + async\n\nMicroservices don't fix bad code. They distribute it.\n\n---\n\n**Real factors**\n\n**Team size/structure**\nConway's Law real. Small team + microservices = nightmare. Need autonomous teams owning services end-to-end. Under ~15 devs: monolith usually wins.\n\n**Domain boundaries clear?**\nCan you draw hard lines between domains with minimal cross-talk? Fuzzy domains = chatty services = worse than monolith. Look for natural seams: billing, auth, notifications, search.\n\n**Independent deploy needed?**\nIf \"deploy checkout fix\" requires redeploying whole app 10x/day \u2192 split makes sense. If deploys rare \u2192 overhead not worth it.\n\n**Scaling profile uneven?**\nOne part hammered (image processing, search) while rest idle? Extract *that part only*. Don't split everything.\n\n**Data ownership**\nEach service needs own DB. Shared DB = distributed monolith (worst of both). Transactions across services become sagas/eventual consistency. Team comfortable with that complexity?\n\n**Operational maturity**\nMicroservices require: service discovery, distributed tracing, centralized logging, circuit breakers, container orchestration (K8s). No DevOps muscle \u2192 services rot fast.\n\n---\n\n**The trap**\n\nMost Django monoliths don't need microservices. They need:\n- Better DB design\n- Caching layer\n- Async task queues\n- Horizontal scaling behind load balancer\n\n---\n\n**If split: start here**\n\nDon't big-bang rewrite. Strangler Fig pattern:\n1. Extract one bounded context (notifications, auth)\n2. Run beside monolith\n3. Route traffic gradually\n4. Learn ops cost before extracting more\n\n---\n\n**Decision shortcut**\n\n| Signal | Direction |\n|--------|-----------|\n| Small team (<15) | Stay monolith |\n| Can't name domain boundaries | Stay monolith |\n| One bottleneck component | Extract that one |\n| Multiple teams blocked on each other | Consider split |\n| Need 99.99% uptime per component | Consider split |\n| No K8s/Docker experience | Fix monolith first |\n\n---\n\n**Bottom line:** Identify *what* is slow. Fix with simplest tool first. Split only when org pain > technical pain.",
+  "thinking_text": "The user wants advice on monolith vs microservices decision. I'll respond in caveman mode (full, default).",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 17.66,
+  "_meta": {
+    "track": "A_prime",
+    "task": "microservices-monolith",
+    "category": "architecture",
+    "condition": "caveman",
+    "run_num": 3,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776610706
+  }
+}

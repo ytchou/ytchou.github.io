@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1055,
+  "output_tokens": 1039,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Caveman mode: **full**\n\n---\n\nThree parts: class component, fallback UI, usage.\n\n```tsx\n// ErrorBoundary.tsx\nimport React, { Component, ErrorInfo, ReactNode } from \"react\";\n\ninterface Props {\n  children: ReactNode;\n  fallback?: (error: Error, reset: () => void) => ReactNode;\n  onError?: (error: Error, info: ErrorInfo) => void;\n}\n\ninterface State {\n  error: Error | null;\n}\n\nexport class ErrorBoundary extends Component<Props, State> {\n  state: State = { error: null };\n\n  static getDerivedStateFromError(error: Error): State {\n    return { error };\n  }\n\n  componentDidCatch(error: Error, info: ErrorInfo) {\n    // Log here \u2014 swap console for Sentry/Datadog/etc.\n    console.error(\"[ErrorBoundary]\", {\n      message: error.message,\n      stack: error.stack,\n      componentStack: info.componentStack,\n    });\n\n    this.props.onError?.(error, info);\n  }\n\n  reset = () => this.setState({ error: null });\n\n  render() {\n    const { error } = this.state;\n    const { children, fallback } = this.props;\n\n    if (error) {\n      return fallback\n        ? fallback(error, this.reset)\n        : <DefaultFallback error={error} reset={this.reset} />;\n    }\n\n    return children;\n  }\n}\n```\n\n```tsx\n// DefaultFallback.tsx\ninterface FallbackProps {\n  error: Error;\n  reset: () => void;\n}\n\nfunction DefaultFallback({ error, reset }: FallbackProps) {\n  return (\n    <div role=\"alert\" style={styles.container}>\n      <h2 style={styles.title}>Something went wrong</h2>\n      <pre style={styles.message}>{error.message}</pre>\n      <button onClick={reset} style={styles.button}>\n        Try again\n      </button>\n    </div>\n  );\n}\n\nconst styles = {\n  container: {\n    padding: \"2rem\",\n    border: \"1px solid #f87171\",\n    borderRadius: \"8px\",\n    background: \"#fef2f2\",\n    fontFamily: \"sans-serif\",\n    maxWidth: \"480px\",\n    margin: \"2rem auto\",\n  },\n  title:  { margin: \"0 0 .5rem\", color: \"#b91c1c\" },\n  message: { fontSize: \".85rem\", color: \"#7f1d1d\", whiteSpace: \"pre-wrap\" as const },\n  button: {\n    marginTop: \"1rem\",\n    padding: \".5rem 1.25rem\",\n    background: \"#b91c1c\",\n    color: \"#fff\",\n    border: \"none\",\n    borderRadius: \"4px\",\n    cursor: \"pointer\",\n  },\n} as const;\n```\n\n```tsx\n// Usage\n// 1. Default fallback\n<ErrorBoundary>\n  <BrokenComponent />\n</ErrorBoundary>\n\n// 2. Custom fallback\n<ErrorBoundary\n  fallback={(error, reset) => (\n    <div>\n      <p>Oops: {error.message}</p>\n      <button onClick={reset}>Retry</button>\n    </div>\n  )}\n>\n  <BrokenComponent />\n</ErrorBoundary>\n\n// 3. With external logger\n<ErrorBoundary onError={(err, info) => Sentry.captureException(err, { extra: info })}>\n  <BrokenComponent />\n</ErrorBoundary>\n```\n\n---\n\n**Key points:**\n\n- `getDerivedStateFromError` \u2014 static, sets state, triggers fallback render\n- `componentDidCatch` \u2014 side effects only (logging). Not for state\n- `reset` clears error \u2192 children remount fresh\n- `fallback` prop = render prop pattern, full control over UI\n- Wrap at route level + around risky widgets (data-fetch heavy, third-party)\n\n**Caveat:** Boundaries catch render/lifecycle errors only. Async errors (event handlers, `setTimeout`, promises) need `try/catch` or `window.onerror`.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 28.25,
+  "_meta": {
+    "track": "C",
+    "task": "error-boundary",
+    "category": "implementation",
+    "condition": "caveman",
+    "run_num": 6,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776586529
+  }
+}

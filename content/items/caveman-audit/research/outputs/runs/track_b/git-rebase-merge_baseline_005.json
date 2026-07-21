@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 18993,
+  "duration_api_ms": 20622,
+  "num_turns": 1,
+  "result": "## Git Merge vs Git Rebase\n\nBoth integrate changes from one branch into another, but they do it differently.\n\n### Merge\n\n```\nmain:    A --- B --- C\n                      \\\nfeature:               D --- E\n```\n\nAfter `git merge main` on feature:\n\n```\nmain:    A --- B --- C\n                      \\       \\\nfeature:               D --- E --- M  (merge commit)\n```\n\n- Creates a new \"merge commit\" (M) that ties the two histories together\n- **Preserves the full history** \u2014 you can see exactly when branches diverged and rejoined\n- Non-destructive: existing commits are never changed\n\n### Rebase\n\nAfter `git rebase main` on feature:\n\n```\nmain:    A --- B --- C\n                      \\\nfeature:               D' --- E'  (replayed commits)\n```\n\n- Replays your commits on top of the target branch \u2014 commits get new SHAs (D', E')\n- **Rewrites history** to look like you branched off the latest commit\n- Result is a linear history with no merge commits\n\n---\n\n## When to use each\n\n**Use merge when:**\n- Integrating a completed feature branch into `main` (especially via PR) \u2014 preserves the full context of when/why the feature was developed\n- Working on a shared branch where others have based work off your commits \u2014 rebasing would break their history\n- You want an accurate audit trail\n\n**Use rebase when:**\n- Updating a local feature branch with upstream changes before submitting a PR \u2014 keeps history clean and avoids noisy merge commits\n- Cleaning up messy WIP commits before review (`git rebase -i`)\n- The branch is **private** (only you use it)\n\n---\n\n## The core tradeoff\n\n| | Merge | Rebase |\n|---|---|---|\n| History | Truthful, branchy | Clean, linear |\n| Safety | Safe on shared branches | **Never rebase shared/public branches** |\n| Debuggability | `git log --graph` shows structure | Easier to `git bisect` |\n| Noise | Merge commits accumulate | None |\n\n**The golden rule:** never rebase commits that exist on a remote branch others depend on. Rebase rewrites commit SHAs, so anyone with the old commits will have a diverged history \u2014 a painful mess to untangle.\n\nA common workflow: rebase locally to stay current with main, then merge (or fast-forward) when the PR lands.",
+  "stop_reason": "end_turn",
+  "session_id": "59492e43-ad76-42de-8d10-970f18e2ae90",
+  "total_cost_usd": 0.0146909,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17043,
+    "output_tokens": 609,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 609,
+        "cache_read_input_tokens": 17043,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 364,
+      "outputTokens": 14,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.00043400000000000003,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 609,
+      "cacheReadInputTokens": 17043,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0142569,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "866b989a-8a87-40de-9dfe-9964c79c69ab",
+  "_meta": {
+    "track": "B",
+    "task": "git-rebase-merge",
+    "category": "explanation",
+    "condition": "baseline",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 20.32,
+    "timestamp": 1776774744,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

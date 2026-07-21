@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 22273,
+  "duration_api_ms": 23303,
+  "num_turns": 1,
+  "result": "## Git Merge vs. Git Rebase\n\nBoth integrate changes from one branch into another, but they do it differently.\n\n---\n\n### `git merge`\n\nCreates a new **merge commit** that ties together the histories of both branches. The original branch histories are preserved exactly as they happened.\n\n```\nmain:    A---B---C---M\n                    /\nfeature:     D---E\n```\n\n`M` is the merge commit. Both `C` and `E` are its parents.\n\n**Use merge when:**\n- Preserving the true historical record matters (e.g., \"these commits were developed together on this branch\")\n- Working on a shared/public branch where others have already pulled\n- Merging a feature branch into `main` \u2014 the merge commit documents when the feature landed\n\n---\n\n### `git rebase`\n\n**Replays** your commits on top of another branch, rewriting them with new SHAs. The result looks like you branched off later than you did.\n\n```\nBefore:          After rebase onto main:\nmain:  A---B---C    main:  A---B---C\n              |                    \\\nfeature: D---E    feature:          D'---E'\n```\n\n`D'` and `E'` are new commits \u2014 same changes, different SHAs and parent pointers.\n\n**Use rebase when:**\n- Keeping a clean, linear history (easier to read with `git log`)\n- Updating a local feature branch with upstream changes before opening a PR\n- Squashing/cleaning up WIP commits before merging\n\n---\n\n### The Core Tradeoff\n\n| | Merge | Rebase |\n|---|---|---|\n| History | Preserves reality | Rewrites history |\n| Commits | Non-destructive | Creates new SHAs |\n| Readability | Can get noisy | Linear and clean |\n| Safety | Safe on shared branches | **Dangerous on shared branches** |\n\n---\n\n### The Golden Rule of Rebase\n\n**Never rebase commits that exist on a remote branch others have pulled.** Rewriting those SHAs forces everyone else to reconcile diverged histories \u2014 a painful experience.\n\nA safe heuristic: rebase locally, merge publicly.\n\n```bash\n# Good workflow\ngit checkout feature\ngit rebase main        # clean up before PR\ngit checkout main\ngit merge feature      # or let GitHub/GitLab do it via PR\n```",
+  "stop_reason": "end_turn",
+  "session_id": "34546d24-f8a6-4860-a481-01758c5e10c2",
+  "total_cost_usd": 0.014428000000000002,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17050,
+    "output_tokens": 591,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 591,
+        "cache_read_input_tokens": 17050,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 364,
+      "outputTokens": 15,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.00043900000000000005,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 591,
+      "cacheReadInputTokens": 17050,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.013989000000000001,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "06cdc58e-804a-4a4a-90a6-2e754f19eee9",
+  "_meta": {
+    "track": "B",
+    "task": "git-rebase-merge",
+    "category": "explanation",
+    "condition": "baseline",
+    "run_num": 7,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 23.82,
+    "timestamp": 1776776327,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

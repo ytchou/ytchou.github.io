@@ -1,0 +1,46 @@
+{
+  "input_tokens": 10189,
+  "output_tokens": 523,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Two critical issues:\n\n## 1. SQL Injection (Critical)\n\nString interpolation puts user input directly into the query. An attacker can send:\n\n```\nGET /api/users/1 OR 1=1\n```\n\nWhich becomes `SELECT * FROM users WHERE id = 1 OR 1=1` \u2014 returning all users. Worse payloads can drop tables or exfiltrate data.\n\n**Fix:** Use a parameterized query:\n\n```js\napp.get('/api/users/:id', (req, res) => {\n  db.query('SELECT * FROM users WHERE id = ?', [req.params.id])\n    .then(user => res.json(user));\n});\n```\n\nThe placeholder `?` (or `$1` in pg) lets the driver handle escaping \u2014 the input is never interpreted as SQL.\n\n## 2. No Error Handling (High)\n\nA failed query rejects the promise with no `.catch()`, causing an unhandled rejection. This can crash the process and leaks a stack trace to the client in some frameworks.\n\n**Fix:**\n\n```js\napp.get('/api/users/:id', (req, res) => {\n  db.query('SELECT * FROM users WHERE id = ?', [req.params.id])\n    .then(user => {\n      if (!user) return res.status(404).json({ error: 'Not found' });\n      res.json(user);\n    })\n    .catch(() => res.status(500).json({ error: 'Internal server error' }));\n});\n```\n\n## 3. Over-fetching (Medium)\n\n`SELECT *` returns every column, including anything sensitive (password hashes, tokens, PII). Explicitly name the columns you need:\n\n```sql\nSELECT id, name, email FROM users WHERE id = ?\n```\n\n---\n\n**Summary table:**\n\n| Issue | Severity | Fix |\n|---|---|---|\n| SQL injection via string interpolation | Critical | Parameterized queries |\n| Unhandled promise rejection | High | `.catch()` returning generic error |\n| `SELECT *` exposes sensitive columns | Medium | Explicit column list |",
+  "thinking_text": "The user wants a security review of this Express route handler. Let me analyze it.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 30.59,
+  "_meta": {
+    "track": "C",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "baseline",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 40893,
+    "timestamp": 1776613589,
+    "level": 3,
+    "ordering": [
+      3,
+      2,
+      9,
+      6,
+      4,
+      0,
+      5,
+      1,
+      7,
+      8
+    ],
+    "chunks_present": [
+      0,
+      2,
+      3,
+      4,
+      6,
+      9
+    ],
+    "num_chunks": 6,
+    "behavioral_chars": 12880,
+    "chunk_chars": 28001
+  }
+}

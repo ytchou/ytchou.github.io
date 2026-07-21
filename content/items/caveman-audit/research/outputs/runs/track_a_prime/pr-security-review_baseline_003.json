@@ -1,0 +1,22 @@
+{
+  "input_tokens": 111,
+  "output_tokens": 808,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## Security Review: Critical Issues Found\n\n### \ud83d\udd34 Critical: SQL Injection\n```javascript\n// VULNERABLE - Direct string interpolation\nconst query = `SELECT * FROM users WHERE id = ${req.params.id}`;\n\n// Attacker can pass: id = \"1 OR 1=1\"\n// Resulting query: SELECT * FROM users WHERE id = 1 OR 1=1\n// Returns ALL users in the database\n```\n\n### \ud83d\udd34 Critical: No Authentication/Authorization\n```javascript\n// Anyone can query any user's data\n// No check: \"is the requester allowed to see this user?\"\n```\n\n### \ud83d\udd34 Critical: No Error Handling\n```javascript\n// Unhandled promise rejection exposes stack traces\n// App can crash, leaking internal details to attackers\n```\n\n### \ud83d\udfe1 Serious: No Input Validation\n```javascript\n// No check that id is actually a number\n// No length limits on the input\n```\n\n### \ud83d\udfe1 Serious: Over-fetching Data (`SELECT *`)\n```javascript\n// Returns ALL columns, potentially including\n// passwords, tokens, SSNs, etc.\n```\n\n---\n\n## \u2705 Secured Version\n\n```javascript\nconst { body, param, validationResult } = require('express-validator');\n\napp.get('/api/users/:id',\n  authenticate,                        // verify JWT/session\n  param('id').isInt({ min: 1 }).trim(), // validate input\n  async (req, res) => {\n    // Check validation results\n    const errors = validationResult(req);\n    if (!errors.isEmpty()) {\n      return res.status(400).json({ error: 'Invalid user ID' });\n    }\n\n    // Authorization: users can only fetch their own data\n    // (admins may be handled separately)\n    if (req.user.id !== parseInt(req.params.id) && !req.user.isAdmin) {\n      return res.status(403).json({ error: 'Forbidden' });\n    }\n\n    try {\n      // Parameterized query prevents SQL injection\n      const query = 'SELECT id, name, email, created_at FROM users WHERE id = ?';\n      const user = await db.query(query, [req.params.id]);\n\n      if (!user || user.length === 0) {\n        return res.status(404).json({ error: 'User not found' });\n      }\n\n      res.json(user[0]);\n    } catch (err) {\n      // Log internally, don't expose details to client\n      console.error('Database error:', err);\n      res.status(500).json({ error: 'Internal server error' });\n    }\n  }\n);\n```\n\n---\n\n## Summary Table\n\n| Issue | Severity | Fix |\n|---|---|---|\n| SQL Injection | \ud83d\udd34 Critical | Parameterized queries |\n| No auth/authz | \ud83d\udd34 Critical | Middleware + ownership check |\n| No error handling | \ud83d\udd34 Critical | try/catch + generic errors |\n| No input validation | \ud83d\udfe1 Serious | express-validator |\n| SELECT * | \ud83d\udfe1 Serious | Explicit column names |\n\n**The original code should never reach production.** SQL injection alone could expose or destroy your entire database.",
+  "thinking_text": "The user wants me to review this Express route handler for security issues. Let me analyze it carefully.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 12.28,
+  "_meta": {
+    "track": "A_prime",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "baseline",
+    "run_num": 3,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 28,
+    "timestamp": 1776610725
+  }
+}

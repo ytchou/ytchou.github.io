@@ -1,0 +1,22 @@
+{
+  "input_tokens": 72,
+  "output_tokens": 789,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## The Problem: Object Reference Equality\n\nThis is a very common React issue. When you pass an object as a prop, React compares props by **reference**, not by value. A new object literal creates a new reference every render, even if the contents are identical.\n\n```javascript\n// \u274c This creates a NEW object reference on every render\nfunction Parent() {\n  const [count, setCount] = useState(0);\n  \n  return (\n    <Child config={{ theme: \"dark\", size: \"lg\" }} /> // New object every render!\n  );\n}\n```\n\n---\n\n## Solutions\n\n### 1. Move the object outside the component (if static)\n```javascript\n// \u2705 Created once, reference never changes\nconst CONFIG = { theme: \"dark\", size: \"lg\" };\n\nfunction Parent() {\n  return <Child config={CONFIG} />;\n}\n```\n\n### 2. useMemo (if the object depends on state/props)\n```javascript\nfunction Parent({ theme }) {\n  const [count, setCount] = useState(0);\n\n  // \u2705 Only recreates when `theme` changes\n  const config = useMemo(() => ({\n    theme,\n    size: \"lg\"\n  }), [theme]);\n\n  return <Child config={config} />;\n}\n```\n\n### 3. Wrap the child in React.memo\n```javascript\n// \u2705 Skips re-render if props are shallowly equal\nconst Child = React.memo(function Child({ config }) {\n  return <div>{config.theme}</div>;\n});\n```\n\n### 4. Custom comparison with React.memo\n```javascript\n// \u2705 Deep comparison (use carefully - has its own cost)\nconst Child = React.memo(\n  function Child({ config }) {\n    return <div>{config.theme}</div>;\n  },\n  (prevProps, nextProps) => {\n    return prevProps.config.theme === nextProps.config.theme &&\n           prevProps.config.size === nextProps.config.size;\n  }\n);\n```\n\n### 5. Pass primitive values instead of objects\n```javascript\n// \u2705 Primitives compare by value, not reference\nfunction Parent({ theme, size }) {\n  return <Child theme={theme} size={size} />;\n}\n```\n\n---\n\n## Key Decision Guide\n\n| Situation | Solution |\n|-----------|----------|\n| Object never changes | Move outside component |\n| Object depends on props/state | `useMemo` |\n| Child is expensive to render | `React.memo` |\n| Need deep comparison | `React.memo` with custom comparator |\n| Can split the object | Pass primitives instead |\n\n---\n\n## Important Caveats\n\n- **`React.memo` alone isn't enough** if the parent keeps creating new object references \u2014 the shallow comparison will still fail\n- **Don't over-optimize** \u2014 React re-renders are fast; only optimize when you measure an actual performance problem\n- **`useMemo` has overhead too** \u2014 it's not free, so use it when the render cost is genuinely high\n\nThe most robust fix is usually combining `useMemo` in the parent **with** `React.memo` on the child.",
+  "thinking_text": "The user is asking about a common React performance issue - re-rendering when passing objects as props even though the props haven't \"changed\" in terms of values.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 13.08,
+  "_meta": {
+    "track": "A_prime",
+    "task": "react-rerender",
+    "category": "debugging",
+    "condition": "baseline",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 28,
+    "timestamp": 1776610333
+  }
+}

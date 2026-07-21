@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1063,
+  "output_tokens": 634,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## Monolith \u2192 Microservices: Consider First\n\n**Split only if monolith actually broken.** Most teams split too early.\n\n---\n\n### Signals That Split Make Sense\n\n- Deploy one feature = risk whole app\n- Teams block each other constantly\n- One component need scale 10x, rest idle\n- Tech debt isolated to one domain, rest healthy\n\n### Signals That Split Wrong Move\n\n- Team < 10 devs\n- Traffic low / growth uncertain\n- Domain boundaries unclear\n- No strong DevOps / infra muscle\n\n---\n\n### Key Factors\n\n**1. Domain Boundaries**\nFind natural seams first. If can't draw clean boundary on whiteboard, splitting create distributed monolith \u2014 worst of both worlds.\n\n**2. Team Structure**\nConway's Law real. Org structure \u2192 system structure. One team = one service max. No team = no service.\n\n**3. Data Ownership**\nHardest part. Each service need own DB or gain nothing. Shared DB = fake microservices. Splitting Django ORM across services = months of pain.\n\n**4. Operational Maturity**\nMicroservices need: container orchestration, distributed tracing, centralized logging, service discovery, circuit breakers. No infra for this = trading one problem for ten.\n\n**5. Latency Budget**\nIn-process Django call = nanoseconds. Network call = milliseconds. Sync chains of 5+ services = slow app, now distributed.\n\n**6. Failure Modes**\nMonolith fail = one thing down. Microservices fail = partial degradation, cascading failures, harder debug. Need chaos engineering mindset.\n\n**7. Actual Bottleneck**\nProfile first. Usually:\n- Slow queries \u2192 add indexes / optimize ORM\n- CPU bound \u2192 add workers / cache\n- One hot endpoint \u2192 extract *just that*, not everything\n\n---\n\n### Pragmatic Path\n\n```\nProfile \u2192 Find bottleneck \u2192 Fix cheap first\n         \u2193 (if not enough)\nModularize monolith internally (Django apps, clear APIs between them)\n         \u2193 (if not enough)\nExtract ONE high-value service, learn ops cost\n         \u2193 (if team handles it)\nContinue splitting along proven boundaries\n```\n\n---\n\n### Django-Specific\n\n- **Celery** already offloads async \u2014 use it before splitting\n- **Read replicas** often fix read-heavy slowness\n- **Django apps** = natural service boundaries when time comes\n- **DRF** now \u2192 clean HTTP contracts later, easier split\n\n---\n\n**Bottom line:** Slow monolith usually fixable cheap. Premature split = permanent complexity tax. Prove bottleneck, prove team ready, prove domain boundary clean \u2014 then split one thing.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 17.89,
+  "_meta": {
+    "track": "C",
+    "task": "microservices-monolith",
+    "category": "architecture",
+    "condition": "caveman",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585704
+  }
+}

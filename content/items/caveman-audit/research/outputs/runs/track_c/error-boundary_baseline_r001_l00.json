@@ -1,0 +1,39 @@
+{
+  "input_tokens": 2844,
+  "output_tokens": 1534,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Writing the error boundary component now.\n\n<function_calls>\n<invoke name=\"Write\">\n<parameter name=\"path\">ErrorBoundary.tsx</parameter>\n<parameter name=\"content\">import { Component, ErrorInfo, ReactNode } from \"react\";\n\ninterface Props {\n  children: ReactNode;\n  fallback?: ReactNode;\n}\n\ninterface State {\n  error: Error | null;\n}\n\nexport class ErrorBoundary extends Component<Props, State> {\n  state: State = { error: null };\n\n  static getDerivedStateFromError(error: Error): State {\n    return { error };\n  }\n\n  componentDidCatch(error: Error, info: ErrorInfo) {\n    console.error(\"[ErrorBoundary]\", error.message, {\n      stack: error.stack,\n      componentStack: info.componentStack,\n    });\n  }\n\n  retry = () => this.setState({ error: null });\n\n  render() {\n    const { error } = this.state;\n\n    if (error) {\n      return (\n        this.props.fallback ?? (\n          <div role=\"alert\" style={styles.container}>\n            <h2 style={styles.title}>Something went wrong</h2>\n            <pre style={styles.message}>{error.message}</pre>\n            <button onClick={this.retry} style={styles.button}>\n              Try again\n            </button>\n          </div>\n        )\n      );\n    }\n\n    return this.props.children;\n  }\n}\n\nconst styles: Record<string, React.CSSProperties> = {\n  container: {\n    display: \"flex\",\n    flexDirection: \"column\",\n    alignItems: \"center\",\n    justifyContent: \"center\",\n    padding: \"2rem\",\n    gap: \"1rem\",\n    fontFamily: \"sans-serif\",\n  },\n  title: { margin: 0, fontSize: \"1.25rem\", color: \"#b91c1c\" },\n  message: {\n    background: \"#fef2f2\",\n    border: \"1px solid #fecaca\",\n    borderRadius: \"6px\",\n    padding: \"0.75rem 1rem\",\n    fontSize: \"0.875rem\",\n    maxWidth: \"480px\",\n    overflowX: \"auto\",\n  },\n  button: {\n    padding: \"0.5rem 1.25rem\",\n    borderRadius: \"6px\",\n    border: \"none\",\n    background: \"#2563eb\",\n    color: \"#fff\",\n    fontSize: \"0.9rem\",\n    cursor: \"pointer\",\n  },\n};\n</parameter>\n</invoke>\n</function_calls>\n<invoke name=\"Write\">\n<parameter name=\"path\">ErrorBoundary.test.tsx</parameter>\n<parameter name=\"content\">import { render, screen, fireEvent } from \"@testing-library/react\";\nimport { ErrorBoundary } from \"./ErrorBoundary\";\n\nconst Throw = ({ shouldThrow }: { shouldThrow: boolean }) => {\n  if (shouldThrow) throw new Error(\"boom\");\n  return <div>ok</div>;\n};\n\nbeforeEach(() => jest.spyOn(console, \"error\").mockImplementation(() => {}));\nafterEach(() => jest.restoreAllMocks());\n\ntest(\"renders children when there is no error\", () => {\n  render(\n    <ErrorBoundary>\n      <Throw shouldThrow={false} />\n    </ErrorBoundary>\n  );\n  expect(screen.getByText(\"ok\")).toBeInTheDocument();\n});\n\ntest(\"shows fallback UI and logs on render error\", () => {\n  render(\n    <ErrorBoundary>\n      <Throw shouldThrow={true} />\n    </ErrorBoundary>\n  );\n  expect(screen.getByRole(\"alert\")).toBeInTheDocument();\n  expect(screen.getByText(\"boom\")).toBeInTheDocument();\n  expect(console.error).toHaveBeenCalledWith(\n    \"[ErrorBoundary]\",\n    \"boom\",\n    expect.objectContaining({ stack: expect.any(String) })\n  );\n});\n\ntest(\"retry button resets the error state\", () => {\n  const { rerender } = render(\n    <ErrorBoundary>\n      <Throw shouldThrow={true} />\n    </ErrorBoundary>\n  );\n  fireEvent.click(screen.getByRole(\"button\", { name: /try again/i }));\n  rerender(\n    <ErrorBoundary>\n      <Throw shouldThrow={false} />\n    </ErrorBoundary>\n  );\n  expect(screen.getByText(\"ok\")).toBeInTheDocument();\n});\n\ntest(\"renders custom fallback when provided\", () => {\n  render(\n    <ErrorBoundary fallback={<p>custom fallback</p>}>\n      <Throw shouldThrow={true} />\n    </ErrorBoundary>\n  );\n  expect(screen.getByText(\"custom fallback\")).toBeInTheDocument();\n});\n</parameter>\n</invoke>\n</function_calls>\n</invoke>\n</function_calls>\n\nTwo files created:\n\n**`ErrorBoundary.tsx`** \u2014 the component itself:\n- `getDerivedStateFromError` captures the error into state, triggering the fallback render\n- `componentDidCatch` logs `error.message`, `stack`, and React's `componentStack` to the console\n- `retry()` clears the error state so React re-attempts rendering the children\n- Accepts an optional `fallback` prop; if omitted, renders a built-in alert UI with the error message and a \"Try again\" button\n\n**Usage:**\n```tsx\n<ErrorBoundary>\n  <MyComponent />\n</ErrorBoundary>\n\n// with a custom fallback\n<ErrorBoundary fallback={<MyErrorPage />}>\n  <MyComponent />\n</ErrorBoundary>\n```\n\n**`ErrorBoundary.test.tsx`** covers all four cases: no error, error + logging, retry, and custom fallback.",
+  "thinking_text": "The user wants a React error boundary component. Let me create a clean, focused implementation.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 18.8,
+  "_meta": {
+    "track": "C",
+    "task": "error-boundary",
+    "category": "implementation",
+    "condition": "baseline",
+    "run_num": 1,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 12880,
+    "timestamp": 1776610381,
+    "level": 0,
+    "ordering": [
+      9,
+      4,
+      6,
+      3,
+      5,
+      0,
+      7,
+      1,
+      2,
+      8
+    ],
+    "chunks_present": [],
+    "num_chunks": 0,
+    "behavioral_chars": 12880,
+    "chunk_chars": 0
+  }
+}

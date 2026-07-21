@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1049,
+  "output_tokens": 673,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Use `pg` pool. Key config:\n\n```js\nimport { Pool } from 'pg';\n\nconst pool = new Pool({\n  connectionString: process.env.DATABASE_URL,\n\n  // Pool sizing\n  max: 20,          // max connections (default 10)\n  min: 2,           // keep alive when idle\n  idleTimeoutMillis: 30_000,    // kill idle conn after 30s\n  connectionTimeoutMillis: 5_000, // fail fast if can't connect in 5s\n  allowExitOnIdle: true,        // let process exit if pool idle\n});\n\n// Error handler \u2014 REQUIRED. Unhandled 'error' event crashes process.\npool.on('error', (err, client) => {\n  console.error('Idle client error:', err.message);\n});\n\n// Query helper \u2014 auto-release client\nexport async function query(sql, params) {\n  const start = Date.now();\n  try {\n    const res = await pool.query(sql, params);\n    console.debug('Query time:', Date.now() - start, 'ms');\n    return res;\n  } catch (err) {\n    console.error('Query failed:', err.message, { sql, params });\n    throw err;\n  }\n}\n\n// Transaction helper \u2014 manual checkout needed\nexport async function withTransaction(fn) {\n  const client = await pool.connect();\n  try {\n    await client.query('BEGIN');\n    const result = await fn(client);\n    await client.query('COMMIT');\n    return result;\n  } catch (err) {\n    await client.query('ROLLBACK');\n    throw err;\n  } finally {\n    client.release(); // ALWAYS release \u2014 else pool starve\n  }\n}\n```\n\nUsage:\n\n```js\n// Simple query\nconst { rows } = await query('SELECT * FROM users WHERE id = $1', [userId]);\n\n// Transaction\nawait withTransaction(async (client) => {\n  await client.query('UPDATE accounts SET balance = balance - $1 WHERE id = $2', [amount, fromId]);\n  await client.query('UPDATE accounts SET balance = balance + $1 WHERE id = $2', [amount, toId]);\n});\n```\n\nKey traps:\n\n| Trap | Fix |\n|------|-----|\n| No `pool.on('error')` | Process crash on idle client error |\n| Forget `client.release()` | Pool starve \u2192 timeout all new queries |\n| `max` too high | DB hit connection limit (`max_connections` in postgres.conf, default 100) |\n| No `connectionTimeoutMillis` | Hang forever if DB down |\n\nShutdown clean:\n\n```js\nprocess.on('SIGTERM', async () => {\n  await pool.end();\n  process.exit(0);\n});\n```",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 15.63,
+  "_meta": {
+    "track": "C",
+    "task": "postgres-pool",
+    "category": "setup",
+    "condition": "caveman",
+    "run_num": 9,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585386
+  }
+}

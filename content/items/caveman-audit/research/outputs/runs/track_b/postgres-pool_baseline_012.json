@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 13237,
+  "duration_api_ms": 14519,
+  "num_turns": 1,
+  "result": "Use the `pg` library's `Pool` class \u2014 it handles connection management, reuse, and lifecycle automatically.\n\n## Basic Setup\n\n```javascript\nimport { Pool } from 'pg';\n\nconst pool = new Pool({\n  host: process.env.DB_HOST,\n  port: parseInt(process.env.DB_PORT ?? '5432'),\n  database: process.env.DB_NAME,\n  user: process.env.DB_USER,\n  password: process.env.DB_PASSWORD,\n\n  // Pool sizing\n  max: 20,                    // max connections (default: 10)\n  min: 2,                     // keep at least 2 alive\n\n  // Timeouts\n  connectionTimeoutMillis: 3000,   // fail fast if can't connect\n  idleTimeoutMillis: 30000,        // release idle connections after 30s\n  query_timeout: 10000,            // per-query timeout (ms)\n  statement_timeout: 10000,        // server-side query timeout\n});\n```\n\n## Error Handling\n\n```javascript\n// Handle pool-level errors (e.g., dropped connections)\npool.on('error', (err, client) => {\n  console.error('Unexpected error on idle client', err);\n  // Don't exit \u2014 the pool will recover automatically\n});\n\n// Wrapped query helper with proper client release\nasync function query(text, params) {\n  const client = await pool.connect();\n  try {\n    return await client.query(text, params);\n  } finally {\n    client.release();  // always release, even on error\n  }\n}\n```\n\n## Transaction Pattern\n\n```javascript\nasync function withTransaction(fn) {\n  const client = await pool.connect();\n  try {\n    await client.query('BEGIN');\n    const result = await fn(client);\n    await client.query('COMMIT');\n    return result;\n  } catch (err) {\n    await client.query('ROLLBACK');\n    throw err;\n  } finally {\n    client.release();\n  }\n}\n\n// Usage\nawait withTransaction(async (client) => {\n  await client.query('INSERT INTO orders ...', []);\n  await client.query('UPDATE inventory ...', []);\n});\n```\n\n## Graceful Shutdown\n\n```javascript\nprocess.on('SIGTERM', async () => {\n  await pool.end();  // drains active queries, then closes\n  process.exit(0);\n});\n```\n\n## Key decisions\n\n- **`max`**: Set to `(num_cpu_cores * 2) + available_disk_spindles)` as a starting point, or match your DB's `max_connections` limit divided by number of app instances.\n- **`connectionTimeoutMillis`**: Keep short (2\u20135s) so failures surface fast rather than queuing up.\n- **`statement_timeout`**: Set server-side to catch runaway queries that your app-level timeout might miss (e.g., if the process crashes mid-query).\n- **`min`**: Only set above 0 if your workload has consistent traffic \u2014 otherwise you're holding connections open for nothing.",
+  "stop_reason": "end_turn",
+  "session_id": "bb757bdd-a159-477b-b586-7304e5db6a61",
+  "total_cost_usd": 0.0173328,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17046,
+    "output_tokens": 784,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 784,
+        "cache_read_input_tokens": 17046,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 360,
+      "outputTokens": 18,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.00045000000000000004,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 784,
+      "cacheReadInputTokens": 17046,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0168828,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "03ccc32b-b064-432d-8639-a9f269cc8131",
+  "_meta": {
+    "track": "B",
+    "task": "postgres-pool",
+    "category": "setup",
+    "condition": "baseline",
+    "run_num": 12,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 14.83,
+    "timestamp": 1776776274,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

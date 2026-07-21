@@ -1,0 +1,21 @@
+{
+  "input_tokens": 52,
+  "output_tokens": 962,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## JWT Expiry Check Bug\n\nThe most common cause is a **units mismatch**. JWT `exp` is in **seconds**, but `Date.now()` returns **milliseconds**.\n\n### The Broken Code\n\n```javascript\n// WRONG - comparing milliseconds to seconds\nconst isExpired = Date.now() > payload.exp;\n\n// Example: Date.now() = 1700000000000 (ms)\n//          payload.exp = 1700000100    (seconds)\n// 1700000000000 > 1700000100 is ALWAYS true... \n// wait, actually it lets tokens through when logic is inverted\n\n// More likely broken pattern:\nif (payload.exp < Date.now()) {  // exp (seconds) is ALWAYS less than Date.now() (ms)\n    throw new Error('Token expired'); // This always fires, or never fires depending on your logic\n}\n```\n\n### The Fix\n\n```javascript\n// CORRECT - convert Date.now() to seconds\nconst currentTimeInSeconds = Math.floor(Date.now() / 1000);\n\nif (currentTimeInSeconds > payload.exp) {\n    throw new Error('Token expired');\n}\n```\n\n### Complete Hardened Middleware Example\n\n```javascript\nconst jwt = require('jsonwebtoken');\n\nfunction authenticateToken(req, res, next) {\n    const authHeader = req.headers['authorization'];\n    const token = authHeader && authHeader.split(' ')[1]; // Bearer <token>\n\n    if (!token) {\n        return res.status(401).json({ error: 'No token provided' });\n    }\n\n    try {\n        // OPTION 1: Let jsonwebtoken handle expiry (recommended)\n        // It checks exp automatically and throws TokenExpiredError\n        const payload = jwt.verify(token, process.env.JWT_SECRET);\n        req.user = payload;\n        next();\n\n    } catch (err) {\n        if (err.name === 'TokenExpiredError') {\n            return res.status(401).json({ error: 'Token expired' });\n        }\n        if (err.name === 'JsonWebTokenError') {\n            return res.status(403).json({ error: 'Invalid token' });\n        }\n        return res.status(500).json({ error: 'Authentication error' });\n    }\n}\n\n// OPTION 2: Manual check (if you must do it yourself)\nfunction manualExpiryCheck(payload) {\n    if (!payload.exp) {\n        throw new Error('Token has no expiry');  // Reject tokens without exp\n    }\n\n    const nowInSeconds = Math.floor(Date.now() / 1000);\n    const clockSkewBuffer = 30; // Allow 30 seconds of clock skew between servers\n\n    if (nowInSeconds > payload.exp + clockSkewBuffer) {\n        throw new Error('Token expired');\n    }\n}\n```\n\n### Why `jwt.verify()` Is Preferred\n\n| Approach | Handles exp | Handles signature | Handles nbf | Clock skew option |\n|---|---|---|---|---|\n| `jwt.verify()` | \u2705 | \u2705 | \u2705 | \u2705 |\n| Manual `Date.now()` check | \u26a0\ufe0f error-prone | \u274c | \u274c | \u274c |\n\n```javascript\n// jwt.verify() accepts options for clock skew tolerance\nconst payload = jwt.verify(token, secret, {\n    clockTolerance: 30  // seconds of allowed clock skew\n});\n```\n\n### Key Takeaways\n\n1. **Root cause**: `Date.now()` is milliseconds, JWT `exp` is seconds \u2014 always divide by 1000\n2. **Better solution**: Use `jwt.verify()` and let the library handle expiry \u2014 it's tested and handles edge cases\n3. **Never skip expiry**: Reject tokens with no `exp` field unless you explicitly intend to issue non-expiring tokens\n4. **Add clock skew tolerance** if your auth server and app server clocks might drift slightly",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 16.22,
+  "_meta": {
+    "track": "C",
+    "task": "auth-middleware-fix",
+    "category": "bugfix",
+    "condition": "baseline",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 28,
+    "timestamp": 1776585160
+  }
+}

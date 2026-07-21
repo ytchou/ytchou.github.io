@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1087,
+  "output_tokens": 563,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Classic read-modify-write race. Two requests read same value, both write same increment.\n\n**Root cause:**\n```js\n// BROKEN \u2014 read then write = race\nconst { rows } = await db.query('SELECT count FROM counters WHERE id = $1', [id]);\nconst newVal = rows[0].count + 1;\nawait db.query('UPDATE counters SET count = $1 WHERE id = $2', [newVal, id]);\n```\n\n**Fix 1 \u2014 Atomic update + RETURNING (best):**\n```js\nconst { rows } = await db.query(\n  'UPDATE counters SET count = count + 1 WHERE id = $1 RETURNING count',\n  [id]\n);\nreturn rows[0].count; // guaranteed unique per caller\n```\nSingle statement. DB handle concurrency. No app-level lock needed.\n\n---\n\n**Fix 2 \u2014 Need conditional logic? Use transaction + row lock:**\n```js\nawait db.query('BEGIN');\nconst { rows } = await db.query(\n  'SELECT count FROM counters WHERE id = $1 FOR UPDATE', // locks row\n  [id]\n);\nconst newVal = rows[0].count + 1;\nawait db.query('UPDATE counters SET count = $1 WHERE id = $2', [newVal, id]);\nawait db.query('COMMIT');\nreturn newVal;\n```\n`FOR UPDATE` block other transactions until lock release.\n\n---\n\n**Fix 3 \u2014 Counter not exist yet? Use upsert:**\n```js\nconst { rows } = await db.query(`\n  INSERT INTO counters (id, count) VALUES ($1, 1)\n  ON CONFLICT (id) DO UPDATE SET count = counters.count + 1\n  RETURNING count\n`, [id]);\nreturn rows[0].count;\n```\n\n---\n\n**Pick:**\n| Situation | Use |\n|-----------|-----|\n| Simple increment | Fix 1 |\n| Complex logic in transaction | Fix 2 |\n| Counter may not exist | Fix 3 |\n\nFix 1 cover 90% of cases. One round-trip, zero race.",
+  "thinking_text": "The user wants to fix a race condition in a PostgreSQL counter increment with concurrent requests. Let me respond in caveman mode (full, default).\n\nThe issue is a classic read-modify-write race condition. The fix is atomic update in PostgreSQL.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 22.52,
+  "_meta": {
+    "track": "A_prime",
+    "task": "race-condition-debug",
+    "category": "debugging",
+    "condition": "caveman",
+    "run_num": 1,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776610933
+  }
+}

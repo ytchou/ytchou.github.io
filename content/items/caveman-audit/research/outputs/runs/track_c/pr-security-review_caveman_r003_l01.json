@@ -1,0 +1,42 @@
+{
+  "input_tokens": 6200,
+  "output_tokens": 259,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "**SQL injection** \u2014 critical flaw. `req.params.id` goes straight into query string. Attacker sends `1 OR 1=1` \u2192 dumps all users. `1; DROP TABLE users` \u2192 data loss.\n\n**Fix:**\n\n```js\napp.get('/api/users/:id', (req, res) => {\n  db.query('SELECT * FROM users WHERE id = ?', [req.params.id])\n    .then(user => {\n      if (!user) return res.status(404).json({ error: 'Not found' });\n      res.json(user);\n    })\n    .catch(() => res.status(500).json({ error: 'Server error' }));\n});\n```\n\n**Other issues:**\n- No auth check \u2014 any caller gets any user's data\n- No input validation \u2014 non-numeric id hits DB needlessly\n- `SELECT *` leaks password hashes, tokens, etc. \u2014 select only needed columns\n- No error handling \u2014 unhandled rejection crashes or leaks stack trace",
+  "thinking_text": "The user wants a security review of this Express route handler.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 14.82,
+  "_meta": {
+    "track": "C",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "caveman",
+    "run_num": 3,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 25563,
+    "timestamp": 1776613716,
+    "level": 1,
+    "ordering": [
+      8,
+      4,
+      6,
+      7,
+      3,
+      0,
+      1,
+      9,
+      5,
+      2
+    ],
+    "chunks_present": [
+      4,
+      8
+    ],
+    "num_chunks": 2,
+    "behavioral_chars": 12880,
+    "chunk_chars": 9158
+  }
+}

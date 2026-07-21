@@ -1,0 +1,79 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 18875,
+  "duration_api_ms": 18806,
+  "num_turns": 5,
+  "result": "Need permission. Changes summary:\n\n- `fallback` \u2192 render prop `(error, reset) => ReactNode` so custom UI can call retry\n- `onError` prop for external logging (Sentry, etc.)\n- Structured `console.error` object instead of positional args\n- `componentStack` shown in collapsible `<details>` in default UI\n\nOnce permitted, will write the file. Approve and I'll proceed.",
+  "stop_reason": "end_turn",
+  "session_id": "a1a9d475-742f-4970-836d-716d88860926",
+  "total_cost_usd": 0.044226,
+  "usage": {
+    "input_tokens": 6,
+    "cache_creation_input_tokens": 1806,
+    "cache_read_input_tokens": 72985,
+    "output_tokens": 1036,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 1806,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 1,
+        "output_tokens": 101,
+        "cache_read_input_tokens": 18862,
+        "cache_creation_input_tokens": 737,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 737
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 6,
+      "outputTokens": 1036,
+      "cacheReadInputTokens": 72985,
+      "cacheCreationInputTokens": 1806,
+      "webSearchRequests": 0,
+      "costUSD": 0.044226,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [
+    {
+      "tool_name": "Write",
+      "tool_use_id": "toolu_01PdFTjrqJSSXfUjQjSXoNEz",
+      "tool_input": {
+        "file_path": "/Users/ytchou/project/portfolio/projects/caveman-audit/src/components/ErrorBoundary.tsx",
+        "content": "import { Component, type ErrorInfo, type ReactNode } from \"react\";\n\ninterface Props {\n  children: ReactNode;\n  fallback?: (error: Error, reset: () => void) => ReactNode;\n  onError?: (error: Error, info: ErrorInfo) => void;\n}\n\ninterface State {\n  error: Error | null;\n  componentStack: string | null;\n}\n\nexport class ErrorBoundary extends Component<Props, State> {\n  state: State = { error: null, componentStack: null };\n\n  static getDerivedStateFromError(error: Error): Partial<State> {\n    return { error };\n  }\n\n  componentDidCatch(error: Error, info: ErrorInfo): void {\n    const stack = info.componentStack ?? null;\n    this.setState({ componentStack: stack });\n\n    console.error(\"[ErrorBoundary]\", {\n      message: error.message,\n      stack: error.stack,\n      componentStack: stack,\n    });\n\n    this.props.onError?.(error, info);\n  }\n\n  reset = (): void => {\n    this.setState({ error: null, componentStack: null });\n  };\n\n  render(): ReactNode {\n    const { error, componentStack } = this.state;\n\n    if (error) {\n      if (this.props.fallback) {\n        return this.props.fallback(error, this.reset);\n      }\n\n      return (\n        <div role=\"alert\" style={{ padding: \"1rem\", border: \"1px solid red\" }}>\n          <h2>Something went wrong</h2>\n          <pre style={{ whiteSpace: \"pre-wrap\", color: \"red\" }}>\n            {error.message}\n          </pre>\n          {componentStack && (\n            <details>\n              <summary>Component stack</summary>\n              <pre style={{ whiteSpace: \"pre-wrap\", fontSize: \"0.75rem\" }}>\n                {componentStack}\n              </pre>\n            </details>\n          )}\n          <button onClick={this.reset}>Try Again</button>\n        </div>\n      );\n    }\n\n    return this.props.children;\n  }\n}\n"
+      }
+    }
+  ],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "7ff74a73-fafa-42ba-b6bc-da1cbeb54200",
+  "_meta": {
+    "track": "B",
+    "task": "error-boundary",
+    "category": "implementation",
+    "condition": "caveman",
+    "run_num": 8,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 20.48,
+    "timestamp": 1776776715,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

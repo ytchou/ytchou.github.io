@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 9683,
+  "duration_api_ms": 11722,
+  "num_turns": 1,
+  "result": "This code has a critical SQL injection vulnerability, plus a few other issues:\n\n## Critical: SQL Injection\n\n```js\n// VULNERABLE \u2014 user input concatenated directly into SQL\nconst query = `SELECT * FROM users WHERE id = ${req.params.id}`;\n```\n\nAn attacker can pass `1 OR 1=1` or `1; DROP TABLE users--` as the `:id` parameter and manipulate the query. Always use parameterized queries:\n\n```js\n// Safe \u2014 value is bound separately, never interpreted as SQL\nconst query = `SELECT * FROM users WHERE id = ?`;\ndb.query(query, [req.params.id]).then(user => res.json(user));\n```\n\n(Exact syntax depends on your DB driver \u2014 `?` for mysql2, `$1` for pg, etc.)\n\n## Secondary Issues\n\n**No input validation** \u2014 `:id` should be validated as a positive integer before hitting the DB:\n\n```js\nconst id = parseInt(req.params.id, 10);\nif (!Number.isInteger(id) || id <= 0) {\n  return res.status(400).json({ error: 'Invalid user ID' });\n}\n```\n\n**No error handling** \u2014 if the query fails, the promise rejection is unhandled, which will crash the process in older Node versions and silently fail in newer ones:\n\n```js\ndb.query(query, [id])\n  .then(user => {\n    if (!user) return res.status(404).json({ error: 'Not found' });\n    res.json(user);\n  })\n  .catch(err => {\n    console.error(err);\n    res.status(500).json({ error: 'Internal server error' });\n  });\n```\n\n**`SELECT *` leaks sensitive columns** \u2014 if `users` has a `password_hash`, `ssn`, or similar field, it will be returned to the caller. Select only the columns you need.\n\n**No auth/authorization check** \u2014 any caller can fetch any user's data by ID. Verify the requester is allowed to access the requested `:id`.",
+  "stop_reason": "end_turn",
+  "session_id": "73b23df8-8d85-4d1d-929d-276c473efd50",
+  "total_cost_usd": 0.0134355,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17085,
+    "output_tokens": 521,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 521,
+        "cache_read_input_tokens": 17085,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 406,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000486,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 521,
+      "cacheReadInputTokens": 17085,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0129495,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "dbb51623-bd23-4eb0-9f36-e5db98c06771",
+  "_meta": {
+    "track": "B",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "baseline",
+    "run_num": 3,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 11.26,
+    "timestamp": 1776774802,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1078,
+  "output_tokens": 738,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Use `pg` pool. Key config:\n\n```javascript\nimport { Pool } from 'pg';\n\nconst pool = new Pool({\n  host: process.env.DB_HOST,\n  port: 5432,\n  database: process.env.DB_NAME,\n  user: process.env.DB_USER,\n  password: process.env.DB_PASSWORD,\n\n  // Pool sizing\n  max: 20,                  // max connections\n  min: 2,                   // keep alive floor\n  idleTimeoutMillis: 30000, // kill idle conn after 30s\n  connectionTimeoutMillis: 2000, // fail fast if no conn in 2s\n\n  // Optional but good\n  allowExitOnIdle: true,    // let process exit cleanly\n});\n\n// Catch pool-level errors (dropped connections, etc.)\npool.on('error', (err, client) => {\n  console.error('Idle client error:', err.message);\n});\n\n// Query helper \u2014 auto-release client\nexport async function query(text, params) {\n  const start = Date.now();\n  try {\n    const res = await pool.query(text, params);\n    console.debug('Query took', Date.now() - start, 'ms');\n    return res;\n  } catch (err) {\n    console.error('Query error:', { text, error: err.message });\n    throw err;\n  }\n}\n\n// Transaction helper \u2014 manual acquire/release\nexport async function withTransaction(fn) {\n  const client = await pool.connect();\n  try {\n    await client.query('BEGIN');\n    const result = await fn(client);\n    await client.query('COMMIT');\n    return result;\n  } catch (err) {\n    await client.query('ROLLBACK');\n    throw err;\n  } finally {\n    client.release(); // ALWAYS release \u2014 even on throw\n  }\n}\n```\n\nUsage:\n\n```javascript\n// Simple query\nconst { rows } = await query('SELECT * FROM users WHERE id = $1', [userId]);\n\n// Transaction\nawait withTransaction(async (client) => {\n  await client.query('UPDATE accounts SET balance = balance - $1 WHERE id = $2', [100, fromId]);\n  await client.query('UPDATE accounts SET balance = balance + $1 WHERE id = $2', [100, toId]);\n});\n```\n\nKey points:\n\n- `connectionTimeoutMillis` \u2014 fail fast over hang forever. Set low (2-5s).\n- `idleTimeoutMillis` \u2014 prevent stale conn buildup. 30s good default.\n- `max` \u2014 rule of thumb: `num_cores * 2 + disk_spindles`. Don't go crazy high; Postgres chokes.\n- `client.release()` in `finally` \u2014 skip this = pool drain \u2192 app hang.\n- Pool-level `error` listener mandatory \u2014 unhandled emits crash Node.",
+  "thinking_text": "The user wants to know how to set up a PostgreSQL connection pool in Node.js with proper timeout and error handling. I should respond in caveman mode (full, default).",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 15.48,
+  "_meta": {
+    "track": "A_prime",
+    "task": "postgres-pool",
+    "category": "setup",
+    "condition": "caveman",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776610538
+  }
+}

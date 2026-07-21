@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1063,
+  "output_tokens": 548,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## Monolith \u2192 Microservices: Consider First\n\n**Split only if monolith actually broken.** Most teams split too early.\n\n---\n\n### Diagnose First\n\n- Slow = where? DB queries, app logic, infra? Profile before architect.\n- \"Slow\" fixable with caching, indexes, async tasks (Celery), read replicas \u2014 no split needed.\n\n---\n\n### Real Reasons to Split\n\n| Good reason | Bad reason |\n|---|---|\n| Teams block each other deploying | \"Microservices modern\" |\n| One domain needs different scale | Rewrite urge |\n| Truly independent release cycles | Slow = unoptimized queries |\n| Compliance isolation required | Team likes Go |\n\n---\n\n### Cost You Pay\n\n**Ops complexity explodes:**\n- Service discovery, load balancing, distributed tracing\n- Each service = own deploy pipeline, monitoring, logging\n- Network calls fail. Monolith method calls don't.\n\n**Data hardest part:**\n- Shared DB = not microservices\n- Split DB = distributed transactions, eventual consistency, saga patterns\n- Django ORM across service boundary = gone\n\n**Dev velocity drops first:**\n- 6-18 months slower before faster (if ever)\n- Need strong DevOps/platform team or pain is permanent\n\n---\n\n### Django-Specific\n\n- Django admin spans everything \u2014 loses value when split\n- ORM joins across services = impossible, need APIs or denormalize\n- Auth/sessions must centralize (JWT or shared auth service)\n- Celery tasks tied to models \u2014 need rethink\n\n---\n\n### Better First Steps\n\n1. **Profile** \u2014 `django-debug-toolbar`, slow query log\n2. **Add caching** \u2014 Redis on hot paths\n3. **Async heavy work** \u2014 Celery + Redis/RabbitMQ\n4. **DB** \u2014 read replicas, indexes, `select_related`/`prefetch_related`\n5. **Modularize internally** \u2014 clean Django apps with strict boundaries (prep for split later if needed)\n6. **Extract only obvious candidates** \u2014 auth, notifications, image processing \u2014 if they have zero shared DB needs\n\n---\n\n### Decision Test\n\n> Can two teams deploy independently without coordinating? Do domains have truly separate data? Do you have platform engineers to own infra?\n\n**All yes \u2192 maybe split. Any no \u2192 fix monolith first.**",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 14.52,
+  "_meta": {
+    "track": "C",
+    "task": "microservices-monolith",
+    "category": "architecture",
+    "condition": "caveman",
+    "run_num": 9,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585719
+  }
+}

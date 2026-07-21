@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1065,
+  "output_tokens": 251,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "JWT `exp` in seconds. `Date.now()` in milliseconds.\n\n**Bug:**\n```js\nif (Date.now() > decoded.exp) // wrong \u2014 ms vs s\n```\n\n**Fix:**\n```js\nif (Date.now() / 1000 > decoded.exp) // convert ms\u2192s\n```\n\nOr:\n```js\nif (Math.floor(Date.now() / 1000) > decoded.exp)\n```\n\n**Better:** Use `jsonwebtoken` verify \u2014 handles expiry auto:\n```js\njwt.verify(token, secret); // throws TokenExpiredError if exp passed\n```\n\nCatch it:\n```js\ntry {\n  const decoded = jwt.verify(token, secret);\n} catch (err) {\n  if (err.name === 'TokenExpiredError') return res.status(401).json({ error: 'Token expired' });\n  return res.status(401).json({ error: 'Invalid token' });\n}\n```\n\nManual check = reinvent wheel + unit mismatch risk. Use library verify.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 4.77,
+  "_meta": {
+    "track": "C",
+    "task": "auth-middleware-fix",
+    "category": "bugfix",
+    "condition": "caveman",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585186
+  }
+}

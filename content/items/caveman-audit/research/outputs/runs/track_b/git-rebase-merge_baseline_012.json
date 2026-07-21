@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 19613,
+  "duration_api_ms": 20729,
+  "num_turns": 1,
+  "result": "## Git Merge vs. Git Rebase\n\nBoth integrate changes from one branch into another, but they do it differently.\n\n---\n\n### `git merge`\n\nCreates a **merge commit** that ties together the histories of both branches. The original branch histories are preserved exactly as they happened.\n\n```\nmain:    A---B---C-------M\n                  \\     /\nfeature:           D---E\n```\n\n- History is **non-destructive** \u2014 commits are never rewritten\n- The merge commit (`M`) shows exactly when branches were joined\n- History can look noisy with many merge commits in active repos\n\n---\n\n### `git rebase`\n\n**Replays** your branch's commits on top of the target branch, rewriting their SHAs. The result looks like development happened linearly.\n\n```\nmain:    A---B---C\n                  \\\nfeature:           D'--E'   (D and E replayed as D', E')\n```\n\n- History is **clean and linear** \u2014 easier to read with `git log`\n- **Rewrites commits** \u2014 D and E become new commits (D', E') with new SHAs\n- Makes `git bisect` and `git blame` more useful\n\n---\n\n### When to use each\n\n| Situation | Recommendation |\n|---|---|\n| Merging a finished feature into `main` | **Merge** \u2014 preserves the full context of when work happened |\n| Updating your feature branch with latest `main` | **Rebase** \u2014 keeps your branch current without a noisy merge commit |\n| Shared/public branch (others have pulled it) | **Merge** \u2014 rebasing rewrites history, breaking others' copies |\n| Local, unpublished branch | **Rebase** freely \u2014 no one else has those SHAs |\n| Want to preserve \"when did this branch land?\" | **Merge** |\n| Want `git log --oneline` to be readable | **Rebase** |\n\n---\n\n### The key tradeoff\n\n**Rebase rewrites history.** This is powerful for local cleanup but dangerous on shared branches \u2014 anyone who based work on your old commits will have diverged history and face a painful reconciliation. The rule of thumb: **never rebase commits that exist on a remote branch others might have pulled.**\n\nA common workflow: rebase your feature branch on `main` while developing (to stay current), then merge (or PR) into `main` when done.",
+  "stop_reason": "end_turn",
+  "session_id": "d7438aeb-a139-4907-b485-44f6e5e0e7d8",
+  "total_cost_usd": 0.014378,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17050,
+    "output_tokens": 588,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 588,
+        "cache_read_input_tokens": 17050,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 364,
+      "outputTokens": 14,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.00043400000000000003,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 588,
+      "cacheReadInputTokens": 17050,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.013944,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "d3f93302-797f-4ce9-9c6e-57ca2f4621ac",
+  "_meta": {
+    "track": "B",
+    "task": "git-rebase-merge",
+    "category": "explanation",
+    "condition": "baseline",
+    "run_num": 12,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 21.01,
+    "timestamp": 1776776342,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

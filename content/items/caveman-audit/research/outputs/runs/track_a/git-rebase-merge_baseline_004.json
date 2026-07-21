@@ -1,0 +1,21 @@
+{
+  "input_tokens": 40,
+  "output_tokens": 833,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "# Git Rebase vs Git Merge\n\nBoth integrate changes from one branch into another, but they do it differently.\n\n## How They Work\n\n### Git Merge\nCreates a **new merge commit** that ties together the histories of both branches.\n\n```\nBefore:                    After merge:\n                           \nA---B---C  (main)          A---B---C---M  (main)\n     \\                          \\     /\n      D---E  (feature)           D---E\n```\nThe history shows exactly what happened and when.\n\n### Git Rebase\n**Replants** your commits onto the tip of another branch, rewriting history.\n\n```\nBefore:                    After rebase:\n\nA---B---C  (main)          A---B---C---D'---E'  (feature)\n     \\                    \n      D---E  (feature)     \n```\nCommits D and E become new commits (D', E') with different hashes.\n\n---\n\n## Quick Decision Guide\n\n| Situation | Use |\n|-----------|-----|\n| Merging a completed feature into main | **Merge** |\n| Updating your feature branch with latest main | **Rebase** |\n| Working on a shared/public branch | **Merge** |\n| Working on a local/private branch | **Either** |\n| You need to preserve exact history | **Merge** |\n| You want a clean, linear history | **Rebase** |\n\n---\n\n## Tradeoffs\n\n### Merge \u2705\n- **Safe** \u2014 never rewrites history\n- Preserves the full context of when things happened\n- Easy to understand and undo\n- Creates extra merge commits that can clutter history\n\n### Rebase \u2705\n- Produces a **clean, linear history** that's easier to read\n- `git log` and `git bisect` work more cleanly\n- **Rewrites history** \u2014 dangerous on shared branches\n- Harder to recover from mistakes\n\n---\n\n## The Golden Rule of Rebase\n\n> **Never rebase a branch that others are working on.**\n\nWhen you rebase, commits get new hashes. If someone else has the old commits, their history diverges from yours and you'll create a mess when pushing.\n\n```bash\n# This is dangerous if others have pulled feature-branch\ngit checkout feature-branch\ngit rebase main          # rewrites commits \u2192 force push required\ngit push --force-with-lease  # overwrites remote history\n```\n\n---\n\n## Common Workflows\n\n### Keeping your feature branch up to date (rebase is cleaner)\n```bash\ngit checkout feature-branch\ngit fetch origin\ngit rebase origin/main\n# Resolve any conflicts, then:\ngit rebase --continue\n```\n\n### Finishing a feature (merge preserves context)\n```bash\ngit checkout main\ngit merge --no-ff feature-branch  # --no-ff forces a merge commit\ngit push origin main\n```\n\n### Interactive rebase \u2014 cleaning up before merging\n```bash\n# Squash, reorder, or edit your last 3 commits\ngit rebase -i HEAD~3\n```\nThis is a great middle ground: rebase locally to clean up messy work-in-progress commits, then merge cleanly into main.\n\n---\n\n## My Recommendation\n\n- **Rebase** your local feature branch onto main regularly to stay current\n- **Merge** (or squash merge) when integrating back into main\n- Use `git rebase -i` to clean up commits before code review\n- **Never force-push to main or shared branches**\n\nThe goal is a history that's honest enough to be useful and clean enough to be readable.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 16.77,
+  "_meta": {
+    "track": "C",
+    "task": "git-rebase-merge",
+    "category": "explanation",
+    "condition": "baseline",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 28,
+    "timestamp": 1776585424
+  }
+}

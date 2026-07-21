@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 13998,
+  "duration_api_ms": 15272,
+  "num_turns": 1,
+  "result": "The decision usually comes down to whether your pain is **operational** or **organizational**. Here are the key factors:\n\n## Before splitting, ask these questions\n\n**1. Where is the actual bottleneck?**\nSlow Django apps are usually slow databases, missing indexes, N+1 queries, or lack of caching \u2014 not the monolith architecture. Profile first with Django Debug Toolbar or `EXPLAIN ANALYZE`. Microservices won't fix a missing index.\n\n**2. Do your team boundaries match your service boundaries?**\nConway's Law is real. Microservices pay off when separate teams own separate domains and need independent deploy cycles. If it's one team, you'll spend most of your time on inter-service coordination overhead instead of features.\n\n**3. Do you have independent scaling needs?**\nIf one specific part (e.g., an image processor, a reporting engine) needs 10x the resources of everything else, that's a genuine reason to extract it. Splitting a uniform workload gains nothing.\n\n**4. Can you afford the operational cost?**\nMicroservices require: service discovery, distributed tracing, network failure handling, distributed transactions (saga pattern), separate CI/CD pipelines, and more infra. This is a significant ongoing tax on a small team.\n\n**5. Are your domain boundaries actually clear?**\nPremature splitting along muddy boundaries creates \"distributed monolith\" \u2014 the worst of both worlds. You want services that almost never need to talk to each other to do their jobs.\n\n## Practical path for a Django monolith\n\nBefore committing to microservices, exhaust these options in order:\n\n- **Database**: indexes, query optimization, read replicas, connection pooling (PgBouncer)\n- **Caching**: Redis for sessions, hot queries, computed results\n- **Async tasks**: Celery/Django-Q for slow work (emails, reports, webhooks)\n- **Modular monolith**: break the Django app into well-bounded internal apps with clean interfaces \u2014 you get organizational clarity without the operational cost, and it makes a future split much cleaner\n- **Extract one service**: if one domain clearly needs independence, extract just that, learn the cost, then decide whether to continue\n\nThe honest answer is: most Django apps at most scales don't need microservices. They need better queries and async workers. The modular monolith approach gives you 80% of the benefit with 20% of the cost.",
+  "stop_reason": "end_turn",
+  "session_id": "89e1e0c1-a6d5-4df1-82f6-47b685369b17",
+  "total_cost_usd": 0.014636,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17060,
+    "output_tokens": 603,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 603,
+        "cache_read_input_tokens": 17060,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 374,
+      "outputTokens": 18,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000464,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 603,
+      "cacheReadInputTokens": 17060,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.014172,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "59cbe5f5-a047-491e-bf76-260ff5f80185",
+  "_meta": {
+    "track": "B",
+    "task": "microservices-monolith",
+    "category": "architecture",
+    "condition": "baseline",
+    "run_num": 10,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 15.64,
+    "timestamp": 1776776410,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 12903,
+  "duration_api_ms": 12842,
+  "num_turns": 1,
+  "result": "Use `pg` (node-postgres) with `Pool`:\n\n```javascript\nimport { Pool } from 'pg';\n\nconst pool = new Pool({\n  host: process.env.DB_HOST,\n  port: parseInt(process.env.DB_PORT ?? '5432'),\n  database: process.env.DB_NAME,\n  user: process.env.DB_USER,\n  password: process.env.DB_PASSWORD,\n\n  // Pool sizing\n  max: 20,                  // max connections in pool\n  min: 2,                   // keep alive connections\n  idleTimeoutMillis: 30000, // close idle connections after 30s\n  connectionTimeoutMillis: 5000, // fail fast if no connection available in 5s\n\n  // Keep connections alive\n  keepAlive: true,\n  keepAliveInitialDelayMillis: 10000,\n});\n\n// Error on idle client \u2014 must handle or process crashes\npool.on('error', (err, client) => {\n  console.error('Idle client error:', err.message);\n});\n```\n\n**Query wrapper with proper release:**\n\n```javascript\nasync function query(text, params) {\n  const start = Date.now();\n  const client = await pool.connect(); // throws if connectionTimeoutMillis exceeded\n  try {\n    const result = await client.query(text, params);\n    return result;\n  } finally {\n    client.release(); // always release, even on error\n  }\n}\n```\n\n**Transaction helper:**\n\n```javascript\nasync function withTransaction(fn) {\n  const client = await pool.connect();\n  try {\n    await client.query('BEGIN');\n    const result = await fn(client);\n    await client.query('COMMIT');\n    return result;\n  } catch (err) {\n    await client.query('ROLLBACK');\n    throw err;\n  } finally {\n    client.release();\n  }\n}\n\n// Usage\nawait withTransaction(async (client) => {\n  await client.query('INSERT INTO orders ...', [...]);\n  await client.query('UPDATE inventory ...', [...]);\n});\n```\n\n**Graceful shutdown:**\n\n```javascript\nprocess.on('SIGTERM', async () => {\n  await pool.end(); // drain pool, reject new connections\n  process.exit(0);\n});\n```\n\nKey points:\n- `pool.connect()` + `client.release()` for transactions; `pool.query()` for one-shots (auto-releases)\n- `pool.on('error')` **required** \u2014 unhandled error on idle client crashes process\n- `connectionTimeoutMillis` controls queue wait, not query duration \u2014 set query timeout separately with `SET statement_timeout`\n- `max: 20` typical default; tune to `(CPU cores * 2) + disk spindles` or Postgres `max_connections / num_app_instances`",
+  "stop_reason": "end_turn",
+  "session_id": "e8405ddf-3ae3-4bb1-bff1-dc262b45346d",
+  "total_cost_usd": 0.03840105,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6399,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 727,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6399,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 727,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6399,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6399
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 727,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6399,
+      "webSearchRequests": 0,
+      "costUSD": 0.03840105,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "153ec0e9-ad09-4ea6-9ec1-0778a06cb8c2",
+  "_meta": {
+    "track": "B",
+    "task": "postgres-pool",
+    "category": "setup",
+    "condition": "caveman",
+    "run_num": 15,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 14.5,
+    "timestamp": 1776776311,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1092,
+  "output_tokens": 697,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "3-stage build. Build bloat stay in builder. Prod image get only compiled JS + prod deps.\n\n```dockerfile\n# \u2500\u2500 Stage 1: Install ALL deps + compile \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nFROM node:20-alpine AS builder\n\nWORKDIR /app\n\n# Copy manifests first \u2192 cache layer if src changes but deps don't\nCOPY package*.json tsconfig.json ./\nRUN npm ci\n\nCOPY src/ ./src/\nRUN npm run build          # tsc output \u2192 /app/dist\n\n\n# \u2500\u2500 Stage 2: Prune to prod deps only \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nFROM node:20-alpine AS deps\n\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci --omit=dev      # no devDeps (ts, @types, etc.)\n\n\n# \u2500\u2500 Stage 3: Final image \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nFROM node:20-alpine AS runtime\n\nENV NODE_ENV=production\nWORKDIR /app\n\n# Non-root user. Security baseline.\nRUN addgroup -S appgroup && adduser -S appuser -G appgroup\nUSER appuser\n\n# Only what prod needs\nCOPY --from=deps     /app/node_modules ./node_modules\nCOPY --from=builder  /app/dist         ./dist\nCOPY package.json    ./\n\nEXPOSE 3000\nCMD [\"node\", \"dist/index.js\"]\n```\n\n**Why each choice:**\n\n| Decision | Reason |\n|---|---|\n| `alpine` base | ~5MB vs ~300MB debian |\n| Manifests copied before `src/` | Layer cache skip `npm ci` on code-only changes |\n| Stage 2 separate prune | Clean `npm ci --omit=dev` faster/safer than `npm prune` on existing install |\n| Non-root user | Container escape = unprivileged. No extra cost. |\n| Copy `dist/` not `src/` | TS compiler, source maps, type defs stay in builder |\n\n**Typical size result:**\n\n```\nbuilder     ~400MB  (TS compiler + all deps + source)\ndeps        ~120MB  (prod deps only)\nruntime     ~130MB  (alpine + prod deps + dist JS)\n```\n\n**`tsconfig.json` must have:**\n\n```json\n{\n  \"compilerOptions\": {\n    \"outDir\": \"./dist\",\n    \"rootDir\": \"./src\"\n  }\n}\n```\n\n**`package.json` build script:**\n\n```json\n{\n  \"scripts\": {\n    \"build\": \"tsc --project tsconfig.json\"\n  }\n}\n```\n\nBuild: `docker build -t myapp .`\nRun: `docker run -p 3000:3000 myapp`",
+  "thinking_text": "The user wants a multi-stage Dockerfile for Node.js TypeScript. Caveman mode is active by default (full level).",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 27.03,
+  "_meta": {
+    "track": "A_prime",
+    "task": "docker-multi-stage",
+    "category": "devops",
+    "condition": "caveman",
+    "run_num": 1,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776610834
+  }
+}

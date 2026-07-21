@@ -1,0 +1,46 @@
+{
+  "input_tokens": 11009,
+  "output_tokens": 407,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Three issues:\n\n**1. SQL Injection (critical)**\n`req.params.id` injected directly \u2192 attacker passes `1 OR 1=1` \u2192 dumps all users.\n\n```js\n// Fix: parameterized query\ndb.query('SELECT * FROM users WHERE id = ?', [req.params.id])\n```\n\n**2. No input validation**\nNo type/format check on `id`. Pass letters, negative numbers, absurdly long strings \u2014 all hit the DB.\n\n```js\nconst id = parseInt(req.params.id, 10);\nif (isNaN(id)) return res.status(400).json({ error: 'Invalid id' });\n```\n\n**3. No error handling**\nQuery failure = unhandled rejection, likely crashes or leaks stack trace to client.\n\n```js\n.catch(err => res.status(500).json({ error: 'Internal server error' }));\n```\n\n**Fixed:**\n```js\napp.get('/api/users/:id', async (req, res) => {\n  const id = parseInt(req.params.id, 10);\n  if (isNaN(id)) return res.status(400).json({ error: 'Invalid id' });\n\n  try {\n    const user = await db.query('SELECT * FROM users WHERE id = ?', [id]);\n    if (!user) return res.status(404).json({ error: 'Not found' });\n    res.json(user);\n  } catch {\n    res.status(500).json({ error: 'Internal server error' });\n  }\n});\n```\n\nSQL injection is the urgent fix \u2014 the others are correctness/robustness.",
+  "thinking_text": "Security review of this Express route handler.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 7.11,
+  "_meta": {
+    "track": "C",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "caveman",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 44554,
+    "timestamp": 1776614192,
+    "level": 3,
+    "ordering": [
+      3,
+      8,
+      5,
+      4,
+      1,
+      7,
+      6,
+      9,
+      2,
+      0
+    ],
+    "chunks_present": [
+      1,
+      3,
+      4,
+      5,
+      7,
+      8
+    ],
+    "num_chunks": 6,
+    "behavioral_chars": 12880,
+    "chunk_chars": 28141
+  }
+}

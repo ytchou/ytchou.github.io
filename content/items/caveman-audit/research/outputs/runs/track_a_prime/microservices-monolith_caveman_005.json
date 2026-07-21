@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1092,
+  "output_tokens": 433,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "**Before split, ask these:**\n\n**Pain diagnosis first**\nSlow \u2260 need microservices. Profile first. Often: bad queries, missing indexes, no caching. Fix that \u2014 10x cheaper than split.\n\n**Org structure**\nConway's Law real. Services mirror teams. One team? One service. 5 teams stepping on each other? Split make sense.\n\n**Domain boundaries clear?**\nCan draw hard line between \"orders\" and \"inventory\" with no shared DB writes? Good. Boundaries fuzzy? Split make distributed monolith \u2014 worst of both worlds.\n\n**Deployment pain**\nBig team, releases blocked waiting on each other? Microservices help. Small team, deploy together fine? Extra overhead not worth it.\n\n**Scale profile**\nOne part need 100x more resources than rest? (e.g. image processing vs auth) Split that part only. Don't split uniform-load app.\n\n**Are you ready for the tax?**\nMicroservices add:\n- Network failures between services\n- Distributed tracing\n- Service discovery\n- Data consistency nightmares (no cross-service transactions)\n- 3x+ infra complexity\n\n**Django-specific**\nORM crosses domain lines everywhere? Untangling that = months of work before first service deploys.\n\n---\n\n**Honest take:**\n\nMost Django monoliths die from DB bottlenecks, not architecture. Fix order:\n\n1. Add caching (Redis)\n2. Read replicas + query optimization\n3. Async tasks (Celery) for slow ops\n4. Modular monolith (clear Django apps, no cross-app model imports)\n5. *Then* extract services if pain still real\n\nSplit only what hurts. Don't split everything.",
+  "thinking_text": "The user wants advice on monolith vs microservices decision factors. I'm in caveman mode (full by default).",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 12.7,
+  "_meta": {
+    "track": "A_prime",
+    "task": "microservices-monolith",
+    "category": "architecture",
+    "condition": "caveman",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776610713
+  }
+}

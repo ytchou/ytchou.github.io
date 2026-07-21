@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 8099,
+  "duration_api_ms": 8047,
+  "num_turns": 1,
+  "result": "Race condition from read-modify-write pattern. Two requests read same value, both write same incremented value.\n\n**Root cause:**\n```js\n// BAD \u2014 two concurrent requests both read X, both write X+1\nconst row = await db.query('SELECT count FROM counters WHERE id = $1', [id]);\nconst newVal = row.rows[0].count + 1;\nawait db.query('UPDATE counters SET count = $1 WHERE id = $2', [newVal, id]);\n```\n\n**Fix 1 \u2014 Atomic UPDATE (simplest):**\n```sql\nUPDATE counters SET count = count + 1 WHERE id = $1 RETURNING count;\n```\nPostgreSQL row-level lock during UPDATE. No app-level race possible.\n\n**Fix 2 \u2014 `FOR UPDATE` if you need the value first:**\n```js\nawait db.query('BEGIN');\nconst row = await db.query(\n  'SELECT count FROM counters WHERE id = $1 FOR UPDATE', [id]\n);\nconst newVal = row.rows[0].count + 1;\nawait db.query('UPDATE counters SET count = $1 WHERE id = $2', [newVal, id]);\nawait db.query('COMMIT');\n```\n`FOR UPDATE` locks row until transaction commits. Other requests block, then proceed serially.\n\n**Fix 3 \u2014 `INSERT ... ON CONFLICT` for upsert pattern:**\n```sql\nINSERT INTO counters (id, count) VALUES ($1, 1)\nON CONFLICT (id) DO UPDATE SET count = counters.count + 1\nRETURNING count;\n```\n\n**Recommended:** Fix 1. Single atomic statement, no transaction overhead, Postgres guarantees serial writes to same row.",
+  "stop_reason": "end_turn",
+  "session_id": "d33b066a-76fe-4dd5-9b4b-c53370e588ee",
+  "total_cost_usd": 0.0341148,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6408,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 439,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6408,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 439,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6408,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6408
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 439,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6408,
+      "webSearchRequests": 0,
+      "costUSD": 0.0341148,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "24d1e945-1fcd-43bf-b9ea-4e997c3bf646",
+  "_meta": {
+    "track": "B",
+    "task": "race-condition-debug",
+    "category": "debugging",
+    "condition": "caveman",
+    "run_num": 9,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 9.66,
+    "timestamp": 1776776583,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

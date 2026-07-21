@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1151,
+  "output_tokens": 370,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "DB query \u2192 promisify \u2192 async/await. Assume `db.query` not yet promisified:\n\n```javascript\n// If db doesn't support promises natively, promisify once at top\nconst { promisify } = require('util');\nconst dbQuery = promisify(db.query.bind(db));\n\nasync function getUser(id) {\n  const rows = await dbQuery('SELECT * FROM users WHERE id = ?', [id]);\n  if (!rows.length) throw new Error('Not found');\n  return rows[0];\n}\n```\n\n**If db already returns promises** (mysql2/promise, pg, prisma, etc.):\n\n```javascript\nasync function getUser(id) {\n  const rows = await db.query('SELECT * FROM users WHERE id = ?', [id]);\n  if (!rows.length) throw new Error('Not found');\n  return rows[0];\n}\n```\n\n**Caller side** \u2014 replace callback pattern:\n\n```javascript\n// Before\ngetUser(42, (err, user) => { ... });\n\n// After\ntry {\n  const user = await getUser(42);\n} catch (err) {\n  // handles both DB errors + 'Not found'\n}\n```\n\nKey changes:\n- Err param \u2192 thrown exception. Caller use `try/catch`.\n- `callback(null, result)` \u2192 `return result`\n- No nested callbacks. Flat flow.",
+  "thinking_text": "The user wants me to refactor callback-based Node.js to async/await. I'm in caveman mode (full by default).",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 7.45,
+  "_meta": {
+    "track": "A_prime",
+    "task": "async-refactor",
+    "category": "refactor",
+    "condition": "caveman",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776610636
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 9499,
+  "duration_api_ms": 9442,
+  "num_turns": 1,
+  "result": "## Merge vs Rebase\n\n**Merge** \u2014 joins two branches, creates new \"merge commit\". History shows exactly what happened.\n\n**Rebase** \u2014 moves your commits on top of another branch. Rewrites commit history to look linear.\n\n---\n\n### Merge\n\n```\nmain:    A---B---C\n                  \\\nfeature:           M  \u2190 merge commit\n                  /\nyour work: D---E\n```\n\n- Preserves full history, shows branch structure\n- Merge commit = noise on simple features\n- Safe: never rewrites existing commits\n- Good for: merging `feature` \u2192 `main`, long-lived branches, shared branches\n\n### Rebase\n\n```\nmain:    A---B---C\n                  \\\nfeature:           D'---E'  \u2190 commits replayed on top\n```\n\n- Clean linear history, easy to `git log`\n- Rewrites commit SHAs \u2014 **dangerous on shared branches**\n- Easier to bisect bugs\n- Good for: updating feature branch with latest main, cleaning up before PR\n\n---\n\n### Rule of thumb\n\n| Situation | Use |\n|-----------|-----|\n| Updating feature branch from main | Rebase |\n| Merging feature into main | Merge (or squash merge) |\n| Shared branch others pull from | **Never rebase** |\n| Cleaning up messy local commits | Interactive rebase (`-i`) |\n| Want full audit trail | Merge |\n\n**Golden rule**: rebase only commits nobody else has. Once pushed + others pulled, rebase = force push = pain.",
+  "stop_reason": "end_turn",
+  "session_id": "66b2796b-fff7-4b0d-9980-1d05785d6974",
+  "total_cost_usd": 0.0335448,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6396,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 404,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6396,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 404,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6396,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6396
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 404,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6396,
+      "webSearchRequests": 0,
+      "costUSD": 0.0335448,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "33f064b1-e11d-4baa-845a-629b2b59e306",
+  "_meta": {
+    "track": "B",
+    "task": "git-rebase-merge",
+    "category": "explanation",
+    "condition": "caveman",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 11.13,
+    "timestamp": 1776774752,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

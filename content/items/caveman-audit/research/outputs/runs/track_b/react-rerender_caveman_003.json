@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 7527,
+  "duration_api_ms": 7478,
+  "num_turns": 1,
+  "result": "New object ref each render. Inline object literal = new identity every time = child re-renders even if values same.\n\n**Problem:**\n```jsx\n<Child config={{ theme: \"dark\", size: 14 }} />\n```\n\nEvery parent render creates new `{}` \u2192 different ref \u2192 React sees \"prop changed\".\n\n**Fixes:**\n\n1. **`useMemo`** \u2014 memoize object, recompute only when deps change:\n```jsx\nconst config = useMemo(() => ({ theme: \"dark\", size: 14 }), []);\n<Child config={config} />\n```\n\n2. **Move outside component** \u2014 if values are static:\n```jsx\nconst CONFIG = { theme: \"dark\", size: 14 };\nfunction Parent() {\n  return <Child config={CONFIG} />;\n}\n```\n\n3. **`React.memo` on child** \u2014 but needs shallow-equal to work, won't help for new object refs:\n```jsx\nconst Child = React.memo(({ config }) => { ... });\n```\n`React.memo` does shallow compare \u2014 still re-renders if object ref is new. Pair with `useMemo` on parent.\n\n**Root rule:** JS objects compare by reference, not value. `{} !== {}` always.",
+  "stop_reason": "end_turn",
+  "session_id": "642d05d6-51c6-4fe0-a3e5-c075a7cd0017",
+  "total_cost_usd": 0.03190605,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6399,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 294,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6399,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 294,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6399,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6399
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 294,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6399,
+      "webSearchRequests": 0,
+      "costUSD": 0.03190605,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "1e8987d5-be0a-4754-ba03-0b1d35f5fd8b",
+  "_meta": {
+    "track": "B",
+    "task": "react-rerender",
+    "category": "debugging",
+    "condition": "caveman",
+    "run_num": 3,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 9.15,
+    "timestamp": 1776774660,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

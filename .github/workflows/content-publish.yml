@@ -1,0 +1,46 @@
+# Required repo secrets:
+# - CLAUDE_CODE_OAUTH_TOKEN
+# - AGENT_HUB_SUPABASE_URL
+# - AGENT_HUB_SUPABASE_SERVICE_KEY
+# - TODOIST_API_TOKEN
+
+name: Content Publish
+on:
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: 'Content item slug (e.g. caveman-audit)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: content-publish-${{ inputs.slug }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Run publish bridge
+        run: node scripts/publish-item.mjs "${{ inputs.slug }}"
+      - name: Create PR
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: content/publish-${{ inputs.slug }}
+          title: "content: publish ${{ inputs.slug }}"
+          body: |
+            Automated publish via content pipeline.
+
+            Publishes `content/items/${{ inputs.slug }}/final.md` to `src/content/blog/`.
+          labels: content
+          commit-message: "content: publish ${{ inputs.slug }}"

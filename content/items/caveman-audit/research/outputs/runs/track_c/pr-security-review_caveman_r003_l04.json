@@ -1,0 +1,48 @@
+{
+  "input_tokens": 13798,
+  "output_tokens": 396,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "**SQL injection** \u2014 critical. `req.params.id` goes straight into query string.\n\n```js\n// Attacker hits: /api/users/1 OR 1=1--\n// Query becomes: SELECT * FROM users WHERE id = 1 OR 1=1--\n// Returns entire users table\n```\n\n**Fix \u2014 parameterized query:**\n```js\napp.get('/api/users/:id', async (req, res) => {\n  const { id } = req.params;\n\n  if (!/^\\d+$/.test(id)) return res.status(400).json({ error: 'Invalid id' });\n\n  try {\n    const user = await db.query('SELECT id, name, email FROM users WHERE id = ?', [id]);\n    if (!user.length) return res.status(404).json({ error: 'Not found' });\n    res.json(user[0]);\n  } catch {\n    res.status(500).json({ error: 'Server error' });\n  }\n});\n```\n\n**All issues fixed:**\n\n| Issue | Original | Fixed |\n|-------|----------|-------|\n| SQL injection | string concat | parameterized `?` |\n| No input validation | none | reject non-numeric ids |\n| `SELECT *` leaks sensitive cols | exposes `password_hash` etc | explicit columns |\n| No 404 handling | returns empty silently | explicit 404 |\n| Unhandled rejection | `.then()` no `.catch()` | `try/catch` |\n\nAlso add auth middleware \u2014 unauthenticated users shouldn't fetch arbitrary user records by id.",
+  "thinking_text": "Security review of this Express route handler.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 7.66,
+  "_meta": {
+    "track": "C",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "caveman",
+    "run_num": 3,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 55002,
+    "timestamp": 1776613792,
+    "level": 4,
+    "ordering": [
+      8,
+      4,
+      6,
+      7,
+      3,
+      0,
+      1,
+      9,
+      5,
+      2
+    ],
+    "chunks_present": [
+      0,
+      1,
+      3,
+      4,
+      6,
+      7,
+      8,
+      9
+    ],
+    "num_chunks": 8,
+    "behavioral_chars": 12880,
+    "chunk_chars": 38585
+  }
+}

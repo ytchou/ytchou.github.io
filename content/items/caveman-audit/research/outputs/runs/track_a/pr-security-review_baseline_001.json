@@ -1,0 +1,21 @@
+{
+  "input_tokens": 82,
+  "output_tokens": 735,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## Security Issues in This Route Handler\n\n### Critical Issues\n\n#### 1. SQL Injection (Highest Severity)\n```javascript\n// VULNERABLE - Direct string interpolation allows SQL injection\nconst query = `SELECT * FROM users WHERE id = ${req.params.id}`;\n\n// Attack example:\n// GET /api/users/1 OR 1=1--\n// Executes: SELECT * FROM users WHERE id = 1 OR 1=1--\n// Returns ALL users in the database\n```\n\n#### 2. No Authentication/Authorization\n```javascript\n// Anyone can query any user's data\n// No check that the requester has permission to access this resource\n```\n\n### Additional Issues\n\n| Issue | Risk |\n|-------|------|\n| No input validation | Unexpected data types/formats reach the database |\n| No error handling | DB errors may expose stack traces/schema info |\n| `SELECT *` usage | Returns all columns, potentially including passwords/tokens |\n| No rate limiting | Endpoint vulnerable to enumeration attacks |\n\n---\n\n### Secure Rewrite\n\n```javascript\nconst rateLimit = require('express-rate-limit');\nconst { param, validationResult } = require('express-validator');\n\nconst limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });\n\napp.get('/api/users/:id',\n  limiter,\n  authenticate,              // verify JWT/session\n  param('id').isInt({ min: 1 }).toInt(),  // validate & sanitize\n  async (req, res) => {\n    // Check validation results\n    const errors = validationResult(req);\n    if (!errors.isEmpty()) {\n      return res.status(400).json({ error: 'Invalid user ID' });\n    }\n\n    // Authorization: users can only access their own data\n    if (req.user.id !== req.params.id && !req.user.isAdmin) {\n      return res.status(403).json({ error: 'Forbidden' });\n    }\n\n    try {\n      // Parameterized query prevents SQL injection\n      const query = 'SELECT id, name, email, created_at FROM users WHERE id = ?';\n      const user = await db.query(query, [req.params.id]);\n\n      if (!user) {\n        return res.status(404).json({ error: 'User not found' });\n      }\n\n      res.json(user);\n    } catch (err) {\n      // Log internally, don't expose details to client\n      logger.error('Database error:', err);\n      res.status(500).json({ error: 'Internal server error' });\n    }\n  }\n);\n```\n\n### Key Fixes Summary\n1. **Parameterized queries** \u2014 eliminate SQL injection\n2. **Authentication middleware** \u2014 verify identity before processing\n3. **Authorization check** \u2014 verify permission to access the specific resource\n4. **Input validation** \u2014 reject malformed input early\n5. **Explicit column selection** \u2014 never expose sensitive fields\n6. **Error handling** \u2014 catch failures without leaking implementation details\n7. **Rate limiting** \u2014 slow down enumeration/brute force attempts",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 11.59,
+  "_meta": {
+    "track": "C",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "baseline",
+    "run_num": 1,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 28,
+    "timestamp": 1776585730
+  }
+}

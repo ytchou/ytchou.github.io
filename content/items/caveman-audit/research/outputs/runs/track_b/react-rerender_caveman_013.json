@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 6063,
+  "duration_api_ms": 6008,
+  "num_turns": 1,
+  "result": "New object ref each render. Inline object prop = new ref = re-render.\n\n**Fix:** Memoize object with `useMemo`:\n\n```jsx\nconst options = useMemo(() => ({ foo: 'bar' }), []);\n<MyComponent options={options} />\n```\n\nOr memoize component with `React.memo`:\n\n```jsx\nconst MyComponent = React.memo(({ options }) => { ... });\n```\n\nOr move object outside component if static:\n\n```jsx\nconst OPTIONS = { foo: 'bar' }; // outside, no re-create\n\nfunction Parent() {\n  return <MyComponent options={OPTIONS} />;\n}\n```\n\nRoot cause: `{}` === `{}` is `false` in JS. New render = new object = new ref = child sees \"changed\" prop.\n\nBest fix: move static objects out. `useMemo` for derived/dynamic objects. `React.memo` only helps when props are stable refs.",
+  "stop_reason": "end_turn",
+  "session_id": "d977d857-f740-4f9f-8b7f-1f9ffb9911b4",
+  "total_cost_usd": 0.0308673,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6406,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 223,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6406,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 223,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6406,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6406
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 223,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6406,
+      "webSearchRequests": 0,
+      "costUSD": 0.0308673,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "e6e865f1-0f73-4821-a664-2b669d50c320",
+  "_meta": {
+    "track": "B",
+    "task": "react-rerender",
+    "category": "debugging",
+    "condition": "caveman",
+    "run_num": 13,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 7.85,
+    "timestamp": 1776776199,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

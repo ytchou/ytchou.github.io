@@ -1,0 +1,46 @@
+{
+  "input_tokens": 9903,
+  "output_tokens": 1119,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "I'll create a React error boundary component with fallback UI, retry functionality, and error logging.\n\n## ErrorBoundary Component\n\n**`src/components/ErrorBoundary.tsx`**\n\n```tsx\nimport React, { Component, ErrorInfo, ReactNode } from \"react\";\n\ninterface Props {\n  children: ReactNode;\n  fallback?: (error: Error, reset: () => void) => ReactNode;\n  onError?: (error: Error, errorInfo: ErrorInfo) => void;\n}\n\ninterface State {\n  error: Error | null;\n}\n\nexport class ErrorBoundary extends Component<Props, State> {\n  state: State = { error: null };\n\n  static getDerivedStateFromError(error: Error): State {\n    return { error };\n  }\n\n  componentDidCatch(error: Error, errorInfo: ErrorInfo) {\n    console.error(\"[ErrorBoundary] Uncaught render error:\", {\n      message: error.message,\n      stack: error.stack,\n      componentStack: errorInfo.componentStack,\n    });\n    this.props.onError?.(error, errorInfo);\n  }\n\n  reset = () => this.setState({ error: null });\n\n  render() {\n    const { error } = this.state;\n    if (!error) return this.props.children;\n\n    if (this.props.fallback) return this.props.fallback(error, this.reset);\n\n    return <DefaultFallback error={error} reset={this.reset} />;\n  }\n}\n\nfunction DefaultFallback({ error, reset }: { error: Error; reset: () => void }) {\n  return (\n    <div role=\"alert\" style={styles.container}>\n      <h2 style={styles.heading}>Something went wrong</h2>\n      <pre style={styles.message}>{error.message}</pre>\n      <button onClick={reset} style={styles.button}>\n        Try again\n      </button>\n    </div>\n  );\n}\n\nconst styles: Record<string, React.CSSProperties> = {\n  container: {\n    padding: \"2rem\",\n    border: \"1px solid #f87171\",\n    borderRadius: \"0.5rem\",\n    backgroundColor: \"#fef2f2\",\n    color: \"#991b1b\",\n    fontFamily: \"sans-serif\",\n    maxWidth: \"480px\",\n    margin: \"2rem auto\",\n  },\n  heading: { margin: \"0 0 0.75rem\", fontSize: \"1.125rem\" },\n  message: {\n    background: \"#fee2e2\",\n    padding: \"0.75rem\",\n    borderRadius: \"0.25rem\",\n    fontSize: \"0.875rem\",\n    overflowX: \"auto\",\n    whiteSpace: \"pre-wrap\",\n    wordBreak: \"break-word\",\n  },\n  button: {\n    marginTop: \"1rem\",\n    padding: \"0.5rem 1.25rem\",\n    background: \"#dc2626\",\n    color: \"#fff\",\n    border: \"none\",\n    borderRadius: \"0.375rem\",\n    cursor: \"pointer\",\n    fontSize: \"0.875rem\",\n  },\n};\n```\n\n---\n\n### Usage\n\n**Basic \u2014 default fallback UI:**\n```tsx\n<ErrorBoundary>\n  <MyComponent />\n</ErrorBoundary>\n```\n\n**Custom fallback UI:**\n```tsx\n<ErrorBoundary\n  fallback={(error, retry) => (\n    <div>\n      <p>Oops: {error.message}</p>\n      <button onClick={retry}>Retry</button>\n    </div>\n  )}\n>\n  <MyComponent />\n</ErrorBoundary>\n```\n\n**With external error reporting (e.g. Sentry):**\n```tsx\n<ErrorBoundary onError={(error, info) => Sentry.captureException(error, { extra: info })}>\n  <MyComponent />\n</ErrorBoundary>\n```\n\n---\n\n### Key design decisions\n\n| Decision | Rationale |\n|---|---|\n| Class component | `getDerivedStateFromError` / `componentDidCatch` have no hook equivalents |\n| `reset` clears `error` state | Re-renders children fresh; works as long as the underlying bug is transient |\n| `onError` prop | Decouples logging from the component \u2014 caller decides Sentry vs console |\n| Custom `fallback` render prop | Gives full UI control without subclassing |\n| `role=\"alert\"` on default fallback | Screen readers announce the error immediately |",
+  "thinking_text": "Let me create a React error boundary component with the requested features.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 56.07,
+  "_meta": {
+    "track": "C",
+    "task": "error-boundary",
+    "category": "implementation",
+    "condition": "baseline",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 40142,
+    "timestamp": 1776611321,
+    "level": 3,
+    "ordering": [
+      3,
+      2,
+      6,
+      0,
+      7,
+      4,
+      5,
+      8,
+      1,
+      9
+    ],
+    "chunks_present": [
+      0,
+      2,
+      3,
+      4,
+      6,
+      7
+    ],
+    "num_chunks": 6,
+    "behavioral_chars": 12880,
+    "chunk_chars": 27250
+  }
+}

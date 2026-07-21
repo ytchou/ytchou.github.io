@@ -1,0 +1,42 @@
+{
+  "input_tokens": 5404,
+  "output_tokens": 1067,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "I'll create a React error boundary component with fallback UI, retry functionality, and error logging.\n\n**`ErrorBoundary.tsx`**\n\n```tsx\nimport React, { Component, ErrorInfo, ReactNode } from \"react\";\n\ninterface Props {\n  children: ReactNode;\n  fallback?: (error: Error, reset: () => void) => ReactNode;\n  onError?: (error: Error, info: ErrorInfo) => void;\n}\n\ninterface State {\n  error: Error | null;\n}\n\nexport class ErrorBoundary extends Component<Props, State> {\n  state: State = { error: null };\n\n  static getDerivedStateFromError(error: Error): State {\n    return { error };\n  }\n\n  componentDidCatch(error: Error, info: ErrorInfo) {\n    console.error(\"[ErrorBoundary]\", error.message);\n    console.error(\"Component stack:\", info.componentStack);\n    this.props.onError?.(error, info);\n  }\n\n  reset = () => this.setState({ error: null });\n\n  render() {\n    const { error } = this.state;\n    const { children, fallback } = this.props;\n\n    if (error) {\n      if (fallback) return fallback(error, this.reset);\n      return <DefaultFallback error={error} onRetry={this.reset} />;\n    }\n\n    return children;\n  }\n}\n\nfunction DefaultFallback({ error, onRetry }: { error: Error; onRetry: () => void }) {\n  return (\n    <div role=\"alert\" style={styles.container}>\n      <h2 style={styles.title}>Something went wrong</h2>\n      <pre style={styles.message}>{error.message}</pre>\n      <button onClick={onRetry} style={styles.button}>\n        Try again\n      </button>\n    </div>\n  );\n}\n\nconst styles: Record<string, React.CSSProperties> = {\n  container: {\n    padding: \"2rem\",\n    border: \"1px solid #f87171\",\n    borderRadius: \"8px\",\n    backgroundColor: \"#fef2f2\",\n    color: \"#991b1b\",\n    maxWidth: \"480px\",\n    margin: \"2rem auto\",\n    fontFamily: \"sans-serif\",\n  },\n  title: { margin: \"0 0 0.75rem\", fontSize: \"1.125rem\" },\n  message: {\n    margin: \"0 0 1rem\",\n    padding: \"0.75rem\",\n    background: \"#fee2e2\",\n    borderRadius: \"4px\",\n    fontSize: \"0.875rem\",\n    whiteSpace: \"pre-wrap\",\n    wordBreak: \"break-word\",\n  },\n  button: {\n    padding: \"0.5rem 1.25rem\",\n    background: \"#dc2626\",\n    color: \"#fff\",\n    border: \"none\",\n    borderRadius: \"6px\",\n    cursor: \"pointer\",\n    fontSize: \"0.875rem\",\n  },\n};\n```\n\n**Usage**\n\n```tsx\n// Basic \u2014 uses default fallback UI\n<ErrorBoundary>\n  <MyComponent />\n</ErrorBoundary>\n\n// Custom fallback\n<ErrorBoundary\n  fallback={(error, retry) => (\n    <div>\n      <p>Oops: {error.message}</p>\n      <button onClick={retry}>Retry</button>\n    </div>\n  )}\n  onError={(error, info) => reportToSentry(error, info)}\n>\n  <MyComponent />\n</ErrorBoundary>\n```\n\n**Key design decisions:**\n\n- `getDerivedStateFromError` \u2014 captures the error into state, triggering the fallback render (this is the React-required static lifecycle for error boundaries).\n- `componentDidCatch` \u2014 side-effect hook for logging; fires after render, so it won't interfere with the fallback paint.\n- `reset` resets state to `null`, which re-renders `children` \u2014 the \"retry\" mechanism.\n- `fallback` prop accepts a render function `(error, reset) => ReactNode` so callers get full control without losing the retry callback.\n- `onError` prop is a clean escape hatch for external loggers (Sentry, Datadog, etc.) without coupling the component to any specific SDK.",
+  "thinking_text": "Let me implement a React error boundary component with the requested features.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 13.07,
+  "_meta": {
+    "track": "C",
+    "task": "error-boundary",
+    "category": "implementation",
+    "condition": "baseline",
+    "run_num": 1,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 23051,
+    "timestamp": 1776610375,
+    "level": 1,
+    "ordering": [
+      9,
+      4,
+      6,
+      3,
+      5,
+      0,
+      7,
+      1,
+      2,
+      8
+    ],
+    "chunks_present": [
+      4,
+      9
+    ],
+    "num_chunks": 2,
+    "behavioral_chars": 12880,
+    "chunk_chars": 10167
+  }
+}

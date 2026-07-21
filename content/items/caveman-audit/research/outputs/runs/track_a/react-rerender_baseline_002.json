@@ -1,0 +1,21 @@
+{
+  "input_tokens": 43,
+  "output_tokens": 933,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## The Problem: Object Reference Equality\n\nReact uses **shallow comparison** (`===`) to determine if props changed. When you pass an object as a prop, React compares **references**, not values.\n\n```javascript\n// This creates a NEW object on every render, even if values are identical\n<MyComponent config={{ theme: 'dark', size: 'large' }} />\n```\n\nEvery parent render creates a new object literal \u2192 new reference \u2192 React thinks props changed \u2192 child re-renders.\n\n---\n\n## Why This Happens\n\n```javascript\nfunction Parent() {\n  const [count, setCount] = useState(0);\n\n  // \u274c New object reference created on every render\n  const config = { theme: 'dark', size: 'large' };\n\n  return (\n    <>\n      <button onClick={() => setCount(c => c + 1)}>Count: {count}</button>\n      <Child config={config} /> {/* Re-renders every time count changes */}\n    </>\n  );\n}\n```\n\n---\n\n## Solutions\n\n### 1. `useMemo` \u2014 Memoize the object\n```javascript\nfunction Parent() {\n  const [count, setCount] = useState(0);\n\n  // \u2705 Same reference unless dependencies change\n  const config = useMemo(() => ({\n    theme: 'dark',\n    size: 'large'\n  }), []); // Empty array = created once\n\n  return (\n    <>\n      <button onClick={() => setCount(c => c + 1)}>Count: {count}</button>\n      <Child config={config} />\n    </>\n  );\n}\n```\n\n### 2. Move the object outside the component\n```javascript\n// \u2705 Best option if the object doesn't depend on props/state\nconst CONFIG = { theme: 'dark', size: 'large' };\n\nfunction Parent() {\n  return <Child config={CONFIG} />;\n}\n```\n\n### 3. `React.memo` on the child \u2014 Skip re-renders\n```javascript\n// \u2705 Child only re-renders if props actually change\nconst Child = React.memo(function Child({ config }) {\n  return <div>{config.theme}</div>;\n});\n```\n\n> **Note:** `React.memo` still uses shallow comparison, so it won't help if you're passing a new object reference each time. Combine it with `useMemo`.\n\n### 4. Pass primitive values instead of objects\n```javascript\n// \u2705 Primitives compare by value, not reference\n<Child theme=\"dark\" size=\"large\" />\n```\n\n---\n\n## Complete Fix\n\n```javascript\n// Child component - memoized\nconst Child = React.memo(function Child({ config }) {\n  console.log('Child rendered');\n  return <div>{config.theme} - {config.size}</div>;\n});\n\n// Parent component\nfunction Parent() {\n  const [count, setCount] = useState(0);\n\n  // Stable reference with useMemo\n  const config = useMemo(() => ({\n    theme: 'dark',\n    size: 'large'\n  }), []);\n\n  return (\n    <>\n      <button onClick={() => setCount(c => c + 1)}>Count: {count}</button>\n      <Child config={config} /> {/* \u2705 No longer re-renders on count change */}\n    </>\n  );\n}\n```\n\n---\n\n## Decision Guide\n\n| Situation | Solution |\n|---|---|\n| Object has no dependencies | Move outside component |\n| Object depends on state/props | `useMemo` |\n| Want to protect child component | `React.memo` |\n| Can split the object into primitives | Pass individual props |\n\n---\n\n## Key Takeaway\n\n> **Don't optimize prematurely.** Re-renders aren't always a problem \u2014 they're only expensive if the component does heavy work. Profile first with React DevTools before adding memoization, since `useMemo`/`React.memo` themselves have overhead.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 13.55,
+  "_meta": {
+    "track": "C",
+    "task": "react-rerender",
+    "category": "debugging",
+    "condition": "baseline",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 28,
+    "timestamp": 1776585075
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1122,
+  "output_tokens": 290,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Caveman mode: **full**\n\n---\n\nWrap `db.query` in Promise, then `async/await`:\n\n```javascript\n// Promisify db.query first (do once, reuse)\nconst query = (sql, params) =>\n  new Promise((resolve, reject) => {\n    db.query(sql, params, (err, rows) => {\n      if (err) reject(err);\n      else resolve(rows);\n    });\n  });\n\nasync function getUser(id) {\n  const rows = await query('SELECT * FROM users WHERE id = ?', [id]);\n  if (!rows.length) throw new Error('Not found');\n  return rows[0];\n}\n```\n\n**Call site change:**\n\n```javascript\n// Before\ngetUser(id, (err, user) => { ... });\n\n// After\ntry {\n  const user = await getUser(id);\n} catch (err) {\n  // handles both DB error + Not found\n}\n```\n\n**Key points:**\n- Separate `query` helper = reusable, testable\n- Errors bubble via `throw` / `reject` \u2014 one `catch` handle both\n- Caller must be `async` too, or use `.then().catch()`",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 6.02,
+  "_meta": {
+    "track": "C",
+    "task": "async-refactor",
+    "category": "refactor",
+    "condition": "caveman",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585548
+  }
+}

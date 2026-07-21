@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1084,
+  "output_tokens": 1136,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Caveman mode: **full**.\n\n---\n\n```tsx\nimport React, { Component, ErrorInfo, ReactNode } from \"react\";\n\ninterface Props {\n  children: ReactNode;\n  fallback?: (error: Error, reset: () => void) => ReactNode;\n  onError?: (error: Error, info: ErrorInfo) => void;\n}\n\ninterface State {\n  error: Error | null;\n}\n\nclass ErrorBoundary extends Component<Props, State> {\n  state: State = { error: null };\n\n  static getDerivedStateFromError(error: Error): State {\n    return { error };\n  }\n\n  componentDidCatch(error: Error, info: ErrorInfo) {\n    // Swap for Sentry/Datadog in prod\n    console.error(\"[ErrorBoundary]\", {\n      message: error.message,\n      stack: error.stack,\n      componentStack: info.componentStack,\n      timestamp: new Date().toISOString(),\n    });\n\n    this.props.onError?.(error, info);\n  }\n\n  reset = () => this.setState({ error: null });\n\n  render() {\n    const { error } = this.state;\n    const { children, fallback } = this.props;\n\n    if (!error) return children;\n\n    if (fallback) return fallback(error, this.reset);\n\n    return <DefaultFallback error={error} reset={this.reset} />;\n  }\n}\n\n// \u2500\u2500 Default fallback UI \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nfunction DefaultFallback({ error, reset }: { error: Error; reset: () => void }) {\n  return (\n    <div role=\"alert\" style={styles.container}>\n      <span style={styles.icon}>\u26a0\ufe0f</span>\n      <h2 style={styles.title}>Something went wrong</h2>\n      <pre style={styles.message}>{error.message}</pre>\n      <button onClick={reset} style={styles.button}>\n        Try again\n      </button>\n    </div>\n  );\n}\n\nconst styles = {\n  container: {\n    display: \"flex\",\n    flexDirection: \"column\" as const,\n    alignItems: \"center\",\n    gap: \"12px\",\n    padding: \"32px\",\n    borderRadius: \"8px\",\n    border: \"1px solid #f87171\",\n    background: \"#fff1f1\",\n    fontFamily: \"sans-serif\",\n    maxWidth: \"480px\",\n    margin: \"40px auto\",\n  },\n  icon:    { fontSize: \"2rem\" },\n  title:   { margin: 0, color: \"#b91c1c\", fontSize: \"1.2rem\" },\n  message: {\n    margin: 0,\n    padding: \"8px 12px\",\n    borderRadius: \"4px\",\n    background: \"#fee2e2\",\n    color: \"#7f1d1d\",\n    fontSize: \"0.85rem\",\n    whiteSpace: \"pre-wrap\" as const,\n    wordBreak: \"break-word\" as const,\n    width: \"100%\",\n  },\n  button: {\n    padding: \"8px 20px\",\n    borderRadius: \"6px\",\n    border: \"none\",\n    background: \"#dc2626\",\n    color: \"#fff\",\n    cursor: \"pointer\",\n    fontWeight: 600,\n  },\n} as const;\n\nexport default ErrorBoundary;\n```\n\n---\n\n**Usage \u2014 default fallback:**\n```tsx\n<ErrorBoundary>\n  <MyComponent />\n</ErrorBoundary>\n```\n\n**Custom fallback:**\n```tsx\n<ErrorBoundary\n  fallback={(err, reset) => (\n    <div>\n      <p>Crashed: {err.message}</p>\n      <button onClick={reset}>Retry</button>\n    </div>\n  )}\n  onError={(err, info) => Sentry.captureException(err, { extra: info })}\n>\n  <MyComponent />\n</ErrorBoundary>\n```\n\n---\n\n**Key pieces:**\n\n| Hook | Job |\n|---|---|\n| `getDerivedStateFromError` | Catch error, trigger fallback render |\n| `componentDidCatch` | Side effects \u2014 log, report to service |\n| `reset()` | Clear error state \u2192 retry render |\n\n**Gotcha:** boundary not catch errors in: event handlers, async code, SSR, itself. For async, add `window.onerror` or `try/catch` + manual `setState({ error })`.",
+  "thinking_text": "The user wants a React error boundary component. I'm in caveman mode (full by default). Let me implement this concisely.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 38.85,
+  "_meta": {
+    "track": "A_prime",
+    "task": "error-boundary",
+    "category": "implementation",
+    "condition": "caveman",
+    "run_num": 3,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776611120
+  }
+}

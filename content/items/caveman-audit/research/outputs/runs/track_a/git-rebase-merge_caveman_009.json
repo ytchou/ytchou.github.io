@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1053,
+  "output_tokens": 395,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## merge vs rebase\n\n**merge** \u2014 join two branches, keep full history. Creates merge commit.\n\n```\nA---B---C  main\n     \\\n      D---E  feature\n           \\\n            M  \u2190 merge commit (has 2 parents)\n```\n\n**rebase** \u2014 replay feature commits on top of target. Linear history, no merge commit.\n\n```\nA---B---C  main\n             \\\n              D'--E'  \u2190 replayed commits (new hashes)\n```\n\n---\n\n## when use each\n\n**merge when:**\n- shared/public branch (never rewrite pushed commits)\n- want preserve true history (\"what actually happened\")\n- merging into `main`/`master`\n\n**rebase when:**\n- cleaning up local feature branch before PR\n- want linear, readable history\n- pulling latest main into your feature branch (`git pull --rebase`)\n\n---\n\n## tradeoffs\n\n| | merge | rebase |\n|---|---|---|\n| history | true, non-linear | clean, linear |\n| commits | preserved | rewritten (new SHA) |\n| conflicts | resolve once | resolve per commit |\n| safe on public branch | \u2705 | \u274c |\n| bisect/log readability | harder | easier |\n\n---\n\n## golden rule\n\n> **Never rebase public/shared branch.** Rewrites history = others' commits orphaned = pain.\n\n---\n\n## common pattern\n\n```bash\n# keep feature branch current (local only)\ngit checkout feature\ngit rebase main\n\n# merge into main when done\ngit checkout main\ngit merge feature          # fast-forward if rebased\n```\n\nRebase = clean history before share. Merge = safe join after share.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 9.7,
+  "_meta": {
+    "track": "C",
+    "task": "git-rebase-merge",
+    "category": "explanation",
+    "condition": "caveman",
+    "run_num": 9,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585496
+  }
+}

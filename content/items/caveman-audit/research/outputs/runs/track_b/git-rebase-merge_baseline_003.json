@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 12170,
+  "duration_api_ms": 17094,
+  "num_turns": 1,
+  "result": "## Git Merge vs Git Rebase\n\nBoth integrate changes from one branch into another, but they do it differently.\n\n---\n\n### `git merge`\n\nCreates a new **merge commit** that joins two branch histories together. The original commits on both branches are preserved exactly as-is.\n\n```\nmain:    A---B---C---M\n                    /\nfeature:     D---E\n```\n\n`M` is the merge commit. History shows exactly when and where branches diverged and rejoined.\n\n---\n\n### `git rebase`\n\n**Replants** your commits onto the tip of another branch. Each commit is rewritten (new SHA) as if the work had started from there.\n\n```\nBefore:\nmain:    A---B---C\nfeature:     D---E\n\nAfter rebase onto main:\nmain:    A---B---C\nfeature:          D'---E'\n```\n\nHistory looks linear \u2014 as if you'd started the feature branch from `C`.\n\n---\n\n### When to use each\n\n| Situation | Use |\n|---|---|\n| Integrating a finished feature into `main` | **Merge** \u2014 preserves the context of when it was developed |\n| Updating your local feature branch with upstream changes | **Rebase** \u2014 keeps history clean before a PR |\n| Shared/public branch that others have pulled | **Merge** \u2014 never rebase shared history |\n| Cleaning up messy WIP commits before code review | **Rebase** (interactive: `git rebase -i`) |\n| Preserving exact timeline of parallel development | **Merge** |\n\n---\n\n### Key tradeoffs\n\n**Merge**\n- Pros: Safe, non-destructive, honest history\n- Cons: Can clutter history with many merge commits on active repos\n\n**Rebase**\n- Pros: Linear, readable history; cleaner `git log`\n- Cons: **Rewrites SHAs** \u2014 dangerous on shared branches, can cause divergence for teammates who already pulled\n\n---\n\n### The golden rule\n\n> Never rebase commits that exist on a remote branch others have pulled from.\n\nIf the branch is only local or you're the sole contributor, rebase freely. Once commits are shared, use merge.",
+  "stop_reason": "end_turn",
+  "session_id": "b35e4113-34cf-4af6-a638-41f2a040ad57",
+  "total_cost_usd": 0.013655899999999999,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17043,
+    "output_tokens": 540,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 540,
+        "cache_read_input_tokens": 17043,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 364,
+      "outputTokens": 14,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.00043400000000000003,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 540,
+      "cacheReadInputTokens": 17043,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.013221899999999998,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "d5bcd981-bfed-412b-95de-7a517b239d0b",
+  "_meta": {
+    "track": "B",
+    "task": "git-rebase-merge",
+    "category": "explanation",
+    "condition": "baseline",
+    "run_num": 3,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 13.85,
+    "timestamp": 1776774734,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

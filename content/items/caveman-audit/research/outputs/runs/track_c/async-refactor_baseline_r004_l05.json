@@ -1,0 +1,50 @@
+{
+  "input_tokens": 14818,
+  "output_tokens": 281,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "```js\nasync function getUser(id) {\n  const rows = await db.query('SELECT * FROM users WHERE id = ?', [id]);\n  if (!rows.length) throw new Error('Not found');\n  return rows[0];\n}\n```\n\nKey changes:\n- `async` replaces the `callback` parameter\n- `await` replaces the callback wrapper \u2014 `db.query` must return a Promise (most modern drivers do)\n- Errors propagate naturally: driver errors reject the promise, and `throw` handles the not-found case\n- Callers use `try/catch` or `.catch()` instead of checking `err`\n\n**Caller before/after:**\n```js\n// Before\ngetUser(id, (err, user) => { if (err) ...; use(user); });\n\n// After\ntry {\n  const user = await getUser(id);\n  use(user);\n} catch (err) { ... }\n```\n\nIf your DB driver doesn't support promises natively, wrap it once with `util.promisify(db.query.bind(db))` rather than in every function.",
+  "thinking_text": "Simple refactor, no need for plan mode or file exploration.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 65.96,
+  "_meta": {
+    "track": "C",
+    "task": "async-refactor",
+    "category": "refactor",
+    "condition": "baseline",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 59576,
+    "timestamp": 1776612953,
+    "level": 5,
+    "ordering": [
+      4,
+      1,
+      5,
+      7,
+      2,
+      9,
+      6,
+      3,
+      8,
+      0
+    ],
+    "chunks_present": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "num_chunks": 10,
+    "behavioral_chars": 12880,
+    "chunk_chars": 46676
+  }
+}

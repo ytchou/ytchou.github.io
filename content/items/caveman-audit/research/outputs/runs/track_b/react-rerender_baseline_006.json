@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 9355,
+  "duration_api_ms": 10509,
+  "num_turns": 1,
+  "result": "The likely cause is that you're creating a new object literal on every render, so even if the values are the same, the reference changes \u2014 and React's shallow comparison sees it as a new prop.\n\n**Common culprit:**\n\n```jsx\n// Parent re-renders \u2192 new object reference every time\nfunction Parent() {\n  return <Child config={{ theme: 'dark', size: 'lg' }} />;\n}\n```\n\nEven if `theme` and `size` never change, `{}` creates a new object on every render.\n\n**Fixes, in order of preference:**\n\n1. **Move the object outside the component** (if it's static):\n   ```jsx\n   const config = { theme: 'dark', size: 'lg' };\n\n   function Parent() {\n     return <Child config={config} />;\n   }\n   ```\n\n2. **`useMemo`** (if the object depends on state/props):\n   ```jsx\n   const config = useMemo(() => ({ theme, size }), [theme, size]);\n   ```\n\n3. **`React.memo` on the child** (guards against unnecessary renders from the child's side):\n   ```jsx\n   const Child = React.memo(({ config }) => { ... });\n   ```\n   Note: this alone won't help if the object reference changes every render \u2014 you still need #1 or #2.\n\n**Root rule:** React uses `Object.is` for prop comparison, which is reference equality for objects. Two objects with identical contents are still \"different\" if they're not the same reference.\n\nIf you share the component code I can point to the exact line.",
+  "stop_reason": "end_turn",
+  "session_id": "8706a0a1-267c-4364-85ff-cc019f2e1281",
+  "total_cost_usd": 0.030870549999999997,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 5417,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 440,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 5417,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 440,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 5417,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 5417
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 367,
+      "outputTokens": 18,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000457,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 440,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 5417,
+      "webSearchRequests": 0,
+      "costUSD": 0.030413549999999998,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "ae1de494-a7c2-4fd0-8508-6be9f4d5b4a3",
+  "_meta": {
+    "track": "B",
+    "task": "react-rerender",
+    "category": "debugging",
+    "condition": "baseline",
+    "run_num": 6,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 12.7,
+    "timestamp": 1776776167,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

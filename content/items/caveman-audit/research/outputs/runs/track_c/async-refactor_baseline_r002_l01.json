@@ -1,0 +1,42 @@
+{
+  "input_tokens": 5077,
+  "output_tokens": 206,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "```js\nasync function getUser(id) {\n  const rows = await db.query('SELECT * FROM users WHERE id = ?', [id]);\n  if (!rows.length) throw new Error('Not found');\n  return rows[0];\n}\n```\n\nNote: this assumes `db.query` returns a promise. If it's still callback-based, wrap it first:\n\n```js\nconst query = (sql, params) => new Promise((resolve, reject) =>\n  db.query(sql, params, (err, rows) => err ? reject(err) : resolve(rows))\n);\n\nasync function getUser(id) {\n  const rows = await query('SELECT * FROM users WHERE id = ?', [id]);\n  if (!rows.length) throw new Error('Not found');\n  return rows[0];\n}\n```",
+  "thinking_text": "Simple refactor request.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 42.51,
+  "_meta": {
+    "track": "C",
+    "task": "async-refactor",
+    "category": "refactor",
+    "condition": "baseline",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 21163,
+    "timestamp": 1776612337,
+    "level": 1,
+    "ordering": [
+      2,
+      8,
+      5,
+      9,
+      7,
+      3,
+      6,
+      4,
+      1,
+      0
+    ],
+    "chunks_present": [
+      2,
+      8
+    ],
+    "num_chunks": 2,
+    "behavioral_chars": 12880,
+    "chunk_chars": 8279
+  }
+}

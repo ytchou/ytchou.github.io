@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1082,
+  "output_tokens": 491,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Both integrate changes from one branch into another. Different history shape.\n\n## Merge\n\n```\nmain:    A--B--C--M\n                 /\nfeat:    D--E--F\n```\n\n`M` = merge commit. Preserves full history. Shows exactly what happened and when.\n\n**Use when:**\n- Feature branch done, merging to `main`\n- Want preserve true history\n- Team branch (others pull from it)\n- Open source PR\n\n**Tradeoffs:**\n- \u2705 Non-destructive, safe, accurate\n- \u274c Noisy history with many branches\n\n---\n\n## Rebase\n\n```\nmain:    A--B--C\nfeat:           D'--E'--F'\n```\n\nReplay feat commits on top of main. Linear history. `D'` = rewritten commit (new SHA).\n\n**Use when:**\n- Updating feature branch with latest `main`\n- Want clean linear history before merge\n- Solo branch nobody else uses\n\n**Tradeoffs:**\n- \u2705 Clean history, easy `git log`, bisect works well\n- \u274c Rewrites commits \u2192 **force push required** \u2192 destroys shared branch history\n\n---\n\n## Golden Rule\n\n> **Never rebase public/shared branch.**\n\nRebase = rewrite history. Others have old SHAs. Chaos follow.\n\n---\n\n## Quick Decision\n\n| Situation | Use |\n|-----------|-----|\n| Merge feature \u2192 main | Merge (or squash merge) |\n| Update feat with latest main | Rebase |\n| Shared branch | Merge only |\n| Clean up local commits before PR | Rebase |\n| Public repo main branch | Merge only |\n\n---\n\n**Common flow:**\n```bash\ngit checkout feat\ngit rebase main      # keep feat fresh, linear\n# ... done with feat ...\ngit checkout main\ngit merge feat       # fast-forward or merge commit\n```\n\nRebase to stay current. Merge to integrate.",
+  "thinking_text": "The user wants an explanation of git rebase vs git merge. I'm in caveman mode (full by default).",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 11.67,
+  "_meta": {
+    "track": "A_prime",
+    "task": "git-rebase-merge",
+    "category": "explanation",
+    "condition": "caveman",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776610599
+  }
+}

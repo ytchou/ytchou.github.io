@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 10292,
+  "duration_api_ms": 11422,
+  "num_turns": 1,
+  "result": "Objects in JavaScript are compared by reference, not by value. Every render creates a **new object literal** even if the contents are identical, so React sees a \"changed\" prop and re-renders.\n\n**Common causes:**\n\n```jsx\n// Bad \u2014 new object created on every render of the parent\n<MyComponent config={{ theme: 'dark', size: 'lg' }} />\n\n// Bad \u2014 same issue with inline arrays\n<MyComponent items={[1, 2, 3]} />\n```\n\n**Fixes, in order of preference:**\n\n1. **Move the object outside the component** if it's static:\n   ```jsx\n   const CONFIG = { theme: 'dark', size: 'lg' }; // defined once\n   function Parent() {\n     return <MyComponent config={CONFIG} />;\n   }\n   ```\n\n2. **`useMemo`** if the object depends on state/props:\n   ```jsx\n   const config = useMemo(() => ({ theme, size }), [theme, size]);\n   ```\n\n3. **`React.memo`** on the child component \u2014 but this only helps if the prop reference is stable. Without fixing the parent, `memo` won't prevent re-renders:\n   ```jsx\n   const MyComponent = React.memo(({ config }) => { ... });\n   ```\n\n4. **`useCallback`** for function props (same root cause):\n   ```jsx\n   const handleClick = useCallback(() => { ... }, [dep]);\n   ```\n\n**The real fix is almost always #1 or #2** \u2014 stabilize the reference in the parent. `React.memo` alone is commonly misapplied as the solution when the problem is actually unstable prop references.\n\nIf you share the component code I can point to the exact line causing it.",
+  "stop_reason": "end_turn",
+  "session_id": "795ab452-fe1e-4e74-a3e1-085348066f9f",
+  "total_cost_usd": 0.030964300000000004,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 5410,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 449,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 5410,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 449,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 5410,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 5410
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 367,
+      "outputTokens": 15,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000442,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 449,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 5410,
+      "webSearchRequests": 0,
+      "costUSD": 0.030522300000000002,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "c40e775c-8a8f-4f42-b55a-242efce636ec",
+  "_meta": {
+    "track": "B",
+    "task": "react-rerender",
+    "category": "debugging",
+    "condition": "baseline",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 14.62,
+    "timestamp": 1776774651,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

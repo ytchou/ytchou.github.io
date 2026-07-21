@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 6537,
+  "duration_api_ms": 7898,
+  "num_turns": 1,
+  "result": "The classic off-by-1000 bug: JWT `exp` is in **seconds** since epoch, but `Date.now()` returns **milliseconds**.\n\n```js\n// Wrong \u2014 compares milliseconds to seconds, token appears to never expire\nif (Date.now() > payload.exp) { ... }\n\n// Fix \u2014 convert to the same unit\nif (Date.now() / 1000 > payload.exp) { ... }\n// or equivalently\nif (Math.floor(Date.now() / 1000) > payload.exp) { ... }\n```\n\nA token with `exp: 1713657600` (a Unix timestamp in seconds) looks like it expires in the year **55,000+** when compared against `Date.now()` (~1.7 trillion ms), so the check `Date.now() > payload.exp` is always false \u2014 every token passes.\n\nIf you share the middleware file I can apply the fix directly.",
+  "stop_reason": "end_turn",
+  "session_id": "97b5ce78-0a2b-4f7b-86bc-80989adf63a0",
+  "total_cost_usd": 0.028683300000000005,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 5426,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 292,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 5426,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 292,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 5426,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 5426
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 376,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.00045599999999999997,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 292,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 5426,
+      "webSearchRequests": 0,
+      "costUSD": 0.028227300000000004,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "8158de30-3e4e-4212-acb7-6cbf8d97f254",
+  "_meta": {
+    "track": "B",
+    "task": "auth-middleware-fix",
+    "category": "bugfix",
+    "condition": "baseline",
+    "run_num": 6,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 8.3,
+    "timestamp": 1776776204,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

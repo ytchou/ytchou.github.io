@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 12524,
+  "duration_api_ms": 13778,
+  "num_turns": 1,
+  "result": "Key factors to weigh before splitting:\n\n**Signals that splitting makes sense**\n- Independent scaling needs \u2014 parts of the app have wildly different load profiles (e.g., an async job processor vs. a user-facing API)\n- Team autonomy \u2014 multiple teams stepping on each other's deployments\n- Clear bounded contexts \u2014 natural domain seams already exist in the code\n- Deployment independence \u2014 you need to ship different parts on different cadences\n\n**Signals to stay monolithic (for now)**\n- The bottleneck is a specific query or endpoint, not architecture \u2014 profile first\n- Your team is small (<10-15 engineers); microservices add operational overhead that small teams feel acutely\n- Domain boundaries aren't clear yet \u2014 splitting prematurely locks in bad seams that are painful to undo\n- You don't have robust observability, service discovery, or distributed tracing \u2014 these become mandatory, not optional\n\n**Django-specific considerations**\n- Django's ORM makes cross-service joins expensive; you'd replace them with API calls or eventual consistency, which adds complexity\n- Django admin is tightly coupled to models \u2014 it breaks across service boundaries\n- Shared auth (sessions, permissions) needs explicit solutions (JWT, shared Redis, API gateway)\n\n**A middle path worth considering**\n\nBefore full microservices, try a *modular monolith*: enforce strict boundaries between Django apps (no cross-app model imports, explicit internal APIs), run them as one process. This gives you team independence and testable seams without distributed systems complexity \u2014 and makes the eventual extraction much cleaner if you still need it.\n\n**The real question to answer first:** Is the slowness from architecture (can't scale independently) or from specific code? Run `django-silk` or check slow query logs \u2014 most monolith performance problems are fixed with indexing and caching, not a rewrite.",
+  "stop_reason": "end_turn",
+  "session_id": "14138cdd-5f07-4a01-a1d1-7cec5d5692a7",
+  "total_cost_usd": 0.012580999999999998,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17060,
+    "output_tokens": 466,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 466,
+        "cache_read_input_tokens": 17060,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 374,
+      "outputTokens": 18,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000464,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 466,
+      "cacheReadInputTokens": 17060,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.012117,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "7f7332f6-a936-4dc9-94d5-41c595ffb593",
+  "_meta": {
+    "track": "B",
+    "task": "microservices-monolith",
+    "category": "architecture",
+    "condition": "baseline",
+    "run_num": 11,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 14.11,
+    "timestamp": 1776776420,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "input_tokens": 5492,
+  "output_tokens": 1464,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "I'll create a React error boundary component with fallback UI and error logging.\n\n## Tool: Write\n\n{\"path\":\"ErrorBoundary.tsx\",\"content\":\"import { Component, ErrorInfo, ReactNode } from \\\"react\\\";\\n\\ninterface Props {\\n  children: ReactNode;\\n  fallback?: ReactNode;\\n  onError?: (error: Error, info: ErrorInfo) => void;\\n}\\n\\ninterface State {\\n  error: Error | null;\\n  errorInfo: ErrorInfo | null;\\n}\\n\\nexport class ErrorBoundary extends Component<Props, State> {\\n  state: State = { error: null, errorInfo: null };\\n\\n  static getDerivedStateFromError(error: Error): Partial<State> {\\n    return { error };\\n  }\\n\\n  componentDidCatch(error: Error, errorInfo: ErrorInfo) {\\n    this.setState({ errorInfo });\\n    console.error(\\\"[ErrorBoundary] Uncaught error:\\\", error);\\n    console.error(\\\"[ErrorBoundary] Component stack:\\\", errorInfo.componentStack);\\n    this.props.onError?.(error, errorInfo);\\n  }\\n\\n  private handleRetry = () => {\\n    this.setState({ error: null, errorInfo: null });\\n  };\\n\\n  render() {\\n    const { error, errorInfo } = this.state;\\n\\n    if (error) {\\n      if (this.props.fallback) {\\n        return this.props.fallback;\\n      }\\n\\n      return (\\n        <div role=\\\"alert\\\" style={styles.container}>\\n          <h2 style={styles.heading}>Something went wrong</h2>\\n          <p style={styles.message}>{error.message}</p>\\n          {process.env.NODE_ENV !== \\\"production\\\" && errorInfo && (\\n            <details style={styles.details}>\\n              <summary style={styles.summary}>Stack trace</summary>\\n              <pre style={styles.pre}>\\n                {error.stack}\\n                {\\\"\\\\n\\\\nComponent stack:\\\"}\\n                {errorInfo.componentStack}\\n              </pre>\\n            </details>\\n          )}\\n          <button onClick={this.handleRetry} style={styles.button}>\\n            Try again\\n          </button>\\n        </div>\\n      );\\n    }\\n\\n    return this.props.children;\\n  }\\n}\\n\\nconst styles: Record<string, React.CSSProperties> = {\\n  container: {\\n    display: \\\"flex\\\",\\n    flexDirection: \\\"column\\\",\\n    alignItems: \\\"center\\\",\\n    justifyContent: \\\"center\\\",\\n    padding: \\\"2rem\\\",\\n    margin: \\\"1rem\\\",\\n    border: \\\"1px solid #f87171\\\",\\n    borderRadius: \\\"8px\\\",\\n    backgroundColor: \\\"#fff1f2\\\",\\n    fontFamily: \\\"sans-serif\\\",\\n    maxWidth: \\\"600px\\\",\\n  },\\n  heading: {\\n    margin: \\\"0 0 0.5rem\\\",\\n    color: \\\"#b91c1c\\\",\\n    fontSize: \\\"1.25rem\\\",\\n  },\\n  message: {\\n    margin: \\\"0 0 1rem\\\",\\n    color: \\\"#374151\\\",\\n    textAlign: \\\"center\\\",\\n  },\\n  details: {\\n    width: \\\"100%\\\",\\n    marginBottom: \\\"1rem\\\",\\n  },\\n  summary: {\\n    cursor: \\\"pointer\\\",\\n    color: \\\"#6b7280\\\",\\n    fontSize: \\\"0.875rem\\\",\\n  },\\n  pre: {\\n    overflow: \\\"auto\\\",\\n    padding: \\\"0.75rem\\\",\\n    backgroundColor: \\\"#f3f4f6\\\",\\n    borderRadius: \\\"4px\\\",\\n    fontSize: \\\"0.75rem\\\",\\n    color: \\\"#111827\\\",\\n    whiteSpace: \\\"pre-wrap\\\",\\n    wordBreak: \\\"break-word\\\",\\n  },\\n  button: {\\n    padding: \\\"0.5rem 1.25rem\\\",\\n    backgroundColor: \\\"#dc2626\\\",\\n    color: \\\"#ffffff\\\",\\n    border: \\\"none\\\",\\n    borderRadius: \\\"6px\\\",\\n    cursor: \\\"pointer\\\",\\n    fontSize: \\\"0.875rem\\\",\\n    fontWeight: 600,\\n  },\\n};\\n\"}\n\nDone. Here's what the component does and how to use it:\n\n**Features**\n- `getDerivedStateFromError` captures the error and triggers the fallback render\n- `componentDidCatch` logs `error.message`, `error.stack`, and `componentStack` to the console, and calls the optional `onError` prop for external reporting (e.g. Sentry)\n- Retry button resets state, causing children to re-mount and attempt a fresh render\n- Stack trace `<details>` block is only shown in non-production environments\n- Accepts a custom `fallback` prop to override the default UI entirely\n\n**Usage**\n\n```tsx\n// Basic\n<ErrorBoundary>\n  <MyComponent />\n</ErrorBoundary>\n\n// With external error reporting\n<ErrorBoundary onError={(err, info) => Sentry.captureException(err, { extra: info })}>\n  <MyComponent />\n</ErrorBoundary>\n\n// With custom fallback UI\n<ErrorBoundary fallback={<p>Failed to load. Please refresh.</p>}>\n  <MyComponent />\n</ErrorBoundary>\n```\n\n> **Note:** Error boundaries only catch errors in the React render tree (render, lifecycle methods, constructors). They do not catch errors in event handlers or async code \u2014 those need their own `try/catch`.",
+  "thinking_text": "Let me implement a React error boundary component with the requested features.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 19.31,
+  "_meta": {
+    "track": "C",
+    "task": "error-boundary",
+    "category": "implementation",
+    "condition": "baseline",
+    "run_num": 3,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 23242,
+    "timestamp": 1776611445,
+    "level": 1,
+    "ordering": [
+      0,
+      9,
+      5,
+      6,
+      4,
+      8,
+      2,
+      1,
+      7,
+      3
+    ],
+    "chunks_present": [
+      0,
+      9
+    ],
+    "num_chunks": 2,
+    "behavioral_chars": 12880,
+    "chunk_chars": 10358
+  }
+}

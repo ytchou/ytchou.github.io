@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1056,
+  "output_tokens": 243,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "New object literal created every render \u2192 new reference \u2192 React sees \"changed\" prop \u2192 re-render.\n\n```jsx\n// Bad: new ref each render\n<Child config={{ theme: 'dark', size: 'lg' }} />\n\n// Fix 1: useMemo\nconst config = useMemo(() => ({ theme: 'dark', size: 'lg' }), []);\n<Child config={config} />\n\n// Fix 2: move outside component (if static)\nconst CONFIG = { theme: 'dark', size: 'lg' };\nfunction Parent() {\n  return <Child config={CONFIG} />;\n}\n\n// Fix 3: memo on Child\nconst Child = React.memo(({ config }) => { ... });\n```\n\nJS equality: `{} !== {}`. Same content, different ref. React use `===` for prop compare.\n\nBest fix depend on whether object value change over time:\n- Static \u2192 outside component\n- Derived from props/state \u2192 `useMemo`\n- Can't change parent \u2192 `React.memo` on child",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 5.6,
+  "_meta": {
+    "track": "C",
+    "task": "react-rerender",
+    "category": "debugging",
+    "condition": "caveman",
+    "run_num": 7,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585122
+  }
+}

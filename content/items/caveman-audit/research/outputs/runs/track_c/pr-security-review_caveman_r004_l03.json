@@ -1,0 +1,46 @@
+{
+  "input_tokens": 10778,
+  "output_tokens": 293,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Two critical issues:\n\n**1. SQL Injection**\n`req.params.id` is interpolated directly into the query. Attacker passes `1 OR 1=1` \u2192 dumps entire table. Use a parameterized query:\n\n```js\nconst query = 'SELECT * FROM users WHERE id = ?';\ndb.query(query, [req.params.id]).then(user => res.json(user));\n```\n\n**2. No error handling**\nRejected promise crashes the process or hangs the request. Add a catch:\n\n```js\ndb.query(query, [req.params.id])\n  .then(user => {\n    if (!user) return res.status(404).json({ error: 'Not found' });\n    res.json(user);\n  })\n  .catch(err => res.status(500).json({ error: 'Internal server error' }));\n```\n\n**Minor: `SELECT *` over-exposes data.** If `users` has a `password_hash` column, it's now in the response. Select only needed columns.\n\n**Also consider:** auth middleware \u2014 any user can fetch any user's data by guessing IDs.",
+  "thinking_text": "The user wants a security review of this Express route handler.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 29.33,
+  "_meta": {
+    "track": "C",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "caveman",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 43952,
+    "timestamp": 1776613998,
+    "level": 3,
+    "ordering": [
+      2,
+      9,
+      6,
+      1,
+      5,
+      4,
+      0,
+      8,
+      7,
+      3
+    ],
+    "chunks_present": [
+      1,
+      2,
+      4,
+      5,
+      6,
+      9
+    ],
+    "num_chunks": 6,
+    "behavioral_chars": 12880,
+    "chunk_chars": 27539
+  }
+}

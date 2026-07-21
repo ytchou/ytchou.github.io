@@ -1,0 +1,22 @@
+{
+  "input_tokens": 72,
+  "output_tokens": 859,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## The Problem: Object Reference Equality\n\nReact uses **shallow comparison** for props. When you pass an object, React checks if the reference is the same, not the contents.\n\n```jsx\n// \u274c This creates a NEW object on every parent render\nfunction Parent() {\n  return <Child config={{ theme: \"dark\", size: 10 }} />; // New reference each time\n}\n```\n\nEven though the object *looks* the same, it's a different object in memory each render.\n\n---\n\n## Solutions\n\n### 1. `React.memo` + Stable Object Reference\n```jsx\n// Wrap child to skip re-renders when props haven't changed\nconst Child = React.memo(({ config }) => {\n  return <div>{config.theme}</div>;\n});\n\n// Move object outside component (if static)\nconst CONFIG = { theme: \"dark\", size: 10 }; // Created once, stable reference\n\nfunction Parent() {\n  return <Child config={CONFIG} />;\n}\n```\n\n### 2. `useMemo` (if object depends on state/props)\n```jsx\nfunction Parent({ theme, size }) {\n  // Only creates new object when dependencies change\n  const config = useMemo(() => ({\n    theme,\n    size\n  }), [theme, size]);\n\n  return <Child config={config} />;\n}\n```\n\n### 3. Pass Primitive Props Instead\n```jsx\n// \u2705 Primitives compare by value, not reference\nfunction Parent() {\n  return <Child theme=\"dark\" size={10} />;\n}\n\nconst Child = React.memo(({ theme, size }) => {\n  return <div>{theme}</div>;\n});\n```\n\n### 4. `useCallback` for Function Props (same issue applies)\n```jsx\nfunction Parent() {\n  // \u274c New function reference every render\n  const handleClick = () => console.log(\"clicked\");\n\n  // \u2705 Stable reference\n  const handleClick = useCallback(() => {\n    console.log(\"clicked\");\n  }, []); // dependencies here\n\n  return <Child onClick={handleClick} />;\n}\n```\n\n---\n\n## Debugging Tip\n\nUse React DevTools Profiler or this hook to find **why** a component re-rendered:\n\n```jsx\nfunction useWhyDidYouRender(props) {\n  const prevProps = useRef(props);\n  \n  useEffect(() => {\n    const changedProps = Object.entries(props).reduce((acc, [key, value]) => {\n      if (prevProps.current[key] !== value) {\n        acc[key] = { from: prevProps.current[key], to: value };\n      }\n      return acc;\n    }, {});\n\n    if (Object.keys(changedProps).length > 0) {\n      console.log(\"Changed props:\", changedProps);\n    }\n    prevProps.current = props;\n  });\n}\n```\n\n---\n\n## Quick Decision Guide\n\n| Situation | Solution |\n|-----------|----------|\n| Static object (never changes) | Move outside component |\n| Object depends on variables | `useMemo` |\n| Function prop | `useCallback` |\n| Child component | `React.memo` |\n| Can split into primitives | Pass primitives directly |\n\n**Key takeaway:** `React.memo` alone won't help if the object reference changes every render \u2014 you need to stabilize the reference first with `useMemo` or by moving it outside the component.",
+  "thinking_text": "The user is asking about a common React performance issue - components re-rendering when objects are passed as props, even when the data hasn't changed. Let me explain the root cause and solutions.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 14.55,
+  "_meta": {
+    "track": "A_prime",
+    "task": "react-rerender",
+    "category": "debugging",
+    "condition": "baseline",
+    "run_num": 3,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 28,
+    "timestamp": 1776610334
+  }
+}

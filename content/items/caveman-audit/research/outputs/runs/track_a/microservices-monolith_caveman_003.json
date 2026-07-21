@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1063,
+  "output_tokens": 506,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## Monolith \u2192 Microservices: Consider First\n\n**Split only if monolith actually broken for your needs.** Most teams split too early.\n\n---\n\n### Signals That Split Makes Sense\n\n- Deploy one feature = risk whole app\n- Teams block each other constantly\n- One component need scale 10x, rest idle\n- Tech debt isolated to one domain, rest healthy\n\n### Signals To Stay Monolith (or go \"modular monolith\" first)\n\n- Team < 20 devs\n- Traffic not the problem \u2014 just slow code\n- Domain boundaries unclear\n- No DevOps maturity for containers/orchestration\n\n---\n\n### Key Factors\n\n**1. Find actual bottleneck first**\nProfile before architect. Slow DB query \u2260 need microservices. Maybe need index, cache, async task (Celery).\n\n**2. Domain boundaries**\nCan you draw clean lines between domains (users / orders / inventory)? Fuzzy boundaries = distributed monolith. Worse than original.\n\n**3. Data ownership**\nEach service own its DB. Shared DB = not real microservices. Cross-service joins become API calls or events. Hard.\n\n**4. Team structure**\nConway's Law real. Services mirror org chart. One team = one service max, usually.\n\n**5. Operational cost**\nMicroservices need: service discovery, distributed tracing, API gateway, CI per service, on-call for N services. Need DevOps muscle.\n\n**6. Consistency vs availability tradeoffs**\nTransactions across services = sagas / eventual consistency. Complex. Django ORM transactions stop working across service boundary.\n\n---\n\n### Recommended Path\n\n```\nProfile \u2192 Fix obvious perf issues\n    \u2193\nModular monolith (enforce domain boundaries internally)\n    \u2193\nExtract highest-pain service first (usually auth or heavy async work)\n    \u2193\nEvaluate. Then maybe extract next.\n```\n\nDon't extract all at once. Strangler Fig pattern \u2014 peel off edges, keep core alive.\n\n---\n\n**Bottom line:** Microservices trade *deployment complexity* for *team/scale independence*. Only worth it if those are actual constraints, not hypothetical ones.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 13.36,
+  "_meta": {
+    "track": "C",
+    "task": "microservices-monolith",
+    "category": "architecture",
+    "condition": "caveman",
+    "run_num": 3,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585688
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1049,
+  "output_tokens": 711,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Use `pg` pool. Config:\n\n```js\nimport { Pool } from 'pg';\n\nconst pool = new Pool({\n  connectionString: process.env.DATABASE_URL,\n\n  // Pool size\n  max: 20,                  // max connections\n  min: 2,                   // keep alive idle connections\n  idleTimeoutMillis: 30000, // kill idle conn after 30s\n  connectionTimeoutMillis: 5000, // fail fast if no conn in 5s\n  allowExitOnIdle: true,    // let process exit if pool idle\n});\n\n// Test on startup\npool.connect()\n  .then(client => { client.release(); console.log('DB ready'); })\n  .catch(err => { console.error('DB connect fail:', err); process.exit(1); });\n\n// Catch background errors (network drop, server restart)\npool.on('error', (err) => {\n  console.error('Idle client error:', err);\n});\n\nexport default pool;\n```\n\nQuery wrapper \u2014 auto-release, timeout per query:\n\n```js\nexport async function query(sql, params, timeoutMs = 10000) {\n  const client = await pool.connect();\n  try {\n    await client.query(`SET statement_timeout = ${timeoutMs}`);\n    return await client.query(sql, params);\n  } finally {\n    client.release(); // always release, even on throw\n  }\n}\n```\n\nTransaction wrapper:\n\n```js\nexport async function withTransaction(fn) {\n  const client = await pool.connect();\n  try {\n    await client.query('BEGIN');\n    const result = await fn(client);\n    await client.query('COMMIT');\n    return result;\n  } catch (err) {\n    await client.query('ROLLBACK');\n    throw err;\n  } finally {\n    client.release();\n  }\n}\n```\n\nUsage:\n\n```js\n// Simple query\nconst { rows } = await query('SELECT * FROM users WHERE id = $1', [userId]);\n\n// Transaction\nawait withTransaction(async (client) => {\n  await client.query('UPDATE accounts SET balance = balance - $1 WHERE id = $2', [amount, fromId]);\n  await client.query('UPDATE accounts SET balance = balance + $1 WHERE id = $2', [amount, toId]);\n});\n```\n\nKey points:\n\n| Setting | Why |\n|---|---|\n| `max: 20` | Match DB `max_connections` minus headroom for admin |\n| `connectionTimeoutMillis` | Fail fast vs hang forever |\n| `statement_timeout` | Kill runaway queries |\n| `pool.on('error')` | Catch errors on idle clients \u2014 unhandled = crash |\n| Always `release()` in `finally` | Leak = pool exhaustion = app hang |\n\nShutdown clean:\n\n```js\nprocess.on('SIGTERM', async () => {\n  await pool.end();\n  process.exit(0);\n});\n```",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 10.77,
+  "_meta": {
+    "track": "C",
+    "task": "postgres-pool",
+    "category": "setup",
+    "condition": "caveman",
+    "run_num": 3,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585350
+  }
+}

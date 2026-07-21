@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1058,
+  "output_tokens": 548,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Race condition. Multiple requests read same value before any write commit.\n\n## Fix: Atomic Update\n\n```sql\n-- Bad: read then write (race)\nSELECT counter FROM table WHERE id = $1;\nUPDATE table SET counter = $2 WHERE id = $1;\n\n-- Good: atomic increment, returns new value\nUPDATE table SET counter = counter + 1 WHERE id = $1\nRETURNING counter;\n```\n\nOne query. DB serialize writes. No gap for race.\n\n## Node.js\n\n```js\n// Bad\nconst { rows: [row] } = await pool.query('SELECT counter FROM t WHERE id = $1', [id]);\nawait pool.query('UPDATE t SET counter = $2 WHERE id = $1', [row.counter + 1, id]);\nres.json({ counter: row.counter + 1 }); // stale if concurrent\n\n// Good\nconst { rows: [row] } = await pool.query(\n  'UPDATE t SET counter = counter + 1 WHERE id = $1 RETURNING counter',\n  [id]\n);\nres.json({ counter: row.counter }); // always fresh\n```\n\n## If Need Complex Logic\n\nWrap in transaction + row lock:\n\n```js\nconst client = await pool.connect();\ntry {\n  await client.query('BEGIN');\n  const { rows: [row] } = await client.query(\n    'SELECT counter FROM t WHERE id = $1 FOR UPDATE', // locks row\n    [id]\n  );\n  // do complex logic here\n  const newVal = row.counter + 1;\n  await client.query('UPDATE t SET counter = $1 WHERE id = $2', [newVal, id]);\n  await client.query('COMMIT');\n  res.json({ counter: newVal });\n} catch (e) {\n  await client.query('ROLLBACK');\n  throw e;\n} finally {\n  client.release();\n}\n```\n\n`FOR UPDATE` block other transactions until commit. Serialize access.\n\n## Pick Right Fix\n\n| Situation | Fix |\n|-----------|-----|\n| Simple increment | `UPDATE ... SET x = x + 1 RETURNING x` |\n| Complex logic on value | Transaction + `FOR UPDATE` |\n| High contention, can retry | Optimistic lock (version column + retry) |\n\nAtomic update cover 90% cases.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 27.65,
+  "_meta": {
+    "track": "C",
+    "task": "race-condition-debug",
+    "category": "debugging",
+    "condition": "caveman",
+    "run_num": 1,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776586153
+  }
+}

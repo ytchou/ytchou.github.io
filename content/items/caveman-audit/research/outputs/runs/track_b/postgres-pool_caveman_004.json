@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 11088,
+  "duration_api_ms": 11026,
+  "num_turns": 1,
+  "result": "Use `pg` (node-postgres) with `Pool`. Key configs:\n\n```js\nimport { Pool } from 'pg';\n\nconst pool = new Pool({\n  host: process.env.DB_HOST,\n  port: 5432,\n  database: process.env.DB_NAME,\n  user: process.env.DB_USER,\n  password: process.env.DB_PASSWORD,\n\n  // Pool sizing\n  max: 20,                // max connections\n  min: 2,                 // keep alive minimum\n  idleTimeoutMillis: 30_000,     // kill idle connection after 30s\n  connectionTimeoutMillis: 5_000, // fail fast if can't acquire connection\n  allowExitOnIdle: true,         // let process exit cleanly when idle\n});\n\n// Catch pool-level errors (dropped connections, etc.)\npool.on('error', (err, client) => {\n  console.error('Idle client error:', err);\n});\n```\n\n**Query with error handling:**\n\n```js\nasync function query(sql, params) {\n  const client = await pool.connect(); // throws after connectionTimeoutMillis\n  try {\n    const result = await client.query(sql, params);\n    return result.rows;\n  } finally {\n    client.release(); // always release \u2014 even on throw\n  }\n}\n```\n\n**Transaction wrapper:**\n\n```js\nasync function withTransaction(fn) {\n  const client = await pool.connect();\n  try {\n    await client.query('BEGIN');\n    const result = await fn(client);\n    await client.query('COMMIT');\n    return result;\n  } catch (err) {\n    await client.query('ROLLBACK');\n    throw err;\n  } finally {\n    client.release();\n  }\n}\n\n// Usage\nawait withTransaction(async (client) => {\n  await client.query('INSERT INTO orders ...', [...]);\n  await client.query('UPDATE inventory ...', [...]);\n});\n```\n\n**Graceful shutdown:**\n\n```js\nprocess.on('SIGTERM', async () => {\n  await pool.end(); // waits for active queries, then closes\n  process.exit(0);\n});\n```\n\n**Key rules:**\n- Always `release()` in `finally` \u2014 leaked clients exhaust pool and hang\n- `connectionTimeoutMillis` prevents indefinite queue pile-up under load\n- `idleTimeoutMillis` avoids stale connections dropped by DB/firewall\n- `max: 20` matches default Postgres `max_connections` headroom \u2014 tune per server",
+  "stop_reason": "end_turn",
+  "session_id": "541f5010-0047-42dd-8cd9-5a8f49dc6c9d",
+  "total_cost_usd": 0.037489800000000004,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6392,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 668,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6392,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 668,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6392,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6392
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 668,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6392,
+      "webSearchRequests": 0,
+      "costUSD": 0.037489800000000004,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "410cc72b-a2dc-41ca-a456-c8f5bd47d93b",
+  "_meta": {
+    "track": "B",
+    "task": "postgres-pool",
+    "category": "setup",
+    "condition": "caveman",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 13.0,
+    "timestamp": 1776774720,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

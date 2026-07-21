@@ -1,0 +1,89 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 29993,
+  "duration_api_ms": 30502,
+  "num_turns": 5,
+  "result": "The write was blocked \u2014 please approve it, or I can show you the diff and you can apply it manually.\n\nHere's what changed from the existing file:\n\n**`fallback` changed from `ReactNode` \u2192 render prop `(error, reset) => ReactNode`**\n- The old static fallback had no access to `reset`, so a retry button was impossible for callers.\n- Now callers get both the error and the reset callback.\n\n**Added `onError` prop**\n- Lets you wire in Sentry or any external logger without subclassing.\n- Called after `console.error`, so local logging always fires first.\n\n**Extracted `DefaultFallback` component + `styles` object**\n- Keeps `render()` readable.\n- Inline styles are now grouped and typed as `const`, so there's one place to touch for theming.\n\nUsage examples:\n\n```tsx\n// Default fallback with retry\n<ErrorBoundary>\n  <MyWidget />\n</ErrorBoundary>\n\n// Custom fallback with retry button\n<ErrorBoundary\n  fallback={(error, reset) => (\n    <div>\n      <p>Oops: {error.message}</p>\n      <button onClick={reset}>Retry</button>\n    </div>\n  )}\n>\n  <MyWidget />\n</ErrorBoundary>\n\n// With external logging\n<ErrorBoundary onError={(err, info) => Sentry.captureException(err, { extra: info })}>\n  <MyWidget />\n</ErrorBoundary>\n```",
+  "stop_reason": "end_turn",
+  "session_id": "a59a9e3f-2dc1-4a12-8166-2d95efb5e2eb",
+  "total_cost_usd": 0.05966195,
+  "usage": {
+    "input_tokens": 7,
+    "cache_creation_input_tokens": 2101,
+    "cache_read_input_tokens": 86554,
+    "output_tokens": 1690,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 2101,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 1,
+        "output_tokens": 362,
+        "cache_read_input_tokens": 17972,
+        "cache_creation_input_tokens": 1013,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 1013
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 366,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000446,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 7,
+      "outputTokens": 1690,
+      "cacheReadInputTokens": 86554,
+      "cacheCreationInputTokens": 2101,
+      "webSearchRequests": 0,
+      "costUSD": 0.05921595000000001,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [
+    {
+      "tool_name": "Write",
+      "tool_use_id": "toolu_01H2uaptmipbfAPNdZne9cDA",
+      "tool_input": {
+        "file_path": "/Users/ytchou/project/portfolio/projects/caveman-audit/src/components/ErrorBoundary.tsx",
+        "content": "import { Component, type ErrorInfo, type ReactNode } from \"react\";\n\ninterface Props {\n  children: ReactNode;\n  /** Render prop receives the error and a reset callback \u2014 use this instead of a static fallback when you need a retry button. */\n  fallback?: (error: Error, reset: () => void) => ReactNode;\n  /** Optional external logger (e.g. Sentry). Called after console.error. */\n  onError?: (error: Error, info: ErrorInfo) => void;\n}\n\ninterface State {\n  error: Error | null;\n  componentStack: string | null;\n}\n\nexport class ErrorBoundary extends Component<Props, State> {\n  state: State = { error: null, componentStack: null };\n\n  static getDerivedStateFromError(error: Error): Partial<State> {\n    return { error };\n  }\n\n  componentDidCatch(error: Error, info: ErrorInfo): void {\n    console.error(\"[ErrorBoundary]\", error, info.componentStack);\n    this.setState({ componentStack: info.componentStack ?? null });\n    this.props.onError?.(error, info);\n  }\n\n  reset = (): void => {\n    this.setState({ error: null, componentStack: null });\n  };\n\n  render(): ReactNode {\n    const { error } = this.state;\n\n    if (error) {\n      if (this.props.fallback) {\n        return this.props.fallback(error, this.reset);\n      }\n\n      return <DefaultFallback error={error} onRetry={this.reset} />;\n    }\n\n    return this.props.children;\n  }\n}\n\nfunction DefaultFallback({\n  error,\n  onRetry,\n}: {\n  error: Error;\n  onRetry: () => void;\n}) {\n  return (\n    <div role=\"alert\" style={styles.container}>\n      <h2 style={styles.heading}>Something went wrong</h2>\n      <pre style={styles.message}>{error.message}</pre>\n      <button onClick={onRetry} style={styles.button}>\n        Try again\n      </button>\n    </div>\n  );\n}\n\nconst styles = {\n  container: {\n    padding: \"1rem\",\n    border: \"1px solid #f87171\",\n    borderRadius: \"0.375rem\",\n    background: \"#fff1f2\",\n    color: \"#991b1b\",\n  },\n  heading: { margin: \"0 0 0.5rem\", fontSize: \"1rem\" },\n  message: {\n    whiteSpace: \"pre-wrap\" as const,\n    fontSize: \"0.875rem\",\n    marginBottom: \"1rem\",\n  },\n  button: {\n    padding: \"0.375rem 0.75rem\",\n    border: \"1px solid #f87171\",\n    borderRadius: \"0.25rem\",\n    background: \"white\",\n    color: \"#991b1b\",\n    cursor: \"pointer\",\n  },\n} as const;\n"
+      }
+    }
+  ],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "5a77c33f-b81f-42fc-ace2-0f0c6b11146b",
+  "_meta": {
+    "track": "B",
+    "task": "error-boundary",
+    "category": "implementation",
+    "condition": "baseline",
+    "run_num": 13,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 31.52,
+    "timestamp": 1776776683,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

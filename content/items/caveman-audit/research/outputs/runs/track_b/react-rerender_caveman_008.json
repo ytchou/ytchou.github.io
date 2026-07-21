@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 7047,
+  "duration_api_ms": 6978,
+  "num_turns": 1,
+  "result": "New object ref created each render. Inline object literal = new identity = React sees \"changed\" prop = re-render.\n\n**Fix options:**\n\n**1. `useMemo` \u2014 memoize object inside parent**\n```js\nconst options = useMemo(() => ({ color: 'red', size: 10 }), []);\n<MyComponent options={options} />\n```\n\n**2. Move object outside component \u2014 if static**\n```js\nconst OPTIONS = { color: 'red', size: 10 }; // module-level constant\n\nfunction Parent() {\n  return <MyComponent options={OPTIONS} />;\n}\n```\n\n**3. `React.memo` \u2014 skip re-render if props shallowly equal**\n```js\nconst MyComponent = React.memo(({ options }) => { ... });\n```\nShallow compare still fails for new object refs \u2014 pair with `useMemo` in parent.\n\n**4. Pass primitives instead**\n```js\n<MyComponent color=\"red\" size={10} />\n```\nPrimitives compare by value. No memoization needed.\n\nRoot cause always same: `{} !== {}` in JS. Pick fix based on whether object is static, derived, or needs to stay inline.",
+  "stop_reason": "end_turn",
+  "session_id": "1c6ca20a-419b-44dc-bd6e-17f705bde64c",
+  "total_cost_usd": 0.0318123,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6406,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 286,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6406,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 286,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6406,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6406
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 286,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6406,
+      "webSearchRequests": 0,
+      "costUSD": 0.0318123,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "e470846b-2ea4-4a61-9b30-78f3227324de",
+  "_meta": {
+    "track": "B",
+    "task": "react-rerender",
+    "category": "debugging",
+    "condition": "caveman",
+    "run_num": 8,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 8.85,
+    "timestamp": 1776776189,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

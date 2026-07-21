@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 6452,
+  "duration_api_ms": 6395,
+  "num_turns": 1,
+  "result": "JWT `exp` field = Unix seconds. `Date.now()` = milliseconds.\n\n**Bug:** comparison always false \u2014 `exp` (e.g. `1713600000`) tiny vs `Date.now()` (e.g. `1713600000000`). Expired tokens pass.\n\n**Fix:**\n\n```js\n// Wrong\nif (Date.now() > payload.exp) { ... }\n\n// Correct\nif (Math.floor(Date.now() / 1000) > payload.exp) { ... }\n// or\nif (Date.now() > payload.exp * 1000) { ... }\n```\n\nAdd clock skew buffer (optional but recommended):\n\n```js\nconst CLOCK_SKEW = 30; // seconds\nif (Math.floor(Date.now() / 1000) > payload.exp + CLOCK_SKEW) {\n  throw new Error('Token expired');\n}\n```",
+  "stop_reason": "end_turn",
+  "session_id": "e13530cf-18a5-442b-ab79-d8dd018cef9c",
+  "total_cost_usd": 0.03081105,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6415,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 217,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6415,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 217,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6415,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6415
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 217,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6415,
+      "webSearchRequests": 0,
+      "costUSD": 0.03081105,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "6eee9850-2faf-4556-ae5c-f870b2d3af34",
+  "_meta": {
+    "track": "B",
+    "task": "auth-middleware-fix",
+    "category": "bugfix",
+    "condition": "caveman",
+    "run_num": 8,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 8.02,
+    "timestamp": 1776776232,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

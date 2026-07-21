@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1065,
+  "output_tokens": 334,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "JWT `exp` in **seconds**. `Date.now()` in **milliseconds**.\n\n**Bug:**\n```js\nif (Date.now() > payload.exp) // wrong \u2014 always false, exp looks huge\n```\n\n**Fix:**\n```js\nif (Date.now() / 1000 > payload.exp) // convert ms \u2192 s\n// or\nif (Math.floor(Date.now() / 1000) > payload.exp)\n```\n\n**Full middleware:**\n```js\nfunction authMiddleware(req, res, next) {\n  const token = req.headers.authorization?.split(' ')[1];\n  if (!token) return res.status(401).json({ error: 'No token' });\n\n  try {\n    const payload = jwt.verify(token, process.env.JWT_SECRET);\n    // jwt.verify() checks expiry automatically \u2014 see note below\n    req.user = payload;\n    next();\n  } catch (err) {\n    return res.status(401).json({ error: 'Invalid or expired token' });\n  }\n}\n```\n\n**Better:** `jwt.verify()` from `jsonwebtoken` checks `exp` automatically. Manual check redundant + error-prone. Drop manual check, let library handle it. Throws `TokenExpiredError` on expiry \u2014 catch covers it.\n\nOnly manual-check if using raw `jwt.decode()` (no verification). Don't do that.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 6.04,
+  "_meta": {
+    "track": "C",
+    "task": "auth-middleware-fix",
+    "category": "bugfix",
+    "condition": "caveman",
+    "run_num": 3,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585192
+  }
+}

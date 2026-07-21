@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1055,
+  "output_tokens": 1058,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Caveman mode: **full**\n\n---\n\nThree parts: class component, fallback UI, usage.\n\n```tsx\n// ErrorBoundary.tsx\nimport React, { Component, ErrorInfo, ReactNode } from \"react\";\n\ninterface Props {\n  children: ReactNode;\n  fallback?: (error: Error, reset: () => void) => ReactNode;\n  onError?: (error: Error, info: ErrorInfo) => void;\n}\n\ninterface State {\n  error: Error | null;\n}\n\nexport class ErrorBoundary extends Component<Props, State> {\n  state: State = { error: null };\n\n  static getDerivedStateFromError(error: Error): State {\n    return { error };\n  }\n\n  componentDidCatch(error: Error, info: ErrorInfo) {\n    const { onError } = this.props;\n\n    // Log details\n    console.error(\"[ErrorBoundary] Caught error:\", {\n      message: error.message,\n      stack: error.stack,\n      componentStack: info.componentStack,\n      timestamp: new Date().toISOString(),\n    });\n\n    onError?.(error, info);\n  }\n\n  reset = () => this.setState({ error: null });\n\n  render() {\n    const { error } = this.state;\n    const { children, fallback } = this.props;\n\n    if (!error) return children;\n\n    // Custom fallback wins\n    if (fallback) return fallback(error, this.reset);\n\n    return <DefaultFallback error={error} reset={this.reset} />;\n  }\n}\n```\n\n```tsx\n// DefaultFallback.tsx\ninterface FallbackProps {\n  error: Error;\n  reset: () => void;\n}\n\nfunction DefaultFallback({ error, reset }: FallbackProps) {\n  return (\n    <div role=\"alert\" style={styles.container}>\n      <h2 style={styles.title}>Something went wrong</h2>\n      <pre style={styles.message}>{error.message}</pre>\n      <button onClick={reset} style={styles.button}>\n        Try again\n      </button>\n    </div>\n  );\n}\n\nconst styles = {\n  container: {\n    padding: \"2rem\",\n    border: \"1px solid #f87171\",\n    borderRadius: \"8px\",\n    background: \"#fef2f2\",\n    fontFamily: \"sans-serif\",\n    maxWidth: \"480px\",\n    margin: \"2rem auto\",\n  },\n  title:  { color: \"#b91c1c\", marginTop: 0 },\n  message: { color: \"#7f1d1d\", fontSize: \"0.875rem\", whiteSpace: \"pre-wrap\" as const },\n  button: {\n    marginTop: \"1rem\",\n    padding: \"0.5rem 1.25rem\",\n    background: \"#dc2626\",\n    color: \"#fff\",\n    border: \"none\",\n    borderRadius: \"6px\",\n    cursor: \"pointer\",\n    fontSize: \"0.9rem\",\n  },\n} as const;\n```\n\n```tsx\n// Usage\nimport { ErrorBoundary } from \"./ErrorBoundary\";\n\n// Basic \u2014 default fallback\n<ErrorBoundary>\n  <MyComponent />\n</ErrorBoundary>\n\n// Custom fallback\n<ErrorBoundary\n  fallback={(error, reset) => (\n    <div>\n      <p>Oops: {error.message}</p>\n      <button onClick={reset}>Retry</button>\n    </div>\n  )}\n  onError={(error, info) => sendToSentry(error, info)}  // hook into external logger\n>\n  <MyComponent />\n</ErrorBoundary>\n```\n\n---\n\n**Key decisions:**\n\n- `getDerivedStateFromError` \u2014 static, pure, sets state for render. `componentDidCatch` \u2014 side effects (logging) only. Two jobs, two methods.\n- `reset` clears `error` state \u2192 children re-mount fresh. If same bug still exist, boundary catch again.\n- `onError` prop = escape hatch for Sentry/Datadog/custom logger. No coupling inside boundary.\n- Custom `fallback` render prop beats default. Full control, no style fight.\n\n**Caveat:** Boundaries no catch errors in: event handlers, async code (`setTimeout`/`fetch`), SSR. Those need `try/catch` direct.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 23.15,
+  "_meta": {
+    "track": "C",
+    "task": "error-boundary",
+    "category": "implementation",
+    "condition": "caveman",
+    "run_num": 10,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776586553
+  }
+}

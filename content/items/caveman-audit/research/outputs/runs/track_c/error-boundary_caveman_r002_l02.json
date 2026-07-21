@@ -1,0 +1,44 @@
+{
+  "input_tokens": 8609,
+  "output_tokens": 633,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Writing the error boundary component.\n\n## Tool: Write\n\n```json\n{\n  \"file_path\": \"/repo/ErrorBoundary.tsx\",\n  \"content\": \"import { Component, ErrorInfo, ReactNode } from 'react';\\n\\ninterface Props {\\n  children: ReactNode;\\n  fallback?: (error: Error, reset: () => void) => ReactNode;\\n}\\n\\ninterface State {\\n  error: Error | null;\\n}\\n\\nexport class ErrorBoundary extends Component<Props, State> {\\n  state: State = { error: null };\\n\\n  static getDerivedStateFromError(error: Error): State {\\n    return { error };\\n  }\\n\\n  componentDidCatch(error: Error, info: ErrorInfo) {\\n    console.error('[ErrorBoundary]', error, info.componentStack);\\n  }\\n\\n  reset = () => this.setState({ error: null });\\n\\n  render() {\\n    const { error } = this.state;\\n    const { children, fallback } = this.props;\\n\\n    if (error) {\\n      if (fallback) return fallback(error, this.reset);\\n      return (\\n        <div role=\\\"alert\\\" style={{ padding: '1rem', border: '1px solid #f00' }}>\\n          <p><strong>Something went wrong.</strong></p>\\n          <pre style={{ fontSize: '0.8rem', opacity: 0.7 }}>{error.message}</pre>\\n          <button onClick={this.reset}>Retry</button>\\n        </div>\\n      );\\n    }\\n\\n    return children;\\n  }\\n}\\n\"\n}\n```\n\nDone. `ErrorBoundary.tsx` created with:\n\n- **`getDerivedStateFromError`** \u2014 captures error into state, triggers fallback render\n- **`componentDidCatch`** \u2014 logs error + component stack to console\n- **`reset()`** \u2014 clears error state on retry\n- **Custom fallback prop** \u2014 optional `(error, reset) => ReactNode` for full control\n\n**Usage:**\n```tsx\n// Default fallback UI\n<ErrorBoundary>\n  <MyComponent />\n</ErrorBoundary>\n\n// Custom fallback\n<ErrorBoundary fallback={(err, retry) => (\n  <div>\n    <p>{err.message}</p>\n    <button onClick={retry}>Try again</button>\n  </div>\n)}>\n  <MyComponent />\n</ErrorBoundary>\n```",
+  "thinking_text": "Let me create a React error boundary component.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 54.36,
+  "_meta": {
+    "track": "C",
+    "task": "error-boundary",
+    "category": "implementation",
+    "condition": "caveman",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 34243,
+    "timestamp": 1776611315,
+    "level": 2,
+    "ordering": [
+      3,
+      2,
+      6,
+      0,
+      7,
+      4,
+      5,
+      8,
+      1,
+      9
+    ],
+    "chunks_present": [
+      0,
+      2,
+      3,
+      6
+    ],
+    "num_chunks": 4,
+    "behavioral_chars": 12880,
+    "chunk_chars": 17834
+  }
+}

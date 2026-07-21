@@ -1,0 +1,44 @@
+{
+  "input_tokens": 7615,
+  "output_tokens": 357,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Two critical issues:\n\n**1. SQL Injection (Critical)**\nThe `id` parameter is interpolated directly into the query string. An attacker can pass `1 OR 1=1` or `1; DROP TABLE users--` as the ID.\n\nFix \u2014 use a parameterized query:\n```js\napp.get('/api/users/:id', (req, res) => {\n  db.query('SELECT * FROM users WHERE id = ?', [req.params.id])\n    .then(user => res.json(user));\n});\n```\n\n**2. Missing input validation**\nNo check that `id` is a valid integer, so non-numeric values reach the DB even with parameterized queries. Add a guard:\n```js\nconst id = parseInt(req.params.id, 10);\nif (isNaN(id)) return res.status(400).json({ error: 'Invalid ID' });\n```\n\n**3. Unhandled promise rejection**\nNo `.catch()` \u2014 a DB error will crash the process or hang the request. Add:\n```js\n.catch(err => res.status(500).json({ error: 'Internal server error' }));\n```\n\n**4. Over-broad `SELECT *`**\nIf the `users` table contains password hashes, tokens, or PII, they'll be sent to the caller. Enumerate only the columns you intend to expose.\n\nThe SQL injection is the blocker \u2014 fix that first.",
+  "thinking_text": "The user wants a security review of this Express route handler.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 35.05,
+  "_meta": {
+    "track": "C",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "baseline",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 31457,
+    "timestamp": 1776613997,
+    "level": 2,
+    "ordering": [
+      2,
+      9,
+      6,
+      1,
+      5,
+      4,
+      0,
+      8,
+      7,
+      3
+    ],
+    "chunks_present": [
+      1,
+      2,
+      6,
+      9
+    ],
+    "num_chunks": 4,
+    "behavioral_chars": 12880,
+    "chunk_chars": 18569
+  }
+}

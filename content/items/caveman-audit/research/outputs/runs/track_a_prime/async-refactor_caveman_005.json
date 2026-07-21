@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1151,
+  "output_tokens": 345,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Wrap `db.query` in Promise, then `await` it.\n\n```javascript\nasync function getUser(id) {\n  const rows = await db.query('SELECT * FROM users WHERE id = ?', [id]);\n  if (!rows.length) throw new Error('Not found');\n  return rows[0];\n}\n```\n\nCall it:\n\n```javascript\n// catch at call site\ntry {\n  const user = await getUser(42);\n} catch (err) {\n  console.error(err);\n}\n```\n\nIf `db.query` no return Promise natively, wrap first:\n\n```javascript\nconst query = (sql, params) =>\n  new Promise((resolve, reject) =>\n    db.query(sql, params, (err, rows) => err ? reject(err) : resolve(rows))\n  );\n\nasync function getUser(id) {\n  const rows = await query('SELECT * FROM users WHERE id = ?', [id]);\n  if (!rows.length) throw new Error('Not found');\n  return rows[0];\n}\n```\n\nKey changes:\n- `err` callback \u2192 `throw` (caller use try/catch)\n- `callback(null, result)` \u2192 `return result`\n- Errors propagate up call stack automatically",
+  "thinking_text": "The user wants me to refactor a callback-based Node.js function to use async/await. I'm in caveman mode (full by default), so I'll be terse but technically accurate.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 5.73,
+  "_meta": {
+    "track": "A_prime",
+    "task": "async-refactor",
+    "category": "refactor",
+    "condition": "caveman",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776610634
+  }
+}

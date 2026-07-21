@@ -1,0 +1,91 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 42081,
+  "duration_api_ms": 42170,
+  "num_turns": 4,
+  "result": "The edit needs your approval to write to `src/components/ErrorBoundary.tsx`. Once approved, here's a summary of what changed vs. the existing file:\n\n| | Before | After |\n|---|---|---|\n| `fallback` prop | `ReactNode` (static) | `(error, reset) => ReactNode` (render prop \u2014 caller controls retry button) |\n| Error logging | `console.error(error, componentStack)` | Structured object with `message`, `stack`, `componentStack` |\n| External logging | None | `onError?: (error, info) => void` callback (for Sentry etc.) |\n| Component stack in UI | Captured but never shown | Shown in a collapsible `<details>` element |\n| Retry button | Always shown in default UI | Shown in default UI; also passed to custom `fallback` via render prop |\n\nUsage examples:\n\n```tsx\n// Default fallback UI with retry\n<ErrorBoundary>\n  <MyWidget />\n</ErrorBoundary>\n\n// Custom fallback with access to error and retry\n<ErrorBoundary fallback={(err, retry) => (\n  <div>\n    <p>Oops: {err.message}</p>\n    <button onClick={retry}>Retry</button>\n  </div>\n)}>\n  <MyWidget />\n</ErrorBoundary>\n\n// With external error reporting\n<ErrorBoundary onError={(err, info) => Sentry.captureException(err, { extra: info })}>\n  <MyWidget />\n</ErrorBoundary>\n```",
+  "stop_reason": "end_turn",
+  "session_id": "723a2fd1-bb3d-4cc5-84d9-8d8a92b9c7f1",
+  "total_cost_usd": 0.07588249999999999,
+  "usage": {
+    "input_tokens": 6,
+    "cache_creation_input_tokens": 2222,
+    "cache_read_input_tokens": 69660,
+    "output_tokens": 1838,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 2222,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 1,
+        "output_tokens": 371,
+        "cache_read_input_tokens": 18098,
+        "cache_creation_input_tokens": 1176,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 1176
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 396,
+      "outputTokens": 950,
+      "cacheReadInputTokens": 94805,
+      "cacheCreationInputTokens": 3550,
+      "webSearchRequests": 0,
+      "costUSD": 0.019064,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 6,
+      "outputTokens": 1838,
+      "cacheReadInputTokens": 69660,
+      "cacheCreationInputTokens": 2222,
+      "webSearchRequests": 0,
+      "costUSD": 0.0568185,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [
+    {
+      "tool_name": "Edit",
+      "tool_use_id": "toolu_01DhfLJAT8P5JKfYpdZFPFMD",
+      "tool_input": {
+        "file_path": "/Users/ytchou/project/portfolio/projects/caveman-audit/src/components/ErrorBoundary.tsx",
+        "old_string": "import { Component, type ErrorInfo, type ReactNode } from \"react\";\n\ninterface Props {\n  children: ReactNode;\n  fallback?: ReactNode;\n}\n\ninterface State {\n  error: Error | null;\n  componentStack: string | null;\n}\n\nexport class ErrorBoundary extends Component<Props, State> {\n  state: State = { error: null, componentStack: null };\n\n  static getDerivedStateFromError(error: Error): Partial<State> {\n    return { error };\n  }\n\n  componentDidCatch(error: Error, info: ErrorInfo): void {\n    console.error(\"[ErrorBoundary]\", error, info.componentStack);\n    this.setState({ componentStack: info.componentStack ?? null });\n  }\n\n  reset = (): void => {\n    this.setState({ error: null, componentStack: null });\n  };\n\n  render(): ReactNode {\n    const { error } = this.state;\n\n    if (error) {\n      if (this.props.fallback) return this.props.fallback;\n\n      return (\n        <div role=\"alert\" style={{ padding: \"1rem\", border: \"1px solid red\" }}>\n          <h2>Something went wrong</h2>\n          <pre style={{ whiteSpace: \"pre-wrap\", color: \"red\" }}>\n            {error.message}\n          </pre>\n          <button onClick={this.reset}>Try Again</button>\n        </div>\n      );\n    }\n\n    return this.props.children;\n  }\n}",
+        "new_string": "import { Component, type ErrorInfo, type ReactNode } from \"react\";\n\ninterface Props {\n  children: ReactNode;\n  fallback?: (error: Error, reset: () => void) => ReactNode;\n  onError?: (error: Error, info: ErrorInfo) => void;\n}\n\ninterface State {\n  error: Error | null;\n  componentStack: string | null;\n}\n\nexport class ErrorBoundary extends Component<Props, State> {\n  state: State = { error: null, componentStack: null };\n\n  static getDerivedStateFromError(error: Error): Partial<State> {\n    return { error };\n  }\n\n  componentDidCatch(error: Error, info: ErrorInfo): void {\n    console.error(\"[ErrorBoundary]\", {\n      message: error.message,\n      stack: error.stack,\n      componentStack: info.componentStack,\n    });\n    this.props.onError?.(error, info);\n    this.setState({ componentStack: info.componentStack ?? null });\n  }\n\n  reset = (): void => {\n    this.setState({ error: null, componentStack: null });\n  };\n\n  render(): ReactNode {\n    const { error, componentStack } = this.state;\n\n    if (error) {\n      if (this.props.fallback) return this.props.fallback(error, this.reset);\n\n      return (\n        <div role=\"alert\" style={{ padding: \"1rem\", border: \"1px solid red\" }}>\n          <h2>Something went wrong</h2>\n          <pre style={{ whiteSpace: \"pre-wrap\", color: \"red\" }}>\n            {error.message}\n          </pre>\n          {componentStack && (\n            <details>\n              <summary style={{ cursor: \"pointer\" }}>Component stack</summary>\n              <pre style={{ whiteSpace: \"pre-wrap\", fontSize: \"0.8em\" }}>\n                {componentStack}\n              </pre>\n            </details>\n          )}\n          <button onClick={this.reset}>Try Again</button>\n        </div>\n      );\n    }\n\n    return this.props.children;\n  }\n}",
+        "replace_all": false
+      }
+    }
+  ],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "9b556807-252c-4128-83bd-fea00d13eee1",
+  "_meta": {
+    "track": "B",
+    "task": "error-boundary",
+    "category": "implementation",
+    "condition": "baseline",
+    "run_num": 12,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 43.51,
+    "timestamp": 1776776695,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

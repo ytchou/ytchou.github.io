@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 6985,
+  "duration_api_ms": 6929,
+  "num_turns": 1,
+  "result": "New object ref created each render. Inline object literal = new identity = React sees \"changed\" prop = re-render.\n\n**Fix options:**\n\n**1. `useMemo` (if object depends on other state/props)**\n```js\nconst config = useMemo(() => ({ key: value }), [value]);\n<Child config={config} />\n```\n\n**2. Move outside component (if object is static)**\n```js\nconst CONFIG = { key: value }; // stable ref, never recreated\n\nfunction Parent() {\n  return <Child config={CONFIG} />;\n}\n```\n\n**3. `React.memo` on child (bail out if props shallowly equal)**\n```js\nconst Child = React.memo(({ config }) => { ... });\n```\n\nNote: `React.memo` does shallow comparison \u2014 nested object changes still miss. Options 1 or 2 fix root cause; `memo` just delays symptom.\n\nRoot cause always same: JS `{} === {}` is `false`. New render = new object literal = new ref = prop \"changed\".",
+  "stop_reason": "end_turn",
+  "session_id": "95993969-c0e4-4050-931b-af86923240de",
+  "total_cost_usd": 0.0312423,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6406,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 248,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6406,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 248,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6406,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6406
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 248,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6406,
+      "webSearchRequests": 0,
+      "costUSD": 0.0312423,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "1fc18519-6a5e-4342-8316-9b7af6e6101b",
+  "_meta": {
+    "track": "B",
+    "task": "react-rerender",
+    "category": "debugging",
+    "condition": "caveman",
+    "run_num": 12,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 8.63,
+    "timestamp": 1776776198,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

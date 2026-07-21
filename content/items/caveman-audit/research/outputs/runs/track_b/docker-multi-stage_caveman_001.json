@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 8403,
+  "duration_api_ms": 8358,
+  "num_turns": 1,
+  "result": "```dockerfile\nFROM node:22-alpine AS deps\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci --ignore-scripts\n\nFROM node:22-alpine AS build\nWORKDIR /app\nCOPY --from=deps /app/node_modules ./node_modules\nCOPY . .\nRUN npm run build\n\nFROM node:22-alpine AS prod-deps\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci --omit=dev --ignore-scripts\n\nFROM node:22-alpine AS runtime\nWORKDIR /app\nENV NODE_ENV=production\n\nRUN addgroup -S appgroup && adduser -S appuser -G appgroup\nCOPY --from=prod-deps /app/node_modules ./node_modules\nCOPY --from=build /app/dist ./dist\nCOPY package*.json ./\n\nUSER appuser\nEXPOSE 3000\nCMD [\"node\", \"dist/index.js\"]\n```\n\n4 stages:\n\n| Stage | Purpose |\n|-------|---------|\n| `deps` | Install all deps (dev + prod) for build |\n| `build` | Compile TS \u2192 `dist/` |\n| `prod-deps` | Install prod-only deps cleanly |\n| `runtime` | Final image \u2014 no TS, no devDeps, no source |\n\nKey decisions:\n- `alpine` base \u2014 ~5MB vs ~900MB for full Debian\n- `npm ci` not `npm install` \u2014 reproducible, faster in CI\n- `--omit=dev` in prod-deps \u2014 drops `typescript`, `ts-node`, etc.\n- Non-root user \u2014 security hygiene\n- `--ignore-scripts` \u2014 skip postinstall scripts in Docker context (remove if your deps need them)\n\nAssumes `tsconfig.json` outputs to `dist/` and `npm run build` invokes `tsc`. Adjust `CMD` entry point if different.",
+  "stop_reason": "end_turn",
+  "session_id": "5c7ecc0b-0b6f-41ff-b17b-824caba63b59",
+  "total_cost_usd": 0.034827300000000005,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6406,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 487,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6406,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 487,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6406,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6406
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 487,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6406,
+      "webSearchRequests": 0,
+      "costUSD": 0.034827300000000005,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "1af1dbe1-8562-4930-98e9-2f3b49485c1c",
+  "_meta": {
+    "track": "B",
+    "task": "docker-multi-stage",
+    "category": "devops",
+    "condition": "caveman",
+    "run_num": 1,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 9.95,
+    "timestamp": 1776774835,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

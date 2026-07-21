@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 8600,
+  "duration_api_ms": 8539,
+  "num_turns": 1,
+  "result": "**SQL injection.** `req.params.id` injected directly into query string. Attacker sends `1 OR 1=1` \u2192 dumps all users. Sends `1; DROP TABLE users` \u2192 data loss.\n\nFix with parameterized query:\n\n```js\napp.get('/api/users/:id', (req, res) => {\n  db.query('SELECT * FROM users WHERE id = $1', [req.params.id])\n    .then(user => res.json(user))\n    .catch(err => res.status(500).json({ error: 'Internal server error' }));\n});\n```\n\nSecondary issues:\n\n- No auth/authz check \u2014 any caller reads any user's data\n- No input validation \u2014 non-integer `:id` hits DB unnecessarily\n- No error handling \u2014 unhandled rejection crashes or leaks stack trace\n\nMinimal hardened version:\n\n```js\napp.get('/api/users/:id', requireAuth, (req, res) => {\n  const id = parseInt(req.params.id, 10);\n  if (isNaN(id)) return res.status(400).json({ error: 'Invalid id' });\n\n  db.query('SELECT id, name, email FROM users WHERE id = $1', [id])\n    .then(user => user ? res.json(user) : res.status(404).json({ error: 'Not found' }))\n    .catch(() => res.status(500).json({ error: 'Internal server error' }));\n});\n```\n\nNote `SELECT *` \u2192 `SELECT id, name, email` to avoid leaking sensitive columns (password hash, tokens, etc.).",
+  "stop_reason": "end_turn",
+  "session_id": "fefcc7c2-bc5d-43e6-a542-b6dbadc664c0",
+  "total_cost_usd": 0.03384855,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6445,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 412,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6445,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 412,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6445,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6445
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 412,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6445,
+      "webSearchRequests": 0,
+      "costUSD": 0.03384855,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "42823670-d544-47d3-84d4-f42a68f5bb30",
+  "_meta": {
+    "track": "B",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "caveman",
+    "run_num": 13,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 10.36,
+    "timestamp": 1776776499,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

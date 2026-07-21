@@ -1,0 +1,48 @@
+{
+  "input_tokens": 12142,
+  "output_tokens": 445,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Two critical issues:\n\n**1. SQL Injection (Critical)**\n\n`req.params.id` is interpolated directly into the query string. An attacker can pass `1 OR 1=1` or `1; DROP TABLE users--` as the `id` parameter.\n\nFix: use a parameterized query.\n\n```js\napp.get('/api/users/:id', (req, res) => {\n  db.query('SELECT * FROM users WHERE id = ?', [req.params.id])\n    .then(user => res.json(user));\n});\n```\n\n**2. Missing error handling (High)**\n\nIf the query fails or returns no rows, the promise rejection is unhandled \u2014 crashing the process or hanging the request. Unhandled rejections also leak stack traces in some configurations.\n\nFix:\n\n```js\napp.get('/api/users/:id', async (req, res) => {\n  try {\n    const user = await db.query('SELECT * FROM users WHERE id = ?', [req.params.id]);\n    if (!user) return res.status(404).json({ error: 'Not found' });\n    res.json(user);\n  } catch (err) {\n    res.status(500).json({ error: 'Internal server error' });\n  }\n});\n```\n\n**3. Minor: `SELECT *` over-fetches**\n\nReturning all columns risks exposing sensitive fields like `password_hash`, `ssn`, etc. Enumerate only the columns the client actually needs.\n\n---\n\n**Summary of fixes:**\n| Issue | Severity | Fix |\n|---|---|---|\n| SQL injection | Critical | Parameterized query |\n| No error handling | High | try/catch + 500 response |\n| `SELECT *` data exposure | Medium | Explicit column list |",
+  "thinking_text": "The user wants a security review of this Express route handler. Let me analyze it.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 28.95,
+  "_meta": {
+    "track": "C",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "baseline",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 49784,
+    "timestamp": 1776614082,
+    "level": 4,
+    "ordering": [
+      2,
+      9,
+      6,
+      1,
+      5,
+      4,
+      0,
+      8,
+      7,
+      3
+    ],
+    "chunks_present": [
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      8,
+      9
+    ],
+    "num_chunks": 8,
+    "behavioral_chars": 12880,
+    "chunk_chars": 36888
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1085,
+  "output_tokens": 308,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Object literal = new ref each render. React compare by ref, not value. Prop \"changed\" every time even if content same.\n\n**Fix options:**\n\n1. **`useMemo`** \u2014 stabilize object inside component:\n```js\nconst options = useMemo(() => ({ color: 'red', size: 10 }), []);\n```\n\n2. **`memo`** \u2014 skip re-render if props shallow-equal:\n```js\nconst MyComponent = React.memo(({ options }) => { ... });\n```\n\n3. **Move object outside component** \u2014 if no dynamic values:\n```js\nconst OPTIONS = { color: 'red', size: 10 }; // stable ref\n\nfunction Parent() {\n  return <Child options={OPTIONS} />;\n}\n```\n\n**Root cause chain:** parent render \u2192 new obj literal \u2192 new ref \u2192 `memo` sees change \u2192 child re-render.\n\n`memo` alone not fix if parent still pass inline object. Need stable ref + `memo` together.",
+  "thinking_text": "The user is asking about React re-rendering. Caveman mode is active (default: full). Let me give a terse, accurate response.\n\nThe issue is that they're passing an object literal as a prop - each render creates a new object reference, so React thinks the prop changed even if the values are the same.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 8.53,
+  "_meta": {
+    "track": "A_prime",
+    "task": "react-rerender",
+    "category": "debugging",
+    "condition": "caveman",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776610348
+  }
+}

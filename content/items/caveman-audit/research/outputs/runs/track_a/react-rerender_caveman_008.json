@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1056,
+  "output_tokens": 233,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "New object ref created each render. Even if content same, `{}` !== `{}` in JS. React see new ref \u2192 re-render.\n\n**Fix options:**\n\n1. **`useMemo`** \u2014 memoize object:\n```js\nconst options = useMemo(() => ({ foo: bar }), [bar]);\n```\n\n2. **`React.memo`** \u2014 skip re-render if props shallow-equal:\n```js\nexport default React.memo(MyComponent);\n```\n\n3. **Move object outside component** \u2014 if static:\n```js\nconst OPTIONS = { foo: 'bar' }; // defined once, stable ref\nfunction MyComponent() { ... }\n```\n\n4. **`useCallback`** \u2014 same problem, same fix, for functions passed as props.\n\n**Root cause chain:** inline object prop \u2192 new ref each render \u2192 `React.memo` useless \u2192 child always re-renders.\n\nBest combo: `React.memo` on child + `useMemo` on parent for object props.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 4.86,
+  "_meta": {
+    "track": "C",
+    "task": "react-rerender",
+    "category": "debugging",
+    "condition": "caveman",
+    "run_num": 8,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585123
+  }
+}

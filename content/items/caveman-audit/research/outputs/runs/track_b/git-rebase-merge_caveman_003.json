@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 9053,
+  "duration_api_ms": 9005,
+  "num_turns": 1,
+  "result": "## Merge vs Rebase\n\n**Merge** \u2014 joins two branches, creates new \"merge commit\". History shows exactly what happened.\n\n**Rebase** \u2014 replays your commits on top of target branch. No merge commit. History looks linear.\n\n---\n\n### Merge\n```\nmain:    A - B - C - M\n                  \\ /\nfeature:      D - E\n```\n`M` = merge commit. Both histories preserved.\n\n### Rebase\n```\nmain:    A - B - C\nfeature:          D'- E'\n```\n`D'`/`E'` = replayed commits. Clean linear history.\n\n---\n\n## When to use\n\n| Use **merge** when | Use **rebase** when |\n|---|---|\n| Branch is shared/public | Branch is local/private |\n| Want full audit trail | Want clean linear history |\n| Integrating to `main` | Updating feature branch with `main` |\n| Non-destructive needed | About to open PR, want clean commits |\n\n---\n\n## Key tradeoffs\n\n**Merge** \u2014 safe, non-destructive, but noisy history with many merge commits.\n\n**Rebase** \u2014 clean history, but rewrites commit SHAs. **Never rebase shared branches** \u2014 breaks collaborators' history.\n\n---\n\n## Common workflow\n\n```bash\n# Update feature branch with latest main (safe \u2014 branch is yours)\ngit checkout feature\ngit rebase main\n\n# Integrate finished feature into main (preserves context)\ngit checkout main\ngit merge feature\n```\n\nGolden rule: **rebase local, merge public.**",
+  "stop_reason": "end_turn",
+  "session_id": "a728c045-f1bf-4a72-986d-3f2e584373be",
+  "total_cost_usd": 0.0336348,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6396,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 410,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6396,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 410,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6396,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6396
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 410,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6396,
+      "webSearchRequests": 0,
+      "costUSD": 0.0336348,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "bb7cd13a-5206-4ecc-a46a-64dbab1bde7b",
+  "_meta": {
+    "track": "B",
+    "task": "git-rebase-merge",
+    "category": "explanation",
+    "condition": "caveman",
+    "run_num": 3,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 10.56,
+    "timestamp": 1776774747,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

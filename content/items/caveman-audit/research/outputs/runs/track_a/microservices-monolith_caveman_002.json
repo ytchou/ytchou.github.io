@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1063,
+  "output_tokens": 637,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## Monolith \u2192 Microservices: Consider First\n\n**Split only if monolith actually broken.** Most teams split too early.\n\n---\n\n### Signals That Split Makes Sense\n\n- Deploy one feature = risk whole app\n- Teams block each other constantly\n- One component need scale 10x, rest idle\n- Tech debt isolated to one domain, rest healthy\n\n### Signals To Stay Monolith\n\n- Team < 20 devs\n- Traffic manageable with vertical scale + caching\n- Domain boundaries unclear\n- Shipping speed already slow \u2014 microservices make slower first\n\n---\n\n### Key Factors To Evaluate\n\n**1. Domain Boundaries**\nCan you draw clean lines? Forced split = distributed monolith (worst of both). Use event storming to find seams first.\n\n**2. Team Structure**\nConway's Law real. Org shape \u2192 system shape. No team owns clear domain = no clean service.\n\n**3. Data Ownership**\nHardest part. Shared DB = not microservices. Each service need own data store. Cross-service joins become API calls or events \u2014 expensive to retrofit.\n\n**4. Operational Maturity**\nMicroservices require: container orchestration (K8s), distributed tracing, centralized logging, service discovery, circuit breakers. No DevOps muscle = pain multiplied.\n\n**5. Latency Budget**\nIn-process Django call = nanoseconds. Network call = milliseconds. Chatty services kill perf. Check call patterns before splitting.\n\n**6. Failure Modes**\nMonolith fail = one thing down. Microservices fail = partial degradation, cascading failures, harder to debug. Need resilience patterns (retry, timeout, bulkhead).\n\n---\n\n### Practical Path (If Split Justified)\n\n```\nMonolith \u2192 Modular Monolith \u2192 Strangler Fig \u2192 Microservices\n```\n\n1. **First:** enforce module boundaries inside Django (no cross-app model imports)\n2. **Extract** highest-value seam first (e.g. auth, notifications \u2014 low coupling, clear boundary)\n3. **Prove** ops model works before extracting core domain\n4. **Never** split data and service in different phases \u2014 do together\n\n---\n\n### Django-Specific Levers Before Splitting\n\n- DB read replicas + query optimization (most Django perf issues here)\n- Celery for async workloads\n- Caching layer (Redis)\n- Horizontal scaling behind load balancer\n\n**Often fixes 80% of perf problems without microservices complexity.**\n\n---\n\n**Bottom line:** Perf problem alone = wrong reason to split. Profile first. If bottleneck is one isolatable domain with clear ownership + team ready for ops burden \u2192 split that one thing. Not everything.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 18.43,
+  "_meta": {
+    "track": "C",
+    "task": "microservices-monolith",
+    "category": "architecture",
+    "condition": "caveman",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585678
+  }
+}

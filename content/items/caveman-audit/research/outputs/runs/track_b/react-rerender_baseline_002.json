@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 11892,
+  "duration_api_ms": 12854,
+  "num_turns": 1,
+  "result": "This is a classic JavaScript reference equality problem. When you pass an object as a prop, React uses `===` to compare the previous and next prop values. Even if the object's contents are identical, a new object literal creates a new reference on every render, so React sees it as a changed prop.\n\n**Common causes:**\n\n1. **Inline object literals** \u2014 the most frequent culprit:\n   ```jsx\n   // Bad: new object reference every render\n   <MyComponent options={{ theme: 'dark', size: 'lg' }} />\n   ```\n\n2. **Derived objects created during render:**\n   ```jsx\n   // Bad: new array/object on every parent render\n   const filtered = items.filter(x => x.active);\n   <MyComponent data={filtered} />\n   ```\n\n**Fixes:**\n\n- **`useMemo`** \u2014 memoize the object so the reference stays stable:\n  ```jsx\n  const options = useMemo(() => ({ theme: 'dark', size: 'lg' }), []);\n  <MyComponent options={options} />\n  ```\n\n- **Move the object outside the component** if it doesn't depend on state/props:\n  ```jsx\n  const OPTIONS = { theme: 'dark', size: 'lg' }; // stable reference\n\n  function Parent() {\n    return <MyComponent options={OPTIONS} />;\n  }\n  ```\n\n- **`React.memo`** on the child** \u2014 but note this uses shallow comparison by default, so it still won't help if you're passing a new object reference each time. Combine it with `useMemo` on the parent side.\n\n- **Pass primitives instead** when possible \u2014 primitives compare by value, not reference:\n  ```jsx\n  <MyComponent theme=\"dark\" size=\"lg\" /> // stable, no memoization needed\n  ```\n\n**Quick diagnosis:** Wrap your child component in `React.memo` temporarily and add a `console.log` inside it. If it still logs on every parent render, the prop reference is changing \u2014 use `useMemo` to fix it.\n\nThe root fix is almost always: stabilize the reference on the parent side with `useMemo` or by hoisting the object out of the render function.",
+  "stop_reason": "end_turn",
+  "session_id": "4cd679bc-1607-4e67-9623-7b60f01e28fc",
+  "total_cost_usd": 0.0324943,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 5410,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 551,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 5410,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 551,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 5410,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 5410
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 367,
+      "outputTokens": 15,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000442,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 551,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 5410,
+      "webSearchRequests": 0,
+      "costUSD": 0.0320523,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "cdbcc18f-72c4-4507-b6aa-6e3c3ec306b4",
+  "_meta": {
+    "track": "B",
+    "task": "react-rerender",
+    "category": "debugging",
+    "condition": "baseline",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 16.26,
+    "timestamp": 1776774652,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

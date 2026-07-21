@@ -1,0 +1,21 @@
+{
+  "input_tokens": 43,
+  "output_tokens": 868,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## The Problem: Object Reference Equality\n\nReact uses **shallow comparison** (`===`) to determine if props changed. When you pass an object as a prop, React compares **references**, not values.\n\n```javascript\n// This creates a NEW object on every render, even if values are identical\n<MyComponent config={{ theme: 'dark', size: 'large' }} />\n```\n\nEvery parent render creates a new object literal with a new memory reference, so `===` always returns `false`, triggering a re-render.\n\n---\n\n## Why Common Fixes Fail\n\n```javascript\n// \u274c Still broken - new object reference every render\nconst MyParent = () => {\n  const [count, setCount] = useState(0);\n  \n  return (\n    <MyChild config={{ theme: 'dark' }} /> // New reference each time\n  );\n};\n\n// \u274c memo doesn't help here either - shallow comparison still fails\nconst MyChild = React.memo(({ config }) => <div>{config.theme}</div>);\n```\n\n---\n\n## Solutions\n\n### 1. Move static objects outside the component\n```javascript\n// \u2705 Defined once, reference never changes\nconst CONFIG = { theme: 'dark', size: 'large' };\n\nconst MyParent = () => {\n  return <MyChild config={CONFIG} />;\n};\n```\n\n### 2. useMemo for derived/dynamic objects\n```javascript\nconst MyParent = ({ userId }) => {\n  // \u2705 Only creates new reference when userId changes\n  const config = useMemo(() => ({\n    theme: 'dark',\n    userId,\n    size: 'large'\n  }), [userId]);\n\n  return <MyChild config={config} />;\n};\n```\n\n### 3. Pass primitive props instead of objects\n```javascript\n// \u2705 Primitives compare by value, not reference\nconst MyParent = () => {\n  return <MyChild theme=\"dark\" size=\"large\" />;\n};\n\nconst MyChild = React.memo(({ theme, size }) => (\n  <div className={theme}>{size}</div>\n));\n```\n\n### 4. useCallback for function props (same problem applies)\n```javascript\nconst MyParent = () => {\n  // \u2705 Stable function reference\n  const handleClick = useCallback(() => {\n    console.log('clicked');\n  }, []); // Empty deps = never recreated\n\n  return <MyChild onClick={handleClick} />;\n};\n```\n\n---\n\n## Making React.memo Work Correctly\n\n```javascript\n// \u2705 Custom comparison function as a last resort\nconst MyChild = React.memo(\n  ({ config }) => <div>{config.theme}</div>,\n  (prevProps, nextProps) => {\n    // Return true if props are equal (skip re-render)\n    return (\n      prevProps.config.theme === nextProps.config.theme &&\n      prevProps.config.size === nextProps.config.size\n    );\n  }\n);\n```\n\n> \u26a0\ufe0f Custom comparators are error-prone and hard to maintain. Prefer the earlier solutions.\n\n---\n\n## Quick Decision Guide\n\n| Situation | Solution |\n|-----------|----------|\n| Object never changes | Move outside component |\n| Object depends on props/state | `useMemo` |\n| Function prop | `useCallback` |\n| Can split into primitives | Pass individual props |\n| Complex object, last resort | Custom `React.memo` comparator |\n\n---\n\n## Key Takeaway\n\nThe root cause is almost always **unnecessary object/function recreation**, not a problem with `React.memo` itself. Fix the reference instability first, then use `memo` to prevent re-renders.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 13.66,
+  "_meta": {
+    "track": "C",
+    "task": "react-rerender",
+    "category": "debugging",
+    "condition": "baseline",
+    "run_num": 3,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 28,
+    "timestamp": 1776585075
+  }
+}

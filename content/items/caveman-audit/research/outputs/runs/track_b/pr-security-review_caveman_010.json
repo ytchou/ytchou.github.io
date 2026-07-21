@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 6657,
+  "duration_api_ms": 6604,
+  "num_turns": 1,
+  "result": "**SQL injection.** `req.params.id` interpolated directly into query string. Attacker sends `1 OR 1=1` \u2192 dumps all users. Sends `1; DROP TABLE users` \u2192 worse.\n\n**Fix:**\n\n```js\napp.get('/api/users/:id', (req, res) => {\n  db.query('SELECT * FROM users WHERE id = ?', [req.params.id])\n    .then(user => {\n      if (!user) return res.status(404).json({ error: 'Not found' });\n      res.json(user);\n    })\n    .catch(() => res.status(500).json({ error: 'Internal error' }));\n});\n```\n\n**Other issues in original:**\n\n| Issue | Risk |\n|-------|------|\n| No input validation on `id` | Unexpected types crash query |\n| No 404 handling | Missing user returns empty/null to client |\n| No error handler | Unhandled rejection leaks stack traces |\n| `SELECT *` | Exposes all columns, incl. `password_hash` |\n\n**Also consider:** auth middleware \u2014 unauthenticated users shouldn't fetch arbitrary user records by ID.",
+  "stop_reason": "end_turn",
+  "session_id": "f5a30312-2158-433d-a1ac-27880e1c46a0",
+  "total_cost_usd": 0.03222855,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6445,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 304,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6445,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 304,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6445,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6445
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 304,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6445,
+      "webSearchRequests": 0,
+      "costUSD": 0.03222855,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "46d50b0a-36f9-42cf-9b67-51d8919b1b62",
+  "_meta": {
+    "track": "B",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "caveman",
+    "run_num": 10,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 8.25,
+    "timestamp": 1776776489,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

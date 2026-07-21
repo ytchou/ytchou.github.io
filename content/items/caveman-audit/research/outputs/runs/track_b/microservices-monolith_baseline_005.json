@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 12059,
+  "duration_api_ms": 13500,
+  "num_turns": 1,
+  "result": "The core question is whether your pain is **operational** (deploy coupling, team scaling) or **technical** (raw performance). Most slow monoliths benefit more from targeted optimization than a rewrite.\n\n**Before splitting, evaluate:**\n\n1. **Where is the actual bottleneck?** Profile first \u2014 Django slow is usually N+1 queries, missing indexes, or synchronous I/O. A service boundary won't fix a bad ORM query.\n\n2. **Team structure.** Microservices pay off when multiple teams own independent domains and step on each other's deploys. A small team with a monolith is often faster, not slower.\n\n3. **Domain boundaries.** Can you draw clean seams in your data model without shared foreign keys? If tables are heavily joined across what would be service boundaries, you're trading a slow monolith for a distributed data mess.\n\n4. **Operational maturity.** Microservices require service discovery, distributed tracing, contract testing, independent CI/CD, and on-call for N services. Do you have that infrastructure?\n\n5. **Network overhead.** In-process function calls become HTTP/gRPC hops with latency, serialization cost, and new failure modes (timeouts, partial failures).\n\n**The pragmatic path** most teams should consider first: extract the *one or two* genuinely independent, high-load domains (e.g., a notification service, a heavy async job worker) while keeping the core monolith intact. This is the \"modular monolith \u2192 selective extraction\" approach \u2014 you get real wins without betting the whole system on a rewrite.\n\nThe main tradeoff: full microservices give you independent scalability and deploy isolation, but multiply your operational complexity by the number of services. That cost is only worth it when team/domain boundaries actually demand it.\n\nWhat's driving the slowness specifically \u2014 are you seeing DB bottlenecks, CPU-bound work, or something else?",
+  "stop_reason": "end_turn",
+  "session_id": "f740cfcd-1c6c-4904-a8d3-9fae1c580368",
+  "total_cost_usd": 0.0128839,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17053,
+    "output_tokens": 486,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 486,
+        "cache_read_input_tokens": 17053,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 374,
+      "outputTokens": 19,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000469,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 486,
+      "cacheReadInputTokens": 17053,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0124149,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "47382401-f117-4801-bbee-f75b3ce76c55",
+  "_meta": {
+    "track": "B",
+    "task": "microservices-monolith",
+    "category": "architecture",
+    "condition": "baseline",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 13.64,
+    "timestamp": 1776774779,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 7883,
+  "duration_api_ms": 9222,
+  "num_turns": 1,
+  "result": "```js\nasync function getUser(id) {\n  const rows = await db.query('SELECT * FROM users WHERE id = ?', [id]);\n  if (!rows.length) throw new Error('Not found');\n  return rows[0];\n}\n```\n\nKey changes:\n- `async` replaces the `callback` parameter\n- `await` replaces the callback's `err`/`result` split \u2014 errors from `db.query` propagate automatically as thrown exceptions\n- Early `throw` replaces `callback(new Error(...))`, and `return rows[0]` replaces `callback(null, rows[0])`\n\nCallers use it with `try/catch` or `.catch()`:\n\n```js\n// async context\ntry {\n  const user = await getUser(id);\n} catch (err) {\n  console.error(err);\n}\n\n// or promise chain\ngetUser(id).then(user => ...).catch(err => ...);\n```\n\nNote: this assumes `db.query` already returns a Promise. If it's still callback-based, wrap it first with `util.promisify(db.query.bind(db))`.",
+  "stop_reason": "end_turn",
+  "session_id": "46f71275-b13c-47e4-a8a7-952cc018d7c3",
+  "total_cost_usd": 0.0100777,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17119,
+    "output_tokens": 295,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 295,
+        "cache_read_input_tokens": 17119,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 433,
+      "outputTokens": 15,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000508,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 295,
+      "cacheReadInputTokens": 17119,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0095697,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "e99015e2-7368-43eb-bf37-8855ac6f29f6",
+  "_meta": {
+    "track": "B",
+    "task": "async-refactor",
+    "category": "refactor",
+    "condition": "baseline",
+    "run_num": 15,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 9.47,
+    "timestamp": 1776776384,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1087,
+  "output_tokens": 408,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Classic read-modify-write race. Two requests read same value before either writes back.\n\n**Fix 1: Atomic update (best)**\n```sql\nUPDATE counters SET value = value + 1 WHERE id = $1 RETURNING value;\n```\nNo read first. DB handle atomically. Use `RETURNING` get new value.\n\n```js\nconst { rows } = await db.query(\n  'UPDATE counters SET value = value + 1 WHERE id = $1 RETURNING value',\n  [counterId]\n);\nreturn rows[0].value;\n```\n\n**Fix 2: SELECT FOR UPDATE (if need read first)**\n```sql\nBEGIN;\nSELECT value FROM counters WHERE id = $1 FOR UPDATE;\n-- row locked. other requests wait here\nUPDATE counters SET value = $2 WHERE id = $1;\nCOMMIT;\n```\nLock row until transaction done. Others queue, not skip.\n\n**Fix 3: Advisory lock (app-level)**\n```js\nawait db.query('SELECT pg_advisory_xact_lock($1)', [counterId]);\n// now safe to read-modify-write\n```\nLighter than row lock for some patterns.\n\n---\n\n**Root cause check:** If use ORM, confirm it not do:\n```js\nconst row = await Counter.findOne(id);   // read\nrow.value += 1;                          // modify in JS\nawait row.save();                        // write \u2014 RACE HERE\n```\nThat pattern always broken under concurrency. Fix 1 kill this.\n\n**Recommendation:** Fix 1. Single query, no transaction overhead, fastest.",
+  "thinking_text": "The user has a race condition in a PostgreSQL counter increment. Let me respond in caveman mode (full, default).",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 10.39,
+  "_meta": {
+    "track": "A_prime",
+    "task": "race-condition-debug",
+    "category": "debugging",
+    "condition": "caveman",
+    "run_num": 3,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776610943
+  }
+}

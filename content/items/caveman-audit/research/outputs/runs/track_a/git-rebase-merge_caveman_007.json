@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1053,
+  "output_tokens": 427,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## merge vs rebase\n\n**merge** \u2014 join two branches, keep full history. Creates merge commit.\n\n```\nA---B---C  main\n     \\\n      D---E  feature\n           \\\n            M  \u2190 merge commit (has 2 parents)\n```\n\n**rebase** \u2014 replay feature commits on top of target. Linear history, no merge commit.\n\n```\nA---B---C  main\n             \\\n              D'--E'  \u2190 replayed commits (new hashes)\n```\n\n---\n\n## when use what\n\n**use merge when:**\n- public/shared branch (main, develop)\n- want preserve exact history + context\n- PR merges \u2014 shows when branch integrated\n- team work, others pulled your branch\n\n**use rebase when:**\n- local cleanup before PR\n- want linear, readable history\n- pulling latest main into feature branch\n- squashing WIP commits\n\n---\n\n## tradeoffs\n\n| | merge | rebase |\n|---|---|---|\n| history | exact, branchy | clean, linear |\n| conflicts | once at merge | once per replayed commit |\n| safety | safe on shared branches | **dangerous on shared branches** |\n| blame/bisect | harder to trace | easier |\n| commit hashes | preserved | **rewritten** |\n\n---\n\n## golden rule\n\n> Never rebase commits already pushed to shared branch.\n\nRebase rewrites hashes \u2192 teammates' history diverge \u2192 pain.\n\n---\n\n## common patterns\n\n```bash\n# update feature branch with latest main (local only)\ngit checkout feature\ngit rebase main\n\n# clean merge into main (preserves branch context)\ngit checkout main\ngit merge --no-ff feature\n\n# interactive: squash WIP before PR\ngit rebase -i main\n```\n\n`--no-ff` force merge commit even when fast-forward possible. Good for explicit record of feature integration.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 10.17,
+  "_meta": {
+    "track": "C",
+    "task": "git-rebase-merge",
+    "category": "explanation",
+    "condition": "caveman",
+    "run_num": 7,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585490
+  }
+}

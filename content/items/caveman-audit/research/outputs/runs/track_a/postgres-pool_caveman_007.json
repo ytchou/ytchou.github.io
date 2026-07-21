@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1049,
+  "output_tokens": 690,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Use `pg` pool. Config:\n\n```js\nimport { Pool } from 'pg';\n\nconst pool = new Pool({\n  connectionString: process.env.DATABASE_URL,\n\n  // Pool size\n  max: 20,                // max connections\n  min: 2,                 // keep alive when idle\n  idleTimeoutMillis: 30_000,     // kill idle conn after 30s\n  connectionTimeoutMillis: 5_000, // fail fast if can't connect in 5s\n  allowExitOnIdle: true,         // let process exit cleanly\n});\n\n// Test on startup\npool.connect()\n  .then(client => { client.release(); console.log('DB ready'); })\n  .catch(err => { console.error('DB connect fail:', err); process.exit(1); });\n\n// Catch pool-level errors (e.g. dropped conn)\npool.on('error', (err) => {\n  console.error('Idle client error:', err);\n});\n```\n\nQuery wrapper \u2014 auto-release, timeout per query:\n\n```js\nasync function query(sql, params, timeoutMs = 10_000) {\n  const client = await pool.connect();\n  try {\n    await client.query(`SET statement_timeout = ${timeoutMs}`);\n    return await client.query(sql, params);\n  } finally {\n    client.release();  // always release, even on throw\n  }\n}\n```\n\nTransaction wrapper:\n\n```js\nasync function withTransaction(fn) {\n  const client = await pool.connect();\n  try {\n    await client.query('BEGIN');\n    const result = await fn(client);\n    await client.query('COMMIT');\n    return result;\n  } catch (err) {\n    await client.query('ROLLBACK');\n    throw err;\n  } finally {\n    client.release();\n  }\n}\n\n// Usage\nawait withTransaction(async (client) => {\n  await client.query('UPDATE accounts SET balance = balance - $1 WHERE id = $2', [100, 1]);\n  await client.query('UPDATE accounts SET balance = balance + $1 WHERE id = $2', [100, 2]);\n});\n```\n\nShutdown:\n\n```js\nprocess.on('SIGTERM', async () => {\n  await pool.end();  // drain pool, close all conn\n  process.exit(0);\n});\n```\n\nKey numbers:\n\n| Setting | Prod | Dev |\n|---|---|---|\n| `max` | 10\u201320 | 2\u20135 |\n| `idleTimeoutMillis` | 30k | 10k |\n| `connectionTimeoutMillis` | 5k | 2k |\n| `statement_timeout` | 10\u201330k | 5k |\n\n`max` cap = DB `max_connections` \u00f7 app instances. Leave headroom for migrations/admin.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 10.66,
+  "_meta": {
+    "track": "C",
+    "task": "postgres-pool",
+    "category": "setup",
+    "condition": "caveman",
+    "run_num": 7,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585386
+  }
+}

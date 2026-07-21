@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 10184,
+  "duration_api_ms": 10124,
+  "num_turns": 4,
+  "result": "Already implemented. Covers all requirements:\n\n- `getDerivedStateFromError` catches render errors\n- `componentDidCatch` logs to `console.error` with component stack\n- Default fallback UI with error message + \"Try Again\" retry button\n- `reset()` clears state to re-render children\n- Optional custom `fallback` prop for override\n\nNo changes needed.",
+  "stop_reason": "end_turn",
+  "session_id": "c893bd37-7ab2-4963-a2b3-36394d616036",
+  "total_cost_usd": 0.0547851,
+  "usage": {
+    "input_tokens": 5,
+    "cache_creation_input_tokens": 9210,
+    "cache_read_input_tokens": 49942,
+    "output_tokens": 350,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 9210,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 1,
+        "output_tokens": 88,
+        "cache_read_input_tokens": 20272,
+        "cache_creation_input_tokens": 574,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 574
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 5,
+      "outputTokens": 350,
+      "cacheReadInputTokens": 49942,
+      "cacheCreationInputTokens": 9210,
+      "webSearchRequests": 0,
+      "costUSD": 0.0547851,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "e6edad96-c149-4c6f-b395-91c53a29fb72",
+  "_meta": {
+    "track": "B",
+    "task": "error-boundary",
+    "category": "implementation",
+    "condition": "caveman",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 11.75,
+    "timestamp": 1776774958,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

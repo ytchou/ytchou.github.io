@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1082,
+  "output_tokens": 445,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## Merge vs Rebase\n\n**Merge** \u2014 join two branches, preserve history exact.\n**Rebase** \u2014 move your commits onto new base, rewrite history linear.\n\n---\n\n### Merge\n\n```\nmain:    A---B---C\n                  \\\nfeature:           D---E\n                        \\\nafter merge:       M  \u2190 merge commit\n```\n\n- Creates merge commit\n- History show true what-happened-when\n- Safe on shared branches\n- Log look messy with many branches\n\n### Rebase\n\n```\nmain:    A---B---C\nfeature:          D'--E'  \u2190 replayed on top\n```\n\n- No merge commit\n- History clean, linear\n- Commits get new SHA (rewritten)\n- **Dangerous on shared branches** \u2014 others have old SHAs\n\n---\n\n### When use what\n\n| Situation | Use |\n|-----------|-----|\n| Shared branch (main/dev) | **Merge** |\n| Your local feature branch | **Rebase** onto main first |\n| Open source PR, clean history wanted | **Rebase** |\n| Audit trail / true timeline matter | **Merge** |\n| Already pushed + others pulled | **Merge** |\n\n---\n\n### Golden rule\n\n> Never rebase public/shared branch.\n\nRebase rewrite commits \u2192 teammates get diverged history \u2192 chaos.\n\n---\n\n### Common workflow\n\n```bash\n# Update feature branch clean before PR:\ngit checkout feature\ngit rebase main\n\n# Merge PR (preserve context):\ngit checkout main\ngit merge feature\n```\n\nOr squash on merge \u2014 best of both. Clean main, real history preserved in PR.\n\n---\n\n**TLDR:** Rebase = clean pretty history, local only. Merge = safe, honest, shareable.",
+  "thinking_text": "The user wants an explanation of git rebase vs git merge. I'm in caveman mode (full by default).",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 14.03,
+  "_meta": {
+    "track": "A_prime",
+    "task": "git-rebase-merge",
+    "category": "explanation",
+    "condition": "caveman",
+    "run_num": 3,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776610595
+  }
+}

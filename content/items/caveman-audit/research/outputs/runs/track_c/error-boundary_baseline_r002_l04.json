@@ -1,0 +1,48 @@
+{
+  "input_tokens": 12174,
+  "output_tokens": 1862,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "I'll create a React error boundary component with fallback UI and error logging.\n\n## Implementation\n\nLet me first check if there's an existing project structure to place this in.\n\nI'll write the component directly since this is a standalone, well-defined task.\n\n**`src/components/ErrorBoundary.tsx`**\n\n```tsx\nimport React, { Component, ErrorInfo, ReactNode } from \"react\";\n\ninterface Props {\n  children: ReactNode;\n  fallback?: (props: FallbackProps) => ReactNode;\n  onError?: (error: Error, info: ErrorInfo) => void;\n}\n\ninterface State {\n  error: Error | null;\n  errorInfo: ErrorInfo | null;\n}\n\nexport interface FallbackProps {\n  error: Error;\n  errorInfo: ErrorInfo;\n  retry: () => void;\n}\n\nfunction DefaultFallback({ error, errorInfo, retry }: FallbackProps) {\n  const [expanded, setExpanded] = React.useState(false);\n\n  return (\n    <div role=\"alert\" style={styles.container}>\n      <div style={styles.card}>\n        <h2 style={styles.heading}>Something went wrong</h2>\n        <p style={styles.message}>{error.message}</p>\n\n        <button onClick={retry} style={styles.retryButton}>\n          Try again\n        </button>\n\n        <button\n          onClick={() => setExpanded((x) => !x)}\n          style={styles.detailsToggle}\n        >\n          {expanded ? \"Hide\" : \"Show\"} details\n        </button>\n\n        {expanded && (\n          <pre style={styles.stack}>\n            {error.stack}\n            {\"\\n\\nComponent stack:\"}\n            {errorInfo.componentStack}\n          </pre>\n        )}\n      </div>\n    </div>\n  );\n}\n\nexport class ErrorBoundary extends Component<Props, State> {\n  state: State = { error: null, errorInfo: null };\n\n  static getDerivedStateFromError(error: Error): Partial<State> {\n    return { error };\n  }\n\n  componentDidCatch(error: Error, errorInfo: ErrorInfo) {\n    this.setState({ errorInfo });\n    this.props.onError?.(error, errorInfo);\n    logError(error, errorInfo);\n  }\n\n  retry = () => {\n    this.setState({ error: null, errorInfo: null });\n  };\n\n  render() {\n    const { error, errorInfo } = this.state;\n\n    if (error && errorInfo) {\n      const fallbackProps: FallbackProps = { error, errorInfo, retry: this.retry };\n      return this.props.fallback\n        ? this.props.fallback(fallbackProps)\n        : <DefaultFallback {...fallbackProps} />;\n    }\n\n    return this.props.children;\n  }\n}\n\nfunction logError(error: Error, info: ErrorInfo) {\n  console.group(\"[ErrorBoundary] Render error caught\");\n  console.error(\"Error:\", error);\n  console.error(\"Component stack:\", info.componentStack);\n  console.groupEnd();\n}\n\nconst styles: Record<string, React.CSSProperties> = {\n  container: {\n    display: \"flex\",\n    alignItems: \"center\",\n    justifyContent: \"center\",\n    minHeight: \"100%\",\n    padding: \"2rem\",\n    backgroundColor: \"#f9fafb\",\n  },\n  card: {\n    maxWidth: 480,\n    width: \"100%\",\n    backgroundColor: \"#fff\",\n    border: \"1px solid #fee2e2\",\n    borderRadius: 8,\n    padding: \"2rem\",\n    boxShadow: \"0 1px 3px rgba(0,0,0,.1)\",\n  },\n  heading: {\n    margin: \"0 0 .5rem\",\n    fontSize: \"1.25rem\",\n    color: \"#991b1b\",\n  },\n  message: {\n    margin: \"0 0 1.5rem\",\n    color: \"#374151\",\n    wordBreak: \"break-word\",\n  },\n  retryButton: {\n    display: \"inline-block\",\n    marginRight: \"1rem\",\n    padding: \".5rem 1.25rem\",\n    backgroundColor: \"#2563eb\",\n    color: \"#fff\",\n    border: \"none\",\n    borderRadius: 6,\n    cursor: \"pointer\",\n    fontSize: \"0.875rem\",\n  },\n  detailsToggle: {\n    display: \"inline-block\",\n    padding: \".5rem 1.25rem\",\n    backgroundColor: \"transparent\",\n    color: \"#6b7280\",\n    border: \"1px solid #d1d5db\",\n    borderRadius: 6,\n    cursor: \"pointer\",\n    fontSize: \"0.875rem\",\n  },\n  stack: {\n    marginTop: \"1rem\",\n    padding: \"1rem\",\n    backgroundColor: \"#f3f4f6\",\n    borderRadius: 4,\n    fontSize: \"0.75rem\",\n    overflowX: \"auto\",\n    whiteSpace: \"pre-wrap\",\n    wordBreak: \"break-all\",\n    color: \"#374151\",\n  },\n};\n```\n\n---\n\n## Key design decisions\n\n| Decision | Rationale |\n|---|---|\n| Class component | `componentDidCatch` has no hook equivalent \u2014 error boundaries must be classes |\n| `getDerivedStateFromError` + `componentDidCatch` | Former triggers re-render with error state; latter is where you log/report (has `errorInfo`) |\n| `errorInfo` stored in state | Needed so the fallback can render the component stack |\n| `retry` resets both `error` and `errorInfo` | Resetting only `error` would leave stale component stack on next failure |\n| `fallback` render prop | Lets callers supply custom UI without sacrificing the built-in retry wiring |\n| `onError` callback | Clean hook for sending to Sentry/Datadog without coupling the component to any SDK |\n\n---\n\n## Usage examples\n\n**Basic wrapping:**\n```tsx\n<ErrorBoundary>\n  <MyWidget />\n</ErrorBoundary>\n```\n\n**With error reporting (e.g. Sentry):**\n```tsx\n<ErrorBoundary onError={(err, info) => Sentry.captureException(err, { extra: info })}>\n  <Dashboard />\n</ErrorBoundary>\n```\n\n**Custom fallback UI:**\n```tsx\n<ErrorBoundary\n  fallback={({ error, retry }) => (\n    <div>\n      <p>Oops: {error.message}</p>\n      <button onClick={retry}>Reload section</button>\n    </div>\n  )}\n>\n  <Chart />\n</ErrorBoundary>\n```\n\n---\n\n## What to watch out for\n\n- **Granularity** \u2014 wrap isolated sections (a widget, a route) rather than the entire app so one failure doesn't blank the whole page.\n- **Retry limits** \u2014 if the error is deterministic (bad data, broken import), retrying will loop forever. Add a `maxRetries` prop and a \"reload page\" escape hatch for production use.\n- **Event handlers** \u2014 errors thrown inside `onClick` / `setTimeout` are **not** caught by error boundaries; handle those with `try/catch` or a global `window.onerror` listener.\n- **Server-side rendering** \u2014 `componentDidCatch` is client-only; SSR frameworks (Next.js) have separate `error.tsx` conventions that complement this.",
+  "thinking_text": "The user wants me to implement a React error boundary component. Let me create a well-structured implementation.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 89.5,
+  "_meta": {
+    "track": "C",
+    "task": "error-boundary",
+    "category": "implementation",
+    "condition": "baseline",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 49180,
+    "timestamp": 1776611378,
+    "level": 4,
+    "ordering": [
+      3,
+      2,
+      6,
+      0,
+      7,
+      4,
+      5,
+      8,
+      1,
+      9
+    ],
+    "chunks_present": [
+      0,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "num_chunks": 8,
+    "behavioral_chars": 12880,
+    "chunk_chars": 36284
+  }
+}

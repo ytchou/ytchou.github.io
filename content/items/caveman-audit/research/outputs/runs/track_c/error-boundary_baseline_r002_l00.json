@@ -1,0 +1,39 @@
+{
+  "input_tokens": 2844,
+  "output_tokens": 1107,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "I'll create a React error boundary component with fallback UI, retry functionality, and error logging.\n\n<function_calls>\n<invoke name=\"Write\">\n<parameter name=\"path\">ErrorBoundary.tsx</parameter>\n<parameter name=\"content\">import { Component, ErrorInfo, ReactNode } from \"react\";\n\ninterface Props {\n  children: ReactNode;\n  fallback?: (error: Error, reset: () => void) => ReactNode;\n  onError?: (error: Error, info: ErrorInfo) => void;\n}\n\ninterface State {\n  error: Error | null;\n}\n\nexport class ErrorBoundary extends Component<Props, State> {\n  state: State = { error: null };\n\n  static getDerivedStateFromError(error: Error): State {\n    return { error };\n  }\n\n  componentDidCatch(error: Error, info: ErrorInfo) {\n    console.error(\"[ErrorBoundary]\", error.message, {\n      stack: error.stack,\n      componentStack: info.componentStack,\n    });\n    this.props.onError?.(error, info);\n  }\n\n  reset = () => this.setState({ error: null });\n\n  render() {\n    const { error } = this.state;\n    const { children, fallback } = this.props;\n\n    if (!error) return children;\n\n    if (fallback) return fallback(error, this.reset);\n\n    return (\n      <div role=\"alert\" style={styles.container}>\n        <h2 style={styles.title}>Something went wrong</h2>\n        <pre style={styles.message}>{error.message}</pre>\n        <button onClick={this.reset} style={styles.button}>\n          Try again\n        </button>\n      </div>\n    );\n  }\n}\n\nconst styles: Record<string, React.CSSProperties> = {\n  container: {\n    display: \"flex\",\n    flexDirection: \"column\",\n    alignItems: \"center\",\n    justifyContent: \"center\",\n    padding: \"2rem\",\n    gap: \"1rem\",\n    fontFamily: \"sans-serif\",\n    border: \"1px solid #f5c6cb\",\n    borderRadius: \"8px\",\n    backgroundColor: \"#fff5f5\",\n    color: \"#333\",\n  },\n  title: {\n    margin: 0,\n    fontSize: \"1.25rem\",\n    color: \"#c0392b\",\n  },\n  message: {\n    margin: 0,\n    padding: \"0.75rem 1rem\",\n    borderRadius: \"4px\",\n    backgroundColor: \"#fee\",\n    fontSize: \"0.875rem\",\n    maxWidth: \"100%\",\n    overflowX: \"auto\",\n    whiteSpace: \"pre-wrap\",\n    wordBreak: \"break-word\",\n  },\n  button: {\n    padding: \"0.5rem 1.25rem\",\n    fontSize: \"0.875rem\",\n    fontWeight: 600,\n    color: \"#fff\",\n    backgroundColor: \"#c0392b\",\n    border: \"none\",\n    borderRadius: \"4px\",\n    cursor: \"pointer\",\n  },\n};\n</parameter>\n</invoke>\n</function_calls>\n<parameter name=\"additi onally\">\n\n</parameter>\n\n**Usage:**\n\n```tsx\n// Basic \u2014 uses built-in fallback UI\n<ErrorBoundary>\n  <MyComponent />\n</ErrorBoundary>\n\n// Custom fallback UI\n<ErrorBoundary\n  fallback={(error, reset) => (\n    <div>\n      <p>Oops: {error.message}</p>\n      <button onClick={reset}>Retry</button>\n    </div>\n  )}\n  onError={(error, info) => sentryClient.captureException(error, { extra: info })}\n>\n  <MyComponent />\n</ErrorBoundary>\n```\n\n**Key details:**\n- `getDerivedStateFromError` \u2014 captures the error into state to trigger the fallback render\n- `componentDidCatch` \u2014 logs to console and calls the optional `onError` prop (hook for Sentry, Datadog, etc.)\n- `reset` \u2014 clears error state, causing React to re-render children from scratch\n- `fallback` prop \u2014 override the default UI entirely; receives `error` and `reset` for full control\n- `role=\"alert\"` \u2014 makes the fallback accessible to screen readers",
+  "thinking_text": "Let me implement a React error boundary component with the requested features.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 14.78,
+  "_meta": {
+    "track": "C",
+    "task": "error-boundary",
+    "category": "implementation",
+    "condition": "baseline",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 12880,
+    "timestamp": 1776611208,
+    "level": 0,
+    "ordering": [
+      3,
+      2,
+      6,
+      0,
+      7,
+      4,
+      5,
+      8,
+      1,
+      9
+    ],
+    "chunks_present": [],
+    "num_chunks": 0,
+    "behavioral_chars": 12880,
+    "chunk_chars": 0
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 14506,
+  "duration_api_ms": 15566,
+  "num_turns": 1,
+  "result": "## Git Merge vs. Git Rebase\n\nBoth integrate changes from one branch into another, but they do it differently.\n\n---\n\n### `git merge`\n\nCreates a new \"merge commit\" that joins two branch histories together. The history shows exactly what happened and when.\n\n```\n      A---B---C  feature\n     /         \\\nD---E---F---G---H  main  (H is the merge commit)\n```\n\n**Use when:**\n- Working on shared/public branches where others have pulled\n- You want to preserve the true history of what happened\n- Merging a completed feature branch via PR (the standard workflow)\n\n---\n\n### `git rebase`\n\nReplays your commits on top of another branch, rewriting their history. The result looks like you branched off the latest point.\n\n```\nBefore:           After rebase onto main:\n    A---B  feature         A'--B'  feature\n   /                      /\nD--E--F  main      D--E--F  main\n```\n\n**Use when:**\n- Updating a local feature branch with upstream changes (instead of a messy merge commit)\n- Cleaning up local commits before opening a PR (`git rebase -i`)\n- You want a linear, readable history\n\n---\n\n### The Core Tradeoff\n\n| | Merge | Rebase |\n|---|---|---|\n| History | Preserves exact branching/merging events | Linear, cleaner to read |\n| Safety | Safe on public branches | **Never rebase commits others have pulled** |\n| Conflict resolution | Once, at merge time | Once per replayed commit |\n| Blame/bisect | Accurate timestamps | Commit SHAs are rewritten |\n\n---\n\n### The Golden Rule of Rebase\n\n> Never rebase a branch that others are working from.\n\nRebasing rewrites commit SHAs. If a teammate has pulled your branch and you rebase it, their history diverges and you'll cause chaos. Rebase is safe for your own local commits that haven't been shared yet.\n\n---\n\n### Practical Recommendation\n\n- **Feature branch workflow:** `rebase` to keep your branch up to date with `main` locally, then open a PR and `merge` (or squash merge) to integrate it.\n- **Cleaning up before PR:** `git rebase -i` to squash/reorder your local commits.\n- **Shared branches or hotfixes:** `merge` \u2014 never rebase something already on `main`.",
+  "stop_reason": "end_turn",
+  "session_id": "bdb89386-c46c-4251-9299-fc6595732bd0",
+  "total_cost_usd": 0.014585899999999999,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17043,
+    "output_tokens": 602,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 602,
+        "cache_read_input_tokens": 17043,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 364,
+      "outputTokens": 14,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.00043400000000000003,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 602,
+      "cacheReadInputTokens": 17043,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.014151899999999999,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "305cc5a6-17af-4b75-8263-63e7ea76a0eb",
+  "_meta": {
+    "track": "B",
+    "task": "git-rebase-merge",
+    "category": "explanation",
+    "condition": "baseline",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 16.03,
+    "timestamp": 1776774738,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

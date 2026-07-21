@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 8697,
+  "duration_api_ms": 8643,
+  "num_turns": 1,
+  "result": "JWT `exp` field = **seconds** since epoch. `Date.now()` = **milliseconds**.\n\nWrong:\n```js\nif (Date.now() > payload.exp) // Date.now() is 1000x too large, always \"expired\"\n```\n\nWait \u2014 actually opposite bug more common: tokens never expire because comparison is backwards scale:\n\n```js\n// BUG: Date.now() (ms) > exp (s) \u2014 always true, rejects valid tokens\n// OR\n// BUG: Date.now() (ms) < exp (s) * 1000 \u2014 math error lets expired through\n```\n\nFix:\n```js\nif (Math.floor(Date.now() / 1000) > payload.exp) {\n  throw new Error('Token expired');\n}\n```\n\nOr with clock skew tolerance (recommended):\n```js\nconst CLOCK_SKEW_SECONDS = 30;\nif (Math.floor(Date.now() / 1000) > payload.exp + CLOCK_SKEW_SECONDS) {\n  throw new Error('Token expired');\n}\n```\n\nTwo things to verify also:\n1. `payload.exp` exists \u2014 tokens without `exp` should be rejected, not passed through\n2. Signature verified **before** reading claims \u2014 don't trust `exp` from unverified token\n\n```js\n// Correct order\nconst payload = jwt.verify(token, secret); // throws if invalid sig or expired\n// jwt.verify handles exp automatically if you use a proper library\n```\n\nIf using `jsonwebtoken` library, `jwt.verify()` already checks `exp` correctly \u2014 don't reimplement it manually.",
+  "stop_reason": "end_turn",
+  "session_id": "d0a9eccd-e8b4-4ede-a840-9b7fece31e8d",
+  "total_cost_usd": 0.011184300000000001,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 18051,
+    "output_tokens": 384,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 384,
+        "cache_read_input_tokens": 18051,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 384,
+      "cacheReadInputTokens": 18051,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.011184300000000001,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "684b96f2-eca6-4e13-87c0-230e5d5d559f",
+  "_meta": {
+    "track": "B",
+    "task": "auth-middleware-fix",
+    "category": "bugfix",
+    "condition": "caveman",
+    "run_num": 14,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 10.24,
+    "timestamp": 1776776248,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

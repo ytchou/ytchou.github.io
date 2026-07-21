@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 8983,
+  "duration_api_ms": 10900,
+  "num_turns": 1,
+  "result": "This handler has two critical vulnerabilities:\n\n## 1. SQL Injection (Critical)\n\n```js\nconst query = `SELECT * FROM users WHERE id = ${req.params.id}`;\n```\n\n`req.params.id` is user-controlled. An attacker can pass `1 OR 1=1` to dump all users, or `1; DROP TABLE users--` to destroy data.\n\n**Fix:** Use a parameterized query:\n```js\nconst query = 'SELECT * FROM users WHERE id = ?';\ndb.query(query, [req.params.id]).then(user => res.json(user));\n```\n(Exact syntax depends on your DB driver \u2014 `?` for mysql2, `$1` for pg.)\n\n## 2. Missing Authorization (Critical)\n\nAny authenticated \u2014 or even unauthenticated \u2014 caller can fetch any user by ID. This is a **Broken Object Level Authorization (BOLA/IDOR)** vulnerability.\n\n**Fix:** Verify the requester owns the resource or has sufficient privilege:\n```js\napp.get('/api/users/:id', requireAuth, (req, res) => {\n  if (req.user.id !== req.params.id && !req.user.isAdmin) {\n    return res.status(403).json({ error: 'Forbidden' });\n  }\n  // ...\n});\n```\n\n## 3. Missing Error Handling (Medium)\n\nAn unhandled promise rejection will crash the process (Node < 15) or produce an unhandled rejection warning. It may also leak DB error details to the client.\n\n**Fix:**\n```js\ndb.query(query, [req.params.id])\n  .then(user => {\n    if (!user) return res.status(404).json({ error: 'Not found' });\n    res.json(user);\n  })\n  .catch(() => res.status(500).json({ error: 'Internal server error' }));\n```\n\n## 4. `SELECT *` Leaks Sensitive Fields (Low)\n\nReturning every column (e.g., `password_hash`, `mfa_secret`) to the client is risky. Select only what the client needs.\n\n---\n\n**Priority order:** SQL injection \u2192 BOLA \u2192 error handling \u2192 field selection.",
+  "stop_reason": "end_turn",
+  "session_id": "15a4b76c-9efb-4377-990b-3ce72c88ad24",
+  "total_cost_usd": 0.03285955000000001,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 5449,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 563,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 5449,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 563,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 5449,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 5449
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 406,
+      "outputTokens": 15,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000481,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 563,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 5449,
+      "webSearchRequests": 0,
+      "costUSD": 0.032378550000000006,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "1f96574b-dc27-4db5-8b64-2d4f2c00943b",
+  "_meta": {
+    "track": "B",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "baseline",
+    "run_num": 1,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 10.64,
+    "timestamp": 1776774799,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

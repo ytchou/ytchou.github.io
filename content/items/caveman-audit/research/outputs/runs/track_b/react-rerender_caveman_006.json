@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 7700,
+  "duration_api_ms": 7640,
+  "num_turns": 1,
+  "result": "New object ref each render. Inline object literal = new identity = React sees \"changed\" prop = re-render.\n\n**Problem:**\n```jsx\n<MyComponent config={{ theme: \"dark\", size: 14 }} />\n```\nEvery parent render creates new object. `===` comparison fails. Child re-renders.\n\n**Fix options:**\n\n1. **`useMemo`** \u2014 memoize object in parent:\n```jsx\nconst config = useMemo(() => ({ theme: \"dark\", size: 14 }), []);\n<MyComponent config={config} />\n```\n\n2. **Move outside component** \u2014 if object is static:\n```jsx\nconst CONFIG = { theme: \"dark\", size: 14 }; // module level\n\nfunction Parent() {\n  return <MyComponent config={CONFIG} />;\n}\n```\n\n3. **`React.memo`** \u2014 wrap child to skip re-render when props shallowly equal:\n```jsx\nconst MyComponent = React.memo(({ config }) => { ... });\n```\n\n4. **Flatten props** \u2014 pass primitives instead of object:\n```jsx\n<MyComponent theme=\"dark\" size={14} />\n```\n\nRoot cause: React uses shallow `===` for prop comparison. Objects never `===` unless same ref. Pick option based on whether object is static (2), derived from state (1), or child is expensive (3).",
+  "stop_reason": "end_turn",
+  "session_id": "b196b59a-f310-4927-9de9-7454c3000bb4",
+  "total_cost_usd": 0.0323373,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6406,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 321,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6406,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 321,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6406,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6406
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 321,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6406,
+      "webSearchRequests": 0,
+      "costUSD": 0.0323373,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "c7927397-1543-45ed-9f58-f85cfc7d630a",
+  "_meta": {
+    "track": "B",
+    "task": "react-rerender",
+    "category": "debugging",
+    "condition": "caveman",
+    "run_num": 6,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 9.28,
+    "timestamp": 1776776188,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

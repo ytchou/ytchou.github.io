@@ -1,0 +1,46 @@
+{
+  "input_tokens": 10122,
+  "output_tokens": 2373,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Let me check if there's an existing React project to add this to.\n\n<function_calls>\n<invoke name=\"ToolSearch\">\n<parameter name=\"query\">select:Bash,Glob,Read</parameter>\n</invoke>\n</function_calls>\n<function_calls>\n<invoke name=\"ToolSearch\">\n<parameter name=\"query\">select:Write</parameter>\n</invoke>\n</function_calls>\n<function_calls>\n<invoke name=\"Bash\">\n<parameter name=\"cmd\">find . -maxdepth 3 -name \"package.json\" ! -path \"*/node_modules/*\" 2>/dev/null | head -5</parameter>\n</invoke>\n</function_calls>\n<function_calls>\n<invoke name=\"Glob\">\n<parameter name=\"pattern\">src/**/*.{tsx,jsx,ts,js}</parameter>\n</invoke>\n</function_calls>\n\nNo existing React project found \u2014 I'll create the component as a standalone file with a usage example.\n\n<function_calls>\n<invoke name=\"Write\">\n<parameter name=\"path\">ErrorBoundary.tsx</parameter>\n<parameter name=\"content\">import React, { Component, ErrorInfo, ReactNode } from \"react\";\n\ninterface Props {\n  children: ReactNode;\n  fallback?: (error: Error, reset: () => void) => ReactNode;\n  onError?: (error: Error, info: ErrorInfo) => void;\n}\n\ninterface State {\n  error: Error | null;\n}\n\nexport class ErrorBoundary extends Component<Props, State> {\n  state: State = { error: null };\n\n  static getDerivedStateFromError(error: Error): State {\n    return { error };\n  }\n\n  componentDidCatch(error: Error, info: ErrorInfo) {\n    console.error(\"[ErrorBoundary] Caught render error:\", {\n      message: error.message,\n      stack: error.stack,\n      componentStack: info.componentStack,\n    });\n    this.props.onError?.(error, info);\n  }\n\n  reset = () => this.setState({ error: null });\n\n  render() {\n    const { error } = this.state;\n    const { children, fallback } = this.props;\n\n    if (!error) return children;\n\n    if (fallback) return fallback(error, this.reset);\n\n    return <DefaultFallback error={error} reset={this.reset} />;\n  }\n}\n\nfunction DefaultFallback({ error, reset }: { error: Error; reset: () => void }) {\n  return (\n    <div role=\"alert\" style={styles.container}>\n      <h2 style={styles.heading}>Something went wrong</h2>\n      <p style={styles.message}>{error.message}</p>\n      {error.stack && (\n        <details style={styles.details}>\n          <summary style={styles.summary}>Stack trace</summary>\n          <pre style={styles.stack}>{error.stack}</pre>\n        </details>\n      )}\n      <button onClick={reset} style={styles.button}>\n        Try again\n      </button>\n    </div>\n  );\n}\n\nconst styles: Record<string, React.CSSProperties> = {\n  container: {\n    padding: \"2rem\",\n    margin: \"1rem\",\n    border: \"1px solid #f5c6cb\",\n    borderRadius: \"4px\",\n    backgroundColor: \"#fff5f5\",\n    fontFamily: \"sans-serif\",\n  },\n  heading: {\n    margin: \"0 0 0.5rem\",\n    color: \"#c0392b\",\n    fontSize: \"1.25rem\",\n  },\n  message: {\n    margin: \"0 0 1rem\",\n    color: \"#333\",\n    wordBreak: \"break-word\",\n  },\n  details: {\n    marginBottom: \"1rem\",\n  },\n  summary: {\n    cursor: \"pointer\",\n    color: \"#666\",\n    fontSize: \"0.875rem\",\n  },\n  stack: {\n    marginTop: \"0.5rem\",\n    padding: \"0.75rem\",\n    backgroundColor: \"#f8f8f8\",\n    border: \"1px solid #ddd\",\n    borderRadius: \"3px\",\n    fontSize: \"0.75rem\",\n    overflowX: \"auto\",\n    whiteSpace: \"pre-wrap\",\n    wordBreak: \"break-all\",\n  },\n  button: {\n    padding: \"0.5rem 1.25rem\",\n    backgroundColor: \"#c0392b\",\n    color: \"#fff\",\n    border: \"none\",\n    borderRadius: \"4px\",\n    cursor: \"pointer\",\n    fontSize: \"0.9rem\",\n  },\n};\n</parameter>\n</invoke>\n</function_calls>\n<function_calls>\n<invoke name=\"Write\">\n<parameter name=\"path\">ErrorBoundary.test.tsx</parameter>\n<parameter name=\"content\">import React from \"react\";\nimport { render, screen, fireEvent } from \"@testing-library/react\";\nimport { ErrorBoundary } from \"./ErrorBoundary\";\n\nfunction Bomb({ shouldThrow }: { shouldThrow: boolean }) {\n  if (shouldThrow) throw new Error(\"Test explosion\");\n  return <p>All good</p>;\n}\n\n// Suppress React's error boundary console output in tests\nbeforeEach(() => jest.spyOn(console, \"error\").mockImplementation(() => {}));\nafterEach(() => jest.restoreAllMocks());\n\ntest(\"renders children when there is no error\", () => {\n  render(\n    <ErrorBoundary>\n      <Bomb shouldThrow={false} />\n    </ErrorBoundary>\n  );\n  expect(screen.getByText(\"All good\")).toBeInTheDocument();\n});\n\ntest(\"shows default fallback UI on error\", () => {\n  render(\n    <ErrorBoundary>\n      <Bomb shouldThrow />\n    </ErrorBoundary>\n  );\n  expect(screen.getByRole(\"alert\")).toBeInTheDocument();\n  expect(screen.getByText(\"Something went wrong\")).toBeInTheDocument();\n  expect(screen.getByText(\"Test explosion\")).toBeInTheDocument();\n  expect(screen.getByRole(\"button\", { name: \"Try again\" })).toBeInTheDocument();\n});\n\ntest(\"retry button resets the error state\", () => {\n  const { rerender } = render(\n    <ErrorBoundary>\n      <Bomb shouldThrow />\n    </ErrorBoundary>\n  );\n  fireEvent.click(screen.getByRole(\"button\", { name: \"Try again\" }));\n  rerender(\n    <ErrorBoundary>\n      <Bomb shouldThrow={false} />\n    </ErrorBoundary>\n  );\n  expect(screen.getByText(\"All good\")).toBeInTheDocument();\n});\n\ntest(\"calls onError with error details\", () => {\n  const onError = jest.fn();\n  render(\n    <ErrorBoundary onError={onError}>\n      <Bomb shouldThrow />\n    </ErrorBoundary>\n  );\n  expect(onError).toHaveBeenCalledWith(\n    expect.objectContaining({ message: \"Test explosion\" }),\n    expect.objectContaining({ componentStack: expect.any(String) })\n  );\n});\n\ntest(\"renders custom fallback when provided\", () => {\n  render(\n    <ErrorBoundary fallback={(err, reset) => <button onClick={reset}>{err.message}</button>}>\n      <Bomb shouldThrow />\n    </ErrorBoundary>\n  );\n  expect(screen.getByRole(\"button\", { name: \"Test explosion\" })).toBeInTheDocument();\n});\n</parameter>\n</invoke>\n</function_calls>\n\nTwo files created:\n\n**`ErrorBoundary.tsx`** \u2014 the component itself:\n- `getDerivedStateFromError` captures the error into state, triggering the fallback render\n- `componentDidCatch` logs full details (`message`, `stack`, `componentStack`) and forwards to an optional `onError` prop\n- Accepts an optional `fallback` render prop for custom UI; otherwise shows `DefaultFallback`\n- `reset` clears the error state, letting children re-mount on the next render\n\n**`ErrorBoundary.test.tsx`** \u2014 covers the key behaviors\n\n**Usage:**\n\n```tsx\n// Basic \u2014 uses built-in fallback UI\n<ErrorBoundary onError={(err, info) => reportToSentry(err, info)}>\n  <YourComponent />\n</ErrorBoundary>\n\n// Custom fallback UI\n<ErrorBoundary fallback={(error, reset) => (\n  <MyToast message={error.message} onRetry={reset} />\n)}>\n  <YourComponent />\n</ErrorBoundary>\n```\n\n**Props:**\n\n| Prop | Type | Description |\n|---|---|---|\n| `children` | `ReactNode` | Components to protect |\n| `fallback` | `(error, reset) => ReactNode` | Custom fallback renderer |\n| `onError` | `(error, info) => void` | Hook for external logging (Sentry, etc.) |",
+  "thinking_text": "The user wants me to implement a React error boundary component. Let me create a well-structured error boundary component.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 28.61,
+  "_meta": {
+    "track": "C",
+    "task": "error-boundary",
+    "category": "implementation",
+    "condition": "baseline",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 41696,
+    "timestamp": 1776611974,
+    "level": 3,
+    "ordering": [
+      5,
+      6,
+      9,
+      7,
+      1,
+      8,
+      3,
+      0,
+      2,
+      4
+    ],
+    "chunks_present": [
+      1,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "num_chunks": 6,
+    "behavioral_chars": 12880,
+    "chunk_chars": 28804
+  }
+}
