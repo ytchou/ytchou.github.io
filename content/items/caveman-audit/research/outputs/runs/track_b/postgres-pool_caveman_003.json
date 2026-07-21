@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 12103,
+  "duration_api_ms": 12046,
+  "num_turns": 1,
+  "result": "Use `pg` (node-postgres) with `Pool`:\n\n```javascript\nimport { Pool } from 'pg';\n\nconst pool = new Pool({\n  host: process.env.DB_HOST,\n  port: parseInt(process.env.DB_PORT ?? '5432'),\n  database: process.env.DB_NAME,\n  user: process.env.DB_USER,\n  password: process.env.DB_PASSWORD,\n\n  // Pool sizing\n  max: 20,                // max connections (default: 10)\n  min: 2,                 // keep alive minimum\n\n  // Timeouts (ms)\n  connectionTimeoutMillis: 5000,   // fail fast if can't acquire connection\n  idleTimeoutMillis: 30000,        // release idle connections after 30s\n  query_timeout: 10000,            // per-query timeout\n  statement_timeout: 10000,        // server-side statement timeout\n\n  ssl: process.env.NODE_ENV === 'production'\n    ? { rejectUnauthorized: true }\n    : false,\n});\n\n// Crash-loop guard: log but don't crash on idle client errors\npool.on('error', (err, client) => {\n  console.error('Idle client error', err);\n});\n\n// Wrapper \u2014 always releases client\nexport async function query(text: string, params?: unknown[]) {\n  const client = await pool.connect();\n  try {\n    return await client.query(text, params);\n  } finally {\n    client.release();\n  }\n}\n\n// Transaction helper\nexport async function withTransaction<T>(\n  fn: (client: PoolClient) => Promise<T>\n): Promise<T> {\n  const client = await pool.connect();\n  try {\n    await client.query('BEGIN');\n    const result = await fn(client);\n    await client.query('COMMIT');\n    return result;\n  } catch (err) {\n    await client.query('ROLLBACK');\n    throw err;\n  } finally {\n    client.release();\n  }\n}\n\n// Graceful shutdown\nexport async function closePool() {\n  await pool.end();\n}\n```\n\nKey points:\n\n| Setting | Why |\n|---|---|\n| `connectionTimeoutMillis` | Fail fast vs. hang forever waiting for free connection |\n| `idleTimeoutMillis` | Prevents stale connections after DB-side timeout |\n| `statement_timeout` | Server enforces; survives client-side crash |\n| `pool.on('error')` | Without this, unhandled error crashes process |\n| `finally { client.release() }` | Prevents pool exhaustion on errors |\n\nSet `max` = roughly (CPU cores \u00d7 2) + effective spindle count, capped at DB's `max_connections` minus headroom for other clients. Don't just leave it at 10.",
+  "stop_reason": "end_turn",
+  "session_id": "c3999dcb-9423-4c6b-a387-61e722690282",
+  "total_cost_usd": 0.038419800000000004,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6392,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 730,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6392,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 730,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6392,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6392
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 730,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6392,
+      "webSearchRequests": 0,
+      "costUSD": 0.038419800000000004,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "0246e0c4-12bc-40b6-a028-ae7a04099a26",
+  "_meta": {
+    "track": "B",
+    "task": "postgres-pool",
+    "category": "setup",
+    "condition": "caveman",
+    "run_num": 3,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 13.64,
+    "timestamp": 1776774720,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

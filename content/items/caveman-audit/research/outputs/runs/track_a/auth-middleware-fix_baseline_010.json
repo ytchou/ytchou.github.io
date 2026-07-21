@@ -1,0 +1,21 @@
+{
+  "input_tokens": 52,
+  "output_tokens": 907,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## JWT Expiry Check Bug\n\nThe most common cause is a **units mismatch**. JWT `exp` is in **seconds**, but `Date.now()` returns **milliseconds**.\n\n---\n\n### The Bug\n\n```javascript\n// \u274c BROKEN - comparing milliseconds to seconds\nconst isExpired = Date.now() > payload.exp;\n\n// Example values that make this clear:\n// Date.now()    = 1703980800000  (milliseconds)\n// payload.exp   = 1703980800     (seconds)\n// 1703980800000 > 1703980800 is ALWAYS true... wait\n\n// Actually the opposite problem is more common:\nconst isExpired = payload.exp > Date.now();  // \u274c backwards AND wrong units\n// 1703980800 > 1703980800000 is ALWAYS false \u2192 never expires\n```\n\nThe token **never appears expired** because the exp value (seconds) is always smaller than `Date.now()` (milliseconds), so the comparison logic inverts.\n\n---\n\n### The Fix\n\n```javascript\n// \u2705 CORRECT - convert Date.now() to seconds\nconst nowInSeconds = Math.floor(Date.now() / 1000);\nconst isExpired = nowInSeconds > payload.exp;\n\nif (isExpired) {\n  return res.status(401).json({ error: 'Token expired' });\n}\n```\n\n---\n\n### Full Middleware Example\n\n```javascript\nfunction authenticateToken(req, res, next) {\n  const authHeader = req.headers['authorization'];\n  const token = authHeader && authHeader.split(' ')[1]; // Bearer <token>\n\n  if (!token) {\n    return res.status(401).json({ error: 'No token provided' });\n  }\n\n  try {\n    // Option 1: Let the JWT library handle expiry (RECOMMENDED)\n    // jsonwebtoken checks exp automatically and throws TokenExpiredError\n    const payload = jwt.verify(token, process.env.JWT_SECRET);\n    req.user = payload;\n    next();\n\n  } catch (err) {\n    if (err.name === 'TokenExpiredError') {\n      return res.status(401).json({ error: 'Token expired' });\n    }\n    if (err.name === 'JsonWebTokenError') {\n      return res.status(401).json({ error: 'Invalid token' });\n    }\n    return res.status(500).json({ error: 'Authentication error' });\n  }\n}\n```\n\n---\n\n### If You Need Manual Expiry Checking\n\n```javascript\nfunction checkExpiry(payload) {\n  if (!payload.exp) {\n    throw new Error('Token has no expiry claim');  // Reject tokens without exp\n  }\n\n  const nowInSeconds = Math.floor(Date.now() / 1000);\n  \n  // Optional: allow small clock skew (e.g., 30 seconds)\n  const clockSkewBuffer = 30;\n  \n  if (nowInSeconds > payload.exp + clockSkewBuffer) {\n    throw new Error('Token expired');\n  }\n}\n```\n\n---\n\n### Key Takeaways\n\n| Issue | Problem | Fix |\n|-------|---------|-----|\n| Units mismatch | `Date.now()` is ms, `exp` is seconds | Divide `Date.now()` by 1000 |\n| Inverted logic | `exp > Date.now()` never expires | Use `nowInSeconds > payload.exp` |\n| Manual vs library | Rolling your own check | Prefer `jwt.verify()` which handles this automatically |\n\n**Best practice:** Use `jwt.verify()` from the `jsonwebtoken` library rather than manually checking `exp` \u2014 it handles units, expiry, signature verification, and clock skew correctly out of the box.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 14.32,
+  "_meta": {
+    "track": "C",
+    "task": "auth-middleware-fix",
+    "category": "bugfix",
+    "condition": "baseline",
+    "run_num": 10,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 28,
+    "timestamp": 1776585191
+  }
+}

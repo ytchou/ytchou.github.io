@@ -1,0 +1,44 @@
+{
+  "input_tokens": 8001,
+  "output_tokens": 103,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "```js\nasync function getUser(id) {\n  const rows = await db.query('SELECT * FROM users WHERE id = ?', [id]);\n  if (!rows.length) throw new Error('Not found');\n  return rows[0];\n}\n```\n\nCall it with `try/catch` or `.catch()` instead of checking the callback `err` argument.",
+  "thinking_text": "Simple refactor, no need for tools.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 65.8,
+  "_meta": {
+    "track": "C",
+    "task": "async-refactor",
+    "category": "refactor",
+    "condition": "baseline",
+    "run_num": 1,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 32726,
+    "timestamp": 1776612156,
+    "level": 2,
+    "ordering": [
+      0,
+      7,
+      9,
+      8,
+      2,
+      3,
+      4,
+      1,
+      5,
+      6
+    ],
+    "chunks_present": [
+      0,
+      7,
+      8,
+      9
+    ],
+    "num_chunks": 4,
+    "behavioral_chars": 12880,
+    "chunk_chars": 19838
+  }
+}

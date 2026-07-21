@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1092,
+  "output_tokens": 613,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Three stages: deps \u2192 build \u2192 runtime.\n\n```dockerfile\n# ---- Stage 1: Install deps ----\nFROM node:22-alpine AS deps\nWORKDIR /app\n\nCOPY package*.json ./\nRUN npm ci --ignore-scripts\n\n# ---- Stage 2: Compile TypeScript ----\nFROM deps AS build\nWORKDIR /app\n\nCOPY tsconfig*.json ./\nCOPY src/ ./src/\nRUN npm run build        # emits to /app/dist\nRUN npm prune --omit=dev # strip devDeps in-place\n\n# ---- Stage 3: Runtime ----\nFROM node:22-alpine AS runtime\nENV NODE_ENV=production\nWORKDIR /app\n\n# Non-root user. Alpine already has 'node' user (uid 1000).\nUSER node\n\nCOPY --from=build --chown=node:node /app/dist      ./dist\nCOPY --from=build --chown=node:node /app/node_modules ./node_modules\nCOPY --from=build --chown=node:node /app/package.json ./\n\nEXPOSE 3000\nCMD [\"node\", \"dist/index.js\"]\n```\n\n---\n\n## Why each choice\n\n| Decision | Reason |\n|----------|--------|\n| `alpine` base | ~5 MB vs ~200 MB slim/bullseye |\n| `npm ci` | Reproducible. Fails on lockfile mismatch |\n| Stage 1 copy `package*.json` only | Layer cache survives src changes |\n| `npm prune --omit=dev` in build stage | devDeps gone before copy to runtime |\n| Copy `dist` + `node_modules` only | No src, no tsconfig, no tests in final |\n| `USER node` | No root in prod |\n\n---\n\n## Expected sizes\n\n```\ndeps      ~250 MB  (throw away)\nbuild     ~300 MB  (throw away)\nruntime   ~120 MB  \u2190 only this ships\n```\n\n---\n\n## Assumptions to adjust\n\n**`tsconfig.json` must set `outDir: \"./dist\"`** \u2014 or change `CMD` to match your actual out path.\n\nIf `npm run build` calls `tsc` with `--project`, copy all relevant tsconfigs in stage 2.\n\nAdd `.dockerignore` or cache wrecked:\n\n```\nnode_modules\ndist\n.git\n*.md\n```",
+  "thinking_text": "The user wants a multi-stage Dockerfile for Node.js TypeScript app. I'm in caveman mode (full by default), so I'll be terse while keeping full technical accuracy.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 15.57,
+  "_meta": {
+    "track": "A_prime",
+    "task": "docker-multi-stage",
+    "category": "devops",
+    "condition": "caveman",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776610850
+  }
+}

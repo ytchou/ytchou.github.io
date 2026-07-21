@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1049,
+  "output_tokens": 841,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Use `pg` pool. Key config:\n\n```js\nimport { Pool } from 'pg';\n\nconst pool = new Pool({\n  connectionString: process.env.DATABASE_URL,\n\n  // Pool sizing\n  max: 20,          // max connections (default 10)\n  min: 2,           // keep alive when idle\n  idleTimeoutMillis: 30_000,    // kill idle conn after 30s\n  connectionTimeoutMillis: 5_000, // fail fast if can't connect in 5s\n\n  // Optional: SSL in prod\n  ssl: process.env.NODE_ENV === 'production'\n    ? { rejectUnauthorized: true }\n    : false,\n});\n\n// Catch background errors (network drop, DB restart)\npool.on('error', (err, client) => {\n  console.error('Idle client error:', err.message);\n  // Don't crash \u2014 pool auto-removes bad client\n});\n```\n\n**Query wrapper with timeout:**\n\n```js\nasync function query(sql, params, timeoutMs = 10_000) {\n  const client = await pool.connect();\n  try {\n    await client.query(`SET statement_timeout = ${timeoutMs}`);\n    return await client.query(sql, params);\n  } catch (err) {\n    // Detect connection-level errors \u2192 pool will discard client\n    if (err.code === 'ECONNRESET' || err.code === '57P01') {\n      client.release(err); // pass err = destroy, not return to pool\n    } else {\n      client.release();\n    }\n    throw err;\n  } finally {\n    // Safety net \u2014 release always runs if not already released\n    // (double-release is safe in pg)\n  }\n}\n```\n\nWait \u2014 cleaner pattern with guaranteed release:\n\n```js\nasync function query(sql, params, timeoutMs = 10_000) {\n  const client = await pool.connect();\n  let released = false;\n\n  const release = (destroy = false) => {\n    if (released) return;\n    released = true;\n    client.release(destroy ? new Error('destroy') : undefined);\n  };\n\n  try {\n    await client.query(`SET statement_timeout = ${timeoutMs}`);\n    const result = await client.query(sql, params);\n    release();\n    return result;\n  } catch (err) {\n    const fatal = ['ECONNRESET', 'EPIPE', '57P01'].includes(err.code);\n    release(fatal);\n    throw err;\n  }\n}\n```\n\n**Graceful shutdown:**\n\n```js\nprocess.on('SIGTERM', async () => {\n  await pool.end(); // wait for active queries, then close all\n  process.exit(0);\n});\n```\n\n---\n\n**Key numbers to tune:**\n\n| Setting | Rule of thumb |\n|---|---|\n| `max` | CPU cores \u00d7 2\u20134, never >100 |\n| `min` | 1\u20135 for warm standby |\n| `idleTimeoutMillis` | 30s\u20135min depending on load pattern |\n| `connectionTimeoutMillis` | 2\u20135s; fail fast beats hanging |\n| `statement_timeout` | Per-query; 10s default, lower for APIs |\n\n**Health check** (readiness probe):\n\n```js\nexport async function dbReady() {\n  const res = await pool.query('SELECT 1');\n  return res.rowCount === 1;\n}\n```",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 24.77,
+  "_meta": {
+    "track": "C",
+    "task": "postgres-pool",
+    "category": "setup",
+    "condition": "caveman",
+    "run_num": 8,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585389
+  }
+}

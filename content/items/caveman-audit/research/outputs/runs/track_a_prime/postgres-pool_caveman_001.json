@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1078,
+  "output_tokens": 716,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Use `pg` pool. Key config:\n\n```js\nimport { Pool } from 'pg';\n\nconst pool = new Pool({\n  host: process.env.DB_HOST,\n  port: 5432,\n  database: process.env.DB_NAME,\n  user: process.env.DB_USER,\n  password: process.env.DB_PASSWORD,\n\n  // Pool sizing\n  max: 20,                // max connections (default 10)\n  min: 2,                 // keep alive floor\n  idleTimeoutMillis: 30_000,    // kill idle conn after 30s\n  connectionTimeoutMillis: 2_000, // fail fast if no conn in 2s\n\n  // Query timeout (per-connection default)\n  statement_timeout: 10_000,    // kill query after 10s\n  query_timeout: 10_000,\n});\n\n// Error on idle client (prevent silent crashes)\npool.on('error', (err, client) => {\n  console.error('Idle client error:', err.message);\n});\n```\n\n**Query wrapper** \u2014 always release:\n\n```js\nasync function query(text, params) {\n  const client = await pool.connect();\n  try {\n    const res = await client.query(text, params);\n    return res;\n  } catch (err) {\n    throw err;           // let caller handle\n  } finally {\n    client.release();    // ALWAYS runs\n  }\n}\n```\n\n**Transaction wrapper:**\n\n```js\nasync function withTransaction(fn) {\n  const client = await pool.connect();\n  try {\n    await client.query('BEGIN');\n    const result = await fn(client);\n    await client.query('COMMIT');\n    return result;\n  } catch (err) {\n    await client.query('ROLLBACK');\n    throw err;\n  } finally {\n    client.release();\n  }\n}\n\n// Usage\nawait withTransaction(async (client) => {\n  await client.query('INSERT INTO orders ...', [...]);\n  await client.query('UPDATE inventory ...', [...]);\n});\n```\n\n**Graceful shutdown:**\n\n```js\nprocess.on('SIGTERM', async () => {\n  await pool.end();      // wait for active queries, then close\n  process.exit(0);\n});\n```\n\n---\n\n**Key tradeoffs:**\n\n| Setting | Too low | Too high |\n|---|---|---|\n| `max` | Queue piles up | DB overwhelmed |\n| `idleTimeoutMillis` | Conn churn | Stale conn accumulate |\n| `connectionTimeoutMillis` | Caller waits long | Fast-fail hides real problem |\n\n`max` rule of thumb: match Postgres `max_connections` \u00f7 app instances, minus 10 for admin headroom.",
+  "thinking_text": "The user wants to know how to set up a PostgreSQL connection pool in Node.js with proper timeout and error handling. I should respond in caveman mode (full, the default).",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 26.97,
+  "_meta": {
+    "track": "A_prime",
+    "task": "postgres-pool",
+    "category": "setup",
+    "condition": "caveman",
+    "run_num": 1,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776610519
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 28454,
+  "duration_api_ms": 28397,
+  "num_turns": 1,
+  "result": "Units mismatch. JWT `exp` = Unix seconds (~1.7B). `Date.now()` = milliseconds (~1.7T). So `Date.now() > token.exp` always true \u2014 every token \"valid.\"\n\n**Wrong:**\n```js\nif (Date.now() > token.exp) {\n  return next(new Error('Token expired'));\n}\n// Date.now() always > exp in seconds \u2014 rejects everything\n// OR if inverted: lets everything through\n```\n\n**Fix \u2014 divide by 1000:**\n```js\nconst nowSeconds = Math.floor(Date.now() / 1000);\nif (nowSeconds > token.exp) {\n  return next(new Error('Token expired'));\n}\nreturn next();\n```\n\nOr use a library that handles this: `jsonwebtoken.verify()` checks expiry automatically.",
+  "stop_reason": "end_turn",
+  "session_id": "b62c264a-1582-4420-9a31-8a2cc457a52f",
+  "total_cost_usd": 0.0517098,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6408,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 1612,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6408,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 1612,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6408,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6408
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 1612,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6408,
+      "webSearchRequests": 0,
+      "costUSD": 0.0517098,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "d7b946d0-9d18-49c0-9612-553f2ea20f8c",
+  "_meta": {
+    "track": "B",
+    "task": "auth-middleware-fix",
+    "category": "bugfix",
+    "condition": "caveman",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 30.47,
+    "timestamp": 1776774702,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

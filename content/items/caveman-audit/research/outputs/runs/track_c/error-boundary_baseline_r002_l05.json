@@ -1,0 +1,50 @@
+{
+  "input_tokens": 14751,
+  "output_tokens": 1839,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Let me check the current project structure first.\n\n<function_calls>\n<invoke name=\"Glob\">\n<parameter name=\"pattern\">**/*.{tsx,ts,jsx,js,json}</parameter>\n</invoke>\n</function_calls>\n<function_calls>\n<invoke name=\"Glob\">\n<parameter name=\"pattern\">package.json</parameter>\n</invoke>\n</function_calls>\n\nNo existing project found \u2014 I'll create the component as a standalone file.\n\n<function_calls>\n<invoke name=\"Write\">\n<parameter name=\"file_path\">/ErrorBoundary.tsx</parameter>\n<parameter name=\"content\">import React, { Component, ErrorInfo, ReactNode } from \"react\";\n\ninterface Props {\n  children: ReactNode;\n  fallback?: ReactNode;\n  onError?: (error: Error, errorInfo: ErrorInfo) => void;\n}\n\ninterface State {\n  hasError: boolean;\n  error: Error | null;\n}\n\nexport class ErrorBoundary extends Component<Props, State> {\n  state: State = { hasError: false, error: null };\n\n  static getDerivedStateFromError(error: Error): State {\n    return { hasError: true, error };\n  }\n\n  componentDidCatch(error: Error, errorInfo: ErrorInfo) {\n    console.error(\"[ErrorBoundary] Caught render error:\", {\n      message: error.message,\n      stack: error.stack,\n      componentStack: errorInfo.componentStack,\n      timestamp: new Date().toISOString(),\n    });\n\n    this.props.onError?.(error, errorInfo);\n  }\n\n  private handleRetry = () => {\n    this.setState({ hasError: false, error: null });\n  };\n\n  render() {\n    if (!this.state.hasError) {\n      return this.props.children;\n    }\n\n    if (this.props.fallback) {\n      return this.props.fallback;\n    }\n\n    return (\n      <DefaultFallback error={this.state.error} onRetry={this.handleRetry} />\n    );\n  }\n}\n\ninterface FallbackProps {\n  error: Error | null;\n  onRetry: () => void;\n}\n\nfunction DefaultFallback({ error, onRetry }: FallbackProps) {\n  return (\n    <div style={styles.container}>\n      <div style={styles.card}>\n        <span style={styles.icon} aria-hidden>\n          \u26a0\ufe0f\n        </span>\n        <h2 style={styles.heading}>Something went wrong</h2>\n        <p style={styles.message}>\n          {error?.message ?? \"An unexpected error occurred.\"}\n        </p>\n        <details style={styles.details}>\n          <summary style={styles.summary}>Stack trace</summary>\n          <pre style={styles.stack}>{error?.stack ?? \"No stack available\"}</pre>\n        </details>\n        <button onClick={onRetry} style={styles.button}>\n          Try again\n        </button>\n      </div>\n    </div>\n  );\n}\n\nconst styles: Record<string, React.CSSProperties> = {\n  container: {\n    display: \"flex\",\n    alignItems: \"center\",\n    justifyContent: \"center\",\n    minHeight: \"100vh\",\n    padding: \"1rem\",\n    fontFamily: \"system-ui, sans-serif\",\n    backgroundColor: \"#f9fafb\",\n  },\n  card: {\n    display: \"flex\",\n    flexDirection: \"column\",\n    alignItems: \"center\",\n    gap: \"0.75rem\",\n    maxWidth: \"480px\",\n    width: \"100%\",\n    padding: \"2rem\",\n    borderRadius: \"0.75rem\",\n    backgroundColor: \"#ffffff\",\n    boxShadow: \"0 4px 24px rgba(0,0,0,0.08)\",\n    textAlign: \"center\",\n  },\n  icon: {\n    fontSize: \"2.5rem\",\n  },\n  heading: {\n    margin: 0,\n    fontSize: \"1.25rem\",\n    fontWeight: 600,\n    color: \"#111827\",\n  },\n  message: {\n    margin: 0,\n    fontSize: \"0.9rem\",\n    color: \"#6b7280\",\n    wordBreak: \"break-word\",\n  },\n  details: {\n    width: \"100%\",\n    textAlign: \"left\",\n    cursor: \"pointer\",\n  },\n  summary: {\n    fontSize: \"0.8rem\",\n    color: \"#9ca3af\",\n    userSelect: \"none\",\n  },\n  stack: {\n    marginTop: \"0.5rem\",\n    padding: \"0.75rem\",\n    borderRadius: \"0.375rem\",\n    backgroundColor: \"#f3f4f6\",\n    fontSize: \"0.7rem\",\n    color: \"#374151\",\n    whiteSpace: \"pre-wrap\",\n    wordBreak: \"break-all\",\n    maxHeight: \"160px\",\n    overflowY: \"auto\",\n  },\n  button: {\n    marginTop: \"0.5rem\",\n    padding: \"0.5rem 1.5rem\",\n    borderRadius: \"0.5rem\",\n    border: \"none\",\n    backgroundColor: \"#2563eb\",\n    color: \"#ffffff\",\n    fontSize: \"0.9rem\",\n    fontWeight: 500,\n    cursor: \"pointer\",\n  },\n};\n</parameter>\n</invoke>\n</function_calls>\n\nHere's what was created in `ErrorBoundary.tsx`:\n\n**Component API**\n\n```tsx\n<ErrorBoundary\n  onError={(error, errorInfo) => sendToSentry(error, errorInfo)} // optional\n  fallback={<MyCustomFallback />}                                  // optional\n>\n  <YourApp />\n</ErrorBoundary>\n```\n\n**Key design decisions:**\n\n| Detail | Choice |\n|---|---|\n| Class component | Required \u2014 React error boundaries only work in class components via `getDerivedStateFromError` / `componentDidCatch` |\n| Retry | Resets `hasError` state, causing the subtree to re-render from scratch |\n| Logging | Structured `console.error` with message, stack, component stack, and timestamp; forwarded to optional `onError` prop for external services (Sentry, Datadog, etc.) |\n| Custom fallback | Pass any `ReactNode` via `fallback` prop to fully replace the default UI |\n| Stack trace | Collapsible `<details>` element \u2014 visible for debugging, not intrusive for users |\n\n**Usage example:**\n\n```tsx\n// wrap at the app root\n<ErrorBoundary onError={(e, info) => Sentry.captureException(e, { extra: info })}>\n  <App />\n</ErrorBoundary>\n\n// or scope to a single section\n<ErrorBoundary fallback={<p>Widget failed to load.</p>}>\n  <Widget />\n</ErrorBoundary>\n```",
+  "thinking_text": "The user wants me to implement a React error boundary component. Let me create this with:\n1. A class-based ErrorBoundary component (required for error boundaries in React)\n2. A fallback UI with a retry button\n3. Error logging\n\nLet me first check if there's an existing React project to add this to.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 85.55,
+  "_meta": {
+    "track": "C",
+    "task": "error-boundary",
+    "category": "implementation",
+    "condition": "baseline",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 59576,
+    "timestamp": 1776611407,
+    "level": 5,
+    "ordering": [
+      3,
+      2,
+      6,
+      0,
+      7,
+      4,
+      5,
+      8,
+      1,
+      9
+    ],
+    "chunks_present": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "num_chunks": 10,
+    "behavioral_chars": 12880,
+    "chunk_chars": 46676
+  }
+}

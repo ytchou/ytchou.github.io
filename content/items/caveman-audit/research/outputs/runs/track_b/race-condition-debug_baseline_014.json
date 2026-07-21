@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 12945,
+  "duration_api_ms": 14292,
+  "num_turns": 1,
+  "result": "This is a classic read-modify-write race condition. If your code does a `SELECT` then `UPDATE`, two concurrent requests read the same value before either writes, so both write the same result.\n\n**The fix: atomic update in a single statement**\n\nInstead of:\n```js\n// BROKEN \u2014 two requests can both read 5, both write 6\nconst { rows } = await db.query('SELECT counter FROM items WHERE id = $1', [id]);\nconst next = rows[0].counter + 1;\nawait db.query('UPDATE items SET counter = $1 WHERE id = $2', [next, id]);\nreturn next;\n```\n\nDo:\n```js\n// CORRECT \u2014 the increment happens atomically inside Postgres\nconst { rows } = await db.query(\n  'UPDATE items SET counter = counter + 1 WHERE id = $1 RETURNING counter',\n  [id]\n);\nreturn rows[0].counter;\n```\n\nPostgreSQL's `UPDATE` takes a row-level lock for the duration of the statement, so concurrent requests are serialized automatically. The `RETURNING` clause gives you back the new value without a second round-trip.\n\n**If you need to read-then-conditionally-write** (e.g., \"only increment if counter < max\"), use `SELECT FOR UPDATE` inside a transaction:\n\n```js\nawait db.query('BEGIN');\nconst { rows } = await db.query(\n  'SELECT counter FROM items WHERE id = $1 FOR UPDATE',\n  [id]\n);\nif (rows[0].counter < MAX) {\n  await db.query('UPDATE items SET counter = counter + 1 WHERE id = $1', [id]);\n}\nawait db.query('COMMIT');\n```\n\n`FOR UPDATE` holds a lock on the row until the transaction commits, blocking other concurrent reads of the same row.\n\n**Rule of thumb:** if the new value depends on the old value, the read and write must be atomic \u2014 either a single `UPDATE ... SET col = col + 1` or a `SELECT FOR UPDATE` inside a transaction. Never read in one query and write in a separate one without locking.",
+  "stop_reason": "end_turn",
+  "session_id": "c8fac936-9d6c-4a36-8d16-5dc0bf87ecd7",
+  "total_cost_usd": 0.0154545,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17055,
+    "output_tokens": 659,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 659,
+        "cache_read_input_tokens": 17055,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 369,
+      "outputTokens": 15,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.00044400000000000006,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 659,
+      "cacheReadInputTokens": 17055,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0150105,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "ff8600a8-c702-44dc-b6fb-126c45e1d8bf",
+  "_meta": {
+    "track": "B",
+    "task": "race-condition-debug",
+    "category": "debugging",
+    "condition": "baseline",
+    "run_num": 14,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 14.64,
+    "timestamp": 1776776575,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1063,
+  "output_tokens": 492,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## Monolith \u2192 Microservices: Consider First\n\n**Split only if monolith actually broken.** Most teams split too early.\n\n---\n\n### Diagnose First\n\n- Slow = where? DB queries? CPU? Memory? Network? Profile before architect.\n- Django slow often = N+1 queries, missing indexes, no caching. Fix cheap vs. split expensive.\n\n---\n\n### Real Reasons to Split\n\n| Signal | Means |\n|--------|-------|\n| Teams block each other deploying | Org problem, split helps |\n| One component needs 10x scale, rest don't | Split that piece |\n| Clear domain boundaries exist | Split natural |\n| Different release cadences | Split helps |\n\n---\n\n### Costs Nobody Mentions\n\n**Distributed systems hard tax:**\n- Network calls fail. Monolith function calls don't.\n- Transactions across services = saga pattern or eventual consistency. Pain.\n- Debugging spans multiple logs, traces, services.\n- Latency adds up. 5 services \u00d7 20ms = 100ms minimum.\n- Ops burden multiplies: N services \u00d7 (deploy + monitor + alert + scale).\n\n**Conway's Law real.** Services mirror org structure. Fix org first or services inherit same mess.\n\n---\n\n### Django-Specific Checks First\n\nBefore split, try:\n1. **Read replicas** \u2014 offload reads\n2. **Celery** \u2014 async heavy tasks\n3. **Caching** \u2014 Redis on hot queries\n4. **DB indexes** \u2014 profile with `django-debug-toolbar`\n5. **Vertical scale** \u2014 cheap, fast, underrated\n\n---\n\n### If Split Makes Sense\n\n**Strangler Fig pattern.** Don't rewrite all at once.\n1. Pick one bounded domain (billing, auth, notifications)\n2. Extract behind internal API\n3. Validate. Then next.\n\nDefine service boundaries by **domain**, not by layer (not \"database service\" \u2014 that's just bad).\n\n---\n\n### Decision Test\n\n> \"Can we name the exact bottleneck, and does splitting fix *that* bottleneck specifically?\"\n\nNo clear answer \u2192 not ready to split.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 13.13,
+  "_meta": {
+    "track": "C",
+    "task": "microservices-monolith",
+    "category": "architecture",
+    "condition": "caveman",
+    "run_num": 7,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585705
+  }
+}

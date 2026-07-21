@@ -1,0 +1,50 @@
+{
+  "input_tokens": 14818,
+  "output_tokens": 124,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "```js\nasync function getUser(id) {\n  const rows = await db.query('SELECT * FROM users WHERE id = ?', [id]);\n  if (!rows.length) throw new Error('Not found');\n  return rows[0];\n}\n```\n\nThe caller switches from `getUser(id, (err, user) => ...)` to `try/catch` with `await`, or `.catch()` on the returned promise.",
+  "thinking_text": "Simple refactor request - no need for plan mode or file exploration.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 47.73,
+  "_meta": {
+    "track": "C",
+    "task": "async-refactor",
+    "category": "refactor",
+    "condition": "baseline",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 59576,
+    "timestamp": 1776613225,
+    "level": 5,
+    "ordering": [
+      3,
+      6,
+      1,
+      2,
+      5,
+      0,
+      8,
+      7,
+      9,
+      4
+    ],
+    "chunks_present": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "num_chunks": 10,
+    "behavioral_chars": 12880,
+    "chunk_chars": 46676
+  }
+}

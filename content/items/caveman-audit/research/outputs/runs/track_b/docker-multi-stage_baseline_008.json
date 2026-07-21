@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 12506,
+  "duration_api_ms": 13584,
+  "num_turns": 1,
+  "result": "```dockerfile\n# Stage 1: Install dependencies\nFROM node:22-alpine AS deps\nWORKDIR /app\nCOPY package.json package-lock.json ./\nRUN npm ci --ignore-scripts\n\n# Stage 2: Build TypeScript\nFROM node:22-alpine AS build\nWORKDIR /app\nCOPY --from=deps /app/node_modules ./node_modules\nCOPY . .\nRUN npm run build\n\n# Stage 3: Production runtime\nFROM node:22-alpine AS runtime\nENV NODE_ENV=production\nWORKDIR /app\n\nCOPY package.json package-lock.json ./\nRUN npm ci --omit=dev --ignore-scripts && npm cache clean --force\n\nCOPY --from=build /app/dist ./dist\n\nUSER node\nEXPOSE 3000\nCMD [\"node\", \"dist/index.js\"]\n```\n\n**Why each stage exists:**\n\n- **deps** \u2014 installs all dependencies (including `devDependencies`) once, cached separately so source changes don't re-trigger a full `npm ci`.\n- **build** \u2014 compiles TypeScript using the full dep tree from `deps`; the source and `node_modules` are discarded after this stage.\n- **runtime** \u2014 starts clean, installs only production deps (`--omit=dev`), then copies only the compiled `dist/`. No TypeScript compiler, no source files, no dev tooling.\n\n**Key size-reduction choices:**\n\n| Choice | Effect |\n|---|---|\n| `node:22-alpine` base | ~50 MB vs ~350 MB for `node:22` |\n| `--omit=dev` in runtime | Strips all dev/build deps |\n| `npm cache clean --force` | Removes npm's cache from the layer |\n| `USER node` | Least-privilege; also avoids root-owned cache files |\n\n**Assumptions to adjust for your project:**\n\n- Entry point is `dist/index.js` \u2014 change if your `tsconfig.json` `outDir` or entry differs.\n- Build script is `npm run build` \u2014 should invoke `tsc` or your bundler.\n- App listens on port 3000 \u2014 update `EXPOSE` to match.\n\nIf you use a bundler (esbuild, tsup, etc.) that produces a single file, you can drop the `--omit=dev` step entirely and just `COPY --from=build /app/dist/bundle.js .` for an even smaller image.",
+  "stop_reason": "end_turn",
+  "session_id": "11b439f7-347d-4914-8230-05c9645a2d4f",
+  "total_cost_usd": 0.014870999999999999,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17060,
+    "output_tokens": 618,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 618,
+        "cache_read_input_tokens": 17060,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 374,
+      "outputTokens": 20,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000474,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 618,
+      "cacheReadInputTokens": 17060,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.014396999999999998,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "26226737-479d-456c-a9a2-c72d7ba92bf0",
+  "_meta": {
+    "track": "B",
+    "task": "docker-multi-stage",
+    "category": "devops",
+    "condition": "baseline",
+    "run_num": 8,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 14.51,
+    "timestamp": 1776776512,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1058,
+  "output_tokens": 461,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Race condition. Multiple requests read same value before any write commit.\n\n## Problem\n\n```\nRequest A: READ counter (5) \u2500\u2500\u2510\nRequest B: READ counter (5) \u2500\u2500\u2524  both read 5\nRequest A: WRITE 5+1 = 6      \u2502\nRequest B: WRITE 5+1 = 6 \u2500\u2500\u2500\u2500\u2500\u2518  B overwrites A, lose increment\n```\n\n## Fix Options\n\n### 1. Atomic UPDATE (best, simplest)\n\n```sql\nUPDATE counters\nSET value = value + 1\nWHERE id = $1\nRETURNING value;\n```\n\nDB handle increment atomically. No read-then-write in app. One query.\n\n### 2. SELECT FOR UPDATE (need transaction + other logic)\n\n```sql\nBEGIN;\nSELECT value FROM counters WHERE id = $1 FOR UPDATE;\n-- row locked, other requests block here\nUPDATE counters SET value = value + 1 WHERE id = $1 RETURNING value;\nCOMMIT;\n```\n\nUse when increment logic complex (not just +1).\n\n### 3. Node code (pg example)\n\n```js\n// BAD - race condition\nconst { rows } = await db.query('SELECT value FROM counters WHERE id = $1', [id]);\nawait db.query('UPDATE counters SET value = $1 WHERE id = $2', [rows[0].value + 1, id]);\n\n// GOOD - atomic\nconst { rows } = await db.query(\n  'UPDATE counters SET value = value + 1 WHERE id = $1 RETURNING value',\n  [id]\n);\nreturn rows[0].value;\n```\n\n## Pick one\n\n| Situation | Use |\n|-----------|-----|\n| Simple increment | Atomic `UPDATE` |\n| Complex logic on value | `SELECT FOR UPDATE` in transaction |\n| Need optimistic concurrency | Add `version` column, check on update |\n\nAtomic UPDATE fix 99% of counter cases. Ship that.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 9.02,
+  "_meta": {
+    "track": "C",
+    "task": "race-condition-debug",
+    "category": "debugging",
+    "condition": "caveman",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776586162
+  }
+}

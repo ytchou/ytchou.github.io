@@ -1,0 +1,22 @@
+{
+  "input_tokens": 69,
+  "output_tokens": 747,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "# Git Merge vs Git Rebase\n\n## What They Do\n\n**Merge** joins two branches by creating a new \"merge commit\" that ties their histories together.\n\n**Rebase** rewrites your commits as if they were made on top of another branch, producing a linear history.\n\n```\n# Starting point\nmain:    A - B - C\nfeature:     \u2514 - D - E\n\n# After MERGE (git merge main \u2192 feature)\nfeature: A - B - C - D - E\n                 \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518 (merge commit F)\n         A - B - C - D - E - F\n\n# After REBASE (git rebase main \u2192 feature)\nfeature: A - B - C - D' - E'\n         (D and E replayed on top of C, new commit hashes)\n```\n\n---\n\n## Key Differences\n\n| | Merge | Rebase |\n|---|---|---|\n| History | Preserves exact history | Rewrites history |\n| Commit hashes | Unchanged | **New hashes created** |\n| Merge commit | Yes, creates one | No |\n| Traceability | Shows when/where branches joined | Hides branch origin |\n| Conflict handling | Once, at merge time | Once **per commit** being replayed |\n\n---\n\n## When to Use Each\n\n### Use **Merge** when:\n- Integrating a completed feature into `main`\n- Working on a **shared/public branch** (never rebase these)\n- You want to **preserve the true history** of when work happened\n- Your team values explicit integration points\n\n```bash\ngit checkout main\ngit merge feature/my-feature\n```\n\n### Use **Rebase** when:\n- **Updating your local feature branch** with latest changes from main\n- You want a **clean, linear history** before merging\n- Cleaning up messy local commits before sharing (`--interactive`)\n- You haven't pushed the branch yet (or you own it exclusively)\n\n```bash\ngit checkout feature/my-feature\ngit rebase main\n```\n\n---\n\n## The Golden Rule\n\n> **Never rebase commits that exist on a public/shared branch**\n\nIf others have based work on those commits, rewriting them creates duplicate commits and serious confusion.\n\n---\n\n## Interactive Rebase (Bonus Power Tool)\n\n```bash\ngit rebase -i HEAD~3   # Edit last 3 commits\n```\n\nLets you **squash**, **reorder**, **edit**, or **drop** commits before sharing \u2014 great for cleaning up \"WIP\" commit history.\n\n---\n\n## Practical Recommendation\n\nA common workflow that gets the best of both:\n\n```bash\n# 1. Keep your feature branch current with rebase\ngit checkout feature/my-work\ngit rebase main          # clean, linear updates\n\n# 2. Merge into main (optionally squashed)\ngit checkout main\ngit merge --squash feature/my-work   # one clean commit\n# or\ngit merge feature/my-work            # preserve feature commits\n```\n\n**Simple rule:** Rebase to tidy up *before* sharing; merge to integrate *after* sharing.",
+  "thinking_text": "The user wants to understand git rebase vs git merge - their differences, use cases, and tradeoffs.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 16.66,
+  "_meta": {
+    "track": "A_prime",
+    "task": "git-rebase-merge",
+    "category": "explanation",
+    "condition": "baseline",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 28,
+    "timestamp": 1776610579
+  }
+}

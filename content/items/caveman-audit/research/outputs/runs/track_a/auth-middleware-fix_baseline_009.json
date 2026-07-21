@@ -1,0 +1,21 @@
+{
+  "input_tokens": 52,
+  "output_tokens": 1142,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## JWT Expiry Check Bug\n\nThe most common cause is a **units mismatch**. JWT `exp` is in **seconds**, but `Date.now()` returns **milliseconds**.\n\n---\n\n### The Bug\n\n```javascript\n// \u274c BROKEN - comparing milliseconds to seconds\nconst isExpired = Date.now() > payload.exp;\n\n// Example: Date.now() = 1700000000000 (milliseconds)\n// payload.exp = 1700000100        (seconds)\n// 1700000000000 > 1700000100 is ALWAYS true... \n// wait, that means it should always reject?\n\n// Actually the opposite bug is more common:\nconst isExpired = Date.now() < payload.exp; // wrong operator\n// OR the check is inverted, letting everything through:\nif (!isExpired) {\n  return next(); // proceeds even when expired\n}\n```\n\nThe **real subtle bug** \u2014 comparing wrong units means the condition is never what you expect:\n\n```javascript\n// \u274c This ALWAYS passes (never blocks expired tokens)\n// Date.now() = 1,700,000,000,000 ms\n// exp        =     1,700,000,100 sec\n// Date.now() is ALWAYS greater, so this logic breaks completely\nif (Date.now() > payload.exp) {\n  // This always fires, even for valid tokens\n  return res.status(401).json({ error: 'Expired' });\n}\n```\n\n---\n\n### The Fix\n\n```javascript\n// \u2705 Convert exp to milliseconds before comparing\nconst isExpired = Date.now() > payload.exp * 1000;\n\n// Or convert Date.now() to seconds\nconst nowInSeconds = Math.floor(Date.now() / 1000);\nconst isExpired = nowInSeconds > payload.exp;\n```\n\n---\n\n### Complete Corrected Middleware\n\n```javascript\nconst jwt = require('jsonwebtoken');\n\nfunction authMiddleware(req, res, next) {\n  const authHeader = req.headers.authorization;\n\n  if (!authHeader?.startsWith('Bearer ')) {\n    return res.status(401).json({ error: 'Missing or malformed token' });\n  }\n\n  const token = authHeader.split(' ')[1];\n\n  try {\n    // Option A: Let jsonwebtoken handle expiry (RECOMMENDED)\n    // It checks exp automatically and throws TokenExpiredError\n    const payload = jwt.verify(token, process.env.JWT_SECRET);\n    req.user = payload;\n    return next();\n\n  } catch (err) {\n    if (err.name === 'TokenExpiredError') {\n      return res.status(401).json({ error: 'Token expired' });\n    }\n    if (err.name === 'JsonWebTokenError') {\n      return res.status(401).json({ error: 'Invalid token' });\n    }\n    return res.status(500).json({ error: 'Auth error' });\n  }\n}\n\n// Option B: Manual check if you're decoding without verifying\nfunction manualExpiryCheck(payload) {\n  const nowInSeconds = Math.floor(Date.now() / 1000);\n\n  if (!payload.exp) {\n    throw new Error('Token has no expiry');   // reject tokens without exp\n  }\n\n  if (nowInSeconds > payload.exp) {\n    throw new Error('Token expired');\n  }\n}\n```\n\n---\n\n### Why `jwt.verify()` Is Preferred\n\n| Approach | Handles exp? | Handles signature? | Safe? |\n|---|---|---|---|\n| `jwt.verify()` | \u2705 Auto | \u2705 Yes | \u2705 Yes |\n| `jwt.decode()` + manual check | \u26a0\ufe0f Manual | \u274c No | \u274c Dangerous |\n| Manual decode + wrong units | \u274c Broken | \u274c No | \u274c No |\n\n**`jwt.decode()` does not verify the signature** \u2014 an attacker can forge any payload. Always use `jwt.verify()` with your secret/public key.\n\n---\n\n### Quick Diagnostic\n\n```javascript\n// Run this to see what your token actually contains\nconst decoded = jwt.decode(token);\nconsole.log({\n  exp: decoded.exp,                          // e.g. 1700000100\n  expAsDate: new Date(decoded.exp * 1000),   // human readable\n  now: Math.floor(Date.now() / 1000),        // current time in seconds\n  isExpired: Math.floor(Date.now() / 1000) > decoded.exp\n});\n```\n\nThe fix is almost always either the **`* 1000` unit conversion** or switching to `jwt.verify()` and letting the library handle it correctly.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 19.13,
+  "_meta": {
+    "track": "C",
+    "task": "auth-middleware-fix",
+    "category": "bugfix",
+    "condition": "baseline",
+    "run_num": 9,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 28,
+    "timestamp": 1776585181
+  }
+}

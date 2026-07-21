@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 9217,
+  "duration_api_ms": 9167,
+  "num_turns": 1,
+  "result": "Classic read-modify-write race. Two requests read same value before either writes back.\n\n**Fix: atomic `UPDATE ... RETURNING`**\n\n```sql\n-- BAD: two round trips, race window between them\nSELECT counter FROM table WHERE id = $1;\n-- ... compute new value in app ...\nUPDATE table SET counter = $2 WHERE id = $1;\n\n-- GOOD: single atomic operation\nUPDATE table SET counter = counter + 1 WHERE id = $1 RETURNING counter;\n```\n\n**In Node.js:**\n\n```js\n// Bad\nconst { rows } = await db.query('SELECT counter FROM items WHERE id = $1', [id]);\nconst newVal = rows[0].counter + 1;\nawait db.query('UPDATE items SET counter = $2 WHERE id = $1', [id, newVal]);\nres.json({ counter: newVal }); // stale under concurrency\n\n// Good\nconst { rows } = await db.query(\n  'UPDATE items SET counter = counter + 1 WHERE id = $1 RETURNING counter',\n  [id]\n);\nres.json({ counter: rows[0].counter }); // always correct\n```\n\n**If you need conditional logic around the increment**, use `SELECT ... FOR UPDATE` to lock the row:\n\n```js\nawait db.query('BEGIN');\nconst { rows } = await db.query(\n  'SELECT counter FROM items WHERE id = $1 FOR UPDATE',\n  [id]\n);\n// safe to read + conditionally update \u2014 row locked until COMMIT\nawait db.query('UPDATE items SET counter = $2 WHERE id = $1', [id, rows[0].counter + 1]);\nawait db.query('COMMIT');\n```\n\n`FOR UPDATE` blocks other transactions on same row. Use only when condition requires reading first \u2014 otherwise plain atomic UPDATE is faster.",
+  "stop_reason": "end_turn",
+  "session_id": "d7f522bd-2928-4c34-a212-da6b1c2769c1",
+  "total_cost_usd": 0.03450855,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6401,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 467,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6401,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 467,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6401,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6401
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 467,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6401,
+      "webSearchRequests": 0,
+      "costUSD": 0.03450855,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "5d39e03e-edd2-4513-b419-24f10e0e56ed",
+  "_meta": {
+    "track": "B",
+    "task": "race-condition-debug",
+    "category": "debugging",
+    "condition": "caveman",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 11.03,
+    "timestamp": 1776774872,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

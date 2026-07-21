@@ -1,0 +1,22 @@
+{
+  "input_tokens": 69,
+  "output_tokens": 941,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "# Git Merge vs Git Rebase\n\n## What They Do\n\nBoth integrate changes from one branch into another, but they do it differently.\n\n### Git Merge\nCreates a **new merge commit** that ties together the histories of both branches.\n\n```\n      A---B---C  feature\n     /         \\\nD---E---F---G---H  main (merge commit H)\n```\n\n```bash\ngit checkout main\ngit merge feature\n```\n\n### Git Rebase\n**Replays** your commits on top of another branch, rewriting history.\n\n```\n              A'--B'--C'  feature (rebased)\n             /\nD---E---F---G  main\n```\n\n```bash\ngit checkout feature\ngit rebase main\n```\n\n---\n\n## Key Differences\n\n| Aspect | Merge | Rebase |\n|--------|-------|--------|\n| History | Preserves exactly what happened | Creates a linear, cleaner history |\n| Commits | Adds a merge commit | Rewrites commit SHAs |\n| Safety | Safe on shared branches | **Dangerous on shared branches** |\n| Conflicts | Resolve once | Resolve per-commit being replayed |\n| Traceability | Shows when branches diverged | Hides original branching point |\n\n---\n\n## When to Use Each\n\n### Use **Merge** when:\n- **Merging into a shared/public branch** (main, develop)\n- You want to **preserve the full history** of what happened and when\n- The branch was **worked on by multiple people**\n- You want a clear record that a feature branch existed\n\n```bash\n# Standard feature branch workflow\ngit checkout main\ngit merge feature/payment-system\n```\n\n### Use **Rebase** when:\n- **Updating a local feature branch** with upstream changes\n- You want a **clean, linear history** before merging\n- Preparing commits for a pull request (squashing/cleaning up)\n- Working **alone** on a branch\n\n```bash\n# Keep your feature branch current with main\ngit checkout feature/my-work\ngit rebase main\n```\n\n---\n\n## The Golden Rule of Rebase\n\n> **Never rebase commits that have been pushed to a shared repository**\n\nRebasing rewrites commit SHAs. If others have based work on those commits, their history diverges from yours and you'll create a messy situation.\n\n```bash\n# SAFE: rebasing your local, unpushed commits\ngit rebase main\n\n# DANGEROUS: if others have pulled this branch\ngit rebase main\ngit push --force  # \u26a0\ufe0f this causes problems for teammates\n```\n\n---\n\n## Common Practical Workflows\n\n**Workflow 1: Rebase then merge (clean history)**\n```bash\n# Update feature branch, then merge cleanly\ngit checkout feature\ngit rebase main        # replay feature commits on top of main\ngit checkout main\ngit merge feature      # fast-forward, no merge commit needed\n```\n\n**Workflow 2: Interactive rebase (clean up commits before PR)**\n```bash\ngit rebase -i HEAD~4   # squash/edit your last 4 commits\n```\n\n**Workflow 3: Always merge (simple, safe)**\n```bash\ngit checkout main\ngit merge feature      # always creates merge commit\n```\n\n---\n\n## Quick Decision Guide\n\n```\nIs the branch shared with others?\n\u251c\u2500\u2500 YES \u2192 Use MERGE\n\u2514\u2500\u2500 NO  \u2192 Is history cleanliness a priority?\n          \u251c\u2500\u2500 YES \u2192 REBASE, then merge\n          \u2514\u2500\u2500 NO  \u2192 Either works, MERGE is safer\n```\n\n---\n\n## Summary\n\n- **Merge** is *honest* \u2014 it records what actually happened\n- **Rebase** is *tidy* \u2014 it tells a cleaner story but rewrites history\n- Most teams use **rebase locally** to keep branches current, then **merge** into main via pull requests\n\nThe most important thing is consistency \u2014 pick a convention for your team and stick to it.",
+  "thinking_text": "The user wants a clear explanation of git rebase vs git merge, when to use each, and tradeoffs.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 18.12,
+  "_meta": {
+    "track": "A_prime",
+    "task": "git-rebase-merge",
+    "category": "explanation",
+    "condition": "baseline",
+    "run_num": 3,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 28,
+    "timestamp": 1776610576
+  }
+}

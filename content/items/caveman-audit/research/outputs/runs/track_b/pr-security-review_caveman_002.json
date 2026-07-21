@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 9446,
+  "duration_api_ms": 9397,
+  "num_turns": 1,
+  "result": "**Critical: SQL injection.** `req.params.id` injected directly into query string. Attacker sends `1 OR 1=1` \u2192 dumps all users. Sends `1; DROP TABLE users` \u2192 data loss.\n\n**Fix \u2014 parameterized query:**\n\n```js\napp.get('/api/users/:id', async (req, res) => {\n  try {\n    const user = await db.query('SELECT * FROM users WHERE id = $1', [req.params.id]);\n    if (!user) return res.status(404).json({ error: 'Not found' });\n    res.json(user);\n  } catch (err) {\n    res.status(500).json({ error: 'Internal server error' });\n  }\n});\n```\n\n**Other issues:**\n\n| Issue | Risk | Fix |\n|-------|------|-----|\n| No auth check | Any user fetches any user's data (IDOR) | Verify `req.user.id === req.params.id` or admin role |\n| No input validation | Non-integer id causes DB error or unexpected behavior | Validate `id` is integer before query |\n| `SELECT *` | Leaks password hashes, tokens, internal fields | Explicit column list |\n| No error handling | DB errors expose stack traces to client | Add try/catch, generic error response |\n\n**Auth + validation added:**\n\n```js\napp.get('/api/users/:id', requireAuth, async (req, res) => {\n  const id = parseInt(req.params.id, 10);\n  if (isNaN(id)) return res.status(400).json({ error: 'Invalid id' });\n  if (req.user.id !== id && !req.user.isAdmin) return res.status(403).json({ error: 'Forbidden' });\n\n  try {\n    const user = await db.query(\n      'SELECT id, name, email, created_at FROM users WHERE id = $1',\n      [id]\n    );\n    if (!user) return res.status(404).json({ error: 'Not found' });\n    res.json(user);\n  } catch {\n    res.status(500).json({ error: 'Internal server error' });\n  }\n});\n```\n\nSQL injection is critical \u2014 fix first.",
+  "stop_reason": "end_turn",
+  "session_id": "78fa30ca-3137-490e-af0f-d19eaf483b82",
+  "total_cost_usd": 0.036117300000000005,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6438,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 565,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6438,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 565,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6438,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6438
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 565,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6438,
+      "webSearchRequests": 0,
+      "costUSD": 0.036117300000000005,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "6239e2ee-1fed-4f1c-84ec-eb359e44c43a",
+  "_meta": {
+    "track": "B",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "caveman",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 11.05,
+    "timestamp": 1776774812,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

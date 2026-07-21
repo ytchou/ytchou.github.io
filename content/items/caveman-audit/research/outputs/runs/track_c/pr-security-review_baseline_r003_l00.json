@@ -1,0 +1,39 @@
+{
+  "input_tokens": 2884,
+  "output_tokens": 286,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Two critical issues:\n\n**1. SQL Injection (Critical)**\nThe `id` parameter is interpolated directly into the query string. An attacker can pass `1 OR 1=1` to dump all users, or destructive payloads like `1; DROP TABLE users`.\n\n**2. Missing error handling**\nA rejected promise causes an unhandled rejection, potentially crashing the process or leaking stack traces to the client.\n\n**Fixed version:**\n```js\napp.get('/api/users/:id', async (req, res) => {\n  try {\n    const user = await db.query('SELECT * FROM users WHERE id = ?', [req.params.id]);\n    if (!user) return res.status(404).json({ error: 'Not found' });\n    res.json(user);\n  } catch (err) {\n    res.status(500).json({ error: 'Internal server error' });\n  }\n});\n```\n\nUse a parameterized query (`?` placeholder with a separate values array) \u2014 the driver handles escaping, preventing injection entirely. The exact placeholder syntax (`?` vs `$1`) depends on your database driver.",
+  "thinking_text": "The user wants a security review of this Express route handler.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 27.11,
+  "_meta": {
+    "track": "C",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "baseline",
+    "run_num": 3,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 12880,
+    "timestamp": 1776613648,
+    "level": 0,
+    "ordering": [
+      8,
+      4,
+      6,
+      7,
+      3,
+      0,
+      1,
+      9,
+      5,
+      2
+    ],
+    "chunks_present": [],
+    "num_chunks": 0,
+    "behavioral_chars": 12880,
+    "chunk_chars": 0
+  }
+}

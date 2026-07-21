@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1078,
+  "output_tokens": 821,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Use `pg` (node-postgres). `Pool` class handle connections automatically.\n\n**Install:**\n```bash\nnpm install pg\n```\n\n**Setup:**\n```js\nconst { Pool } = require('pg');\n\nconst pool = new Pool({\n  host:     process.env.DB_HOST,\n  port:     process.env.DB_PORT || 5432,\n  database: process.env.DB_NAME,\n  user:     process.env.DB_USER,\n  password: process.env.DB_PASSWORD,\n\n  // Pool size\n  max:     10,   // max connections (default 10)\n  min:      2,   // keep alive idle connections\n\n  // Timeouts (ms)\n  connectionTimeoutMillis:  3000,   // wait for conn from pool\n  idleTimeoutMillis:       30000,   // drop idle conn after\n  query_timeout:           10000,   // kill slow queries\n  statement_timeout:       10000,   // pg-level query cutoff\n});\n```\n\n**Query wrapper** (safe, no leaked connections):\n```js\nasync function query(text, params) {\n  const start = Date.now();\n  try {\n    const res = await pool.query(text, params);\n    console.log('query', { text, duration: Date.now() - start, rows: res.rowCount });\n    return res;\n  } catch (err) {\n    console.error('query error', { text, error: err.message });\n    throw err;\n  }\n}\n```\n\n**Transaction wrapper** (must use client, not pool):\n```js\nasync function withTransaction(fn) {\n  const client = await pool.connect();\n  try {\n    await client.query('BEGIN');\n    const result = await fn(client);\n    await client.query('COMMIT');\n    return result;\n  } catch (err) {\n    await client.query('ROLLBACK');\n    throw err;\n  } finally {\n    client.release();   // always release \u2014 leak = pool starve\n  }\n}\n```\n\n**Pool-level error handler** (required \u2014 unhandled idle conn errors crash process):\n```js\npool.on('error', (err, client) => {\n  console.error('idle client error', err.message);\n  // don't rethrow \u2014 just log\n});\n```\n\n**Graceful shutdown:**\n```js\nprocess.on('SIGTERM', async () => {\n  await pool.end();\n  process.exit(0);\n});\n```\n\n---\n\n**Key knobs:**\n\n| Config | Why |\n|--------|-----|\n| `max` | High = more concurrency, more DB RAM. Match DB `max_connections` budget |\n| `connectionTimeoutMillis` | Prevent request pile-up when DB slow. Throw fast, fail visible |\n| `statement_timeout` | DB-level cutoff. Survive runaway queries even if app crash |\n| `idleTimeoutMillis` | Free unused conns. Avoid \"too many connections\" at idle |\n\n**Watch for:**\n- Always `release()` in `finally` \u2014 missed release starve pool silently\n- `pool.query` auto-acquire/release \u2014 use for simple queries\n- `pool.connect()` for multi-step ops/transactions only",
+  "thinking_text": "The user wants to know how to set up a PostgreSQL connection pool in Node.js with proper timeout and error handling. I should respond in caveman mode (full, default).",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 23.98,
+  "_meta": {
+    "track": "A_prime",
+    "task": "postgres-pool",
+    "category": "setup",
+    "condition": "caveman",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776610522
+  }
+}

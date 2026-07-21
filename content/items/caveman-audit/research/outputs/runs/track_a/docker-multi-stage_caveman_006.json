@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1063,
+  "output_tokens": 534,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "```dockerfile\n# Stage 1: deps\nFROM node:20-alpine AS deps\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci\n\n# Stage 2: build\nFROM node:20-alpine AS build\nWORKDIR /app\nCOPY --from=deps /app/node_modules ./node_modules\nCOPY . .\nRUN npm run build          # tsc \u2192 dist/\n\n# Stage 3: prod deps only\nFROM node:20-alpine AS prod-deps\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci --omit=dev\n\n# Stage 4: final\nFROM node:20-alpine AS final\nENV NODE_ENV=production\nWORKDIR /app\n\n# Non-root user\nRUN addgroup -S appgroup && adduser -S appuser -G appgroup\nUSER appuser\n\nCOPY --from=prod-deps /app/node_modules ./node_modules\nCOPY --from=build     /app/dist         ./dist\nCOPY package.json ./\n\nEXPOSE 3000\nCMD [\"node\", \"dist/index.js\"]\n```\n\n## Why each stage\n\n| Stage | Purpose | Dropped in final |\n|-------|---------|-----------------|\n| `deps` | Install all deps (cache layer) | Yes |\n| `build` | Run `tsc` | Yes \u2014 src + devDeps gone |\n| `prod-deps` | `npm ci --omit=dev` clean install | Yes |\n| `final` | Runtime only | \u2014 |\n\n## Size wins\n\n- **alpine** base \u2192 ~180MB vs ~1GB full node\n- **devDeps excluded** \u2014 no ts, @types/*, ts-node, etc.\n- **Source excluded** \u2014 only `dist/` copied\n- **Non-root user** \u2014 security + some registries require it\n\n## Assumptions to adjust\n\n```\nCMD [\"node\", \"dist/index.js\"]   # change if entrypoint differ\nEXPOSE 3000                      # match app port\nnpm run build                    # must call tsc, check package.json scripts\n```\n\n## `.dockerignore` \u2014 add this too\n\n```\nnode_modules\ndist\n.git\n*.md\n.env*\n```\n\nWithout `.dockerignore`, `COPY . .` send fat context \u2192 slow builds.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 19.17,
+  "_meta": {
+    "track": "C",
+    "task": "docker-multi-stage",
+    "category": "devops",
+    "condition": "caveman",
+    "run_num": 6,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776586026
+  }
+}

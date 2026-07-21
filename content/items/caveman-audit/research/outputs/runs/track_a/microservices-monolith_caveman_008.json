@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1063,
+  "output_tokens": 579,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## Monolith \u2192 Microservices: Consider First\n\n**Split only if monolith actually broken for your needs.** Most teams split too early.\n\n---\n\n### Signals That Split Makes Sense\n\n- Deploy one feature = risk whole app\n- Teams block each other constantly\n- One component needs 10x scale, rest need 1x\n- Tech debt isolated to one domain, rest healthy\n\n### Signals To Stay Monolith\n\n- Team < 10-15 devs\n- Traffic manageable with vertical scale + caching\n- Domains not yet clear \u2014 splitting wrong boundaries = disaster\n- No DevOps maturity (microservices = 5x ops complexity)\n\n---\n\n### Key Factors To Evaluate\n\n**1. Domain Boundaries**\nClear bounded contexts exist? If yes, split viable. If domains tangled \u2192 extract = pain. Use event storming first.\n\n**2. Team Structure**\nConway's Law real. Org structure \u2192 system structure. One team = one service max. No team = no service.\n\n**3. Data Coupling**\nShared DB = hardest problem. Each service needs own DB. Django ORM across service boundary = gone. Foreign keys across services = gone. Replace with eventual consistency + events.\n\n**4. Operational Readiness**\nNeed before split:\n- Distributed tracing (Jaeger/Tempo)\n- Centralized logging\n- Service discovery\n- CI/CD per service\n- Health checks + circuit breakers\n\n**5. Actual Bottleneck**\nProfile first. Slow Django app usually:\n- N+1 queries \u2192 `select_related`/`prefetch_related`\n- Missing DB indexes\n- No caching (Redis)\n- Sync tasks that should be async (Celery)\n\nFix these first. Often buys 12-18 months.\n\n---\n\n### Pragmatic Path\n\n```\nMonolith \u2192 Modular Monolith \u2192 Extract 1-2 services \u2192 More if needed\n```\n\n1. **Enforce module boundaries inside Django** (separate apps, no cross-import)\n2. **Extract high-value targets first** \u2014 auth, notifications, heavy async jobs\n3. **Strangler fig pattern** \u2014 new traffic routes to new service, old stays until migrated\n4. **Never split data and logic separately** \u2014 service owns its data or chaos follows\n\n---\n\n**Bottom line:** Slow Django = fix queries + add caching first. If team/deploy friction is real problem, modular monolith next. Full microservices only when org + ops ready.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 15.26,
+  "_meta": {
+    "track": "C",
+    "task": "microservices-monolith",
+    "category": "architecture",
+    "condition": "caveman",
+    "run_num": 8,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585719
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "input_tokens": 12258,
+  "output_tokens": 145,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "```js\nasync function getUser(id) {\n  const rows = await db.query('SELECT * FROM users WHERE id = ?', [id]);\n  if (!rows.length) throw new Error('Not found');\n  return rows[0];\n}\n```\n\nKey changes:\n- `async` replaces the `callback` parameter\n- `await` replaces the nested callback \u2014 `db.query` errors now throw automatically\n- Return value replaces `callback(null, result)`; callers use `try/catch` for errors",
+  "thinking_text": "Simple refactor, no need to read files or explore codebase.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 4.04,
+  "_meta": {
+    "track": "C",
+    "task": "async-refactor",
+    "category": "refactor",
+    "condition": "baseline",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 49405,
+    "timestamp": 1776613132,
+    "level": 4,
+    "ordering": [
+      3,
+      6,
+      1,
+      2,
+      5,
+      0,
+      8,
+      7,
+      9,
+      4
+    ],
+    "chunks_present": [
+      0,
+      1,
+      2,
+      3,
+      5,
+      6,
+      7,
+      8
+    ],
+    "num_chunks": 8,
+    "behavioral_chars": 12880,
+    "chunk_chars": 36509
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "input_tokens": 2844,
+  "output_tokens": 727,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Here's the implementation:\n\n```tsx\n// ErrorBoundary.tsx\nimport { Component, type ErrorInfo, type ReactNode } from \"react\";\n\ninterface Props {\n  children: ReactNode;\n  fallback?: (error: Error, retry: () => void) => ReactNode;\n}\n\ninterface State {\n  error: Error | null;\n}\n\nexport class ErrorBoundary extends Component<Props, State> {\n  state: State = { error: null };\n\n  static getDerivedStateFromError(error: Error): State {\n    return { error };\n  }\n\n  componentDidCatch(error: Error, info: ErrorInfo) {\n    console.error(\"[ErrorBoundary]\", error.message, {\n      stack: error.stack,\n      componentStack: info.componentStack,\n    });\n  }\n\n  retry = () => this.setState({ error: null });\n\n  render() {\n    const { error } = this.state;\n    const { children, fallback } = this.props;\n\n    if (error) {\n      return fallback ? (\n        fallback(error, this.retry)\n      ) : (\n        <DefaultFallback error={error} retry={this.retry} />\n      );\n    }\n\n    return children;\n  }\n}\n\nfunction DefaultFallback({ error, retry }: { error: Error; retry: () => void }) {\n  return (\n    <div role=\"alert\" style={{ padding: \"1rem\", border: \"1px solid #f00\" }}>\n      <h2>Something went wrong</h2>\n      <pre style={{ fontSize: \"0.85em\", color: \"#c00\" }}>{error.message}</pre>\n      <button onClick={retry}>Retry</button>\n    </div>\n  );\n}\n```\n\n**Usage:**\n\n```tsx\n// Basic \u2014 uses default fallback UI\n<ErrorBoundary>\n  <MyComponent />\n</ErrorBoundary>\n\n// Custom fallback\n<ErrorBoundary\n  fallback={(error, retry) => (\n    <div>\n      <p>Error: {error.message}</p>\n      <button onClick={retry}>Try again</button>\n    </div>\n  )}\n>\n  <MyComponent />\n</ErrorBoundary>\n```\n\n**Key design decisions:**\n\n| Decision | Reason |\n|---|---|\n| Class component | `getDerivedStateFromError` / `componentDidCatch` have no hook equivalents |\n| `retry` resets state to `null` | Re-renders children; if the error was transient (e.g. a failed fetch), it recovers cleanly |\n| `fallback` prop as render function | Gives callers access to `error` and `retry` without extra context plumbing |\n| `role=\"alert\"` on default UI | Screen readers announce the error immediately |\n\nNote: retry only works if the underlying cause is gone \u2014 wrap data-fetching children in something like `react-query` or a `key` prop reset if you need forced remounting.",
+  "thinking_text": "Let me implement a React error boundary component.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 19.43,
+  "_meta": {
+    "track": "C",
+    "task": "error-boundary",
+    "category": "implementation",
+    "condition": "baseline",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 12880,
+    "timestamp": 1776611847,
+    "level": 0,
+    "ordering": [
+      5,
+      6,
+      9,
+      7,
+      1,
+      8,
+      3,
+      0,
+      2,
+      4
+    ],
+    "chunks_present": [],
+    "num_chunks": 0,
+    "behavioral_chars": 12880,
+    "chunk_chars": 0
+  }
+}

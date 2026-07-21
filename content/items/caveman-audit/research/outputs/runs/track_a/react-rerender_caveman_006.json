@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1056,
+  "output_tokens": 231,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "New object literal created every render \u2192 new reference \u2192 child sees \"changed\" prop \u2192 re-render.\n\n```jsx\n// Bad: new object each render\n<Child config={{ theme: 'dark', size: 'lg' }} />\n\n// Fix 1: useMemo\nconst config = useMemo(() => ({ theme: 'dark', size: 'lg' }), []);\n<Child config={config} />\n\n// Fix 2: lift outside component (if static)\nconst CONFIG = { theme: 'dark', size: 'lg' };\nfunction Parent() {\n  return <Child config={CONFIG} />;\n}\n\n// Fix 3: memo on child\nconst Child = React.memo(({ config }) => { ... });\n```\n\nRoot cause: JS object equality by reference, not value. `{} !== {}` always true.\n\nPick fix based on whether object depend on state/props. Static \u2192 lift out. Dynamic \u2192 `useMemo`. Child owns re-render logic \u2192 `React.memo`.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 5.21,
+  "_meta": {
+    "track": "C",
+    "task": "react-rerender",
+    "category": "debugging",
+    "condition": "caveman",
+    "run_num": 6,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585119
+  }
+}

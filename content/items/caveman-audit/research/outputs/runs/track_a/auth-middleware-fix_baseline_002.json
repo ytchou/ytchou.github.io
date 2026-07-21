@@ -1,0 +1,21 @@
+{
+  "input_tokens": 52,
+  "output_tokens": 1084,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## JWT Expiry Check Bug\n\nThe most common cause is a **units mismatch**. JWT `exp` is in **seconds**, but `Date.now()` returns **milliseconds**.\n\n### The Bug\n\n```javascript\n// BROKEN - comparing milliseconds to seconds\nconst isExpired = Date.now() > payload.exp;\n// Date.now() \u2248 1700000000000 (milliseconds)\n// payload.exp \u2248 1700000000    (seconds)\n// 1700000000000 > 1700000000 is ALWAYS true... \n// wait, that would reject everything\n\n// More likely bug - reversed comparison or divided incorrectly\nconst isExpired = payload.exp > Date.now(); // reversed - always passes expired tokens\n// OR\nconst isExpired = Date.now() / 1000 > payload.exp; // this is actually correct\n```\n\n### Common Variations of This Bug\n\n```javascript\n// Bug 1: Reversed comparison (most likely your issue)\nif (payload.exp > Date.now()) {  // WRONG - backwards logic\n  throw new Error('Token expired');\n}\n\n// Bug 2: Wrong units, no conversion\nif (Date.now() > payload.exp) {  // WRONG - ms vs seconds, always \"expired\"\n  throw new Error('Token expired');\n}\n\n// Bug 3: Multiplying instead of dividing\nif ((Date.now() * 1000) > payload.exp) {  // WRONG - makes it even larger\n  throw new Error('Token expired');\n}\n```\n\n### The Fix\n\n```javascript\nconst authMiddleware = (req, res, next) => {\n  try {\n    const token = req.headers.authorization?.split(' ')[1];\n    \n    if (!token) {\n      return res.status(401).json({ error: 'No token provided' });\n    }\n\n    const payload = jwt.decode(token); // or your manual decode\n\n    if (!payload) {\n      return res.status(401).json({ error: 'Invalid token' });\n    }\n\n    // CORRECT: Convert Date.now() ms \u2192 seconds to match JWT exp\n    const currentTimeInSeconds = Math.floor(Date.now() / 1000);\n\n    if (!payload.exp) {\n      return res.status(401).json({ error: 'Token has no expiry' });\n    }\n\n    if (currentTimeInSeconds > payload.exp) {\n      return res.status(401).json({ error: 'Token expired' });\n    }\n\n    req.user = payload;\n    next();\n\n  } catch (err) {\n    return res.status(401).json({ error: 'Authentication failed' });\n  }\n};\n```\n\n### Better: Use jsonwebtoken's Built-in Verification\n\nDon't manually check expiry \u2014 `jwt.verify()` handles it automatically and correctly:\n\n```javascript\nconst jwt = require('jsonwebtoken');\n\nconst authMiddleware = (req, res, next) => {\n  try {\n    const token = req.headers.authorization?.split(' ')[1];\n\n    if (!token) {\n      return res.status(401).json({ error: 'No token provided' });\n    }\n\n    // verify() checks signature AND expiry automatically\n    const payload = jwt.verify(token, process.env.JWT_SECRET);\n\n    req.user = payload;\n    next();\n\n  } catch (err) {\n    // jwt.verify throws specific errors you can handle\n    if (err.name === 'TokenExpiredError') {\n      return res.status(401).json({ error: 'Token expired' });\n    }\n    if (err.name === 'JsonWebTokenError') {\n      return res.status(401).json({ error: 'Invalid token' });\n    }\n    return res.status(401).json({ error: 'Authentication failed' });\n  }\n};\n```\n\n### Quick Debugging Checklist\n\n| Issue | Symptom | Fix |\n|-------|---------|-----|\n| Reversed `>` vs `<` | Expired tokens pass, valid tokens rejected | Flip comparison |\n| Missing `/ 1000` | All tokens appear expired | Divide `Date.now()` by 1000 |\n| Using `jwt.decode()` | No signature or expiry validation | Switch to `jwt.verify()` |\n| No `exp` field in token | Expiry check silently skipped | Validate `exp` exists, or reject tokens without it |\n\n**Share your actual middleware code** if the issue is different from these \u2014 the fix depends on exactly how your check is written.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 17.01,
+  "_meta": {
+    "track": "C",
+    "task": "auth-middleware-fix",
+    "category": "bugfix",
+    "condition": "baseline",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 28,
+    "timestamp": 1776585142
+  }
+}

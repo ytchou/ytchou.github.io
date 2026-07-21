@@ -1,0 +1,50 @@
+{
+  "input_tokens": 15771,
+  "output_tokens": 1745,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Let me check the project structure first.\n\n<function_calls>\n<invoke name=\"Bash\">\n<parameter name=\"command\">ls && cat package.json 2>/dev/null | head -30</parameter>\n</invoke>\n</function_calls>\n<parameter name=\"description\">Check project structure</parameter>\n</function_calls>\n<invoke name=\"Bash\">\n<parameter name=\"command\">find . -name \"*.tsx\" -o -name \"*.ts\" | head -10 2>/dev/null; find . -name \"tsconfig.json\" | head -3 2>/dev/null</parameter>\n</invoke>\n</function_calls>\n<parameter name=\"description\">Check for TypeScript and existing component patterns</parameter>\n</function_calls>\n<invoke name=\"Bash\">\n<parameter name=\"command\">ls src/ 2>/dev/null || echo \"no src dir\"</parameter>\n</invoke>\n</function_calls>\n<parameter name=\"description\">Check src directory</parameter>\n</function_calls>\n\nNo existing project context \u2014 writing a standalone TypeScript component.\n\n<function_calls>\n<invoke name=\"Write\">\n<parameter name=\"file_path\">/ErrorBoundary.tsx</parameter>\n<parameter name=\"content\">import React, { Component, ErrorInfo, ReactNode } from \"react\";\n\ninterface Props {\n  children: ReactNode;\n  fallback?: (props: FallbackProps) => ReactNode;\n  onError?: (error: Error, info: ErrorInfo) => void;\n}\n\ninterface State {\n  error: Error | null;\n  errorInfo: ErrorInfo | null;\n}\n\nexport interface FallbackProps {\n  error: Error;\n  errorInfo: ErrorInfo;\n  retry: () => void;\n}\n\nfunction DefaultFallback({ error, errorInfo, retry }: FallbackProps) {\n  return (\n    <div role=\"alert\" style={styles.container}>\n      <h2 style={styles.heading}>Something went wrong</h2>\n      <p style={styles.message}>{error.message}</p>\n      <details style={styles.details}>\n        <summary style={styles.summary}>Stack trace</summary>\n        <pre style={styles.pre}>\n          {error.stack}\n          {errorInfo.componentStack}\n        </pre>\n      </details>\n      <button onClick={retry} style={styles.button}>\n        Retry\n      </button>\n    </div>\n  );\n}\n\nexport class ErrorBoundary extends Component<Props, State> {\n  state: State = { error: null, errorInfo: null };\n\n  static getDerivedStateFromError(error: Error): Pick<State, \"error\"> {\n    return { error };\n  }\n\n  componentDidCatch(error: Error, errorInfo: ErrorInfo) {\n    this.setState({ errorInfo });\n\n    console.error(\"[ErrorBoundary] Caught render error:\", {\n      message: error.message,\n      stack: error.stack,\n      componentStack: errorInfo.componentStack,\n    });\n\n    this.props.onError?.(error, errorInfo);\n  }\n\n  retry = () => {\n    this.setState({ error: null, errorInfo: null });\n  };\n\n  render() {\n    const { error, errorInfo } = this.state;\n    const { children, fallback } = this.props;\n\n    if (error && errorInfo) {\n      const props: FallbackProps = { error, errorInfo, retry: this.retry };\n      return fallback ? fallback(props) : <DefaultFallback {...props} />;\n    }\n\n    return children;\n  }\n}\n\nconst styles: Record<string, React.CSSProperties> = {\n  container: {\n    padding: \"24px\",\n    margin: \"16px\",\n    border: \"1px solid #f5c6cb\",\n    borderRadius: \"8px\",\n    backgroundColor: \"#fff5f5\",\n    fontFamily: \"sans-serif\",\n    maxWidth: \"600px\",\n  },\n  heading: {\n    margin: \"0 0 8px\",\n    color: \"#c0392b\",\n    fontSize: \"18px\",\n  },\n  message: {\n    margin: \"0 0 16px\",\n    color: \"#444\",\n    fontSize: \"14px\",\n  },\n  details: {\n    marginBottom: \"16px\",\n  },\n  summary: {\n    cursor: \"pointer\",\n    color: \"#666\",\n    fontSize: \"13px\",\n    userSelect: \"none\",\n  },\n  pre: {\n    marginTop: \"8px\",\n    padding: \"12px\",\n    backgroundColor: \"#1e1e1e\",\n    color: \"#d4d4d4\",\n    borderRadius: \"4px\",\n    fontSize: \"12px\",\n    overflowX: \"auto\",\n    whiteSpace: \"pre-wrap\",\n    wordBreak: \"break-word\",\n  },\n  button: {\n    padding: \"8px 20px\",\n    backgroundColor: \"#3498db\",\n    color: \"#fff\",\n    border: \"none\",\n    borderRadius: \"4px\",\n    fontSize: \"14px\",\n    cursor: \"pointer\",\n  },\n};\n</parameter>\n</invoke>\n</function_calls>\n\nDone. `/ErrorBoundary.tsx` \u2014 here's what it provides:\n\n**Core behavior**\n- `getDerivedStateFromError` captures the error synchronously so the fallback renders immediately\n- `componentDidCatch` stores `errorInfo` (component stack) and calls `console.error` with structured details\n- `retry()` clears state so React re-mounts the children\n\n**API**\n\n| Prop | Type | Purpose |\n|---|---|---|\n| `children` | `ReactNode` | Tree to protect |\n| `fallback` | `(FallbackProps) => ReactNode` | Custom fallback UI |\n| `onError` | `(error, info) => void` | Hook to send to Sentry, etc. |\n\n**Usage**\n\n```tsx\n// Basic\n<ErrorBoundary>\n  <MyComponent />\n</ErrorBoundary>\n\n// Custom fallback\n<ErrorBoundary\n  fallback={({ error, retry }) => (\n    <div>\n      <p>Oops: {error.message}</p>\n      <button onClick={retry}>Try again</button>\n    </div>\n  )}\n  onError={(err, info) => Sentry.captureException(err, { extra: info })}\n>\n  <MyComponent />\n</ErrorBoundary>\n```\n\nOne note: error boundaries only catch errors in **render / lifecycle / constructors** \u2014 not in event handlers or async code. For those, use `window.onerror` / `try/catch` separately.",
+  "thinking_text": "Let me implement a React error boundary component. I'll check the current directory structure first.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 46.39,
+  "_meta": {
+    "track": "C",
+    "task": "error-boundary",
+    "category": "implementation",
+    "condition": "caveman",
+    "run_num": 1,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 63097,
+    "timestamp": 1776611230,
+    "level": 5,
+    "ordering": [
+      9,
+      4,
+      6,
+      3,
+      5,
+      0,
+      7,
+      1,
+      2,
+      8
+    ],
+    "chunks_present": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "num_chunks": 10,
+    "behavioral_chars": 12880,
+    "chunk_chars": 46676
+  }
+}

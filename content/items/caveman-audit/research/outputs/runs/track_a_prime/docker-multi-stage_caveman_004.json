@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1092,
+  "output_tokens": 619,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Multi-stage: build in full Node, copy only compiled output + prod deps into slim final.\n\n```dockerfile\n# \u2500\u2500 Stage 1: deps \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nFROM node:20-alpine AS deps\nWORKDIR /app\n\nCOPY package*.json ./\nRUN npm ci\n\n# \u2500\u2500 Stage 2: build \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nFROM node:20-alpine AS builder\nWORKDIR /app\n\nCOPY --from=deps /app/node_modules ./node_modules\nCOPY . .\nRUN npm run build          # tsc \u2192 dist/\n\n# \u2500\u2500 Stage 3: prod deps only \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nFROM node:20-alpine AS prod-deps\nWORKDIR /app\n\nCOPY package*.json ./\nRUN npm ci --omit=dev\n\n# \u2500\u2500 Stage 4: final \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nFROM node:20-alpine AS final\nWORKDIR /app\n\nENV NODE_ENV=production\n\n# non-root user \u2014 no root in prod\nRUN addgroup -S appgroup && adduser -S appuser -G appgroup\nUSER appuser\n\nCOPY --from=prod-deps /app/node_modules ./node_modules\nCOPY --from=builder   /app/dist         ./dist\nCOPY package*.json ./\n\nEXPOSE 3000\nCMD [\"node\", \"dist/index.js\"]\n```\n\n**Why each stage:**\n\n| Stage | Purpose | Dropped in final |\n|-------|---------|-----------------|\n| `deps` | Cache full `node_modules` layer separately | Yes |\n| `builder` | Run `tsc`, produce `dist/` | Yes |\n| `prod-deps` | `npm ci --omit=dev` = no devDeps | Yes |\n| `final` | Only: `dist/` + prod `node_modules` | \u2014 |\n\n**Size wins:**\n- `alpine` base ~5 MB vs `node:20` ~350 MB\n- No TypeScript, ts-node, test libs, source `.ts` in final\n- Non-root user: security + some registries reject root containers\n\n**Assumptions to adjust:**\n- Build script name: `npm run build` \u2192 match your `package.json`\n- Entry: `dist/index.js` \u2192 match your `outDir` + root file in `tsconfig.json`\n- Port `3000` \u2192 match your app",
+  "thinking_text": "The user wants a multi-stage Dockerfile for Node.js TypeScript app. Caveman mode is active (default: full). Let me write this concisely.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 25.54,
+  "_meta": {
+    "track": "A_prime",
+    "task": "docker-multi-stage",
+    "category": "devops",
+    "condition": "caveman",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776610882
+  }
+}

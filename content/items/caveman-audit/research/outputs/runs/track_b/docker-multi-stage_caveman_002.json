@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 8351,
+  "duration_api_ms": 8301,
+  "num_turns": 1,
+  "result": "```dockerfile\n# Stage 1: Install deps\nFROM node:22-alpine AS deps\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci --ignore-scripts\n\n# Stage 2: Build\nFROM node:22-alpine AS builder\nWORKDIR /app\nCOPY --from=deps /app/node_modules ./node_modules\nCOPY . .\nRUN npm run build\n\n# Stage 3: Runtime\nFROM node:22-alpine AS runner\nENV NODE_ENV=production\nWORKDIR /app\n\nCOPY package*.json ./\nRUN npm ci --omit=dev --ignore-scripts && npm cache clean --force\n\nCOPY --from=builder /app/dist ./dist\n\nRUN addgroup -S appgroup && adduser -S appuser -G appgroup\nUSER appuser\n\nEXPOSE 3000\nCMD [\"node\", \"dist/index.js\"]\n```\n\nKey decisions:\n\n- **alpine** base \u2014 ~5MB vs ~900MB for full debian\n- **deps stage** isolated \u2014 layer cache hit on `node_modules` when only src changes\n- **builder stage** compiles TS, discarded after\n- **runner stage** installs only prod deps (`--omit=dev`), copies only `dist/`\n- `npm cache clean --force` sheds ~50\u2013100MB from cache in final layer\n- non-root user \u2014 `appuser` reduces attack surface\n- `--ignore-scripts` prevents postinstall script execution from deps\n\nAssumes `tsconfig.json` outputs to `dist/`. Adjust `CMD` if entry point differs.",
+  "stop_reason": "end_turn",
+  "session_id": "abed24a3-6658-48be-b518-9f3fc9d52b23",
+  "total_cost_usd": 0.0334323,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6406,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 394,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6406,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 394,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6406,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6406
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 394,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6406,
+      "webSearchRequests": 0,
+      "costUSD": 0.0334323,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "bb1e9465-5ff4-4b80-b7a5-ecc2ba804e84",
+  "_meta": {
+    "track": "B",
+    "task": "docker-multi-stage",
+    "category": "devops",
+    "condition": "caveman",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 9.99,
+    "timestamp": 1776774837,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

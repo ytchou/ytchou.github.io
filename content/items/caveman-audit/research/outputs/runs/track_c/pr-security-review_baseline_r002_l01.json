@@ -1,0 +1,42 @@
+{
+  "input_tokens": 5257,
+  "output_tokens": 323,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Two issues:\n\n**1. SQL Injection (Critical)**\n\n`req.params.id` is interpolated directly into the query string. An attacker can pass `1 OR 1=1` or `1; DROP TABLE users--` as the id.\n\n**Fix: use a parameterized query**\n```js\napp.get('/api/users/:id', (req, res) => {\n  db.query('SELECT * FROM users WHERE id = ?', [req.params.id])\n    .then(user => res.json(user));\n});\n```\n\n**2. Missing error handling**\n\nA rejected promise crashes the process (or leaks a stack trace to the client in some frameworks).\n\n**Fix: add a catch**\n```js\napp.get('/api/users/:id', (req, res) => {\n  db.query('SELECT * FROM users WHERE id = ?', [req.params.id])\n    .then(user => res.json(user))\n    .catch(() => res.status(500).json({ error: 'Internal server error' }));\n});\n```\n\n**Minor: consider input validation** \u2014 if `id` is always an integer, reject non-numeric values before hitting the DB at all (e.g. check `Number.isInteger(Number(req.params.id))`).",
+  "thinking_text": "The user wants a security review of this Express route handler.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 15.71,
+  "_meta": {
+    "track": "C",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "baseline",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 21471,
+    "timestamp": 1776613465,
+    "level": 1,
+    "ordering": [
+      3,
+      2,
+      9,
+      6,
+      4,
+      0,
+      5,
+      1,
+      7,
+      8
+    ],
+    "chunks_present": [
+      2,
+      3
+    ],
+    "num_chunks": 2,
+    "behavioral_chars": 12880,
+    "chunk_chars": 8587
+  }
+}

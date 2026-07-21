@@ -1,0 +1,22 @@
+{
+  "input_tokens": 69,
+  "output_tokens": 778,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "# Git Merge vs Git Rebase\n\n## What They Do\n\n**Merge** joins two branches by creating a new \"merge commit\" that has two parents:\n```\nmain:    A---B---C---M\n                    /\nfeature:    D---E--\n```\nThe history shows exactly when branches diverged and rejoined.\n\n**Rebase** moves your commits to sit on top of another branch, rewriting their history:\n```\nBefore:          After rebase onto main:\nmain:  A---B---C    main:  A---B---C\n              \\                    \\\nfeature: D---E  feature:    D'---E'\n```\nD and E become new commits (D', E') with new hashes.\n\n---\n\n## Key Differences\n\n| | Merge | Rebase |\n|---|---|---|\n| History | Preserves exact history | Creates linear history |\n| Commits | Adds a merge commit | Rewrites existing commits |\n| Safety | Safe on shared branches | **Dangerous on shared branches** |\n| Conflicts | Resolve once | Resolve per-commit |\n| Traceability | Easy to see branch points | Harder to see original context |\n\n---\n\n## When to Use Each\n\n### Use **Merge** when:\n- Working on **shared/public branches** (main, develop)\n- You want to **preserve the true history** of what happened\n- Merging a completed feature branch into main\n- Working with a team where others have pulled the branch\n\n```bash\ngit checkout main\ngit merge feature/my-feature\n```\n\n### Use **Rebase** when:\n- **Updating your local feature branch** with recent changes from main\n- You want a **clean, linear history** before merging\n- Cleaning up messy local commits before sharing\n- Your branch only exists on your machine\n\n```bash\ngit checkout feature/my-feature\ngit rebase main\n```\n\n---\n\n## The Golden Rule\n\n> **Never rebase a branch that others are working on**\n\nRebasing rewrites commit hashes. If someone else has based work on your original commits, their history becomes incompatible with yours \u2014 causing painful conflicts.\n\n---\n\n## Common Workflows\n\n### Option 1: Merge everything\n```bash\n# Simple, safe, noisy history\ngit checkout main && git merge feature\n```\n\n### Option 2: Rebase then merge (most popular)\n```bash\n# Clean up your branch first, then merge cleanly\ngit checkout feature\ngit rebase main          # update with latest main\ngit checkout main\ngit merge feature        # now a fast-forward, no merge commit\n```\n\n### Option 3: Interactive rebase (clean up before sharing)\n```bash\n# Squash/edit your commits before merging\ngit rebase -i main\n```\nThis lets you squash \"WIP\" commits, fix typos in messages, etc.\n\n---\n\n## Quick Decision Guide\n\n```\nIs the branch public/shared?\n\u251c\u2500\u2500 Yes \u2192 Use MERGE\n\u2514\u2500\u2500 No (local only)\n    \u251c\u2500\u2500 Want clean linear history? \u2192 REBASE\n    \u2514\u2500\u2500 Want to preserve history? \u2192 MERGE\n```\n\nThe most practical default: **rebase your local feature branches onto main to stay updated, then merge (or PR) into main when done.**",
+  "thinking_text": "The user wants a clear explanation of git rebase vs git merge, with practical guidance on when to use each.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 24.74,
+  "_meta": {
+    "track": "A_prime",
+    "task": "git-rebase-merge",
+    "category": "explanation",
+    "condition": "baseline",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 28,
+    "timestamp": 1776610563
+  }
+}

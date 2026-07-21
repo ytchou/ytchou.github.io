@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1065,
+  "output_tokens": 273,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "JWT `exp` in seconds. `Date.now()` in milliseconds.\n\n**Bug:**\n```js\nif (Date.now() > payload.exp) // wrong \u2014 always false, exp looks huge\n```\n\n**Fix:**\n```js\nif (Math.floor(Date.now() / 1000) > payload.exp) // correct\n```\n\nOr:\n```js\nif (Date.now() > payload.exp * 1000) // also correct\n```\n\n**Full middleware:**\n```js\nfunction authMiddleware(req, res, next) {\n  const token = req.headers.authorization?.split(' ')[1];\n  if (!token) return res.status(401).json({ error: 'No token' });\n\n  try {\n    const payload = jwt.verify(token, SECRET); // verify() checks exp automatically\n    req.user = payload;\n    next();\n  } catch (err) {\n    return res.status(401).json({ error: err.message });\n  }\n}\n```\n\nBetter fix: let `jwt.verify()` handle expiry check \u2014 throws `TokenExpiredError` if expired. No manual `Date.now()` needed.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 4.72,
+  "_meta": {
+    "track": "C",
+    "task": "auth-middleware-fix",
+    "category": "bugfix",
+    "condition": "caveman",
+    "run_num": 9,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585201
+  }
+}

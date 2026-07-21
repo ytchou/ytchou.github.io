@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1087,
+  "output_tokens": 453,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Race condition: read-then-write. Two requests read same value, both write +1. Net result: +1 not +2.\n\n**Fix: atomic update in DB, skip app-level read.**\n\n```sql\n-- Bad: two round trips, race window between them\nSELECT counter FROM table WHERE id = $1;\n-- ... app adds 1 ...\nUPDATE table SET counter = $2 WHERE id = $1;\n\n-- Good: one atomic op\nUPDATE table SET counter = counter + 1 WHERE id = $1 RETURNING counter;\n```\n\n```js\n// Bad\nconst { rows } = await db.query('SELECT counter FROM counters WHERE id = $1', [id]);\nconst newVal = rows[0].counter + 1;\nawait db.query('UPDATE counters SET counter = $1 WHERE id = $2', [newVal, id]);\nreturn newVal; // race lives here\n\n// Good\nconst { rows } = await db.query(\n  'UPDATE counters SET counter = counter + 1 WHERE id = $1 RETURNING counter',\n  [id]\n);\nreturn rows[0].counter; // atomic, safe\n```\n\nDB handle increment as single operation. Concurrent requests serialize at row level. No gap.\n\n**If need compare-and-swap instead** (only increment under condition):\n\n```sql\nUPDATE counters SET counter = counter + 1\nWHERE id = $1 AND counter < $2\nRETURNING counter;\n```\n\nCheck `rows.length === 0` \u2192 condition failed, handle accordingly.\n\n**Bonus: high contention** \u2192 consider `SELECT ... FOR UPDATE` inside transaction or use Redis `INCR` (single-threaded, zero race possible).",
+  "thinking_text": "The user has a race condition in their Node.js API with PostgreSQL counter increments. Let me respond in caveman mode (full, default).\n\nThe fix is atomic update in PostgreSQL - use `UPDATE ... RETURNING` instead of SELECT then UPDATE.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 9.41,
+  "_meta": {
+    "track": "A_prime",
+    "task": "race-condition-debug",
+    "category": "debugging",
+    "condition": "caveman",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776610948
+  }
+}

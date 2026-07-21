@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 10819,
+  "duration_api_ms": 10763,
+  "num_turns": 1,
+  "result": "Use `pg` (node-postgres) with `Pool`. Key config:\n\n```javascript\nimport { Pool } from 'pg';\n\nconst pool = new Pool({\n  connectionString: process.env.DATABASE_URL,\n  // Pool sizing\n  max: 20,                    // max connections\n  min: 2,                     // keep alive connections\n  idleTimeoutMillis: 30000,   // kill idle conn after 30s\n  connectionTimeoutMillis: 5000, // fail fast if can't connect in 5s\n  // Query timeout (pg v8+)\n  statement_timeout: 10000,   // kill query after 10s\n  query_timeout: 10000,\n});\n\n// Catch idle errors (network drops, DB restart)\npool.on('error', (err, client) => {\n  console.error('Idle client error:', err);\n  // Don't crash \u2014 pool auto-recovers\n});\n\nexport default pool;\n```\n\n**Usage pattern \u2014 always release:**\n\n```javascript\n// Option A: pool.query (auto-release, single queries)\nconst { rows } = await pool.query('SELECT * FROM users WHERE id = $1', [id]);\n\n// Option B: manual client (transactions)\nconst client = await pool.connect();\ntry {\n  await client.query('BEGIN');\n  await client.query('INSERT INTO ...', [...]);\n  await client.query('COMMIT');\n} catch (err) {\n  await client.query('ROLLBACK');\n  throw err;\n} finally {\n  client.release(); // MUST release or pool exhausts\n}\n```\n\n**Error types to handle:**\n\n| Code | Meaning | Action |\n|------|---------|--------|\n| `ECONNREFUSED` | DB down | retry with backoff |\n| `57014` | query_timeout hit | log + surface to user |\n| `53300` | too many connections | increase `max` or reduce load |\n| `40001` | serialization failure | retry transaction |\n\n**Shutdown cleanly:**\n\n```javascript\nprocess.on('SIGTERM', async () => {\n  await pool.end(); // drains active queries, closes all\n});\n```\n\nMain gotcha: never `await pool.connect()` without a `finally { client.release() }`. One leak exhausts pool under load.",
+  "stop_reason": "end_turn",
+  "session_id": "d86d995d-d33e-4da1-a3a8-18936e99409c",
+  "total_cost_usd": 0.03658605,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6399,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 606,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6399,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 606,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6399,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6399
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 606,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6399,
+      "webSearchRequests": 0,
+      "costUSD": 0.03658605,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "5c88abdd-4e43-4aa8-9e90-739244416cbe",
+  "_meta": {
+    "track": "B",
+    "task": "postgres-pool",
+    "category": "setup",
+    "condition": "caveman",
+    "run_num": 11,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 12.46,
+    "timestamp": 1776776297,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

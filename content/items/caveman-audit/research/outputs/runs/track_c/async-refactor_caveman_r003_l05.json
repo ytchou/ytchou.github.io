@@ -1,0 +1,50 @@
+{
+  "input_tokens": 15838,
+  "output_tokens": 169,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "```js\nasync function getUser(id) {\n  const rows = await db.query('SELECT * FROM users WHERE id = ?', [id]);\n  if (!rows.length) throw new Error('Not found');\n  return rows[0];\n}\n```\n\nAssumes `db.query` returns a promise \u2014 most modern drivers (pg, mysql2) do by default. If yours doesn't, wrap it first:\n\n```js\nconst query = (sql, params) => new Promise((resolve, reject) =>\n  db.query(sql, params, (err, rows) => err ? reject(err) : resolve(rows))\n);\n```",
+  "thinking_text": "Simple refactor, no need for plan mode or file reading.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 3.92,
+  "_meta": {
+    "track": "C",
+    "task": "async-refactor",
+    "category": "refactor",
+    "condition": "caveman",
+    "run_num": 3,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 63097,
+    "timestamp": 1776612840,
+    "level": 5,
+    "ordering": [
+      2,
+      6,
+      3,
+      4,
+      7,
+      0,
+      1,
+      9,
+      5,
+      8
+    ],
+    "chunks_present": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "num_chunks": 10,
+    "behavioral_chars": 12880,
+    "chunk_chars": 46676
+  }
+}

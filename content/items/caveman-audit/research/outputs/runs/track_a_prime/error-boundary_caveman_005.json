@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1084,
+  "output_tokens": 1205,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Caveman mode: **full**. Here go:\n\n```tsx\nimport React, { Component, ErrorInfo, ReactNode } from \"react\";\n\n// --- Types ---\ninterface Props {\n  children: ReactNode;\n  fallback?: (error: Error, reset: () => void) => ReactNode;\n  onError?: (error: Error, info: ErrorInfo) => void;\n}\n\ninterface State {\n  error: Error | null;\n}\n\n// --- Component ---\nclass ErrorBoundary extends Component<Props, State> {\n  state: State = { error: null };\n\n  static getDerivedStateFromError(error: Error): State {\n    return { error };\n  }\n\n  componentDidCatch(error: Error, info: ErrorInfo) {\n    // Log \u2014 swap console for Sentry/Datadog/etc.\n    console.error(\"[ErrorBoundary]\", {\n      message: error.message,\n      stack: error.stack,\n      componentStack: info.componentStack,\n      timestamp: new Date().toISOString(),\n    });\n\n    this.props.onError?.(error, info);\n  }\n\n  reset = () => this.setState({ error: null });\n\n  render() {\n    const { error } = this.state;\n    const { children, fallback } = this.props;\n\n    if (!error) return children;\n\n    // Custom fallback takes priority\n    if (fallback) return fallback(error, this.reset);\n\n    return <DefaultFallback error={error} onRetry={this.reset} />;\n  }\n}\n\n// --- Default fallback UI ---\nfunction DefaultFallback({\n  error,\n  onRetry,\n}: {\n  error: Error;\n  onRetry: () => void;\n}) {\n  return (\n    <div role=\"alert\" style={styles.container}>\n      <span style={styles.icon}>\u26a0\ufe0f</span>\n      <h2 style={styles.title}>Something went wrong</h2>\n      <p style={styles.message}>{error.message}</p>\n\n      {/* Stack only in dev */}\n      {process.env.NODE_ENV === \"development\" && (\n        <pre style={styles.stack}>{error.stack}</pre>\n      )}\n\n      <button onClick={onRetry} style={styles.button}>\n        Try again\n      </button>\n    </div>\n  );\n}\n\nconst styles: Record<string, React.CSSProperties> = {\n  container: {\n    display: \"flex\",\n    flexDirection: \"column\",\n    alignItems: \"center\",\n    justifyContent: \"center\",\n    padding: \"2rem\",\n    gap: \"1rem\",\n    fontFamily: \"sans-serif\",\n    color: \"#1a1a1a\",\n  },\n  icon:    { fontSize: \"3rem\" },\n  title:   { margin: 0, fontSize: \"1.5rem\" },\n  message: { margin: 0, color: \"#666\", maxWidth: \"40ch\", textAlign: \"center\" },\n  stack: {\n    background: \"#f5f5f5\",\n    padding: \"1rem\",\n    borderRadius: \"4px\",\n    fontSize: \"0.75rem\",\n    maxWidth: \"60ch\",\n    overflow: \"auto\",\n    color: \"#c0392b\",\n  },\n  button: {\n    padding: \"0.5rem 1.5rem\",\n    background: \"#0070f3\",\n    color: \"#fff\",\n    border: \"none\",\n    borderRadius: \"6px\",\n    cursor: \"pointer\",\n    fontSize: \"1rem\",\n  },\n};\n\nexport default ErrorBoundary;\n```\n\n**Use:**\n\n```tsx\n// Basic\n<ErrorBoundary>\n  <MyComponent />\n</ErrorBoundary>\n\n// Custom fallback\n<ErrorBoundary\n  fallback={(error, retry) => (\n    <div>\n      <p>Oops: {error.message}</p>\n      <button onClick={retry}>Retry</button>\n    </div>\n  )}\n  onError={(err, info) => sendToSentry(err, info)}\n>\n  <MyComponent />\n</ErrorBoundary>\n```\n\n---\n\n**Key points:**\n\n| Thing | Why |\n|---|---|\n| `getDerivedStateFromError` | Static \u2014 update state so render show fallback |\n| `componentDidCatch` | Side effects only (log, report) \u2014 separate concern from state |\n| `reset` arrow fn | Clears error \u2192 triggers re-render of children |\n| Stack hide in prod | No leak internal paths to users |\n| Custom `fallback` prop | Composable \u2014 each feature area own UI if needed |\n\n**Gotcha:** Boundary no catch: async errors, event handlers, server-side errors. For those, use `try/catch` + `window.onerror` separately.",
+  "thinking_text": "The user wants a React error boundary component. I'm in caveman mode (full by default). Let me implement this concisely.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 29.23,
+  "_meta": {
+    "track": "A_prime",
+    "task": "error-boundary",
+    "category": "implementation",
+    "condition": "caveman",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776611150
+  }
+}

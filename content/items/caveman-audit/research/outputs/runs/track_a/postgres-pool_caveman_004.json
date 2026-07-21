@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1049,
+  "output_tokens": 762,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Use `pg` pool. Key config:\n\n```js\nimport { Pool } from 'pg';\n\nconst pool = new Pool({\n  connectionString: process.env.DATABASE_URL,\n\n  // Pool sizing\n  max: 20,          // max connections (default 10)\n  min: 2,           // keep alive when idle\n  idleTimeoutMillis: 30_000,    // kill idle conn after 30s\n  connectionTimeoutMillis: 5_000, // fail fast if can't connect in 5s\n  allowExitOnIdle: true,        // let process exit if pool idle\n});\n\n// Error handler \u2014 REQUIRED. Unhandled 'error' event crashes process.\npool.on('error', (err, client) => {\n  console.error('Idle client error:', err.message);\n});\n\n// Query helper \u2014 auto-release client\nasync function query(sql, params) {\n  const start = Date.now();\n  try {\n    const res = await pool.query(sql, params);\n    console.debug('Query time:', Date.now() - start, 'ms');\n    return res;\n  } catch (err) {\n    console.error('Query failed:', err.message, { sql, params });\n    throw err;\n  }\n}\n\n// Transaction helper \u2014 manual checkout needed\nasync function withTransaction(fn) {\n  const client = await pool.connect();\n  try {\n    await client.query('BEGIN');\n    const result = await fn(client);\n    await client.query('COMMIT');\n    return result;\n  } catch (err) {\n    await client.query('ROLLBACK');\n    throw err;\n  } finally {\n    client.release(); // ALWAYS release \u2014 else pool starves\n  }\n}\n\n// Graceful shutdown\nasync function shutdown() {\n  await pool.end();\n  console.log('Pool closed.');\n}\n\nprocess.on('SIGTERM', shutdown);\nprocess.on('SIGINT', shutdown);\n\nexport { pool, query, withTransaction };\n```\n\n## Key decisions\n\n| Config | Why |\n|--------|-----|\n| `max: 20` | Match Postgres `max_connections` minus headroom for admin/migrations |\n| `connectionTimeoutMillis` | Fail fast > hang forever. 2\u20135s typical |\n| `idleTimeoutMillis` | Free unused conn. Match load pattern |\n| `pool.on('error')` | Without this, idle client error = uncaught exception = crash |\n| `finally { client.release() }` | Leak one client \u2192 pool starves under load |\n\n## Tune pool size\n\n```\npool size \u2248 (core_count * 2) + effective_spindle_count\n```\nPostgres default `max_connections = 100`. Leave ~10 for admin. Split remainder across app instances.\n\n## Health check\n\n```js\nasync function healthCheck() {\n  const client = await pool.connect();\n  try {\n    await client.query('SELECT 1');\n    return { status: 'ok', total: pool.totalCount, idle: pool.idleCount, waiting: pool.waitingCount };\n  } finally {\n    client.release();\n  }\n}\n```",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 21.95,
+  "_meta": {
+    "track": "C",
+    "task": "postgres-pool",
+    "category": "setup",
+    "condition": "caveman",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585364
+  }
+}

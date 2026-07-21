@@ -1,0 +1,48 @@
+{
+  "input_tokens": 12585,
+  "output_tokens": 1302,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "I'll create a React error boundary component with fallback UI, retry functionality, and error logging.\n\n## Tool: Write\n\nParameters:\n```json\n{\n  \"file_path\": \"/repo/ErrorBoundary.tsx\",\n  \"contents\": \"import React, { Component, ErrorInfo, ReactNode } from \\\"react\\\";\\n\\ninterface Props {\\n  children: ReactNode;\\n  fallback?: (error: Error, reset: () => void) => ReactNode;\\n  onError?: (error: Error, info: ErrorInfo) => void;\\n}\\n\\ninterface State {\\n  error: Error | null;\\n}\\n\\nexport class ErrorBoundary extends Component<Props, State> {\\n  state: State = { error: null };\\n\\n  static getDerivedStateFromError(error: Error): State {\\n    return { error };\\n  }\\n\\n  componentDidCatch(error: Error, info: ErrorInfo) {\\n    console.error(\\\"[ErrorBoundary] Uncaught error:\\\", error);\\n    console.error(\\\"[ErrorBoundary] Component stack:\\\", info.componentStack);\\n    this.props.onError?.(error, info);\\n  }\\n\\n  reset = () => this.setState({ error: null });\\n\\n  render() {\\n    const { error } = this.state;\\n    const { children, fallback } = this.props;\\n\\n    if (error) {\\n      if (fallback) return fallback(error, this.reset);\\n      return <DefaultFallback error={error} reset={this.reset} />;\\n    }\\n\\n    return children;\\n  }\\n}\\n\\nfunction DefaultFallback({ error, reset }: { error: Error; reset: () => void }) {\\n  return (\\n    <div role=\\\"alert\\\" style={styles.container}>\\n      <h2 style={styles.heading}>Something went wrong</h2>\\n      <pre style={styles.message}>{error.message}</pre>\\n      <button onClick={reset} style={styles.button}>\\n        Try again\\n      </button>\\n    </div>\\n  );\\n}\\n\\nconst styles: Record<string, React.CSSProperties> = {\\n  container: {\\n    padding: \\\"2rem\\\",\\n    border: \\\"1px solid #f87171\\\",\\n    borderRadius: \\\"0.5rem\\\",\\n    background: \\\"#fef2f2\\\",\\n    color: \\\"#991b1b\\\",\\n    fontFamily: \\\"sans-serif\\\",\\n    maxWidth: \\\"480px\\\",\\n    margin: \\\"2rem auto\\\",\\n    textAlign: \\\"center\\\",\\n  },\\n  heading: {\\n    margin: \\\"0 0 0.75rem\\\",\\n    fontSize: \\\"1.25rem\\\",\\n  },\\n  message: {\\n    background: \\\"#fee2e2\\\",\\n    borderRadius: \\\"0.25rem\\\",\\n    padding: \\\"0.5rem 0.75rem\\\",\\n    fontSize: \\\"0.875rem\\\",\\n    textAlign: \\\"left\\\",\\n    overflowX: \\\"auto\\\",\\n    whiteSpace: \\\"pre-wrap\\\",\\n    wordBreak: \\\"break-word\\\",\\n  },\\n  button: {\\n    marginTop: \\\"1rem\\\",\\n    padding: \\\"0.5rem 1.25rem\\\",\\n    background: \\\"#dc2626\\\",\\n    color: \\\"#fff\\\",\\n    border: \\\"none\\\",\\n    borderRadius: \\\"0.375rem\\\",\\n    fontSize: \\\"0.9rem\\\",\\n    cursor: \\\"pointer\\\",\\n  },\\n};\\n\"\n}\n```\n\nDone. Here's what was implemented in `ErrorBoundary.tsx`:\n\n**Core behavior:**\n- `getDerivedStateFromError` \u2014 captures the thrown error into state, triggering the fallback render\n- `componentDidCatch` \u2014 logs the error and component stack to `console.error`, then calls the optional `onError` prop for external logging (e.g. Sentry)\n- `reset` \u2014 clears error state so the original children re-render (the retry)\n\n**Props:**\n| Prop | Type | Description |\n|---|---|---|\n| `children` | `ReactNode` | The subtree to protect |\n| `fallback` | `(error, reset) => ReactNode` | Optional custom fallback UI |\n| `onError` | `(error, info) => void` | Optional external error logger |\n\n**Usage examples:**\n\n```tsx\n// Default fallback\n<ErrorBoundary>\n  <MyComponent />\n</ErrorBoundary>\n\n// Custom fallback\n<ErrorBoundary\n  fallback={(error, retry) => (\n    <div>\n      <p>Oops: {error.message}</p>\n      <button onClick={retry}>Retry</button>\n    </div>\n  )}\n  onError={(error, info) => Sentry.captureException(error, { extra: info })}\n>\n  <MyComponent />\n</ErrorBoundary>\n```\n\nNote: Error boundaries must be class components \u2014 React does not support this lifecycle pattern in function components.",
+  "thinking_text": "Let me implement a React error boundary component with the requested features.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 47.44,
+  "_meta": {
+    "track": "C",
+    "task": "error-boundary",
+    "category": "implementation",
+    "condition": "baseline",
+    "run_num": 1,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 51293,
+    "timestamp": 1776610444,
+    "level": 4,
+    "ordering": [
+      9,
+      4,
+      6,
+      3,
+      5,
+      0,
+      7,
+      1,
+      2,
+      8
+    ],
+    "chunks_present": [
+      0,
+      1,
+      3,
+      4,
+      5,
+      6,
+      7,
+      9
+    ],
+    "num_chunks": 8,
+    "behavioral_chars": 12880,
+    "chunk_chars": 38397
+  }
+}

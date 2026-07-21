@@ -1,0 +1,22 @@
+{
+  "input_tokens": 72,
+  "output_tokens": 803,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## The Problem: Reference Equality\n\nWhen you pass an object as a prop, React uses **reference equality** (`===`) to compare props. A new object literal creates a new reference on every render, even if the contents are identical.\n\n```jsx\n// \u274c Problem: new object reference created on every render\nfunction Parent() {\n  const [count, setCount] = useState(0);\n  \n  return (\n    <>\n      <button onClick={() => setCount(c => c + 1)}>Count: {count}</button>\n      <Child config={{ theme: \"dark\", size: \"large\" }} /> {/* new ref every render */}\n    </>\n  );\n}\n\nconst Child = React.memo(({ config }) => {\n  console.log(\"Child rendered\"); // fires every time Parent re-renders\n  return <div>{config.theme}</div>;\n});\n```\n\nEven with `React.memo`, the child re-renders because `{} !== {}`.\n\n---\n\n## Solutions\n\n### 1. `useMemo` \u2014 memoize the object\n```jsx\nfunction Parent() {\n  const [count, setCount] = useState(0);\n  \n  const config = useMemo(() => ({\n    theme: \"dark\",\n    size: \"large\"\n  }), []); // only recreated when dependencies change\n  \n  return (\n    <>\n      <button onClick={() => setCount(c => c + 1)}>Count: {count}</button>\n      <Child config={config} />\n    </>\n  );\n}\n```\n\n### 2. Move the object outside the component\n```jsx\n// Best when the object is truly static\nconst CONFIG = { theme: \"dark\", size: \"large\" };\n\nfunction Parent() {\n  return <Child config={CONFIG} />;\n}\n```\n\n### 3. Pass primitive props instead\n```jsx\n// Primitives compare by value, not reference\nfunction Parent() {\n  return <Child theme=\"dark\" size=\"large\" />;\n}\n\nconst Child = React.memo(({ theme, size }) => {\n  return <div>{theme}</div>;\n});\n```\n\n### 4. Use a custom comparison function with `React.memo`\n```jsx\nconst Child = React.memo(({ config }) => {\n  return <div>{config.theme}</div>;\n}, (prevProps, nextProps) => {\n  // return true if props are equal (skip re-render)\n  return prevProps.config.theme === nextProps.config.theme &&\n         prevProps.config.size === nextProps.config.size;\n});\n```\n\n---\n\n## Decision Guide\n\n| Situation | Solution |\n|---|---|\n| Object is static/constant | Move outside component |\n| Object depends on props/state | `useMemo` |\n| Simple values | Pass as primitives |\n| Complex comparison logic | Custom `React.memo` comparator |\n\n---\n\n## Key Takeaways\n\n- **`React.memo` alone isn't enough** if you're passing new object references\n- `useMemo` + `React.memo` work **together** to prevent unnecessary re-renders\n- Be careful not to over-optimize \u2014 only memoize when you've **confirmed** a performance problem\n- Use React DevTools **Profiler** to verify what's actually causing re-renders before optimizing",
+  "thinking_text": "The user is asking about React re-rendering when passing objects as props. This is a very common React issue related to reference equality.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 13.4,
+  "_meta": {
+    "track": "A_prime",
+    "task": "react-rerender",
+    "category": "debugging",
+    "condition": "baseline",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 28,
+    "timestamp": 1776610348
+  }
+}

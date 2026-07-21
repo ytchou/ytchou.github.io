@@ -1,0 +1,21 @@
+{
+  "input_tokens": 109,
+  "output_tokens": 611,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## Refactored with Async/Await\n\nHere's the refactored version with several improvements:\n\n```javascript\nasync function getUser(id) {\n  const rows = await db.query('SELECT * FROM users WHERE id = ?', [id]);\n\n  if (!rows.length) {\n    throw new Error(`User with id \"${id}\" not found`);\n  }\n\n  return rows[0];\n}\n```\n\n### Usage Example\n\n```javascript\n// Basic usage\ntry {\n  const user = await getUser(1);\n  console.log(user);\n} catch (err) {\n  console.error('Failed to get user:', err.message);\n}\n\n// Or with .then()/.catch() if not in an async context\ngetUser(1)\n  .then(user => console.log(user))\n  .catch(err => console.error(err.message));\n```\n\n---\n\n### What Changed and Why\n\n| Before | After | Reason |\n|---|---|---|\n| `callback(err)` | `throw new Error(...)` | Errors propagate naturally up the call stack |\n| `callback(null, rows[0])` | `return rows[0]` | Return values are cleaner and composable |\n| Nested callbacks | Linear `await` | Easier to read and maintain |\n| Generic error message | Includes the `id` | More useful for debugging |\n\n---\n\n### Important Caveat\n\nThis assumes `db.query` **already returns a Promise**. If it's still callback-based (e.g., older `mysql` package), you'll need to promisify it first:\n\n```javascript\n// Option 1 \u2014 Node's built-in util.promisify\nconst { promisify } = require('util');\nconst dbQuery = promisify(db.query.bind(db));\n\nasync function getUser(id) {\n  const rows = await dbQuery('SELECT * FROM users WHERE id = ?', [id]);\n  if (!rows.length) throw new Error(`User with id \"${id}\" not found`);\n  return rows[0];\n}\n\n// Option 2 \u2014 Manual Promise wrapper (if promisify doesn't work well)\nfunction dbQuery(sql, params) {\n  return new Promise((resolve, reject) => {\n    db.query(sql, params, (err, rows) => {\n      if (err) reject(err);\n      else resolve(rows);\n    });\n  });\n}\n```\n\n> **Tip:** Modern database libraries like `mysql2`, `pg`, and `better-sqlite3` support Promises natively, so you can skip the promisify step entirely.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 10.58,
+  "_meta": {
+    "track": "C",
+    "task": "async-refactor",
+    "category": "refactor",
+    "condition": "baseline",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 28,
+    "timestamp": 1776585514
+  }
+}

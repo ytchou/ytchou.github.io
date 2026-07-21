@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 17793,
+  "duration_api_ms": 19424,
+  "num_turns": 1,
+  "result": "The decision hinges on whether your *current pain* is actually solved by microservices, or whether you'd be trading known problems for harder ones.\n\n**Split only if you have at least two of these:**\n\n- **Independent scaling needs** \u2014 specific parts of the app consume disproportionate resources (e.g., a heavy data pipeline vs. a lightweight API)\n- **Team autonomy bottlenecks** \u2014 multiple teams are blocked on each other's deploys or causing each other's breakage\n- **Divergent tech requirements** \u2014 one domain genuinely needs a different language, DB, or runtime\n- **Fault isolation** \u2014 one slow component is taking down everything else\n\n**Reasons to stay monolithic (for now):**\n\n- You haven't profiled yet \u2014 most Django slowness is N+1 queries, missing indexes, or synchronous calls that can be fixed without splitting\n- Your team is small \u2014 microservices require serious infra overhead (service discovery, distributed tracing, inter-service auth, orchestration)\n- Your domain boundaries aren't clear \u2014 premature splitting along the wrong seams creates a \"distributed monolith\" that's worse than the original\n- You don't have strong observability in place \u2014 debugging across service boundaries without it is painful\n\n**If you do split, the order matters:**\n\n1. Profile first \u2014 fix the low-hanging fruit (caching, async tasks with Celery, DB optimization)\n2. Identify natural seam candidates \u2014 things that change independently, have distinct data ownership, and don't require synchronous cross-calls in the hot path\n3. Extract one service as a pilot \u2014 typically something peripheral (notifications, PDF generation, auth) rather than core domain logic\n4. Don't split the database last \u2014 shared DB across services defeats the purpose and creates invisible coupling\n\nThe most common mistake is treating microservices as a performance solution. They're an *organizational and operational* architecture \u2014 the performance benefits (if any) come from targeted scaling, not the split itself.",
+  "stop_reason": "end_turn",
+  "session_id": "f37e631b-1805-4e96-85c7-8d872a1cbbae",
+  "total_cost_usd": 0.012946,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17060,
+    "output_tokens": 490,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 490,
+        "cache_read_input_tokens": 17060,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 374,
+      "outputTokens": 19,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000469,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 490,
+      "cacheReadInputTokens": 17060,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.012476999999999999,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "d5b67891-e73d-4a9f-83fc-a3500eafe91a",
+  "_meta": {
+    "track": "B",
+    "task": "microservices-monolith",
+    "category": "architecture",
+    "condition": "baseline",
+    "run_num": 14,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 19.21,
+    "timestamp": 1776776427,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

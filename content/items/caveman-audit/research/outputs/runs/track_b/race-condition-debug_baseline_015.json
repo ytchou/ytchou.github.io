@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 9915,
+  "duration_api_ms": 10862,
+  "num_turns": 1,
+  "result": "The classic read-modify-write race: two requests read the same value, both increment it, and write back the same result.\n\n**The fix: do the increment atomically in SQL, never in application code.**\n\nInstead of:\n```js\n// WRONG \u2014 race condition\nconst { rows } = await db.query('SELECT count FROM counters WHERE id = $1', [id]);\nconst newCount = rows[0].count + 1;\nawait db.query('UPDATE counters SET count = $1 WHERE id = $2', [newCount, id]);\n```\n\nDo:\n```js\n// CORRECT \u2014 atomic, returns the new value\nconst { rows } = await db.query(\n  'UPDATE counters SET count = count + 1 WHERE id = $1 RETURNING count',\n  [id]\n);\nreturn rows[0].count;\n```\n\nPostgreSQL executes `UPDATE ... SET count = count + 1` as a single atomic operation with a row-level lock, so concurrent requests serialize automatically.\n\n**If you need to insert-or-increment** (upsert):\n```sql\nINSERT INTO counters (id, count) VALUES ($1, 1)\nON CONFLICT (id) DO UPDATE SET count = counters.count + 1\nRETURNING count;\n```\n\n**When you need multi-step logic** that must be atomic, wrap it in a transaction with `SELECT ... FOR UPDATE` to lock the row:\n```js\nawait db.query('BEGIN');\nconst { rows } = await db.query(\n  'SELECT count FROM counters WHERE id = $1 FOR UPDATE', [id]\n);\n// ... other logic ...\nawait db.query('UPDATE counters SET count = $1 WHERE id = $2', [rows[0].count + 1, id]);\nawait db.query('COMMIT');\n```\n\nFor most counter use cases, the single `UPDATE ... RETURNING` is the right answer \u2014 it's simpler and avoids transaction overhead.",
+  "stop_reason": "end_turn",
+  "session_id": "15ceaefa-d8e5-455b-b8ec-8ac327cbb210",
+  "total_cost_usd": 0.014199500000000002,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17055,
+    "output_tokens": 575,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 575,
+        "cache_read_input_tokens": 17055,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 369,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000449,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 575,
+      "cacheReadInputTokens": 17055,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.013750500000000002,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "859a23d0-430e-4851-b910-1b552361168f",
+  "_meta": {
+    "track": "B",
+    "task": "race-condition-debug",
+    "category": "debugging",
+    "condition": "baseline",
+    "run_num": 15,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 11.55,
+    "timestamp": 1776776573,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

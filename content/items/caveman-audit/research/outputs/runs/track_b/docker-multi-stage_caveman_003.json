@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 10804,
+  "duration_api_ms": 10760,
+  "num_turns": 1,
+  "result": "```dockerfile\n# Stage 1: Install deps + build\nFROM node:22-alpine AS builder\n\nWORKDIR /app\n\nCOPY package*.json ./\nRUN npm ci\n\nCOPY tsconfig.json ./\nCOPY src ./src\nRUN npm run build\n\n# Stage 2: Prune to prod deps only\nFROM node:22-alpine AS deps\n\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci --omit=dev\n\n# Stage 3: Final image\nFROM node:22-alpine AS runtime\n\nENV NODE_ENV=production\n\nWORKDIR /app\n\n# Non-root user\nRUN addgroup -S app && adduser -S app -G app\n\nCOPY --from=deps /app/node_modules ./node_modules\nCOPY --from=builder /app/dist ./dist\nCOPY package.json ./\n\nUSER app\n\nEXPOSE 3000\nCMD [\"node\", \"dist/index.js\"]\n```\n\nKey decisions:\n\n- **`node:22-alpine`** \u2014 ~180MB vs ~1GB for `node:22`. Same across all stages so layer cache shares base.\n- **Separate `deps` stage** \u2014 runs `npm ci --omit=dev` in isolation. Builder keeps devDeps (TypeScript, ts-node, etc.) out of final image.\n- **`npm ci` not `npm install`** \u2014 deterministic, faster in CI, respects lockfile.\n- **Non-root user** \u2014 `adduser -S` = system/no-login user. Required for most container security policies.\n- **Only `dist/` + `node_modules`** \u2014 no source, no tsconfig, no devDeps in final layer.\n\nAssumes `npm run build` outputs to `dist/`. Adjust `CMD` entry point if different.",
+  "stop_reason": "end_turn",
+  "session_id": "0fe68df5-f493-4d6c-8c6b-415b2f39c5b1",
+  "total_cost_usd": 0.0341823,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6406,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 444,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6406,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 444,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6406,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6406
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 444,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6406,
+      "webSearchRequests": 0,
+      "costUSD": 0.0341823,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "eb43c40f-4143-4407-820a-24332538e737",
+  "_meta": {
+    "track": "B",
+    "task": "docker-multi-stage",
+    "category": "devops",
+    "condition": "caveman",
+    "run_num": 3,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 12.38,
+    "timestamp": 1776774843,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "input_tokens": 14791,
+  "output_tokens": 422,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Two critical issues:\n\n## 1. SQL Injection (Critical)\n\nString interpolation puts user input directly into the query. An attacker can pass `id=1 OR 1=1` to dump the entire table, or `1; DROP TABLE users--` to destroy data.\n\n**Fix:** Use a parameterized query:\n```js\nconst query = 'SELECT * FROM users WHERE id = ?';\ndb.query(query, [req.params.id]).then(user => res.json(user));\n```\n(Syntax varies by driver \u2014 `?` for mysql2, `$1` for pg.)\n\n## 2. Missing Error Handling (High)\n\nIf the query fails or `id` is malformed, the unhandled promise rejection crashes the process or hangs the request.\n\n**Fix:**\n```js\napp.get('/api/users/:id', async (req, res) => {\n  try {\n    const user = await db.query('SELECT * FROM users WHERE id = ?', [req.params.id]);\n    if (!user) return res.status(404).json({ error: 'Not found' });\n    res.json(user);\n  } catch (err) {\n    res.status(500).json({ error: 'Internal server error' });\n  }\n});\n```\n\n## 3. Minor: Excessive Data Exposure\n\n`SELECT *` returns every column, potentially including `password_hash`, `ssn`, or other sensitive fields. Enumerate only the columns you need:\n```sql\nSELECT id, name, email FROM users WHERE id = ?\n```\n\nAlso consider adding authentication middleware to this route if users shouldn't be able to fetch arbitrary other users' records.",
+  "thinking_text": "The user wants me to review an Express route handler for security issues. This is a code review task, no tools needed.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 68.79,
+  "_meta": {
+    "track": "C",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "baseline",
+    "run_num": 1,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 59576,
+    "timestamp": 1776613411,
+    "level": 5,
+    "ordering": [
+      8,
+      6,
+      9,
+      3,
+      7,
+      1,
+      5,
+      4,
+      2,
+      0
+    ],
+    "chunks_present": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "num_chunks": 10,
+    "behavioral_chars": 12880,
+    "chunk_chars": 46676
+  }
+}

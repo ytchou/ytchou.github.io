@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1094,
+  "output_tokens": 351,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "JWT `exp` in **seconds**. `Date.now()` in **milliseconds**. Compare wrong unit \u2192 all tokens appear unexpired.\n\n**Bug:**\n```js\nif (Date.now() > payload.exp) // Date.now() = 1700000000000, exp = 1700000000 \u2192 never true\n```\n\n**Fix:**\n```js\nif (Math.floor(Date.now() / 1000) > payload.exp) {\n  return res.status(401).json({ error: 'Token expired' });\n}\n```\n\nOr flip: compare `payload.exp < Date.now() / 1000`.\n\n**Better:** let `jsonwebtoken` handle it \u2014 `jwt.verify()` throws `TokenExpiredError` automatically. No manual check needed.\n\n```js\ntry {\n  const payload = jwt.verify(token, SECRET); // throws if expired\n  req.user = payload;\n  next();\n} catch (err) {\n  if (err.name === 'TokenExpiredError') {\n    return res.status(401).json({ error: 'Token expired' });\n  }\n  return res.status(401).json({ error: 'Invalid token' });\n}\n```\n\nUse `jwt.verify()`. Manual time check = footgun.",
+  "thinking_text": "The user has an Express auth middleware with JWT expiry check issue. JWT `exp` field is in seconds since epoch, but `Date.now()` returns milliseconds. That's the classic bug.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 6.03,
+  "_meta": {
+    "track": "A_prime",
+    "task": "auth-middleware-fix",
+    "category": "bugfix",
+    "condition": "caveman",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776610394
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 14912,
+  "duration_api_ms": 14861,
+  "num_turns": 1,
+  "result": "Key factors:\n\n**Split only if monolith pain is real, not theoretical.**\n\n**Signals that favor splitting:**\n- Independent scaling needs (e.g., image processing hammers CPU, API doesn't)\n- Teams blocked by each other deploying\n- DB contention on unrelated domains\n- Need different tech stacks per domain\n\n**Signals that favor staying:**\n- Slow because of bad queries/indexes \u2014 fix those first, way cheaper\n- Small team (<10 devs) \u2014 microservices tax eats you alive\n- Domain boundaries unclear \u2014 wrong splits create distributed monolith, worst of both worlds\n\n**Real costs people underestimate:**\n- Network latency replaces function calls; failures now partial\n- Distributed transactions are hard (saga pattern, eventual consistency)\n- Observability multiplies \u2014 need tracing, centralized logging, service mesh\n- Ops burden: N services = N deploy pipelines, N health checks, N on-call surfaces\n\n**Practical path:**\n1. Profile first. Find actual bottleneck. Often one slow endpoint or missing index.\n2. If DB is shared bottleneck \u2014 consider read replicas or caching layer before split.\n3. If you must split \u2014 extract one bounded domain, keep rest monolith. Strangler fig pattern.\n4. Never split because \"big companies do it\" \u2014 Netflix/Amazon split at scale you probably don't have.\n\nBottom line: Django monolith slow = usually DB or code problem, not architecture problem. Measure before migrate.",
+  "stop_reason": "end_turn",
+  "session_id": "1fbdd6f1-e337-434b-9825-eb3ded6f6e32",
+  "total_cost_usd": 0.011333699999999999,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 18049,
+    "output_tokens": 394,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 394,
+        "cache_read_input_tokens": 18049,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 394,
+      "cacheReadInputTokens": 18049,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.011333699999999999,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "42578c54-9b26-4007-ae67-4dad1e48beb5",
+  "_meta": {
+    "track": "B",
+    "task": "microservices-monolith",
+    "category": "architecture",
+    "condition": "caveman",
+    "run_num": 12,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 16.25,
+    "timestamp": 1776776452,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

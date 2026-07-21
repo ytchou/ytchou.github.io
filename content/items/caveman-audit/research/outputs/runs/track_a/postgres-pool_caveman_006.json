@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1049,
+  "output_tokens": 601,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Use `pg` pool. Key config:\n\n```js\nimport { Pool } from 'pg';\n\nconst pool = new Pool({\n  connectionString: process.env.DATABASE_URL,\n\n  // Pool sizing\n  max: 20,          // max connections (default 10)\n  min: 2,           // keep alive when idle\n  idleTimeoutMillis: 30_000,    // kill idle conn after 30s\n  connectionTimeoutMillis: 5_000, // fail fast if can't connect in 5s\n\n  // Optional: SSL in prod\n  ssl: process.env.NODE_ENV === 'production'\n    ? { rejectUnauthorized: true }\n    : false,\n});\n\n// Catch background errors (network drop, DB restart)\npool.on('error', (err, client) => {\n  console.error('Idle client error:', err.message);\n  // Don't crash \u2014 pool auto-removes bad client\n});\n\nexport default pool;\n```\n\n**Query wrapper with timeout:**\n\n```js\nexport async function query(sql, params, timeoutMs = 10_000) {\n  const client = await pool.connect();\n  try {\n    await client.query(`SET statement_timeout = ${timeoutMs}`);\n    return await client.query(sql, params);\n  } catch (err) {\n    // Detect connection-level errors \u2192 pool will replace client\n    if (err.code === 'ECONNRESET' || err.code === '57P01') {\n      client.release(err); // pass err = destroy, not return\n    }\n    throw err;\n  } finally {\n    client.release();\n  }\n}\n```\n\n**Usage:**\n\n```js\nconst { rows } = await query(\n  'SELECT * FROM users WHERE id = $1',\n  [userId]\n);\n```\n\n---\n\n**Key decisions:**\n\n| Config | Why |\n|--------|-----|\n| `max: 20` | Match DB `max_connections` minus headroom for admin/migrations |\n| `min: 2` | Avoid cold-start latency on first requests |\n| `connectionTimeoutMillis` | Fail fast > hang forever |\n| `statement_timeout` per query | Prevent runaway queries starving pool |\n| `client.release(err)` | Destroy bad conn, not return to pool |\n\n**Shutdown:**\n\n```js\nprocess.on('SIGTERM', async () => {\n  await pool.end(); // drain pool gracefully\n  process.exit(0);\n});\n```",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 16.71,
+  "_meta": {
+    "track": "C",
+    "task": "postgres-pool",
+    "category": "setup",
+    "condition": "caveman",
+    "run_num": 6,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585370
+  }
+}

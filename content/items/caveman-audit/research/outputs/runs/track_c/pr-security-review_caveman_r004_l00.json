@@ -1,0 +1,39 @@
+{
+  "input_tokens": 3904,
+  "output_tokens": 197,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "**SQL injection** \u2014 critical.\n\n`/api/users/1 OR 1=1` dumps entire table. `/api/users/1; DROP TABLE users` destroys data.\n\n**Fix:**\n\n```js\napp.get('/api/users/:id', (req, res) => {\n  db.query('SELECT * FROM users WHERE id = ?', [req.params.id])\n    .then(user => res.json(user));\n});\n```\n\n**Also missing:**\n- Auth/authz check \u2014 any caller gets any user\n- Input validation \u2014 `:id` should be numeric; reject early\n- Error handling \u2014 unhandled rejection crashes or leaks stack trace\n- `SELECT *` \u2014 exposes `password_hash`, tokens, etc.; select explicit columns",
+  "thinking_text": "The user wants a security review of this Express route handler.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 5.01,
+  "_meta": {
+    "track": "C",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "caveman",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 16401,
+    "timestamp": 1776613881,
+    "level": 0,
+    "ordering": [
+      2,
+      9,
+      6,
+      1,
+      5,
+      4,
+      0,
+      8,
+      7,
+      3
+    ],
+    "chunks_present": [],
+    "num_chunks": 0,
+    "behavioral_chars": 12880,
+    "chunk_chars": 0
+  }
+}

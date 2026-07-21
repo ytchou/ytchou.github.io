@@ -1,0 +1,22 @@
+{
+  "input_tokens": 111,
+  "output_tokens": 1123,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## Security Issues Found\n\nThis code has **critical vulnerabilities**. Here's a thorough breakdown:\n\n---\n\n### \ud83d\udd34 Critical: SQL Injection\n```javascript\n// VULNERABLE - Direct string interpolation\nconst query = `SELECT * FROM users WHERE id = ${req.params.id}`;\n\n// Attacker sends: GET /api/users/1 OR 1=1\n// Resulting query: SELECT * FROM users WHERE id = 1 OR 1=1\n// Returns ALL users in the database\n```\n\n**Fix: Use parameterized queries**\n```javascript\nconst query = 'SELECT * FROM users WHERE id = ?'; // or $1 for PostgreSQL\ndb.query(query, [req.params.id])\n```\n\n---\n\n### \ud83d\udd34 Critical: No Authentication or Authorization\n```javascript\n// Anyone can query any user ID - no token/session check\n// Attacker can enumerate all users: /api/users/1, /api/users/2...\n```\n\n**Fix: Add auth middleware and ownership check**\n```javascript\napp.get('/api/users/:id', authenticateToken, async (req, res) => {\n  if (req.user.id !== req.params.id && req.user.role !== 'admin') {\n    return res.status(403).json({ error: 'Forbidden' });\n  }\n  // ...\n});\n```\n\n---\n\n### \ud83d\udfe0 High: No Input Validation\n```javascript\n// req.params.id could be anything - a 10MB string, script, etc.\n```\n\n**Fix: Validate before use**\n```javascript\nconst { id } = req.params;\nif (!/^\\d+$/.test(id) || id.length > 10) {\n  return res.status(400).json({ error: 'Invalid ID' });\n}\n```\n\n---\n\n### \ud83d\udfe0 High: No Error Handling\n```javascript\n// Unhandled rejection exposes stack traces and crashes the server\ndb.query(query).then(user => res.json(user));\n// Missing .catch()\n```\n\n**Fix: Handle errors explicitly**\n```javascript\ntry {\n  const user = await db.query(query, [id]);\n  if (!user) return res.status(404).json({ error: 'Not found' });\n  res.json(user);\n} catch (err) {\n  console.error(err); // Log internally only\n  res.status(500).json({ error: 'Internal server error' });\n}\n```\n\n---\n\n### \ud83d\udfe1 Medium: Over-fetching Data (`SELECT *`)\n```javascript\n// Returns ALL columns, potentially including:\n// passwords, SSNs, tokens, internal flags\n```\n\n**Fix: Select only needed fields**\n```javascript\n'SELECT id, username, email, created_at FROM users WHERE id = $1'\n```\n\n---\n\n### \u2705 Secure Version\n```javascript\napp.get('/api/users/:id',\n  authenticateToken,\n  async (req, res) => {\n    const { id } = req.params;\n\n    // 1. Validate input\n    if (!/^\\d+$/.test(id)) {\n      return res.status(400).json({ error: 'Invalid user ID' });\n    }\n\n    // 2. Authorize\n    if (req.user.id !== id && req.user.role !== 'admin') {\n      return res.status(403).json({ error: 'Forbidden' });\n    }\n\n    try {\n      // 3. Parameterized query with explicit columns\n      const [user] = await db.query(\n        'SELECT id, username, email, created_at FROM users WHERE id = ?',\n        [id]\n      );\n\n      // 4. Handle not found\n      if (!user) return res.status(404).json({ error: 'User not found' });\n\n      res.json(user);\n    } catch (err) {\n      // 5. Safe error response\n      console.error('DB error:', err);\n      res.status(500).json({ error: 'Internal server error' });\n    }\n  }\n);\n```\n\n---\n\n### Summary Table\n\n| Issue | Severity | Impact |\n|---|---|---|\n| SQL Injection | \ud83d\udd34 Critical | Full DB compromise |\n| No auth/authz | \ud83d\udd34 Critical | Unauthorized data access |\n| No input validation | \ud83d\udfe0 High | Unexpected behavior/attacks |\n| No error handling | \ud83d\udfe0 High | Server crash, info leakage |\n| SELECT * | \ud83d\udfe1 Medium | Sensitive data exposure |",
+  "thinking_text": "The user wants me to review this Express route handler for security issues. Let me analyze it carefully.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 14.54,
+  "_meta": {
+    "track": "A_prime",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "baseline",
+    "run_num": 1,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 28,
+    "timestamp": 1776610717
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "input_tokens": 43,
+  "output_tokens": 784,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## The Problem: Object Reference Equality\n\nReact uses **shallow comparison** (`===`) to determine if props changed. When you pass an object as a prop, React compares **references**, not values.\n\n```javascript\n// This creates a NEW object on every render, even if values are identical\n<MyComponent config={{ theme: 'dark', size: 'large' }} />\n```\n\nEvery parent render creates a new object literal \u2192 new reference \u2192 React thinks props changed \u2192 child re-renders.\n\n---\n\n## Why This Happens\n\n```javascript\nfunction Parent() {\n  const [count, setCount] = useState(0);\n  \n  // \u274c New object reference created on every render\n  const config = { theme: 'dark', size: 'large' };\n  \n  return (\n    <>\n      <button onClick={() => setCount(c => c + 1)}>Count: {count}</button>\n      <Child config={config} /> {/* Re-renders every time count changes */}\n    </>\n  );\n}\n```\n\n---\n\n## Solutions\n\n### 1. `useMemo` \u2014 Memoize the object\n```javascript\nfunction Parent() {\n  const [count, setCount] = useState(0);\n  \n  // \u2705 Same reference unless dependencies change\n  const config = useMemo(() => ({ \n    theme: 'dark', \n    size: 'large' \n  }), []); // Add actual dependencies here\n  \n  return <Child config={config} />;\n}\n```\n\n### 2. Move the object outside the component\n```javascript\n// \u2705 Defined once, never recreated (best for static data)\nconst CONFIG = { theme: 'dark', size: 'large' };\n\nfunction Parent() {\n  return <Child config={CONFIG} />;\n}\n```\n\n### 3. `React.memo` on the child \u2014 Skip re-renders\n```javascript\n// \u2705 Child only re-renders if props actually changed\nconst Child = React.memo(function Child({ config }) {\n  return <div>{config.theme}</div>;\n});\n```\n\n> **Note:** `React.memo` still uses shallow comparison, so it won't help if you're passing new object literals \u2014 combine it with `useMemo`.\n\n### 4. Pass primitive values instead of objects\n```javascript\n// \u2705 Primitives compare by value, not reference\n<Child theme=\"dark\" size=\"large\" />\n```\n\n---\n\n## Choosing the Right Solution\n\n| Situation | Solution |\n|---|---|\n| Static config that never changes | Move outside component |\n| Object depends on props/state | `useMemo` with correct dependencies |\n| Want to protect a child component broadly | `React.memo` + `useMemo` |\n| Object is small and simple | Pass as separate primitive props |\n\n---\n\n## Verifying the Fix\n\nUse the **React DevTools Profiler** to confirm \u2014 it shows exactly why a component re-rendered (prop change, state change, parent render, etc.).\n\n```javascript\n// Quick debug: log when component renders and why\nconst Child = React.memo(function Child({ config }) {\n  console.log('Child rendered');\n  return <div>{config.theme}</div>;\n});\n```\n\nThe most common mistake is reaching for `React.memo` alone without addressing the root cause \u2014 the new object reference being created on every render.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 14.83,
+  "_meta": {
+    "track": "C",
+    "task": "react-rerender",
+    "category": "debugging",
+    "condition": "baseline",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 28,
+    "timestamp": 1776585090
+  }
+}

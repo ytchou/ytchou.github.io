@@ -1,0 +1,39 @@
+{
+  "input_tokens": 2884,
+  "output_tokens": 308,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Two critical issues:\n\n**1. SQL Injection (Critical)**\nThe `id` parameter is interpolated directly into the query string. An attacker can pass `1 OR 1=1` or `1; DROP TABLE users--` as the ID.\n\n**2. No error handling**\nUnhandled promise rejections leak stack traces to clients and can crash the process.\n\n**Fixed version:**\n```js\napp.get('/api/users/:id', async (req, res) => {\n  try {\n    const user = await db.query('SELECT * FROM users WHERE id = ?', [req.params.id]);\n    if (!user) return res.status(404).json({ error: 'Not found' });\n    res.json(user);\n  } catch {\n    res.status(500).json({ error: 'Internal server error' });\n  }\n});\n```\n\n**Changes:**\n- Parameterized query (`?` placeholder) \u2014 the DB driver escapes the value safely\n- `try/catch` prevents crashes and avoids leaking internals to the client\n- 404 guard avoids leaking whether records exist (optional, context-dependent)\n\nAlso consider: authentication/authorization middleware to ensure callers can only fetch their own record.",
+  "thinking_text": "The user wants a security review of this Express route handler.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 14.33,
+  "_meta": {
+    "track": "C",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "baseline",
+    "run_num": 1,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 12880,
+    "timestamp": 1776613188,
+    "level": 0,
+    "ordering": [
+      8,
+      6,
+      9,
+      3,
+      7,
+      1,
+      5,
+      4,
+      2,
+      0
+    ],
+    "chunks_present": [],
+    "num_chunks": 0,
+    "behavioral_chars": 12880,
+    "chunk_chars": 0
+  }
+}

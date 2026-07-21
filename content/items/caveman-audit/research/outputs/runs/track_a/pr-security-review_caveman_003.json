@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1095,
+  "output_tokens": 464,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "**3 critical issues:**\n\n**1. SQL injection** (critical)\nDirect param interpolation. Attacker sends `1 OR 1=1` \u2192 dumps all users. Or `1; DROP TABLE users--`.\n\nFix \u2014 parameterized query:\n```js\ndb.query('SELECT * FROM users WHERE id = ?', [req.params.id])\n```\n\n**2. No auth/authz**\nAny request hits user data. No token check, no ownership verify. User 5 can fetch user 99.\n\nFix:\n```js\nif (!req.user || req.user.id !== parseInt(req.params.id)) {\n  return res.status(403).json({ error: 'Forbidden' });\n}\n```\n\n**3. No error handling**\nDB fail \u2192 unhandled rejection \u2192 crash or raw error leak to client.\n\nFix:\n```js\n.catch(err => {\n  console.error(err);          // log server-side only\n  res.status(500).json({ error: 'Internal server error' });\n});\n```\n\n**Also fix: `SELECT *`** \u2014 expose future columns (passwords, tokens) automatically. Name columns explicit.\n\n---\n\n**Hardened version:**\n```js\napp.get('/api/users/:id', authenticate, async (req, res) => {\n  if (req.user.id !== parseInt(req.params.id)) {\n    return res.status(403).json({ error: 'Forbidden' });\n  }\n  try {\n    const [user] = await db.query(\n      'SELECT id, name, email FROM users WHERE id = ?',\n      [req.params.id]\n    );\n    if (!user) return res.status(404).json({ error: 'Not found' });\n    res.json(user);\n  } catch (err) {\n    console.error(err);\n    res.status(500).json({ error: 'Internal server error' });\n  }\n});\n```",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 15.43,
+  "_meta": {
+    "track": "C",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "caveman",
+    "run_num": 3,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585788
+  }
+}

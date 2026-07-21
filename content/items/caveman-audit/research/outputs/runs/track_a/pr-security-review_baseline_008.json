@@ -1,0 +1,21 @@
+{
+  "input_tokens": 82,
+  "output_tokens": 909,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## Security Issues in This Route Handler\n\n### 1. \ud83d\udea8 Critical: SQL Injection\n```javascript\n// VULNERABLE - Direct string interpolation\nconst query = `SELECT * FROM users WHERE id = ${req.params.id}`;\n\n// Attacker can pass: /api/users/1 OR 1=1\n// Resulting query: SELECT * FROM users WHERE id = 1 OR 1=1\n// Returns ALL users in the database\n```\n\n### 2. \ud83d\udea8 Critical: No Authentication/Authorization\n```javascript\n// Anyone can query any user's data\n// No check that the requester has permission to access this resource\n```\n\n### 3. \u26a0\ufe0f High: No Input Validation\n```javascript\n// req.params.id is completely unchecked\n// Could be a string, negative number, null, extremely long value, etc.\n```\n\n### 4. \u26a0\ufe0f High: No Error Handling\n```javascript\n// Rejected promises are unhandled\n// Database errors leak to the client or crash the server\n```\n\n### 5. \u26a0\ufe0f Medium: Overly Broad Data Exposure\n```javascript\n// SELECT * returns ALL columns\n// Likely exposes password hashes, tokens, PII, etc.\n```\n\n---\n\n## Secure Rewrite\n\n```javascript\nconst { param, validationResult } = require('express-validator');\n\n// Authentication middleware (example using JWT)\nconst authenticate = (req, res, next) => {\n  const token = req.headers.authorization?.split(' ')[1];\n  if (!token) return res.status(401).json({ error: 'Unauthorized' });\n\n  try {\n    req.user = jwt.verify(token, process.env.JWT_SECRET);\n    next();\n  } catch {\n    res.status(401).json({ error: 'Invalid token' });\n  }\n};\n\napp.get(\n  '/api/users/:id',\n  authenticate,\n  param('id').isInt({ min: 1 }).toInt(),   // Validate and sanitize\n  async (req, res) => {\n    // Check validation results\n    const errors = validationResult(req);\n    if (!errors.isEmpty()) {\n      return res.status(400).json({ error: 'Invalid user ID' });\n    }\n\n    // Authorization: users can only access their own data\n    // (admins could be handled separately)\n    if (req.user.id !== req.params.id && !req.user.isAdmin) {\n      return res.status(403).json({ error: 'Forbidden' });\n    }\n\n    try {\n      // Parameterized query prevents SQL injection\n      const [user] = await db.query(\n        'SELECT id, name, email, created_at FROM users WHERE id = ?',\n        [req.params.id]   // Parameterized - never interpolated\n      );\n\n      if (!user) {\n        return res.status(404).json({ error: 'User not found' });\n      }\n\n      res.json(user);\n    } catch (err) {\n      // Log internally, don't expose details to client\n      console.error('Database error:', err);\n      res.status(500).json({ error: 'Internal server error' });\n    }\n  }\n);\n```\n\n---\n\n## Summary Table\n\n| Issue | Risk | Fix |\n|---|---|---|\n| SQL Injection | Critical | Parameterized queries |\n| No auth | Critical | JWT/session middleware |\n| No authorization | Critical | Ownership/role check |\n| No input validation | High | express-validator |\n| No error handling | High | try/catch + error middleware |\n| SELECT * | Medium | Explicit column selection |\n\n### Key Principle\n**Never trust user input** \u2014 validate, sanitize, and use parameterized queries for anything touching a database.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 20.56,
+  "_meta": {
+    "track": "C",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "baseline",
+    "run_num": 8,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 28,
+    "timestamp": 1776585766
+  }
+}

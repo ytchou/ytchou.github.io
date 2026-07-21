@@ -1,0 +1,42 @@
+{
+  "input_tokens": 6535,
+  "output_tokens": 402,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Two critical issues:\n\n**1. SQL Injection** (critical)\n`req.params.id` goes straight into query string. Attacker sends:\n```\nGET /api/users/1 OR 1=1\n```\n\u2192 dumps entire users table. Or `1; DROP TABLE users--`.\n\n**Fix:** parameterized query:\n```js\napp.get('/api/users/:id', (req, res) => {\n  db.query('SELECT * FROM users WHERE id = ?', [req.params.id])\n    .then(user => res.json(user));\n});\n```\n\n**2. Mass data exposure** (high)\n`SELECT *` + `res.json(user)` sends every column \u2014 passwords, tokens, PII \u2014 to caller.\n\n**Fix:** select only what's needed:\n```js\ndb.query('SELECT id, name, email FROM users WHERE id = ?', [req.params.id])\n  .then(user => {\n    if (!user) return res.status(404).json({ error: 'Not found' });\n    res.json(user);\n  });\n```\n\n**3. Missing auth check** (high, likely)\nNo token/session verification shown \u2014 any caller can query any user by ID (IDOR).\n\nAdd middleware: `router.use(requireAuth)` and verify `req.user.id === req.params.id` or that caller has admin role.\n\n**4. No error handling**\nRejected promise = unhandled rejection, possible 500 with stack trace leak. Add `.catch(err => res.status(500).json({ error: 'Server error' }))`.",
+  "thinking_text": "The user wants a security review of this Express route handler.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 19.99,
+  "_meta": {
+    "track": "C",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "caveman",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 25935,
+    "timestamp": 1776614170,
+    "level": 1,
+    "ordering": [
+      3,
+      8,
+      5,
+      4,
+      1,
+      7,
+      6,
+      9,
+      2,
+      0
+    ],
+    "chunks_present": [
+      3,
+      8
+    ],
+    "num_chunks": 2,
+    "behavioral_chars": 12880,
+    "chunk_chars": 9530
+  }
+}

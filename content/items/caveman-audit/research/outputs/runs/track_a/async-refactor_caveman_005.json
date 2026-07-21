@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1122,
+  "output_tokens": 331,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Caveman mode: **full**\n\n---\n\nWrap `db.query` in Promise, then `async/await`:\n\n```javascript\n// Promisify db.query once (reuse across codebase)\nfunction queryAsync(sql, params) {\n  return new Promise((resolve, reject) => {\n    db.query(sql, params, (err, rows) => {\n      if (err) reject(err);\n      else resolve(rows);\n    });\n  });\n}\n\nasync function getUser(id) {\n  const rows = await queryAsync('SELECT * FROM users WHERE id = ?', [id]);\n  if (!rows.length) throw new Error('Not found');\n  return rows[0];\n}\n```\n\n**Call site:**\n```javascript\n// Before\ngetUser(id, (err, user) => { ... });\n\n// After\ntry {\n  const user = await getUser(id);\n} catch (err) {\n  // handles both DB error + not found\n}\n```\n\n---\n\n3 things note:\n\n1. **Error path** \u2014 both DB fail + not-found now throw. Caller use try/catch or `.catch()`.\n2. **`queryAsync` separate** \u2014 if `db` already support promises (e.g. `mysql2/promise`), skip wrapper, call direct.\n3. **Callback signature gone** \u2014 any caller still pass callback \u2192 break. Update all call sites.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 6.96,
+  "_meta": {
+    "track": "C",
+    "task": "async-refactor",
+    "category": "refactor",
+    "condition": "caveman",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585551
+  }
+}

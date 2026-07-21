@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 12251,
+  "duration_api_ms": 12196,
+  "num_turns": 1,
+  "result": "Both integrate changes from one branch into another. Different history shapes.\n\n## Merge\n\n```\n      A---B---C  feature\n     /         \\\nD---E---F---G---H  main (merge commit H)\n```\n\nCreates merge commit. Preserves exact history \u2014 who branched when, when things joined. Non-destructive.\n\n## Rebase\n\n```\n              A'--B'--C'  feature (replayed on top of G)\n             /\nD---E---F---G  main\n```\n\nReplays commits on top of target. Linear history. No merge commit. **Rewrites commit SHAs** \u2014 A becomes A'.\n\n---\n\n## When to use each\n\n**Merge:**\n- Shared/public branches \u2014 never rewrite history others depend on\n- Want to preserve \"this feature was developed in parallel\" context\n- Long-lived feature branches with many contributors\n- `main` \u2190 `feature` integrations\n\n**Rebase:**\n- Local cleanup before PR \u2014 squash/reorder your own commits\n- Keep feature branch current with main during development\n- Want clean linear history for bisect/log readability\n- Solo work not yet pushed\n\n---\n\n## Key tradeoffs\n\n| | Merge | Rebase |\n|---|---|---|\n| History | True, branchy | Clean, linear |\n| Safe on shared? | Yes | No \u2014 rewrites SHAs |\n| Conflicts | Once | Per replayed commit |\n| Bisect-friendly | Harder | Easier |\n| Context preserved | Yes | Lost (branch point gone) |\n\n---\n\n**Golden rule:** Never rebase commits already pushed to shared branch. Others' history breaks.\n\nPractical pattern: rebase local feature onto main to stay current, merge (or squash-merge) into main when done.",
+  "stop_reason": "end_turn",
+  "session_id": "248afbe7-cac2-4f03-a250-77f085765847",
+  "total_cost_usd": 0.03406605,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6403,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 437,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6403,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 437,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6403,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6403
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 437,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6403,
+      "webSearchRequests": 0,
+      "costUSD": 0.03406605,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "f5f091b4-0dde-4621-9162-f00f2a1eeaed",
+  "_meta": {
+    "track": "B",
+    "task": "git-rebase-merge",
+    "category": "explanation",
+    "condition": "caveman",
+    "run_num": 13,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 13.96,
+    "timestamp": 1776776366,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1065,
+  "output_tokens": 217,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "JWT `exp` field = seconds since epoch. `Date.now()` = **milliseconds**.\n\nOff by 1000x \u2192 expired tokens always look valid (exp < now/1000, but you compare exp < now \u2192 always true for recent tokens).\n\n**Fix:**\n\n```js\n// Wrong\nif (token.exp < Date.now()) throw new Error('Expired');\n\n// Right\nif (token.exp < Date.now() / 1000) throw new Error('Expired');\n// or\nif (token.exp * 1000 < Date.now()) throw new Error('Expired');\n```\n\n**Better \u2014 use library that handles this:**\n\n```js\nimport jwt from 'jsonwebtoken';\n\n// Verifies signature + expiry automatically\nconst payload = jwt.verify(token, SECRET); // throws if expired\n```\n\n`jwt.verify` handle unit mismatch, clock skew, all edge cases. Manual check = footgun.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 6.08,
+  "_meta": {
+    "track": "C",
+    "task": "auth-middleware-fix",
+    "category": "bugfix",
+    "condition": "caveman",
+    "run_num": 1,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585187
+  }
+}

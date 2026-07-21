@@ -1,0 +1,48 @@
+{
+  "input_tokens": 13685,
+  "output_tokens": 428,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Three issues:\n\n**1. SQL Injection (critical)**\n`req.params.id` injected directly \u2192 attacker sends `1 OR 1=1` \u2192 dumps all users.\n\n```js\n// Fix: parameterized query\nconst query = 'SELECT * FROM users WHERE id = ?';\ndb.query(query, [req.params.id]).then(user => res.json(user));\n```\n\n**2. No error handling**\nDB failure \u2192 unhandled rejection \u2192 process crash or hung request.\n\n```js\n.then(user => res.json(user))\n.catch(err => res.status(500).json({ error: 'Internal server error' }));\n```\n\n**3. Mass data exposure**\n`SELECT *` returns password hashes, tokens, PII. Select only needed columns.\n\n```js\nconst query = 'SELECT id, name, email FROM users WHERE id = ?';\n```\n\n**Also consider:** auth middleware (is caller allowed to fetch this user?), input validation (`id` should be numeric), rate limiting.\n\nFixed:\n```js\napp.get('/api/users/:id', authenticate, async (req, res) => {\n  const id = parseInt(req.params.id, 10);\n  if (isNaN(id)) return res.status(400).json({ error: 'Invalid ID' });\n\n  try {\n    const user = await db.query(\n      'SELECT id, name, email FROM users WHERE id = ?',\n      [id]\n    );\n    if (!user) return res.status(404).json({ error: 'Not found' });\n    res.json(user);\n  } catch {\n    res.status(500).json({ error: 'Internal server error' });\n  }\n});\n```",
+  "thinking_text": "Security review of this Express route handler.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 41.12,
+  "_meta": {
+    "track": "C",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "caveman",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 54687,
+    "timestamp": 1776614266,
+    "level": 4,
+    "ordering": [
+      3,
+      8,
+      5,
+      4,
+      1,
+      7,
+      6,
+      9,
+      2,
+      0
+    ],
+    "chunks_present": [
+      1,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "num_chunks": 8,
+    "behavioral_chars": 12880,
+    "chunk_chars": 38270
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "input_tokens": 138,
+  "output_tokens": 474,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## Refactored with Async/Await\n\n```javascript\nasync function getUser(id) {\n  const rows = await db.query('SELECT * FROM users WHERE id = ?', [id]);\n\n  if (!rows.length) {\n    throw new Error(`User with id \"${id}\" not found`);\n  }\n\n  return rows[0];\n}\n```\n\n### Usage\n\n```javascript\n// Basic call\nconst user = await getUser(1);\n\n// With error handling\ntry {\n  const user = await getUser(1);\n  console.log(user);\n} catch (err) {\n  console.error('Failed to fetch user:', err.message);\n}\n```\n\n---\n\n### What Changed and Why\n\n| Before | After |\n|---|---|\n| Accepts a `callback` parameter | No callback \u2014 returns a Promise implicitly |\n| Passes errors via `callback(err)` | Throws errors \u2014 `await` surfaces them as exceptions |\n| Returns result via `callback(null, result)` | Returns result directly with `return` |\n| Nested callback structure | Flat, linear code |\n\n---\n\n### If `db.query` Doesn't Return a Promise\n\nIf your database library only supports callbacks (e.g., older `mysql` package), you'll need to **promisify** it first:\n\n```javascript\nconst { promisify } = require('util');\nconst dbQuery = promisify(db.query).bind(db);\n\nasync function getUser(id) {\n  const rows = await dbQuery('SELECT * FROM users WHERE id = ?', [id]);\n\n  if (!rows.length) {\n    throw new Error(`User with id \"${id}\" not found`);\n  }\n\n  return rows[0];\n}\n```\n\n> **Note:** Modern database libraries like `mysql2`, `pg`, and ORMs like Prisma/Sequelize return Promises natively, so no wrapping is needed.",
+  "thinking_text": "The user wants to refactor a callback-based Node.js function to use async/await.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 11.93,
+  "_meta": {
+    "track": "A_prime",
+    "task": "async-refactor",
+    "category": "refactor",
+    "condition": "baseline",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 28,
+    "timestamp": 1776610618
+  }
+}

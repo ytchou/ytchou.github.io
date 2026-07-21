@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1092,
+  "output_tokens": 693,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "3-stage build. Deps \u2192 build \u2192 runtime. Final image = Alpine + compiled JS only.\n\n```dockerfile\n# \u2500\u2500 Stage 1: Install dependencies \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nFROM node:22-alpine AS deps\n\nWORKDIR /app\n\n# Copy manifests only \u2014 cache this layer until they change\nCOPY package.json package-lock.json ./\n\nRUN npm ci --ignore-scripts\n\n\n# \u2500\u2500 Stage 2: Compile TypeScript \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nFROM node:22-alpine AS build\n\nWORKDIR /app\n\n# Bring in node_modules from deps stage\nCOPY --from=deps /app/node_modules ./node_modules\nCOPY . .\n\nRUN npm run build          # tsc outputs to /app/dist (adjust if needed)\n\n# Prune dev dependencies \u2014 only prod deps go to final image\nRUN npm prune --omit=dev\n\n\n# \u2500\u2500 Stage 3: Runtime \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nFROM node:22-alpine AS runtime\n\nENV NODE_ENV=production\nWORKDIR /app\n\n# Non-root user \u2014 don't run as root in prod\nRUN addgroup -S appgroup && adduser -S appuser -G appgroup\n\n# Copy only what runtime needs\nCOPY --from=build --chown=appuser:appgroup /app/dist        ./dist\nCOPY --from=build --chown=appuser:appgroup /app/node_modules ./node_modules\nCOPY --from=build --chown=appuser:appgroup /app/package.json ./\n\nUSER appuser\n\nEXPOSE 3000\n\nCMD [\"node\", \"dist/index.js\"]\n```\n\n## Why each choice\n\n| Choice | Reason |\n|--------|--------|\n| `node:22-alpine` all stages | Alpine = ~5MB base vs ~200MB debian |\n| Stage 1 copy manifests first | Layer cache hit if source changes but deps don't |\n| `npm ci` not `npm install` | Deterministic, faster, fails on lockfile mismatch |\n| `npm prune --omit=dev` | Strip devDeps (includes `typescript`, `ts-node`, etc.) |\n| Copy only `dist/` + `node_modules` | No `src/`, no `.ts` files, no `tsconfig`, no test files in final image |\n| Non-root user | Container escape mitigation |\n\n## `tsconfig.json` must have\n\n```json\n{\n  \"compilerOptions\": {\n    \"outDir\": \"./dist\",\n    \"rootDir\": \"./src\"\n  }\n}\n```\n\nAdjust `CMD` path if entry point differ. If use path aliases, add `tsc-alias` or `tsconfig-paths` to prod deps.",
+  "thinking_text": "The user wants a multi-stage Dockerfile for Node.js TypeScript app. Caveman mode is active by default (full level).",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 14.53,
+  "_meta": {
+    "track": "A_prime",
+    "task": "docker-multi-stage",
+    "category": "devops",
+    "condition": "caveman",
+    "run_num": 3,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776610864
+  }
+}

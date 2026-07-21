@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 9398,
+  "duration_api_ms": 10780,
+  "num_turns": 1,
+  "result": "Objects in JavaScript are compared by **reference**, not by value. Every time your parent component renders, it creates a **new object literal** \u2014 even if the contents are identical \u2014 so React sees a different reference and re-renders the child.\n\n```jsx\n// This creates a NEW object on every parent render\n<MyComponent config={{ theme: 'dark', size: 'lg' }} />\n```\n\n**Three common fixes:**\n\n**1. Memoize the object with `useMemo`** (best for derived/computed objects)\n```jsx\nconst config = useMemo(() => ({ theme: 'dark', size: 'lg' }), [theme, size]);\n<MyComponent config={config} />\n```\n\n**2. Move the object outside the component** (best for static objects)\n```jsx\nconst CONFIG = { theme: 'dark', size: 'lg' }; // defined once, stable reference\n\nfunction Parent() {\n  return <MyComponent config={CONFIG} />;\n}\n```\n\n**3. Wrap the child in `React.memo`** (prevents re-render if props are shallowly equal)\n```jsx\nconst MyComponent = React.memo(({ config }) => {\n  // ...\n});\n```\n\nNote: `React.memo` does a **shallow comparison**, so it still won't help if you're passing a new object literal each time \u2014 the reference will differ. Combine it with `useMemo` for full protection.\n\n**Root cause checklist:**\n- Inline object/array/function literals as props \u2192 use `useMemo`/`useCallback`\n- State or context updates in the parent \u2192 child re-renders unless memoized\n- Missing or incorrect `deps` array in `useMemo` \u2192 object recreated unnecessarily\n\nThe most common mistake is forgetting that `{}` in JSX props is not free \u2014 it allocates a new object every render.",
+  "stop_reason": "end_turn",
+  "session_id": "126d1c4a-68a9-42eb-956f-248dab0b4fb0",
+  "total_cost_usd": 0.0128719,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17053,
+    "output_tokens": 487,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 487,
+        "cache_read_input_tokens": 17053,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 367,
+      "outputTokens": 15,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000442,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 487,
+      "cacheReadInputTokens": 17053,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0124299,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "a624970f-89dd-411c-bb43-15dd8593b229",
+  "_meta": {
+    "track": "B",
+    "task": "react-rerender",
+    "category": "debugging",
+    "condition": "baseline",
+    "run_num": 11,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 11.1,
+    "timestamp": 1776776178,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 27117,
+  "duration_api_ms": 26336,
+  "num_turns": 6,
+  "result": "Need write permission. User: please approve or I'll describe the changes instead.\n\nMeanwhile \u2014 here's what changed from existing file:\n\n**Additions:**\n1. `errorId` \u2014 correlation ID (`err_<timestamp>_<random>`) stored in state, shown in UI, included in log\n2. `onError` prop \u2014 optional escape hatch to forward errors to external logger (Sentry, Datadog, etc.)\n3. Structured `console.error` \u2014 logs `{errorId, message, stack, componentStack}` as object, not positional args\n4. `componentStack` in fallback UI \u2014 collapsed `<details>` so it's visible but not overwhelming\n5. `errorId` cleared on reset so next error gets fresh ID\n\n**Usage:**\n```tsx\n// Basic\n<ErrorBoundary>\n  <MyWidget />\n</ErrorBoundary>\n\n// With external logger\n<ErrorBoundary onError={(err, info) => Sentry.captureException(err, { extra: info })}>\n  <MyWidget />\n</ErrorBoundary>\n\n// Custom fallback (hides default UI, retry button your responsibility)\n<ErrorBoundary fallback={<MyFallback />}>\n  <MyWidget />\n</ErrorBoundary>\n```\n\nApprove write permission to apply changes.",
+  "stop_reason": "end_turn",
+  "session_id": "a14dbc8b-9359-4126-958b-849d5f6e9530",
+  "total_cost_usd": 0.0617475,
+  "usage": {
+    "input_tokens": 8,
+    "cache_creation_input_tokens": 1784,
+    "cache_read_input_tokens": 109845,
+    "output_tokens": 1472,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 1784,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 1,
+        "output_tokens": 304,
+        "cache_read_input_tokens": 18937,
+        "cache_creation_input_tokens": 888,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 888
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 8,
+      "outputTokens": 1472,
+      "cacheReadInputTokens": 109845,
+      "cacheCreationInputTokens": 1784,
+      "webSearchRequests": 0,
+      "costUSD": 0.0617475,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [
+    {
+      "tool_name": "Write",
+      "tool_use_id": "toolu_01Cw739xiscHxzfzDZUdmv2M",
+      "tool_input": {
+        "file_path": "/Users/ytchou/project/portfolio/projects/caveman-audit/src/components/ErrorBoundary.tsx",
+        "content": "import { Component, type ErrorInfo, type ReactNode } from \"react\";\n\ninterface Props {\n  children: ReactNode;\n  fallback?: ReactNode;\n  onError?: (error: Error, info: ErrorInfo) => void;\n}\n\ninterface State {\n  error: Error | null;\n  componentStack: string | null;\n  errorId: string | null;\n}\n\nfunction generateErrorId(): string {\n  return `err_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;\n}\n\nexport class ErrorBoundary extends Component<Props, State> {\n  state: State = { error: null, componentStack: null, errorId: null };\n\n  static getDerivedStateFromError(error: Error): Partial<State> {\n    return { error, errorId: generateErrorId() };\n  }\n\n  componentDidCatch(error: Error, info: ErrorInfo): void {\n    const { errorId } = this.state;\n    console.error(\"[ErrorBoundary]\", {\n      errorId,\n      message: error.message,\n      stack: error.stack,\n      componentStack: info.componentStack,\n    });\n    this.setState({ componentStack: info.componentStack ?? null });\n    this.props.onError?.(error, info);\n  }\n\n  reset = (): void => {\n    this.setState({ error: null, componentStack: null, errorId: null });\n  };\n\n  render(): ReactNode {\n    const { error, componentStack, errorId } = this.state;\n\n    if (error) {\n      if (this.props.fallback) return this.props.fallback;\n\n      return (\n        <div role=\"alert\" style={{ padding: \"1rem\", border: \"1px solid red\", fontFamily: \"monospace\" }}>\n          <h2 style={{ margin: \"0 0 0.5rem\" }}>Something went wrong</h2>\n          <p style={{ color: \"red\", margin: \"0 0 0.25rem\" }}>{error.message}</p>\n          {errorId && (\n            <p style={{ fontSize: \"0.75rem\", color: \"#888\", margin: \"0 0 0.5rem\" }}>\n              Error ID: {errorId}\n            </p>\n          )}\n          {componentStack && (\n            <details style={{ marginBottom: \"0.75rem\" }}>\n              <summary style={{ cursor: \"pointer\", fontSize: \"0.85rem\" }}>Component stack</summary>\n              <pre style={{ whiteSpace: \"pre-wrap\", fontSize: \"0.75rem\", color: \"#555\", marginTop: \"0.25rem\" }}>\n                {componentStack}\n              </pre>\n            </details>\n          )}\n          <button onClick={this.reset}>Try Again</button>\n        </div>\n      );\n    }\n\n    return this.props.children;\n  }\n}\n"
+      }
+    }
+  ],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "af4a2a08-8239-42fa-9aaa-04279576253d",
+  "_meta": {
+    "track": "B",
+    "task": "error-boundary",
+    "category": "implementation",
+    "condition": "caveman",
+    "run_num": 14,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 28.52,
+    "timestamp": 1776776757,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

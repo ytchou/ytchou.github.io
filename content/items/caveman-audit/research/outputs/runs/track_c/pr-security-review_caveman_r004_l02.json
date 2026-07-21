@@ -1,0 +1,44 @@
+{
+  "input_tokens": 8635,
+  "output_tokens": 376,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "**SQL injection.** `req.params.id` goes raw into query string. Attacker sends `1 OR 1=1` \u2192 dumps all users. `1; DROP TABLE users` \u2192 gone.\n\n**Fix \u2014 parameterized query:**\n\n```js\napp.get('/api/users/:id', async (req, res) => {\n  const { id } = req.params;\n  if (!/^\\d+$/.test(id)) return res.status(400).json({ error: 'Invalid id' });\n\n  try {\n    const user = await db.query('SELECT * FROM users WHERE id = $1', [id]);\n    if (!user.rows.length) return res.status(404).json({ error: 'Not found' });\n    res.json(user.rows[0]);\n  } catch {\n    res.status(500).json({ error: 'Server error' });\n  }\n});\n```\n\n**Other issues:**\n\n| Issue | Risk | Fix |\n|---|---|---|\n| No auth check | Any user fetch any user | Add session/JWT middleware |\n| `SELECT *` | Leaks password hash, internal fields | Explicit column list |\n| No 404 handling | Reveals DB absence vs error | Check `rows.length` |\n| No error handling | Stack trace leaks on crash | `try/catch` |\n\nParam binding (`$1`) is non-negotiable \u2014 DB driver escapes it, injection impossible.",
+  "thinking_text": "The user wants a security review of this Express route handler. Let me analyze it and respond in caveman mode (full, which is default).",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 7.94,
+  "_meta": {
+    "track": "C",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "caveman",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 34978,
+    "timestamp": 1776614027,
+    "level": 2,
+    "ordering": [
+      2,
+      9,
+      6,
+      1,
+      5,
+      4,
+      0,
+      8,
+      7,
+      3
+    ],
+    "chunks_present": [
+      1,
+      2,
+      6,
+      9
+    ],
+    "num_chunks": 4,
+    "behavioral_chars": 12880,
+    "chunk_chars": 18569
+  }
+}

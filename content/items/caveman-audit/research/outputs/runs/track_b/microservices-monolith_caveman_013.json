@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 12938,
+  "duration_api_ms": 12878,
+  "num_turns": 1,
+  "result": "Slowness \u2260 microservices problem. Fix root cause first.\n\n**Before splitting, diagnose:**\n- Is slow from DB queries? Add indexes, optimize ORM, read replicas.\n- Is slow from CPU-bound work? Celery + workers.\n- Is slow from memory? Scale vertically or tune Django settings.\n- Profiling done? (`django-silk`, `py-spy`, `EXPLAIN ANALYZE` on queries)\n\n**Real factors that justify splitting:**\n\n| Factor | Split makes sense | Don't split yet |\n|--------|------------------|-----------------|\n| Team size | 10+ devs stepping on each other | <10 devs, low coordination cost |\n| Deploy frequency | Teams need independent deploys | All features deploy together anyway |\n| Scale bottleneck | One domain (e.g. search) needs 100x more resources | All domains scale together |\n| Domain boundaries | Clear bounded contexts already exist | Tangled models, shared DB everywhere |\n| Operational maturity | You have observability, CI/CD, service mesh | Deployment is already painful |\n\n**Microservices cost that teams underestimate:**\n- Network failures everywhere (need retries, timeouts, circuit breakers)\n- Distributed transactions \u2014 no more `atomic()` across services\n- Observability complexity \u2014 tracing across services is hard\n- Data consistency \u2014 eventual consistency is a paradigm shift\n- Ops burden multiplies: N services \u00d7 (deploy + monitor + alert + on-call)\n\n**Pragmatic middle path for Django:**\n\n1. **Modular monolith first** \u2014 enforce strict Django app boundaries, no cross-app model imports\n2. **Extract only what hurts** \u2014 identify the ONE bottleneck domain, extract it\n3. **Async tasks** \u2014 Celery handles most \"it's slow\" complaints without splitting\n4. **DB read replicas** \u2014 buy significant headroom cheaply\n\n**Rule of thumb:** If you can't draw clean bounded contexts on a whiteboard in 30 minutes, you're not ready. Premature extraction creates distributed monolith \u2014 worst of both worlds.\n\nWhat's the actual slow part? Query-heavy, CPU-heavy, or traffic volume?",
+  "stop_reason": "end_turn",
+  "session_id": "06a45857-5639-418e-973d-c40ce40156ec",
+  "total_cost_usd": 0.0133887,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 18049,
+    "output_tokens": 531,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 531,
+        "cache_read_input_tokens": 18049,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 531,
+      "cacheReadInputTokens": 18049,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0133887,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "511fd5c3-115e-406a-846b-6c96ead4b2ea",
+  "_meta": {
+    "track": "B",
+    "task": "microservices-monolith",
+    "category": "architecture",
+    "condition": "caveman",
+    "run_num": 13,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 14.58,
+    "timestamp": 1776776453,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

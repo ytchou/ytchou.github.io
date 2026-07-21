@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1122,
+  "output_tokens": 292,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Caveman mode: **full**\n\n---\n\nWrap `db.query` in Promise, then `async/await`:\n\n```javascript\n// Promisify db.query once (or use db.promise() if mysql2)\nfunction queryAsync(sql, params) {\n  return new Promise((resolve, reject) => {\n    db.query(sql, params, (err, rows) => {\n      if (err) return reject(err);\n      resolve(rows);\n    });\n  });\n}\n\nasync function getUser(id) {\n  const rows = await queryAsync('SELECT * FROM users WHERE id = ?', [id]);\n  if (!rows.length) throw new Error('Not found');\n  return rows[0];\n}\n```\n\n**Call site change:**\n\n```javascript\n// Before\ngetUser(id, (err, user) => { ... });\n\n// After\ntry {\n  const user = await getUser(id);\n} catch (err) { ... }\n```\n\n**Key points:**\n- `queryAsync` reusable for all queries \u2014 extract to `db.js`\n- Error propagate via `throw`/`reject`, no callback needed\n- If use **mysql2**: skip wrapper, use `db.promise().query(...)` direct",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 6.04,
+  "_meta": {
+    "track": "C",
+    "task": "async-refactor",
+    "category": "refactor",
+    "condition": "caveman",
+    "run_num": 7,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585554
+  }
+}

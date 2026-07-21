@@ -1,0 +1,48 @@
+{
+  "input_tokens": 13278,
+  "output_tokens": 170,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "```js\nasync function getUser(id) {\n  const rows = await db.query('SELECT * FROM users WHERE id = ?', [id]);\n  if (!rows.length) throw new Error('Not found');\n  return rows[0];\n}\n```\n\nAssumes `db.query` returns a promise. If it doesn't, wrap it first:\n\n```js\nconst query = (sql, params) => new Promise((resolve, reject) =>\n  db.query(sql, params, (err, rows) => err ? reject(err) : resolve(rows))\n);\n```\n\nThen swap `db.query` \u2192 `query` in `getUser`.",
+  "thinking_text": "Simple refactor, no need for plan mode.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 25.31,
+  "_meta": {
+    "track": "C",
+    "task": "async-refactor",
+    "category": "refactor",
+    "condition": "caveman",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 52926,
+    "timestamp": 1776613174,
+    "level": 4,
+    "ordering": [
+      3,
+      6,
+      1,
+      2,
+      5,
+      0,
+      8,
+      7,
+      9,
+      4
+    ],
+    "chunks_present": [
+      0,
+      1,
+      2,
+      3,
+      5,
+      6,
+      7,
+      8
+    ],
+    "num_chunks": 8,
+    "behavioral_chars": 12880,
+    "chunk_chars": 36509
+  }
+}

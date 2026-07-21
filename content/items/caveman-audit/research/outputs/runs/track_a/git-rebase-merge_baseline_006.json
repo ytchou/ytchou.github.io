@@ -1,0 +1,21 @@
+{
+  "input_tokens": 40,
+  "output_tokens": 960,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "# Git Rebase vs Git Merge\n\n## What They Do\n\nBoth integrate changes from one branch into another, but they do it differently.\n\n### Git Merge\nCreates a **new merge commit** that ties together the histories of both branches.\n\n```\nBefore:                    After merge:\n                           \nA---B---C  (main)          A---B---C---M  (main)\n     \\                          \\     /\n      D---E  (feature)           D---E\n```\nThe history shows exactly what happened and when.\n\n### Git Rebase\n**Replays** your commits on top of another branch, rewriting history.\n\n```\nBefore:                    After rebase:\n\nA---B---C  (main)          A---B---C---D'---E'  (feature)\n     \\                                 \n      D---E  (feature)     \n```\nCommits D and E become D' and E' \u2014 same changes, new commit hashes.\n\n---\n\n## When to Use Each\n\n### Use Merge When:\n- Merging a **completed feature into main/develop**\n- You want to **preserve the true history** of what happened\n- Working on a **shared/public branch** (never rebase these)\n- You want a clear record of when branches were integrated\n\n```bash\ngit checkout main\ngit merge feature/my-feature\n```\n\n### Use Rebase When:\n- **Updating your local feature branch** with latest main changes\n- You want a **clean, linear history** before merging\n- Doing an **interactive rebase** to clean up messy commits\n- Working on a **private branch** only you use\n\n```bash\ngit checkout feature/my-feature\ngit rebase main\n```\n\n---\n\n## Interactive Rebase \u2014 A Superpower\n\n```bash\ngit rebase -i HEAD~4   # Rewrite last 4 commits\n```\n\nThis lets you:\n- `pick` \u2014 keep a commit as-is\n- `squash` \u2014 combine with previous commit\n- `reword` \u2014 edit the commit message\n- `drop` \u2014 delete a commit entirely\n- `edit` \u2014 pause to amend the commit\n\n**Great for cleaning up \"WIP\", \"fix typo\", \"oops\" commits before merging.**\n\n---\n\n## The Tradeoffs\n\n| | Merge | Rebase |\n|---|---|---|\n| History | Preserves exact history | Creates cleaner linear history |\n| Commit hashes | Unchanged | Rewritten (new hashes) |\n| Merge commit | Yes | No |\n| Conflict resolution | Once, at merge time | Once per replayed commit |\n| Safe on shared branches | \u2705 Yes | \u274c No |\n| Easier to understand | For some | For others |\n| `git bisect` friendly | Somewhat | Very |\n\n---\n\n## The Golden Rule\n\n> **Never rebase a branch that others are working on.**\n\nWhen you rebase, you rewrite commit hashes. If someone else has those old commits, their history diverges from yours and you'll create a mess.\n\n```bash\n# DANGEROUS if anyone else has pulled feature-branch\ngit rebase main feature-branch   # \u274c if shared\n\n# SAFE \u2014 only you use your local feature branch\ngit rebase main                   # \u2705 on your private branch\n```\n\n---\n\n## A Common Workflow\n\n```bash\n# 1. Keep your feature branch updated with main (rebase)\ngit checkout feature/my-feature\ngit fetch origin\ngit rebase origin/main\n\n# 2. Clean up commits before merging (interactive rebase)\ngit rebase -i origin/main\n\n# 3. Merge the clean branch into main\ngit checkout main\ngit merge --no-ff feature/my-feature  # --no-ff preserves merge commit\n```\n\n---\n\n## Quick Decision Guide\n\n```\nIs the branch shared with others?\n\u251c\u2500\u2500 Yes \u2192 Use MERGE\n\u2514\u2500\u2500 No \u2192 \n    Do you want clean linear history?\n    \u251c\u2500\u2500 Yes \u2192 REBASE, then merge\n    \u2514\u2500\u2500 No \u2192 MERGE is fine\n```\n\nThe most common practical approach: **rebase locally to stay current, merge to integrate.**",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 19.74,
+  "_meta": {
+    "track": "C",
+    "task": "git-rebase-merge",
+    "category": "explanation",
+    "condition": "baseline",
+    "run_num": 6,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 28,
+    "timestamp": 1776585439
+  }
+}

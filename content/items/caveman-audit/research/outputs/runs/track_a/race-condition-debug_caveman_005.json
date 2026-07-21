@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1058,
+  "output_tokens": 520,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Race condition. Multiple requests read same value before any write back.\n\n## Problem\n\n```\nRequest A: READ counter (5) \u2500\u2500\u2510\nRequest B: READ counter (5) \u2500\u2500\u2524  both read 5\nRequest A: WRITE 5+1 = 6    \u2500\u2500\u2524\nRequest B: WRITE 5+1 = 6    \u2500\u2500\u2518  both write 6, one increment lost\n```\n\n## Fix Options\n\n### 1. Atomic SQL update (best)\n\n```sql\nUPDATE counters\nSET value = value + 1\nWHERE id = $1\nRETURNING value;\n```\n\nDB handle increment atomically. No read-then-write in app code.\n\n```js\nconst { rows } = await pool.query(\n  'UPDATE counters SET value = value + 1 WHERE id = $1 RETURNING value',\n  [counterId]\n);\nreturn rows[0].value;\n```\n\n### 2. `SELECT FOR UPDATE` (if logic complex)\n\n```js\nconst client = await pool.connect();\ntry {\n  await client.query('BEGIN');\n  const { rows } = await client.query(\n    'SELECT value FROM counters WHERE id = $1 FOR UPDATE',\n    [counterId]\n  );\n  const newVal = rows[0].value + 1;\n  await client.query(\n    'UPDATE counters SET value = $1 WHERE id = $2',\n    [newVal, counterId]\n  );\n  await client.query('COMMIT');\n  return newVal;\n} catch (e) {\n  await client.query('ROLLBACK');\n  throw e;\n} finally {\n  client.release();\n}\n```\n\n`FOR UPDATE` locks row. Other requests block until transaction done.\n\n### 3. Advisory locks (app-level mutex)\n\nOverkill for simple counter. Skip unless counter logic spans multiple tables.\n\n## Pick One\n\n| Situation | Use |\n|-----------|-----|\n| Simple increment | Atomic SQL (#1) |\n| Complex logic on same row | `FOR UPDATE` (#2) |\n| Logic spans multiple tables | Advisory lock or queue |\n\n**Use #1.** Fastest, least code, no deadlock risk.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 9.3,
+  "_meta": {
+    "track": "C",
+    "task": "race-condition-debug",
+    "category": "debugging",
+    "condition": "caveman",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776586169
+  }
+}

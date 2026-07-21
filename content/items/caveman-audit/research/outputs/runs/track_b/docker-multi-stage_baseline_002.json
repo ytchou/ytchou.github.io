@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 8045,
+  "duration_api_ms": 9463,
+  "num_turns": 1,
+  "result": "```dockerfile\nFROM node:22-alpine AS deps\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci --ignore-scripts\n\nFROM node:22-alpine AS build\nWORKDIR /app\nCOPY --from=deps /app/node_modules ./node_modules\nCOPY . .\nRUN npm run build\n\nFROM node:22-alpine AS production\nENV NODE_ENV=production\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci --omit=dev --ignore-scripts && npm cache clean --force\nCOPY --from=build /app/dist ./dist\nUSER node\nEXPOSE 3000\nCMD [\"node\", \"dist/index.js\"]\n```\n\nThree stages:\n\n1. **`deps`** \u2014 installs all dependencies (including devDeps) once, cached separately from source code so a code-only change doesn't re-run `npm ci`.\n2. **`build`** \u2014 compiles TypeScript. Assumes `npm run build` outputs to `dist/`.\n3. **`production`** \u2014 fresh install of prod-only deps, copies only the compiled output. No source, no devDeps, no TypeScript compiler.\n\n**A few things to adjust for your project:**\n\n- `dist/index.js` \u2014 change to match your actual entry point (check `outDir` in `tsconfig.json`)\n- `EXPOSE 3000` \u2014 match your app's port\n- `--ignore-scripts` \u2014 remove if your deps have required install scripts (e.g., native addons with `node-gyp`)\n- If you use a `.npmrc` or `.env`, add a `.dockerignore` to keep those out of the image:\n\n```\nnode_modules\ndist\n.env*\n*.log\n```",
+  "stop_reason": "end_turn",
+  "session_id": "8a7a8cf9-2097-4672-8d32-c79cea2d7ab5",
+  "total_cost_usd": 0.03102755,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 5417,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 449,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 5417,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 449,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 5417,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 5417
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 374,
+      "outputTokens": 21,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000479,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 449,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 5417,
+      "webSearchRequests": 0,
+      "costUSD": 0.03054855,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "90f0a91c-55d3-49a5-b8c4-6b39adbfdd6b",
+  "_meta": {
+    "track": "B",
+    "task": "docker-multi-stage",
+    "category": "devops",
+    "condition": "baseline",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 9.55,
+    "timestamp": 1776774821,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

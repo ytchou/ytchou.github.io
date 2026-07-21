@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 11062,
+  "duration_api_ms": 12286,
+  "num_turns": 1,
+  "result": "Use the `pg` library's `Pool` class \u2014 it handles connection reuse, queuing, and lifecycle automatically.\n\n```javascript\nimport { Pool } from 'pg';\n\nconst pool = new Pool({\n  connectionString: process.env.DATABASE_URL,\n  // Pool sizing\n  max: 10,                  // max connections (default: 10)\n  min: 2,                   // keep at least 2 warm\n  // Timeouts (all in ms)\n  connectionTimeoutMillis: 3000,   // fail fast if can't acquire connection\n  idleTimeoutMillis: 30000,        // close idle connections after 30s\n  statement_timeout: 10000,        // per-query timeout (sent to Postgres)\n  query_timeout: 10000,            // client-side query timeout\n});\n\n// Validate on startup \u2014 fail loudly rather than at first request\npool.on('error', (err, client) => {\n  console.error('Idle client error:', err);\n  // Don't crash the process \u2014 Pool handles reconnection\n});\n```\n\n**Single queries** \u2014 let the pool manage acquisition/release:\n\n```javascript\nconst result = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);\n```\n\n**Transactions** \u2014 acquire a dedicated client:\n\n```javascript\nconst client = await pool.connect();\ntry {\n  await client.query('BEGIN');\n  await client.query('INSERT INTO orders ...', [...]);\n  await client.query('UPDATE inventory ...', [...]);\n  await client.query('COMMIT');\n} catch (err) {\n  await client.query('ROLLBACK');\n  throw err;\n} finally {\n  client.release(); // always release, even on error\n}\n```\n\n**Graceful shutdown** (important in serverless or containers):\n\n```javascript\nprocess.on('SIGTERM', async () => {\n  await pool.end();\n  process.exit(0);\n});\n```\n\nKey things to get right:\n- **Always call `client.release()`** in a `finally` block \u2014 a leaked client drains the pool silently\n- **`connectionTimeoutMillis`** determines how long a caller waits when the pool is exhausted; tune it to your p99 acceptable latency\n- **`max`** should match your Postgres `max_connections` budget divided by the number of app instances\n- **`statement_timeout`** is enforced by Postgres itself, so it kills runaway queries even if the Node process hangs",
+  "stop_reason": "end_turn",
+  "session_id": "0c311b94-4208-4863-b6c2-60fe93851c96",
+  "total_cost_usd": 0.0337623,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 5410,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 635,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 5410,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 635,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 5410,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 5410
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 360,
+      "outputTokens": 18,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.00045000000000000004,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 635,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 5410,
+      "webSearchRequests": 0,
+      "costUSD": 0.0333123,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "0bbcffae-3bb9-4881-a3a6-b904683b8771",
+  "_meta": {
+    "track": "B",
+    "task": "postgres-pool",
+    "category": "setup",
+    "condition": "baseline",
+    "run_num": 7,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 12.68,
+    "timestamp": 1776776255,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

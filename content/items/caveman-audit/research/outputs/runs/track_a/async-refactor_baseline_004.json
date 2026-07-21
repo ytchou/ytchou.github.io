@@ -1,0 +1,21 @@
+{
+  "input_tokens": 109,
+  "output_tokens": 510,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## Refactored with Async/Await\n\nHere's the refactored version with several improvements:\n\n```javascript\nasync function getUser(id) {\n  const rows = await db.query('SELECT * FROM users WHERE id = ?', [id]);\n\n  if (!rows.length) {\n    throw new Error(`User with id \"${id}\" not found`);\n  }\n\n  return rows[0];\n}\n```\n\n### Usage Example\n\n```javascript\n// Basic usage\ntry {\n  const user = await getUser(1);\n  console.log(user);\n} catch (err) {\n  console.error('Failed to get user:', err.message);\n}\n\n// Or with .then()/.catch() if not in an async context\ngetUser(1)\n  .then(user => console.log(user))\n  .catch(err => console.error(err.message));\n```\n\n---\n\n### Key Changes\n\n| Before | After |\n|---|---|\n| Callback parameter `(err, result)` | Returns a **Promise** implicitly |\n| Manual `if (err) return callback(err)` | `await` **re-throws** DB errors automatically |\n| `callback(null, rows[0])` to return data | Plain `return rows[0]` |\n| Error-first callback pattern | Standard `try/catch` for error handling |\n\n---\n\n### Important Caveat\n\nThis assumes `db.query()` **already returns a Promise**. If it only supports callbacks (e.g., older `mysql` package), wrap it first using `util.promisify`:\n\n```javascript\nconst { promisify } = require('util');\nconst dbQuery = promisify(db.query).bind(db);\n\nasync function getUser(id) {\n  const rows = await dbQuery('SELECT * FROM users WHERE id = ?', [id]);\n\n  if (!rows.length) {\n    throw new Error(`User with id \"${id}\" not found`);\n  }\n\n  return rows[0];\n}\n```\n\n> **Tip:** Modern database libraries like `mysql2`, `pg`, and `better-sqlite3` support Promises natively, so `promisify` is often unnecessary with current packages.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 7.83,
+  "_meta": {
+    "track": "C",
+    "task": "async-refactor",
+    "category": "refactor",
+    "condition": "baseline",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 28,
+    "timestamp": 1776585509
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "input_tokens": 5296,
+  "output_tokens": 380,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Two critical issues:\n\n**1. SQL Injection (Critical)**\n`req.params.id` is interpolated directly into the query string. An attacker can pass `1 OR 1=1` or `1; DROP TABLE users--` as the id parameter.\n\n**Fix:** Use a parameterized query:\n```js\nconst query = 'SELECT * FROM users WHERE id = ?';\ndb.query(query, [req.params.id]).then(user => res.json(user));\n```\n(Exact placeholder syntax depends on your DB client \u2014 `?` for mysql2, `$1` for pg.)\n\n**2. Missing input validation**\nNo check that `req.params.id` is a valid integer before hitting the DB, and no 404 handling if the user doesn't exist.\n\n**Fix:**\n```js\napp.get('/api/users/:id', async (req, res) => {\n  const id = parseInt(req.params.id, 10);\n  if (isNaN(id)) return res.status(400).json({ error: 'Invalid id' });\n\n  const user = await db.query('SELECT * FROM users WHERE id = $1', [id]);\n  if (!user) return res.status(404).json({ error: 'Not found' });\n\n  res.json(user);\n});\n```\n\n**Minor: no error handling** \u2014 an unhandled DB rejection will crash the process or hang the request. The `async/await` version above makes it easy to add a `try/catch` or a global error middleware.",
+  "thinking_text": "The user wants a security review of this Express route handler.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 6.79,
+  "_meta": {
+    "track": "C",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "baseline",
+    "run_num": 1,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 22004,
+    "timestamp": 1776613203,
+    "level": 1,
+    "ordering": [
+      8,
+      6,
+      9,
+      3,
+      7,
+      1,
+      5,
+      4,
+      2,
+      0
+    ],
+    "chunks_present": [
+      6,
+      8
+    ],
+    "num_chunks": 2,
+    "behavioral_chars": 12880,
+    "chunk_chars": 9120
+  }
+}

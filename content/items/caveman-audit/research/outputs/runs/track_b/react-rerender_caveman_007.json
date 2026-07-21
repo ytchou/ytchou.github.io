@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 11625,
+  "duration_api_ms": 11560,
+  "num_turns": 1,
+  "result": "New object ref each render. Inline object literal = new ref every time = child re-renders even with same values.\n\n**Common culprit:**\n```jsx\n// Parent \u2014 new object created every render\n<Child config={{ theme: 'dark', size: 'lg' }} />\n```\n\n**Fixes:**\n\n1. **`useMemo`** \u2014 memoize object, new ref only when deps change:\n```jsx\nconst config = useMemo(() => ({ theme: 'dark', size: 'lg' }), []);\n<Child config={config} />\n```\n\n2. **Move outside component** \u2014 if no deps on state/props:\n```jsx\nconst CONFIG = { theme: 'dark', size: 'lg' }; // stable ref forever\n\nfunction Parent() {\n  return <Child config={CONFIG} />;\n}\n```\n\n3. **`React.memo`** on child + custom comparator** \u2014 if restructure isn't option:\n```jsx\nconst Child = React.memo(MyChild, (prev, next) =>\n  prev.config.theme === next.config.theme &&\n  prev.config.size === next.config.size\n);\n```\n\n**Root rule:** React uses `===` for prop comparison. Two objects with identical contents are not equal. Same ref = skip re-render.\n\n`useMemo` or lifting constant outside component = fastest fix.",
+  "stop_reason": "end_turn",
+  "session_id": "6f86ef64-5ba3-4d2b-bc80-06f6e09da72b",
+  "total_cost_usd": 0.032322300000000005,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6406,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 320,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6406,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 320,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6406,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6406
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 320,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6406,
+      "webSearchRequests": 0,
+      "costUSD": 0.032322300000000005,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "52ce29ef-d2fd-4688-9aa5-eaae840ff739",
+  "_meta": {
+    "track": "B",
+    "task": "react-rerender",
+    "category": "debugging",
+    "condition": "caveman",
+    "run_num": 7,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 13.3,
+    "timestamp": 1776776194,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1063,
+  "output_tokens": 464,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## Monolith \u2192 Microservices: Consider First\n\n**Split only if monolith actually broken.** Most teams split too early.\n\n---\n\n### Diagnose First\n\nRun profiling. Slow \u2260 wrong architecture. Slow often = bad queries, missing indexes, no caching. Fix cheap stuff first.\n\n---\n\n### Real Reasons to Split\n\n| Signal | Means |\n|--------|-------|\n| Teams block each other on deploys | Org problem, split helps |\n| One component needs 10x more scale than rest | Split that piece only |\n| Different uptime requirements per domain | Split justified |\n| Release cycles diverge badly | Split helps |\n\n---\n\n### Hidden Costs (Most Teams Underestimate)\n\n- **Network calls** replace function calls \u2192 latency + failure modes multiply\n- **Distributed transactions** \u2014 no Django ORM to save you. Saga pattern or accept eventual consistency\n- **Observability** \u2014 need tracing across services or debugging becomes nightmare\n- **Local dev** \u2014 spinning up 8 services locally is pain\n- **Data ownership** \u2014 which service owns which DB? Shared DB = microservices in name only\n- **Ops burden** \u2014 CI/CD, containers, service discovery, secrets management per service\n\n---\n\n### Django-Specific\n\nDjango monolith has natural seams: **apps**. Before full split:\n\n1. Enforce app boundaries \u2014 no cross-app model imports\n2. Add internal APIs between apps (service layer)\n3. Extract one low-risk service first, learn the pain\n4. Consider **modular monolith** \u2014 most benefit, fraction of cost\n\n---\n\n### Decision Filter\n\n```\nSlow queries?        \u2192 Fix DB first\nScaling one feature? \u2192 Extract that one service\nTeam coordination?   \u2192 Check if org structure fixable first\nEverything coupled?  \u2192 Modular monolith before microservices\n```\n\n---\n\n**Bottom line:** Microservices solve org/scale problems. They create distributed systems problems. Trade only if you're sure which problem is bigger.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 13.96,
+  "_meta": {
+    "track": "C",
+    "task": "microservices-monolith",
+    "category": "architecture",
+    "condition": "caveman",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585692
+  }
+}

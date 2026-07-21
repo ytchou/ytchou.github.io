@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1085,
+  "output_tokens": 186,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Inline object = new ref every render. React compare by ref, not value.\n\n```jsx\n// Bad \u2014 new object each render\n<Child config={{ theme: \"dark\", size: 14 }} />\n\n// Good \u2014 stable ref\nconst config = useMemo(() => ({ theme: \"dark\", size: 14 }), []);\n<Child config={config} />\n```\n\nAlso: wrap `Child` in `React.memo` or re-render still happen when parent render.\n\n```jsx\nconst Child = React.memo(({ config }) => { ... });\n```\n\nBoth needed. `memo` skip re-render only if props ref stable. `useMemo` make ref stable.",
+  "thinking_text": "The user is asking about React re-rendering. Caveman mode is active (full by default).",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 4.69,
+  "_meta": {
+    "track": "A_prime",
+    "task": "react-rerender",
+    "category": "debugging",
+    "condition": "caveman",
+    "run_num": 1,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776610339
+  }
+}

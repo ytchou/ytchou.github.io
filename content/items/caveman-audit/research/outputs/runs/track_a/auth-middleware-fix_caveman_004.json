@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1065,
+  "output_tokens": 129,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "JWT `exp` in seconds. `Date.now()` in milliseconds.\n\n**Bug:**\n```js\nif (Date.now() > payload.exp) // wrong \u2014 ms vs s\n```\n\n**Fix:**\n```js\nif (Math.floor(Date.now() / 1000) > payload.exp) // convert to seconds\n```\n\nOr flip: `payload.exp * 1000 < Date.now()`.\n\nUse library (`jsonwebtoken`) \u2014 handles this + signature verify + clock skew. Roll-your-own JWT check = pain.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 3.84,
+  "_meta": {
+    "track": "C",
+    "task": "auth-middleware-fix",
+    "category": "bugfix",
+    "condition": "caveman",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585191
+  }
+}

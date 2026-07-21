@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1087,
+  "output_tokens": 414,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Race condition. Read-modify-write not atomic. Two requests read same value, both write same+1.\n\n**Fix: atomic update**\n\n```sql\nUPDATE counters\nSET value = value + 1\nWHERE id = $1\nRETURNING value;\n```\n\nOne query. Postgres serialize writes to same row. No race.\n\n---\n\n**If using transaction + SELECT now:**\n\n```js\n// BROKEN - classic race\nconst { rows } = await db.query('SELECT value FROM counters WHERE id = $1', [id]);\nconst newVal = rows[0].value + 1;\nawait db.query('UPDATE counters SET value = $1 WHERE id = $2', [newVal, id]);\n```\n\n```js\n// FIXED - atomic\nconst { rows } = await db.query(\n  'UPDATE counters SET value = value + 1 WHERE id = $1 RETURNING value',\n  [id]\n);\nreturn rows[0].value;\n```\n\n---\n\n**Edge cases:**\n\n| Scenario | Solution |\n|----------|----------|\n| Counter not exist yet | `INSERT ... ON CONFLICT DO UPDATE SET value = counters.value + 1 RETURNING value` |\n| Need old + new value | `RETURNING value - 1 AS old_value, value AS new_value` |\n| Multiple counters in one tx | `SELECT FOR UPDATE` + transaction (locks row, serializes) |\n\n---\n\n`UPDATE ... RETURNING` = simplest, fastest, correct. Use that.",
+  "thinking_text": "The user has a race condition in their PostgreSQL counter increment. Let me respond in caveman mode (full, default).\n\nThe fix is to use atomic UPDATE with RETURNING, or use SELECT FOR UPDATE, or use advisory locks. The best solution is atomic UPDATE RETURNING.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 17.75,
+  "_meta": {
+    "track": "A_prime",
+    "task": "race-condition-debug",
+    "category": "debugging",
+    "condition": "caveman",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776610932
+  }
+}

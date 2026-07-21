@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 9439,
+  "duration_api_ms": 9382,
+  "num_turns": 1,
+  "result": "## merge vs rebase\n\n**merge**: Join two branches, preserve history as-is. Creates merge commit.\n\n```\nA---B---C  main\n     \\   \\\n      D---E---M  feature (M = merge commit)\n```\n\n**rebase**: Replay commits on top of another branch. Rewrites history. Linear result.\n\n```\nA---B---C  main\n             \\\n              D'--E'  feature (commits replanted, new hashes)\n```\n\n---\n\n## When to use\n\n**merge** when:\n- Branch is shared/public (rebasing shared branch = disaster for teammates)\n- Preserving exact history matters (audits, bisect accuracy)\n- Merging feature \u2192 main (creates clear record of when feature landed)\n\n**rebase** when:\n- Cleaning up local commits before PR (squash noise, reorder)\n- Syncing feature branch with latest main (`git rebase main`)\n- Want linear history for readable `git log`\n\n---\n\n## Tradeoffs\n\n| | merge | rebase |\n|---|---|---|\n| History | Truthful, messy | Clean, rewritten |\n| Safe on shared branches | Yes | No |\n| Conflict resolution | Once | Per replayed commit |\n| `git bisect` | Works | Works better (linear) |\n| Undo | Easy | Harder |\n\n---\n\n## Golden rule\n\n> Never rebase commits that exist outside your local repo.\n\nRebase rewrites hashes. Push rebased branch \u2192 teammates' history diverges \u2192 chaos.\n\n**Typical workflow:** rebase locally to clean up, merge into main via PR.",
+  "stop_reason": "end_turn",
+  "session_id": "182811fc-edd6-49ea-ba20-d826c7a59b9d",
+  "total_cost_usd": 0.03370605,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6403,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 413,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6403,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 413,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6403,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6403
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 413,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6403,
+      "webSearchRequests": 0,
+      "costUSD": 0.03370605,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "a313d1a5-3ed0-4750-bb50-ee516fb5c029",
+  "_meta": {
+    "track": "B",
+    "task": "git-rebase-merge",
+    "category": "explanation",
+    "condition": "caveman",
+    "run_num": 6,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 11.03,
+    "timestamp": 1776776338,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

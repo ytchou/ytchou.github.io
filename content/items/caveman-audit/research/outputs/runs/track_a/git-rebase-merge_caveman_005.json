@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1053,
+  "output_tokens": 420,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## merge vs rebase\n\n**merge** \u2014 join two branches, keep full history. Creates merge commit.\n\n```\nA---B---C  main\n     \\\n      D---E  feature\n           \\\n            M  \u2190 merge commit (has 2 parents)\n```\n\n**rebase** \u2014 replay feature commits on top of target. Linear history, no merge commit.\n\n```\nA---B---C  main\n             \\\n              D'--E'  \u2190 rebased (new commits, same changes)\n```\n\n---\n\n## when use what\n\n**merge when:**\n- public/shared branch (never rebase these)\n- want preserve exact history + context\n- merging main \u2192 long-lived feature (safe catch-up)\n- team prefers non-destructive ops\n\n**rebase when:**\n- cleaning local feature branch before PR\n- want linear, readable history\n- squashing WIP commits\n- solo branch, not pushed yet\n\n---\n\n## tradeoffs\n\n| | merge | rebase |\n|---|---|---|\n| history | true, messy | clean, rewritten |\n| conflicts | once | per commit replayed |\n| safety | always safe | dangerous on shared branches |\n| bisect/blame | harder | easier |\n| context | preserves \"when\" | loses \"when\" |\n\n---\n\n## golden rule\n\n> **Never rebase commits already pushed to shared branch.**\n\nRebase rewrites commit hashes. Others have old hashes \u2192 chaos.\n\n---\n\n## common pattern\n\n```bash\n# keep feature branch current (safe)\ngit checkout feature\ngit rebase main        # clean, linear\n\n# merge to main when done\ngit checkout main\ngit merge feature      # fast-forward, no merge commit needed\n```\n\nConflict mid-rebase \u2192 fix \u2192 `git rebase --continue`. Bail \u2192 `git rebase --abort`.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 9.33,
+  "_meta": {
+    "track": "C",
+    "task": "git-rebase-merge",
+    "category": "explanation",
+    "condition": "caveman",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585484
+  }
+}

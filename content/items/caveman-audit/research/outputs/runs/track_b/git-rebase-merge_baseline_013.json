@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 14882,
+  "duration_api_ms": 16101,
+  "num_turns": 1,
+  "result": "## Git Merge vs. Git Rebase\n\nBoth integrate changes from one branch into another, but they do it differently.\n\n---\n\n### `git merge`\n\nCreates a **merge commit** that ties two branch histories together. The original commits on both branches are preserved exactly as they were.\n\n```\nmain:    A - B - C - - - - - M\n                  \\         /\nfeature:           D - E - F\n```\n\n- History is **non-destructive** \u2014 nothing is rewritten\n- The merge commit (`M`) is a clear record that branches were joined\n- Result: a non-linear history with \"bubbles\"\n\n### `git rebase`\n\n**Replays** your branch's commits on top of another branch. The commits are rewritten (new SHAs) as if you had started your branch from the latest point.\n\n```\nmain:    A - B - C\n                  \\\nfeature:           D' - E' - F'   \u2190 replayed on top of C\n```\n\n- History is **linear** \u2014 looks like development happened sequentially\n- Commits are rewritten (D, E, F become D', E', F' with new hashes)\n- No merge commit noise\n\n---\n\n### When to use each\n\n**Use `merge` when:**\n- Integrating a completed feature into `main`/`master` \u2014 the merge commit documents the event\n- Working on a **shared branch** where others have your commits (rewriting would break their history)\n- You want an explicit record of when branches diverged and rejoined\n\n**Use `rebase` when:**\n- Updating your **local feature branch** to incorporate upstream changes before opening a PR\n- Cleaning up a messy commit history before merging (especially with interactive rebase: `git rebase -i`)\n- Your team values a linear, readable `git log`\n\n---\n\n### The critical rule\n\n> **Never rebase commits that have been pushed to a shared branch.**\n\nRebase rewrites commit SHAs. If others have already pulled those commits, their history diverges from yours and they'll hit painful conflicts. The golden rule: rebase only local or solo branches.\n\n---\n\n### Summary tradeoffs\n\n| | Merge | Rebase |\n|---|---|---|\n| History | Preserves exact history | Creates clean linear history |\n| Safety | Safe on shared branches | Dangerous on shared branches |\n| Traceability | Merge commit marks integration point | No integration marker |\n| Complexity | Simpler mental model | Requires understanding SHA rewriting |\n\nA common workflow: **rebase locally to stay current**, **merge (or fast-forward) to integrate into main** via PR.",
+  "stop_reason": "end_turn",
+  "session_id": "edb1915e-1785-4674-836f-78ce049fe92d",
+  "total_cost_usd": 0.015008,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17050,
+    "output_tokens": 630,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 630,
+        "cache_read_input_tokens": 17050,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 364,
+      "outputTokens": 14,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.00043400000000000003,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 630,
+      "cacheReadInputTokens": 17050,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.014574,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "79c3a356-98f6-4feb-b7b1-46888b09012a",
+  "_meta": {
+    "track": "B",
+    "task": "git-rebase-merge",
+    "category": "explanation",
+    "condition": "baseline",
+    "run_num": 13,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 16.56,
+    "timestamp": 1776776340,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

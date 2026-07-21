@@ -1,0 +1,50 @@
+{
+  "input_tokens": 15811,
+  "output_tokens": 534,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Two vulns:\n\n**1. SQL Injection (critical)**\n\n`req.params.id` drops raw into query. Attacker sends `1 OR 1=1` \u2192 dumps whole table. Or `1; DROP TABLE users--`.\n\nFix \u2014 parameterized query:\n```js\napp.get('/api/users/:id', (req, res) => {\n  db.query('SELECT * FROM users WHERE id = ?', [req.params.id])\n    .then(user => res.json(user));\n});\n```\n\n**2. No auth check**\n\nAny caller gets any user's data. No session/token guard.\n\nFix \u2014 add middleware:\n```js\napp.get('/api/users/:id', requireAuth, (req, res) => {\n```\n\n**3. No input validation**\n\n`id` should be integer. Reject non-numeric early:\n```js\nconst id = parseInt(req.params.id, 10);\nif (isNaN(id)) return res.status(400).json({ error: 'Invalid id' });\n```\n\n**4. `SELECT *` leaks fields**\n\nReturns password hash, tokens, everything. Name columns explicitly.\n\n**5. No error handling**\n\nQuery reject \u2192 unhandled promise \u2192 crash or 500 leak. Add `.catch(err => res.status(500).json({ error: 'Server error' }))`.\n\n---\n\nFixed version:\n```js\napp.get('/api/users/:id', requireAuth, (req, res) => {\n  const id = parseInt(req.params.id, 10);\n  if (isNaN(id)) return res.status(400).json({ error: 'Invalid id' });\n\n  db.query('SELECT id, name, email FROM users WHERE id = ?', [id])\n    .then(user => {\n      if (!user) return res.status(404).json({ error: 'Not found' });\n      res.json(user);\n    })\n    .catch(() => res.status(500).json({ error: 'Server error' }));\n});\n```\n\nSQL injection = fix first. Auth = fix second.",
+  "thinking_text": "The user wants a security review of this Express route handler. Let me analyze it and respond in caveman mode (full, the default).",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 9.8,
+  "_meta": {
+    "track": "C",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "caveman",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 63097,
+    "timestamp": 1776639273,
+    "level": 5,
+    "ordering": [
+      2,
+      9,
+      6,
+      1,
+      5,
+      4,
+      0,
+      8,
+      7,
+      3
+    ],
+    "chunks_present": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "num_chunks": 10,
+    "behavioral_chars": 12880,
+    "chunk_chars": 46676
+  }
+}

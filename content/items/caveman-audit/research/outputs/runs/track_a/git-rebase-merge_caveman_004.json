@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1053,
+  "output_tokens": 406,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## merge vs rebase\n\n**merge** \u2014 join two branches, keep full history. Creates merge commit.\n\n```\nA---B---C  main\n     \\\n      D---E  feature\n           \\\n            M  \u2190 merge commit (has 2 parents)\n```\n\n**rebase** \u2014 replay feature commits on top of target. Linear history, no merge commit.\n\n```\nA---B---C  main\n             \\\n              D'--E'  \u2190 replayed commits (new hashes)\n```\n\n---\n\n## When use which\n\n**Use merge when:**\n- Public/shared branch (never rewrite shared history)\n- Want exact record of when branch integrated\n- Team prefers non-destructive workflow\n\n**Use rebase when:**\n- Local cleanup before PR\n- Want clean linear history\n- Updating feature branch with latest main changes\n\n---\n\n## Tradeoffs\n\n| | merge | rebase |\n|---|---|---|\n| History | Preserves exact truth | Clean but rewritten |\n| Conflicts | Resolve once | Resolve per commit |\n| Safety | Always safe | Dangerous on shared branches |\n| Bisect/log | Noisy | Easy to read |\n\n---\n\n## Golden rule\n\n> **Never rebase commits already pushed to shared branch.**\n\nRebase rewrites hashes. Others have old hashes. Chaos follows.\n\n---\n\n## Common patterns\n\n```bash\n# Update feature branch with main (local only)\ngit checkout feature\ngit rebase main\n\n# Merge feature into main (preserves history)\ngit checkout main\ngit merge feature\n\n# Interactive rebase: squash messy WIP commits before PR\ngit rebase -i main\n```\n\n**TL;DR:** rebase = clean history, local only. merge = safe, always OK.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 8.5,
+  "_meta": {
+    "track": "C",
+    "task": "git-rebase-merge",
+    "category": "explanation",
+    "condition": "caveman",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585480
+  }
+}

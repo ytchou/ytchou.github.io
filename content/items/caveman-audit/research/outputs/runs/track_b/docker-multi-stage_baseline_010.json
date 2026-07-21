@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 10637,
+  "duration_api_ms": 12688,
+  "num_turns": 1,
+  "result": "```dockerfile\nFROM node:22-alpine AS deps\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci --ignore-scripts\n\nFROM node:22-alpine AS build\nWORKDIR /app\nCOPY --from=deps /app/node_modules ./node_modules\nCOPY . .\nRUN npm run build\n\nFROM node:22-alpine AS prod-deps\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci --omit=dev --ignore-scripts\n\nFROM node:22-alpine AS runtime\nWORKDIR /app\n\nRUN addgroup -S appgroup && adduser -S appuser -G appgroup\n\nCOPY --from=prod-deps /app/node_modules ./node_modules\nCOPY --from=build /app/dist ./dist\nCOPY package.json ./\n\nUSER appuser\n\nENV NODE_ENV=production\n\nEXPOSE 3000\nCMD [\"node\", \"dist/index.js\"]\n```\n\nFour stages:\n\n1. **deps** \u2014 installs all dependencies (including devDeps) with a clean `npm ci`\n2. **build** \u2014 copies deps + source, compiles TypeScript via `npm run build`\n3. **prod-deps** \u2014 separate `npm ci --omit=dev` to get a clean prod-only `node_modules`\n4. **runtime** \u2014 final image: only compiled `dist/`, prod `node_modules`, and `package.json`\n\nKey size optimizations:\n- `alpine` base keeps the image under ~200MB vs ~1GB for the full Debian image\n- prod-only deps are installed fresh in a separate stage rather than pruning, which leaves devDep artifacts behind\n- no source files, no TypeScript compiler, no test tooling in the final image\n- `--ignore-scripts` during install avoids running arbitrary postinstall hooks in the build environment\n\nAdjust `dist/index.js` to match your `outDir` and entry point in `tsconfig.json`.",
+  "stop_reason": "end_turn",
+  "session_id": "d32c1c1c-7f83-44ce-b316-e4a1943ad36c",
+  "total_cost_usd": 0.013036,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17060,
+    "output_tokens": 496,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 496,
+        "cache_read_input_tokens": 17060,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 374,
+      "outputTokens": 19,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000469,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 496,
+      "cacheReadInputTokens": 17060,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.012567,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "1bc06c4b-1669-4ba4-85f6-b794102db1f1",
+  "_meta": {
+    "track": "B",
+    "task": "docker-multi-stage",
+    "category": "devops",
+    "condition": "baseline",
+    "run_num": 10,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 12.42,
+    "timestamp": 1776776511,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

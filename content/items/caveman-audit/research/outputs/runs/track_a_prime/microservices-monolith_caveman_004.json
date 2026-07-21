@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1092,
+  "output_tokens": 512,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "**Split or not: key factors**\n\n**Don't split until monolith truly broken:**\n- Microservices add distributed systems complexity. Most teams underestimate cost.\n\n---\n\n**Diagnose first. Slow \u2260 need microservices.**\n\n1. **Find actual bottleneck** \u2014 DB queries? N+1s? No caching? Missing indexes? Fix those first. Often 10x gains without split.\n2. **Profile before architect** \u2014 `django-silk`, `django-debug-toolbar`. Guess wrong = waste months.\n\n---\n\n**Legit reasons to split:**\n\n| Signal | Example |\n|--------|---------|\n| Teams block each other | 4 squads deploy same repo, constant conflicts |\n| Parts need different scale | Image processing vs. auth vs. billing |\n| Different tech needs | ML pipeline want Python/GPU, rest fine on Django |\n| Failure isolation critical | Payment crash shouldn't kill search |\n\n---\n\n**Real costs of microservices:**\n\n- Network calls replace function calls \u2192 latency, failure modes multiply\n- Distributed transactions hard (no more `atomic()`)\n- Need service discovery, API gateway, observability stack\n- Each service = own deploy pipeline, DB, monitoring\n- Debugging cross-service requests brutal without good tracing\n\n---\n\n**Middle path (often best):**\n\n1. **Modular monolith first** \u2014 enforce strict boundaries inside Django app. Separate DB schemas per domain. No circular imports.\n2. **Extract only hottest bottleneck** as service. Not all at once.\n3. **Async tasks** \u2014 Celery/Redis handles slow work. Big wins, low complexity.\n4. **Read replicas + caching** \u2014 often kills 80% of slowness.\n\n---\n\n**Questions to answer before deciding:**\n\n- Do you have senior engineers who've run distributed systems?\n- Do you have solid observability (tracing, structured logs, alerting)?\n- Can you define clear service boundaries with minimal cross-service data needs?\n- Is the slowness in one isolatable domain?\n\nNo to most \u2192 fix monolith first.",
+  "thinking_text": "The user wants advice on monolith vs microservices. I should respond in caveman mode (full, default).",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 13.57,
+  "_meta": {
+    "track": "A_prime",
+    "task": "microservices-monolith",
+    "category": "architecture",
+    "condition": "caveman",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776610703
+  }
+}

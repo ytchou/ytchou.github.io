@@ -1,0 +1,79 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 26096,
+  "duration_api_ms": 24558,
+  "num_turns": 5,
+  "result": "Need write permission. Key changes I'm making:\n\n- `fallback` prop changed to **render function** `(error, reset) => ReactNode` \u2014 custom UI still gets retry access\n- `onError` prop added \u2014 lets parent hook into errors (send to Sentry, etc.)\n- Log includes `errorId`, `timestamp`, full `stack`\n- Default UI shows `componentStack`, scrollable pre\n\nApprove write to proceed.",
+  "stop_reason": "end_turn",
+  "session_id": "62d32a49-0973-43a4-87af-c8ecdc80df77",
+  "total_cost_usd": 0.07733430000000001,
+  "usage": {
+    "input_tokens": 7,
+    "cache_creation_input_tokens": 8404,
+    "cache_read_input_tokens": 84961,
+    "output_tokens": 1354,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 8404,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 1,
+        "output_tokens": 100,
+        "cache_read_input_tokens": 18911,
+        "cache_creation_input_tokens": 959,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 959
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 7,
+      "outputTokens": 1354,
+      "cacheReadInputTokens": 84961,
+      "cacheCreationInputTokens": 8404,
+      "webSearchRequests": 0,
+      "costUSD": 0.07733430000000001,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [
+    {
+      "tool_name": "Write",
+      "tool_use_id": "toolu_01A538EoUamY1tVufra9j8wp",
+      "tool_input": {
+        "file_path": "/Users/ytchou/project/portfolio/projects/caveman-audit/src/components/ErrorBoundary.tsx",
+        "content": "import { Component, type ErrorInfo, type ReactNode } from \"react\";\n\ninterface Props {\n  children: ReactNode;\n  fallback?: (error: Error, reset: () => void) => ReactNode;\n  onError?: (error: Error, info: ErrorInfo) => void;\n}\n\ninterface State {\n  error: Error | null;\n  componentStack: string | null;\n}\n\nexport class ErrorBoundary extends Component<Props, State> {\n  state: State = { error: null, componentStack: null };\n\n  static getDerivedStateFromError(error: Error): Partial<State> {\n    return { error };\n  }\n\n  componentDidCatch(error: Error, info: ErrorInfo): void {\n    const errorId = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;\n    console.error(\"[ErrorBoundary]\", {\n      errorId,\n      message: error.message,\n      stack: error.stack,\n      componentStack: info.componentStack,\n      timestamp: new Date().toISOString(),\n    });\n    this.props.onError?.(error, info);\n    this.setState({ componentStack: info.componentStack ?? null });\n  }\n\n  reset = (): void => {\n    this.setState({ error: null, componentStack: null });\n  };\n\n  render(): ReactNode {\n    const { error, componentStack } = this.state;\n\n    if (error) {\n      if (this.props.fallback) {\n        return this.props.fallback(error, this.reset);\n      }\n\n      return (\n        <div\n          role=\"alert\"\n          style={{\n            padding: \"1rem\",\n            border: \"1px solid #f87171\",\n            borderRadius: \"4px\",\n            fontFamily: \"monospace\",\n          }}\n        >\n          <h2 style={{ margin: \"0 0 0.5rem\", color: \"#dc2626\" }}>\n            Something went wrong\n          </h2>\n          <pre\n            style={{\n              whiteSpace: \"pre-wrap\",\n              color: \"#7f1d1d\",\n              fontSize: \"0.875rem\",\n              maxHeight: \"200px\",\n              overflow: \"auto\",\n              margin: \"0 0 1rem\",\n            }}\n          >\n            {error.message}\n            {componentStack && `\\n\\nComponent Stack:${componentStack}`}\n          </pre>\n          <button\n            onClick={this.reset}\n            style={{\n              padding: \"0.375rem 0.75rem\",\n              background: \"#dc2626\",\n              color: \"#fff\",\n              border: \"none\",\n              borderRadius: \"4px\",\n              cursor: \"pointer\",\n            }}\n          >\n            Try Again\n          </button>\n        </div>\n      );\n    }\n\n    return this.props.children;\n  }\n}\n"
+      }
+    }
+  ],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "0ddbead9-c790-41c7-b874-ba781ef7843a",
+  "_meta": {
+    "track": "B",
+    "task": "error-boundary",
+    "category": "implementation",
+    "condition": "caveman",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 27.79,
+    "timestamp": 1776774995,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1092,
+  "output_tokens": 720,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "**Split only if pain is real. Most monoliths die from bad code, not wrong shape.**\n\n---\n\n## Diagnose First\n\nProfile before architect. Slow where?\n\n- DB queries? \u2192 indexes, query opt, read replicas\n- Specific endpoints? \u2192 caching, async tasks (Celery)\n- All requests? \u2192 infra problem, not architecture\n\n**Fix obvious stuff first. Microservices don't fix slow SQL.**\n\n---\n\n## Real Reasons to Split\n\nGood:\n- Teams step on each other constantly (deployment conflicts, merge hell)\n- Clear domain boundaries already exist (billing \u2260 notifications \u2260 auth)\n- One piece needs different scale than rest (image processing vs user auth)\n- Compliance forces isolation (PCI data separate from rest)\n\nBad:\n- \"Everyone does microservices\"\n- Devs bored\n- App just slow (perf problem \u2260 architecture problem)\n\n---\n\n## Hidden Costs\n\n| You gain | You lose |\n|----------|----------|\n| Independent deploy | Simple `manage.py runserver` |\n| Independent scale | Free Django ORM joins |\n| Team autonomy | Free DB transactions |\n| \u2014 | Distributed tracing |\n| \u2014 | Network latency between services |\n| \u2014 | Ops complexity (K8s, service mesh, etc.) |\n\n**Biggest trap:** transactions. Django ACID transactions across services = impossible. Need sagas, eventual consistency, compensation logic. Hard to build, harder to debug.\n\n---\n\n## Key Questions Before Splitting\n\n1. **Team size?** Under ~15 devs, monolith usually win. Microservices are org scaling tool as much as tech tool.\n2. **Domain boundaries clear?** Fuzzy boundaries = distributed monolith. Worst of both worlds.\n3. **Ops maturity?** Need: containerization, CI/CD per service, centralized logging, distributed tracing, health checks. No devops \u2192 don't split.\n4. **DB ownership clear?** Each service must own its data. Shared DB = not real microservices.\n5. **Async OK?** Many service calls become async. Product + devs must accept eventual consistency.\n\n---\n\n## Practical Path\n\nDon't big-bang rewrite. Extract incrementally:\n\n```\nMonolith \u2192 Modular Monolith \u2192 Strangler Fig \u2192 Microservices\n```\n\nStep 1: **Clean internal boundaries first.** Django apps per domain, no cross-app model imports. If can't draw clean lines inside monolith, can't draw them outside either.\n\nStep 2: **Extract highest-value seam first.** Usually: async workers (already decoupled), or one high-scale domain.\n\nStep 3: **Prove ops pipeline works** before extracting second service.\n\n---\n\n**Bottom line:** If deploys take hours because 8 teams conflict, split. If app just slow, profile first. Microservices multiply complexity \u2014 only worth it when monolith complexity is already worse.",
+  "thinking_text": "The user wants advice on microservices vs monolith. I should respond in caveman mode (full, default).",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 17.81,
+  "_meta": {
+    "track": "A_prime",
+    "task": "microservices-monolith",
+    "category": "architecture",
+    "condition": "caveman",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776610700
+  }
+}

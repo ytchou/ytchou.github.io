@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1065,
+  "output_tokens": 186,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "JWT `exp` in **seconds**. `Date.now()` in **milliseconds**.\n\n**Bug:**\n```js\nif (Date.now() > payload.exp) // wrong \u2014 always false, exp looks huge\n```\n\n**Fix:**\n```js\nif (Math.floor(Date.now() / 1000) > payload.exp) // correct\n```\n\nOr:\n```js\nif (Date.now() > payload.exp * 1000) // also correct\n```\n\n**Why tokens pass:** `Date.now()` \u2248 `1700000000000`, `exp` \u2248 `1700000000`. Left always bigger \u2192 condition never true \u2192 all tokens \"valid\".\n\nRecommend `jsonwebtoken` lib \u2014 handles unit mismatch, clock skew, alg validation auto.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 4.33,
+  "_meta": {
+    "track": "C",
+    "task": "auth-middleware-fix",
+    "category": "bugfix",
+    "condition": "caveman",
+    "run_num": 8,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585199
+  }
+}

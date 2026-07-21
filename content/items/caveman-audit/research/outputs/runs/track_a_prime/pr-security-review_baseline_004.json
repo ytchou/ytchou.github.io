@@ -1,0 +1,22 @@
+{
+  "input_tokens": 111,
+  "output_tokens": 999,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## Security Issues Found\n\nThis code has **critical vulnerabilities** that could compromise your entire database.\n\n---\n\n### \ud83d\udd34 Critical: SQL Injection\n```javascript\n// VULNERABLE - Direct string interpolation\nconst query = `SELECT * FROM users WHERE id = ${req.params.id}`;\n\n// Attacker sends: /api/users/1 OR 1=1\n// Resulting query: SELECT * FROM users WHERE id = 1 OR 1=1\n// Returns ALL users in the database\n```\n\n**Fix: Use parameterized queries**\n```javascript\nconst query = 'SELECT * FROM users WHERE id = ?';\ndb.query(query, [req.params.id])\n```\n\n---\n\n### \ud83d\udd34 Critical: Missing Authentication/Authorization\n```javascript\n// Anyone can query any user's data\napp.get('/api/users/:id', (req, res) => { ... })\n```\n**Fix:** Verify the requester is allowed to access this resource\n```javascript\napp.get('/api/users/:id', authenticateToken, (req, res) => {\n  if (req.user.id !== req.params.id && !req.user.isAdmin) {\n    return res.status(403).json({ error: 'Forbidden' });\n  }\n  // ...\n});\n```\n\n---\n\n### \ud83d\udfe0 High: No Input Validation\n```javascript\n// req.params.id is completely unchecked\n```\n**Fix:** Validate before using\n```javascript\nconst { id } = req.params;\nif (!id || !/^\\d+$/.test(id)) {\n  return res.status(400).json({ error: 'Invalid ID' });\n}\n```\n\n---\n\n### \ud83d\udfe0 High: No Error Handling\n```javascript\n// Unhandled rejection exposes stack traces or crashes the server\ndb.query(query).then(user => res.json(user));\n```\n**Fix:**\n```javascript\ndb.query(query, [id])\n  .then(user => {\n    if (!user) return res.status(404).json({ error: 'Not found' });\n    res.json(user);\n  })\n  .catch(err => {\n    console.error(err); // Log internally only\n    res.status(500).json({ error: 'Internal server error' });\n  });\n```\n\n---\n\n### \ud83d\udfe1 Medium: Over-fetching with SELECT *\n```javascript\nSELECT * FROM users  // May expose passwords, tokens, PII\n```\n**Fix:** Select only needed fields\n```javascript\nSELECT id, name, email FROM users WHERE id = ?\n```\n\n---\n\n### \u2705 Secure Version\n```javascript\napp.get('/api/users/:id', authenticateToken, async (req, res) => {\n  const { id } = req.params;\n\n  if (!/^\\d+$/.test(id)) {\n    return res.status(400).json({ error: 'Invalid ID format' });\n  }\n\n  if (req.user.id !== id && !req.user.isAdmin) {\n    return res.status(403).json({ error: 'Forbidden' });\n  }\n\n  try {\n    const query = 'SELECT id, name, email FROM users WHERE id = ?';\n    const user = await db.query(query, [id]);\n\n    if (!user) return res.status(404).json({ error: 'User not found' });\n\n    res.json(user);\n  } catch (err) {\n    console.error('DB error:', err);\n    res.status(500).json({ error: 'Internal server error' });\n  }\n});\n```\n\n---\n\n### Summary Table\n| Issue | Severity | Impact |\n|---|---|---|\n| SQL Injection | \ud83d\udd34 Critical | Full DB compromise |\n| No authorization | \ud83d\udd34 Critical | Data breach |\n| No input validation | \ud83d\udfe0 High | Unexpected behavior |\n| No error handling | \ud83d\udfe0 High | Info leakage / crash |\n| SELECT * | \ud83d\udfe1 Medium | Data overexposure |",
+  "thinking_text": "The user wants me to review this Express route handler for security issues. Let me analyze it carefully.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 17.2,
+  "_meta": {
+    "track": "A_prime",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "baseline",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 28,
+    "timestamp": 1776610734
+  }
+}

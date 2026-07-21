@@ -1,0 +1,42 @@
+{
+  "input_tokens": 5180,
+  "output_tokens": 333,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Two issues:\n\n**1. SQL Injection (Critical)**\n\n`req.params.id` is interpolated directly into the query string. An attacker can pass `1 OR 1=1` or `1; DROP TABLE users--` as the ID.\n\nFix \u2014 use a parameterized query:\n```js\napp.get('/api/users/:id', (req, res) => {\n  db.query('SELECT * FROM users WHERE id = ?', [req.params.id])\n    .then(user => res.json(user));\n});\n```\n(Use `$1` instead of `?` for PostgreSQL.)\n\n**2. Missing error handling**\n\nA rejected promise crashes the process or hangs the request. Add a `.catch`:\n```js\napp.get('/api/users/:id', (req, res) => {\n  db.query('SELECT * FROM users WHERE id = ?', [req.params.id])\n    .then(user => {\n      if (!user) return res.status(404).json({ error: 'Not found' });\n      res.json(user);\n    })\n    .catch(() => res.status(500).json({ error: 'Internal server error' }));\n});\n```\n\n**Minor:** `SELECT *` returns all columns \u2014 avoid exposing fields like `password_hash`. Select only what you need.",
+  "thinking_text": "The user wants a security review of this Express route handler.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 36.63,
+  "_meta": {
+    "track": "C",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "baseline",
+    "run_num": 3,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 22042,
+    "timestamp": 1776613690,
+    "level": 1,
+    "ordering": [
+      8,
+      4,
+      6,
+      7,
+      3,
+      0,
+      1,
+      9,
+      5,
+      2
+    ],
+    "chunks_present": [
+      4,
+      8
+    ],
+    "num_chunks": 2,
+    "behavioral_chars": 12880,
+    "chunk_chars": 9158
+  }
+}

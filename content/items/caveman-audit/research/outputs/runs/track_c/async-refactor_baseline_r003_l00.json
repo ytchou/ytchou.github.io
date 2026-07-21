@@ -1,0 +1,39 @@
+{
+  "input_tokens": 2911,
+  "output_tokens": 122,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "```js\nasync function getUser(id) {\n  const rows = await db.query('SELECT * FROM users WHERE id = ?', [id]);\n  if (!rows.length) throw new Error('Not found');\n  return rows[0];\n}\n```\n\nAssumes `db.query` returns a promise \u2014 if it's callback-only, wrap it first with `util.promisify(db.query.bind(db))`.",
+  "thinking_text": "Simple refactoring task - no need to look at files.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 13.59,
+  "_meta": {
+    "track": "C",
+    "task": "async-refactor",
+    "category": "refactor",
+    "condition": "baseline",
+    "run_num": 3,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 12880,
+    "timestamp": 1776612516,
+    "level": 0,
+    "ordering": [
+      2,
+      6,
+      3,
+      4,
+      7,
+      0,
+      1,
+      9,
+      5,
+      8
+    ],
+    "chunks_present": [],
+    "num_chunks": 0,
+    "behavioral_chars": 12880,
+    "chunk_chars": 0
+  }
+}

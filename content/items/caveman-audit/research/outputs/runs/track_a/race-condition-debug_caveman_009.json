@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1058,
+  "output_tokens": 316,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Race condition. Multiple requests read same value before any write commit.\n\n## Fix options\n\n**1. Atomic update (best)**\n```sql\nUPDATE counters\nSET value = value + 1\nWHERE id = $1\nRETURNING value;\n```\nDB handle increment atomically. No read-then-write in app code.\n\n**2. Row-level lock**\n```sql\nBEGIN;\nSELECT value FROM counters WHERE id = $1 FOR UPDATE;\nUPDATE counters SET value = value + 1 WHERE id = $1 RETURNING value;\nCOMMIT;\n```\n`FOR UPDATE` blocks other reads until tx done. Slower under load.\n\n**3. Advisory lock** \u2014 overkill here. Skip.\n\n## Node code (option 1)\n\n```js\napp.post('/counter/increment', async (req, res) => {\n  const { rows } = await pool.query(\n    'UPDATE counters SET value = value + 1 WHERE id = $1 RETURNING value',\n    [req.params.id]\n  );\n  res.json({ value: rows[0].value });\n});\n```\n\n## Why this works\n\n`UPDATE` in Postgres = atomic read+write at DB level. Concurrent requests queue at DB, each get unique incremented value.\n\n**Use option 1.** Atomic update solve problem in one query, no tx overhead.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 6.89,
+  "_meta": {
+    "track": "C",
+    "task": "race-condition-debug",
+    "category": "debugging",
+    "condition": "caveman",
+    "run_num": 9,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776586181
+  }
+}

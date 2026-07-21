@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1065,
+  "output_tokens": 204,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "JWT `exp` in seconds. `Date.now()` in milliseconds.\n\n**Bug:**\n```js\nif (Date.now() > decoded.exp) // wrong \u2014 always true, exp looks ancient\n```\n\n**Fix:**\n```js\nif (Date.now() / 1000 > decoded.exp) // convert ms \u2192 s\n// or\nif (Math.floor(Date.now() / 1000) > decoded.exp)\n```\n\n**Better:** ditch manual check, let `jsonwebtoken` handle it:\n```js\njwt.verify(token, secret, (err, decoded) => {\n  if (err) return res.status(401).json({ error: err.message });\n  // TokenExpiredError thrown automatically\n  next();\n});\n```\n\n`verify()` reject expired tokens, throw `TokenExpiredError`. No manual `exp` math needed.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 5.86,
+  "_meta": {
+    "track": "C",
+    "task": "auth-middleware-fix",
+    "category": "bugfix",
+    "condition": "caveman",
+    "run_num": 10,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585203
+  }
+}

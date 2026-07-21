@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1092,
+  "output_tokens": 446,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "**Split monolith? Ask first:**\n\n**Pain real?**\nSlow \u2260 need microservices. Profile first. Usually: bad queries, missing indexes, no caching. Fix cheap stuff before big rewrite.\n\n**Where slow?**\nIdentify bottleneck module. One slow part \u2260 split everything. Maybe extract *that one* service.\n\n**Team size**\nSmall team + microservices = ops nightmare. Rule of thumb: need team per service. 3 devs running 12 services = pain.\n\n**Domain boundaries clear?**\nServices need clean seams. Forced split on tangled code = distributed monolith. Worse than original. Map bounded contexts first (DDD). If can't draw clean lines, not ready.\n\n**Data coupling**\nBiggest killer. Django monolith probably share one DB. Split service = split data = distributed transactions = complexity explodes. Check: how many cross-module DB joins exist?\n\n**Operational maturity**\nMicroservices need: container orchestration, service discovery, distributed tracing, centralized logging, circuit breakers. No k8s/observability experience = don't split yet.\n\n**Network cost**\nIn-process function call \u2192 HTTP/gRPC call. Latency adds up. Failure modes multiply. Need retry logic, timeouts everywhere.\n\n**What actually works:**\n1. Profile \u2192 fix DB/cache first\n2. Modular monolith next (clean internal boundaries, shared deploy)\n3. Extract only high-scale or team-isolated component if still needed\n4. Full microservices last resort\n\n**Red flags for split:** teams blocked by each other, one component need 10x scale others don't, different deploy cadence needed.\n\n**Red flags against:** slow queries, small team, tangled domain, no observability stack.",
+  "thinking_text": "The user wants advice on microservices vs monolith decision factors. I should respond in caveman mode (full, default).",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 15.36,
+  "_meta": {
+    "track": "A_prime",
+    "task": "microservices-monolith",
+    "category": "architecture",
+    "condition": "caveman",
+    "run_num": 1,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776610683
+  }
+}

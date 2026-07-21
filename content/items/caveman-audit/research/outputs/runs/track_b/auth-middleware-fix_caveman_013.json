@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 4865,
+  "duration_api_ms": 4811,
+  "num_turns": 1,
+  "result": "JWT `exp` field = seconds since epoch. `Date.now()` = milliseconds. Off by 1000x.\n\n**Bug:**\n```js\nif (Date.now() > payload.exp) // wrong \u2014 Date.now() always >> exp\n```\n\n**Fix:**\n```js\nif (Math.floor(Date.now() / 1000) > payload.exp) // compare same unit\n```\n\nOr flip it \u2014 check token still valid:\n```js\nif (payload.exp < Math.floor(Date.now() / 1000)) {\n  return res.status(401).json({ error: 'Token expired' });\n}\n```\n\nSide note: if using `jsonwebtoken` library, `jwt.verify()` handles expiry check automatically \u2014 no manual compare needed.",
+  "stop_reason": "end_turn",
+  "session_id": "1d17cf75-eed4-45f8-8a25-b2a592ace23b",
+  "total_cost_usd": 0.03028605,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6415,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 182,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6415,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 182,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6415,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6415
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 182,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6415,
+      "webSearchRequests": 0,
+      "costUSD": 0.03028605,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "be4e0433-051b-41ac-91fa-95ae7d30b59e",
+  "_meta": {
+    "track": "B",
+    "task": "auth-middleware-fix",
+    "category": "bugfix",
+    "condition": "caveman",
+    "run_num": 13,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 6.56,
+    "timestamp": 1776776241,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

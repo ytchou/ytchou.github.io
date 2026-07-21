@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1053,
+  "output_tokens": 435,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## merge vs rebase\n\n**merge** \u2014 join two branches, keep full history. Creates merge commit.\n\n```\nA---B---C  main\n     \\\n      D---E  feature\n           \\\n            M  \u2190 merge commit (has 2 parents)\n```\n\n**rebase** \u2014 replay feature commits on top of target. Linear history, no merge commit.\n\n```\nA---B---C  main\n             \\\n              D'--E'  \u2190 replayed commits (new hashes)\n```\n\n---\n\n## when use each\n\n**merge when:**\n- shared/public branch (never rewrite pushed commits)\n- want preserve exact history + context\n- merging main \u2192 long-lived feature (safe catch-up)\n- team unfamiliar with rebase\n\n**rebase when:**\n- local cleanup before PR\n- want linear, readable history\n- squashing noise commits\n- updating feature off latest main (before push)\n\n---\n\n## tradeoffs\n\n| | merge | rebase |\n|---|---|---|\n| history | true, messy | clean, rewritten |\n| conflicts | once | per replayed commit |\n| safety | always safe | dangerous on public branches |\n| bisect/blame | harder | easier |\n| context | preserves \"when\" | loses \"when\" |\n\n---\n\n## golden rule\n\n> **Never rebase commits already pushed to shared branch.**\n\nRebase rewrites hashes. Others have old hashes. Chaos follows.\n\n---\n\n## common patterns\n\n```bash\n# update feature off main (local only)\ngit checkout feature\ngit rebase main\n\n# clean up before PR (squash noise)\ngit rebase -i HEAD~4\n\n# merge feature \u2192 main (preserve context)\ngit checkout main\ngit merge --no-ff feature\n```\n\n`--no-ff` force merge commit even if fast-forward possible. Good for explicit \"feature landed here\" marker in history.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 10.75,
+  "_meta": {
+    "track": "C",
+    "task": "git-rebase-merge",
+    "category": "explanation",
+    "condition": "caveman",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585475
+  }
+}

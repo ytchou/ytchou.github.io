@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 9034,
+  "duration_api_ms": 11071,
+  "num_turns": 1,
+  "result": "The classic off-by-1000 bug: JWT `exp` is in **seconds** since Unix epoch, but `Date.now()` returns **milliseconds**.\n\n```js\n// Bug: Date.now() is ~1700000000000, exp is ~1700000000\n// So exp is always less than Date.now(), but the comparison is wrong direction,\n// OR you're checking the wrong direction entirely\n\n// Common broken versions:\nif (payload.exp < Date.now()) { ... }         // wrong unit\nif (Date.now() < payload.exp) { ... }         // wrong direction + wrong unit\n```\n\n**Fix:**\n\n```js\nif (Date.now() / 1000 > payload.exp) {\n  return res.status(401).json({ error: 'Token expired' });\n}\n```\n\nOr equivalently:\n\n```js\nif (Math.floor(Date.now() / 1000) > payload.exp) { ... }\n```\n\n**Two things to check in your code:**\n\n1. **Unit mismatch** \u2014 divide `Date.now()` by 1000 before comparing to `exp`\n2. **Comparison direction** \u2014 expired means `now > exp`, so the token should be rejected when `Date.now() / 1000 > payload.exp`\n\nIf you're using a library like `jsonwebtoken`, its `verify()` handles expiry automatically \u2014 you only need the manual check if you're decoding without verifying. Paste your middleware if you want me to look at the exact line.",
+  "stop_reason": "end_turn",
+  "session_id": "abdbfdc8-048d-4d34-9f7d-54f30146a44a",
+  "total_cost_usd": 0.0119736,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17062,
+    "output_tokens": 426,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 426,
+        "cache_read_input_tokens": 17062,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 376,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.00045599999999999997,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 426,
+      "cacheReadInputTokens": 17062,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0115176,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "7fa76de3-d278-40d5-9a6e-ffa06f3f5ca7",
+  "_meta": {
+    "track": "B",
+    "task": "auth-middleware-fix",
+    "category": "bugfix",
+    "condition": "baseline",
+    "run_num": 15,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 10.68,
+    "timestamp": 1776776224,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

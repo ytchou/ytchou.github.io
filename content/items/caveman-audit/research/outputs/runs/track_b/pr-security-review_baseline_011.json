@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 9747,
+  "duration_api_ms": 11304,
+  "num_turns": 1,
+  "result": "This handler has a critical SQL injection vulnerability, plus a few secondary issues:\n\n## Critical: SQL Injection\n\n```js\n// Vulnerable \u2014 attacker controls req.params.id\nconst query = `SELECT * FROM users WHERE id = ${req.params.id}`;\n```\n\nAn attacker can send `GET /api/users/1 OR 1=1` to dump the entire users table, or `1; DROP TABLE users--` to execute arbitrary SQL. Fix with a parameterized query:\n\n```js\napp.get('/api/users/:id', async (req, res) => {\n  const { id } = req.params;\n\n  // Validate input shape before hitting the DB\n  if (!/^\\d+$/.test(id)) {\n    return res.status(400).json({ error: 'Invalid user ID' });\n  }\n\n  try {\n    const [user] = await db.query('SELECT * FROM users WHERE id = ?', [id]);\n    if (!user) return res.status(404).json({ error: 'Not found' });\n    res.json(user);\n  } catch (err) {\n    res.status(500).json({ error: 'Internal server error' });\n  }\n});\n```\n\n## Secondary Issues\n\n| Issue | Risk | Fix |\n|---|---|---|\n| `SELECT *` | Leaks sensitive columns (passwords, tokens, PII) | Select only the columns the client needs |\n| No auth/authz check | Any user can fetch any other user's data (IDOR) | Verify `req.user.id === id` or check a permission |\n| Unhandled rejection | Crashes the process on DB error, no response sent to client | Wrap in `try/catch` or add `.catch()` |\n| No input validation | Non-integer IDs cause unexpected DB behavior | Validate before querying (shown above) |\n\nThe SQL injection is the blocker \u2014 parameterize that query before anything else ships.",
+  "stop_reason": "end_turn",
+  "session_id": "603d61f2-79bd-4970-96af-3dcd485c64cf",
+  "total_cost_usd": 0.0129376,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17092,
+    "output_tokens": 488,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 488,
+        "cache_read_input_tokens": 17092,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 406,
+      "outputTokens": 15,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000481,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 488,
+      "cacheReadInputTokens": 17092,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0124566,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "03159a6d-3900-4d89-af04-a5df855c8156",
+  "_meta": {
+    "track": "B",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "baseline",
+    "run_num": 11,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 11.3,
+    "timestamp": 1776776471,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

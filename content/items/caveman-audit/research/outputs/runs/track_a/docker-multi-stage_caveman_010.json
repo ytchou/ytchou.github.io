@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1063,
+  "output_tokens": 614,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "```dockerfile\n# Stage 1: deps\nFROM node:20-alpine AS deps\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci --ignore-scripts\n\n# Stage 2: build\nFROM node:20-alpine AS build\nWORKDIR /app\nCOPY --from=deps /app/node_modules ./node_modules\nCOPY . .\nRUN npx tsc --noEmit false \\\n && npm prune --omit=dev\n\n# Stage 3: runtime\nFROM node:20-alpine AS runtime\nENV NODE_ENV=production\nWORKDIR /app\nRUN addgroup -S app && adduser -S app -G app\nCOPY --from=build /app/dist ./dist\nCOPY --from=build /app/node_modules ./node_modules\nCOPY package.json .\nUSER app\nEXPOSE 3000\nCMD [\"node\", \"dist/index.js\"]\n```\n\n## Why each choice\n\n**alpine** \u2014 ~5MB base vs ~180MB debian.\n\n**3 stages** \u2014 deps stage cache npm install separately. Build stage compile + prune. Runtime stage get only prod artifacts.\n\n**`npm ci`** \u2014 lockfile-exact install, faster, no write to package-lock.\n\n**`--omit=dev`** \u2014 strip devDeps before copy to runtime. Cuts node_modules 40-70%.\n\n**No `npx tsc` in runtime** \u2014 `dist/` only. No ts-node, no typescript pkg, no source.\n\n**Non-root user** \u2014 `adduser -S` = system user, no password, no home dir bloat.\n\n**`--ignore-scripts`** in deps stage** \u2014 skip postinstall scripts during dep fetch. Re-run allowed in build stage where you control context.\n\n## Assumptions + adjust points\n\n| Assumption | If wrong |\n|---|---|\n| TS output \u2192 `dist/` | Change `tsconfig.json` `outDir`, update `COPY` + `CMD` |\n| Entry = `dist/index.js` | Update `CMD` |\n| No native addons | Add `--ignore-scripts` removal + build tools in build stage |\n| Port 3000 | Change `EXPOSE` (cosmetic only) |\n\n## Optional size wins\n\n```dockerfile\n# After npm prune, nuke cache\nRUN npm cache clean --force\n\n# Or swap node:alpine for distroless (no shell = smaller attack surface)\nFROM gcr.io/distroless/nodejs20-debian12 AS runtime\n```\n\nDistroless trade: no shell = harder debug. Use `node:alpine` for dev, distroless for prod.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 17.22,
+  "_meta": {
+    "track": "C",
+    "task": "docker-multi-stage",
+    "category": "devops",
+    "condition": "caveman",
+    "run_num": 10,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776586044
+  }
+}

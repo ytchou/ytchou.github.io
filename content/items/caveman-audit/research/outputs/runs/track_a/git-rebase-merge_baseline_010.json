@@ -1,0 +1,21 @@
+{
+  "input_tokens": 40,
+  "output_tokens": 998,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "# Git Merge vs Git Rebase\n\n## What They Do\n\n**`git merge`** combines two branches by creating a new \"merge commit\" that has two parents, preserving the exact history of how development happened.\n\n**`git rebase`** moves your commits to a new base, replaying them one by one on top of another branch, rewriting history to appear linear.\n\n---\n\n## Visual Comparison\n\n**Starting point:**\n```\nmain:    A --- B --- C\n                \\\nfeature:         D --- E\n```\n\n**After `git merge main` (on feature branch):**\n```\nmain:    A --- B --- C\n                \\       \\\nfeature:         D --- E --- M   \u2190 merge commit (M has 2 parents)\n```\n\n**After `git rebase main` (on feature branch):**\n```\nmain:    A --- B --- C\n                         \\\nfeature:                  D' --- E'   \u2190 commits replayed, new hashes\n```\n\n---\n\n## When to Use Each\n\n### Use `git merge` when:\n- Merging a **completed feature into main/develop** (the merge commit documents when it happened)\n- Working on a **shared/public branch** others are using\n- You want to **preserve exact history** \u2014 who branched when, from where\n- Resolving conflicts **once** is preferable (merge handles it in one commit)\n\n### Use `git rebase` when:\n- **Updating your local feature branch** with upstream changes before a PR\n- You want a **clean, linear history** that's easier to read\n- Doing **interactive rebase** (`-i`) to clean up messy commits before sharing\n- Working on a **private branch** no one else has checked out\n\n---\n\n## The Tradeoffs\n\n| | Merge | Rebase |\n|---|---|---|\n| History | Preserves true history | Creates linear, cleaner history |\n| Commits | Adds a merge commit | Rewrites commit SHAs |\n| Conflicts | Resolved once | May need to resolve per-commit |\n| Safety | Safe on shared branches | **Dangerous on shared branches** |\n| Blame/bisect | Can be harder to follow | Easier to follow |\n| Reversibility | Easy to undo | Harder to undo |\n\n---\n\n## The Golden Rule of Rebase\n\n> **Never rebase a branch that others are working on.**\n\nWhen you rebase, commits get new SHA hashes. If someone else has the old commits, their history diverges from yours and you'll create a mess when pushing.\n\n```bash\n# This will be rejected (or cause chaos if forced)\ngit rebase main\ngit push origin shared-branch  # \u274c Don't do this\n\n# Force pushing after rebase is only safe on YOUR private branch\ngit push --force-with-lease origin my-feature-branch  # \u2705 OK if truly private\n```\n\n---\n\n## Common Workflows\n\n**Keeping your feature branch up to date:**\n```bash\ngit checkout feature-branch\ngit fetch origin\ngit rebase origin/main        # Clean: replays your work on top of latest main\n# vs\ngit merge origin/main         # Also works, but adds a merge commit\n```\n\n**Cleaning up commits before a PR:**\n```bash\ngit rebase -i HEAD~4          # Interactively squash/reword last 4 commits\n```\n\n**Merging a finished feature:**\n```bash\ngit checkout main\ngit merge --no-ff feature-branch   # --no-ff forces a merge commit even if fast-forward is possible\n```\n\n---\n\n## Quick Decision Guide\n\n```\nIs the branch shared with others?\n\u251c\u2500\u2500 Yes \u2192 Use MERGE (always)\n\u2514\u2500\u2500 No (your private branch)\n    \u251c\u2500\u2500 Want clean linear history? \u2192 REBASE\n    \u251c\u2500\u2500 Cleaning up commits? \u2192 REBASE -i\n    \u2514\u2500\u2500 Don't care / want true history? \u2192 MERGE\n```\n\n---\n\n## My Recommendation\n\nA common pragmatic workflow:\n1. **Rebase** your feature branch onto main while developing (keeps it current, clean history)\n2. **Merge** (with `--no-ff`) into main when the feature is done (documents the integration point)\n\nThis gives you the benefits of both: clean feature branch history *and* a clear record of when features landed in main.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 23.24,
+  "_meta": {
+    "track": "C",
+    "task": "git-rebase-merge",
+    "category": "explanation",
+    "condition": "baseline",
+    "run_num": 10,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 28,
+    "timestamp": 1776585467
+  }
+}

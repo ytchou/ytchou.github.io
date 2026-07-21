@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 14699,
+  "duration_api_ms": 16020,
+  "num_turns": 1,
+  "result": "This is a classic read-modify-write race condition. The fix depends on your current approach.\n\n**The problem:** multiple requests read the same value, increment in application code, and write back \u2014 so concurrent reads get the same starting value.\n\n## Fix 1: Atomic SQL update (best)\n\nInstead of `SELECT` then `UPDATE`, do it in one statement:\n\n```js\n// Wrong: two round-trips, race window between them\nconst { rows } = await db.query('SELECT count FROM counters WHERE id = $1', [id]);\nawait db.query('UPDATE counters SET count = $1 WHERE id = $2', [rows[0].count + 1, id]);\n\n// Right: atomic, returns the new value\nconst { rows } = await db.query(\n  'UPDATE counters SET count = count + 1 WHERE id = $1 RETURNING count',\n  [id]\n);\nreturn rows[0].count;\n```\n\nPostgreSQL guarantees `UPDATE` is atomic per row \u2014 no locking needed on your end.\n\n## Fix 2: `SELECT FOR UPDATE` (if you need the value before updating)\n\n```js\nawait db.query('BEGIN');\nconst { rows } = await db.query(\n  'SELECT count FROM counters WHERE id = $1 FOR UPDATE',\n  [id]\n);\nconst newCount = rows[0].count + 1;\nawait db.query('UPDATE counters SET count = $1 WHERE id = $2', [newCount, id]);\nawait db.query('COMMIT');\nreturn newCount;\n```\n\n`FOR UPDATE` acquires a row-level lock, serializing concurrent requests. More overhead than Fix 1 \u2014 only use this when you need the old value for side effects (e.g., rate-limit logic).\n\n## Fix 3: Optimistic locking (high contention alternative)\n\n```js\nlet updated = 0;\nwhile (!updated) {\n  const { rows } = await db.query('SELECT count, version FROM counters WHERE id = $1', [id]);\n  const { count, version } = rows[0];\n  const result = await db.query(\n    'UPDATE counters SET count = $1, version = $2 WHERE id = $3 AND version = $4',\n    [count + 1, version + 1, id, version]\n  );\n  updated = result.rowCount; // 0 if someone else updated first \u2192 retry\n}\n```\n\nRetries on conflict instead of blocking. Better throughput under high contention, but adds complexity.\n\n**Recommendation:** Use Fix 1 (`UPDATE ... RETURNING`) \u2014 it's the simplest, most performant, and correct by default. Only reach for `SELECT FOR UPDATE` if you need to read the value before deciding whether/how to update it.",
+  "stop_reason": "end_turn",
+  "session_id": "0ab5b9ab-2958-4bc3-8557-8bd5920c7dcd",
+  "total_cost_usd": 0.0169424,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17048,
+    "output_tokens": 758,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 758,
+        "cache_read_input_tokens": 17048,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 369,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000449,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 758,
+      "cacheReadInputTokens": 17048,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0164934,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "0a536cb6-f358-4fd2-881e-44fe83e9c3d1",
+  "_meta": {
+    "track": "B",
+    "task": "race-condition-debug",
+    "category": "debugging",
+    "condition": "baseline",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 16.3,
+    "timestamp": 1776774858,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

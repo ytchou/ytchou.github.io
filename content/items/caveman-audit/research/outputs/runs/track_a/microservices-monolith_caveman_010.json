@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1063,
+  "output_tokens": 585,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## Monolith \u2192 Microservices: Consider First\n\n**Split only if monolith actually broken.** Most teams split too early.\n\n---\n\n### Signals That Split Make Sense\n\n- Deploy one feature = risk whole app\n- Teams block each other constantly\n- One component need scale 10x, rest idle\n- Tech debt isolated to one domain, rest healthy\n\n### Signals That Split Wrong Move\n\n- Small team (< ~8 devs)\n- Monolith just *slow* \u2014 profile first, maybe just bad queries\n- No clear domain boundaries yet\n- Ops not ready for distributed systems\n\n---\n\n### Key Factors\n\n**1. Domain Boundaries**\nCan you draw clean lines? User auth, payments, notifications \u2014 do they have clear owners? Fuzzy = pain forever.\n\n**2. Data Ownership**\nHardest part. Each service need own DB or you just have distributed monolith. Shared DB = coupling survive the split.\n\n**3. Team Structure**\nConway's Law real. Services mirror org chart. One team per service, or chaos.\n\n**4. Ops Maturity**\nMicroservices need: container orchestration, distributed tracing, centralized logging, service discovery, circuit breakers. No infra = 10x harder.\n\n**5. Actual Bottleneck**\nProfile Django first. Slow = maybe just:\n- Missing DB indexes\n- N+1 queries (`select_related` / `prefetch_related`)\n- No caching (Redis)\n- Sync tasks that should be async (Celery)\n\nFix those first. Often buys 2-3 years.\n\n**6. Network Latency Budget**\nIn-process call: ~microseconds. HTTP/gRPC call: ~milliseconds. Chatty services = slower than monolith.\n\n---\n\n### Middle Path (Often Best)\n\n```\nMonolith \u2192 Modular Monolith \u2192 Extract Services Selectively\n```\n\n- Clean internal module boundaries first\n- Extract only high-scale or high-churn components (e.g. image processing, notifications)\n- Keep core Django app intact longer\n\n---\n\n### Decision Shortcut\n\n| Question | Yes \u2192 | No \u2192 |\n|---|---|---|\n| Clear domain boundaries? | Continue | Stop, fix first |\n| Separate teams per domain? | Continue | Reconsider |\n| Ops can handle distributed? | Continue | Build infra first |\n| Monolith optimized already? | Continue | Optimize first |\n\nAll yes \u2192 split worth exploring. Any no \u2192 fix that first.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 14.47,
+  "_meta": {
+    "track": "C",
+    "task": "microservices-monolith",
+    "category": "architecture",
+    "condition": "caveman",
+    "run_num": 10,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585719
+  }
+}

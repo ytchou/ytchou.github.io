@@ -1,0 +1,22 @@
+{
+  "input_tokens": 138,
+  "output_tokens": 682,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## Refactored with Async/Await\n\n```javascript\nasync function getUser(id) {\n  const rows = await db.query('SELECT * FROM users WHERE id = ?', [id]);\n\n  if (!rows.length) {\n    throw new Error(`User with id \"${id}\" not found`);\n  }\n\n  return rows[0];\n}\n```\n\n### Usage Example\n\n```javascript\n// Basic usage\nconst user = await getUser(1);\n\n// With error handling\ntry {\n  const user = await getUser(1);\n  console.log(user);\n} catch (err) {\n  console.error('Failed to fetch user:', err.message);\n}\n```\n\n---\n\n### If `db.query` Doesn't Natively Support Promises\n\nSome older database libraries (e.g., `mysql`) use callbacks only. Wrap them with `util.promisify` or a manual Promise:\n\n**Option 1 \u2014 `util.promisify` (simplest)**\n```javascript\nconst { promisify } = require('util');\nconst query = promisify(db.query).bind(db);\n\nasync function getUser(id) {\n  const rows = await query('SELECT * FROM users WHERE id = ?', [id]);\n\n  if (!rows.length) {\n    throw new Error(`User with id \"${id}\" not found`);\n  }\n\n  return rows[0];\n}\n```\n\n**Option 2 \u2014 Manual Promise wrapper (most explicit)**\n```javascript\nfunction queryAsync(sql, params) {\n  return new Promise((resolve, reject) => {\n    db.query(sql, params, (err, rows) => {\n      if (err) reject(err);\n      else resolve(rows);\n    });\n  });\n}\n\nasync function getUser(id) {\n  const rows = await queryAsync('SELECT * FROM users WHERE id = ?', [id]);\n\n  if (!rows.length) {\n    throw new Error(`User with id \"${id}\" not found`);\n  }\n\n  return rows[0];\n}\n```\n\n---\n\n### Key Differences\n\n| | Callback Version | Async/Await Version |\n|---|---|---|\n| **Errors** | Passed to `callback(err)` | Thrown as exceptions |\n| **Results** | Passed to `callback(null, result)` | Returned with `return` |\n| **Error handling** | Manual `if (err)` checks | `try/catch` blocks |\n| **Composability** | Nesting / pyramid of doom | Flat, readable flow |\n\n> **Tip:** If you're starting a new project, prefer a library that supports Promises natively (e.g., `mysql2/promise`, `pg` with `pg-promise`, or an ORM like Prisma/Sequelize).",
+  "thinking_text": "The user wants to refactor a callback-based Node.js function to use async/await.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 9.54,
+  "_meta": {
+    "track": "A_prime",
+    "task": "async-refactor",
+    "category": "refactor",
+    "condition": "baseline",
+    "run_num": 3,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 28,
+    "timestamp": 1776610613
+  }
+}

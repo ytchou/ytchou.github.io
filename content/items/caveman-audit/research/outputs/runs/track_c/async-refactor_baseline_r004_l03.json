@@ -1,0 +1,46 @@
+{
+  "input_tokens": 9815,
+  "output_tokens": 235,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "```js\nasync function getUser(id) {\n  const rows = await db.query('SELECT * FROM users WHERE id = ?', [id]);\n  if (!rows.length) throw new Error('Not found');\n  return rows[0];\n}\n```\n\nCall it with `try/catch` or `.catch()`:\n\n```js\n// try/catch\ntry {\n  const user = await getUser(id);\n} catch (err) {\n  console.error(err);\n}\n\n// or promise chain\nconst user = await getUser(id).catch(err => ...);\n```\n\nThis assumes `db.query` already returns a Promise. If it's still callback-based, wrap it first with `util.promisify`:\n\n```js\nconst { promisify } = require('util');\nconst query = promisify(db.query).bind(db);\n```\n\nThen use `query` in place of `db.query`.",
+  "thinking_text": "Simple refactor, no need for plan mode.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 64.22,
+  "_meta": {
+    "track": "C",
+    "task": "async-refactor",
+    "category": "refactor",
+    "condition": "baseline",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 40791,
+    "timestamp": 1776612880,
+    "level": 3,
+    "ordering": [
+      4,
+      1,
+      5,
+      7,
+      2,
+      9,
+      6,
+      3,
+      8,
+      0
+    ],
+    "chunks_present": [
+      1,
+      2,
+      4,
+      5,
+      7,
+      9
+    ],
+    "num_chunks": 6,
+    "behavioral_chars": 12880,
+    "chunk_chars": 27899
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 4089,
+  "duration_api_ms": 5521,
+  "num_turns": 1,
+  "result": "```js\nasync function getUser(id) {\n  const rows = await db.query('SELECT * FROM users WHERE id = ?', [id]);\n  if (!rows.length) throw new Error('Not found');\n  return rows[0];\n}\n```\n\nKey changes:\n- `async` function replaces the `callback` parameter\n- `await` replaces the nested callback \u2014 errors from `db.query` propagate automatically as rejected promises\n- Explicit `if (err)` check removed; `throw` handles the \"not found\" case\n- Callers use `try/catch` or `.catch()` instead of checking the first callback argument",
+  "stop_reason": "end_turn",
+  "session_id": "327baa53-8ba0-4cc1-af09-987295520bd1",
+  "total_cost_usd": 0.008337699999999998,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17119,
+    "output_tokens": 179,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 179,
+        "cache_read_input_tokens": 17119,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 433,
+      "outputTokens": 15,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000508,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 179,
+      "cacheReadInputTokens": 17119,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.007829699999999998,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "336644b2-c9a1-4bbe-a847-40a52c08a878",
+  "_meta": {
+    "track": "B",
+    "task": "async-refactor",
+    "category": "refactor",
+    "condition": "baseline",
+    "run_num": 14,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 5.65,
+    "timestamp": 1776776379,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

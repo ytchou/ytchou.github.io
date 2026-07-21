@@ -1,0 +1,22 @@
+{
+  "input_tokens": 138,
+  "output_tokens": 533,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## Refactored with Async/Await\n\n```javascript\nasync function getUser(id) {\n  const rows = await db.query('SELECT * FROM users WHERE id = ?', [id]);\n\n  if (!rows.length) {\n    throw new Error(`User with id \"${id}\" not found`);\n  }\n\n  return rows[0];\n}\n```\n\n### Usage\n\n```javascript\n// With try/catch\nasync function main() {\n  try {\n    const user = await getUser(1);\n    console.log(user);\n  } catch (err) {\n    console.error('Failed to fetch user:', err.message);\n  }\n}\n\n// With .catch()\nconst user = await getUser(1).catch(err => {\n  console.error(err.message);\n});\n```\n\n---\n\n### Key Changes\n\n| Before | After |\n|--------|-------|\n| Accepts a `callback` parameter | No callback \u2014 returns a Promise |\n| Passes errors via `callback(err)` | Throws errors (caught by `try/catch`) |\n| Returns result via `callback(null, result)` | Returns result directly with `return` |\n| Caller must handle nested callbacks | Caller uses clean `await` syntax |\n\n---\n\n### Important Note on `db.query`\n\nThis assumes your database driver **already returns a Promise**. If it only supports callbacks (e.g., older `mysql` package), you'll need to promisify it first:\n\n```javascript\n// Option 1: Use the built-in promisify utility\nconst { promisify } = require('util');\nconst query = promisify(db.query).bind(db);\n\nasync function getUser(id) {\n  const rows = await query('SELECT * FROM users WHERE id = ?', [id]);\n  if (!rows.length) throw new Error(`User with id \"${id}\" not found`);\n  return rows[0];\n}\n\n// Option 2: Use mysql2/promise or pg \u2014 drivers with native Promise support\nconst db = require('mysql2/promise');\n```\n\nUsing a driver with native Promise support (like `mysql2/promise`) is the cleanest long-term solution.",
+  "thinking_text": "The user wants to refactor a callback-based Node.js function to use async/await.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 8.54,
+  "_meta": {
+    "track": "A_prime",
+    "task": "async-refactor",
+    "category": "refactor",
+    "condition": "baseline",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 28,
+    "timestamp": 1776610614
+  }
+}

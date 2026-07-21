@@ -1,0 +1,21 @@
+{
+  "input_tokens": 52,
+  "output_tokens": 1061,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## JWT Expiry Check Bug\n\nThe most common cause is a **units mismatch**. JWT `exp` is in **seconds**, but `Date.now()` returns **milliseconds**.\n\n### The Bug\n\n```javascript\n// BROKEN - comparing milliseconds to seconds\nconst isExpired = Date.now() > payload.exp;\n\n// Example: Date.now() = 1700000000000 (ms)\n//          payload.exp = 1700000000    (seconds)\n// 1700000000000 > 1700000000 is ALWAYS true... \n// wait, that would reject everything.\n\n// The opposite mistake is also common:\nconst isExpired = Math.floor(Date.now() / 1000) < payload.exp;\n// If you accidentally flip the comparison, expired tokens pass through\n```\n\n### Most Likely Culprits\n\n```javascript\n// BUG 1: Wrong comparison operator (most common \"letting through\" cause)\nif (Date.now() / 1000 > payload.exp) {  // correct logic\n  throw new Error('Token expired');\n}\n// vs accidentally written as:\nif (Date.now() / 1000 < payload.exp) {  // WRONG - never blocks expired tokens\n  throw new Error('Token expired');\n}\n\n// BUG 2: Units mismatch making expired tokens appear valid\nconst now = Date.now();          // milliseconds: 1700000000000\nconst exp = payload.exp;         // seconds:      1700000050\n// now > exp is always true, so you might have \"fixed\" it by flipping\n// the operator, which then lets everything through\n\n// BUG 3: Checking the wrong field or missing field entirely\nif (payload.expires > Date.now()) { // wrong field name, always undefined = falsy\n  throw new Error('Token expired');\n}\n```\n\n### The Fix\n\n```javascript\nfunction verifyToken(req, res, next) {\n  try {\n    const token = req.headers.authorization?.split(' ')[1];\n    \n    if (!token) {\n      return res.status(401).json({ error: 'No token provided' });\n    }\n\n    const payload = jwt.decode(token); // or your manual decode\n\n    // \u2705 Correct: convert Date.now() to seconds, check exp exists\n    const nowInSeconds = Math.floor(Date.now() / 1000);\n\n    if (!payload.exp) {\n      return res.status(401).json({ error: 'Token has no expiry' });\n    }\n\n    if (nowInSeconds >= payload.exp) {\n      return res.status(401).json({ error: 'Token expired' });\n    }\n\n    next();\n  } catch (err) {\n    return res.status(401).json({ error: 'Invalid token' });\n  }\n}\n```\n\n### Better: Use jsonwebtoken's Built-in Verification\n\n```javascript\nconst jwt = require('jsonwebtoken');\n\nfunction verifyToken(req, res, next) {\n  try {\n    const token = req.headers.authorization?.split(' ')[1];\n\n    if (!token) {\n      return res.status(401).json({ error: 'No token provided' });\n    }\n\n    // verify() handles expiry, signature, and structure automatically\n    const payload = jwt.verify(token, process.env.JWT_SECRET);\n    \n    req.user = payload;\n    next();\n  } catch (err) {\n    // jwt.verify throws TokenExpiredError, JsonWebTokenError, etc.\n    if (err.name === 'TokenExpiredError') {\n      return res.status(401).json({ error: 'Token expired' });\n    }\n    return res.status(401).json({ error: 'Invalid token' });\n  }\n}\n```\n\n### Quick Debugging Checklist\n\n| Issue | Symptom | Fix |\n|-------|---------|-----|\n| `<` instead of `>=` | All tokens pass | Flip operator |\n| Missing `/1000` | ms vs seconds mismatch | `Date.now() / 1000` |\n| Using `jwt.decode()` | No signature/expiry check | Switch to `jwt.verify()` |\n| Wrong field name | `undefined` comparison | Check actual payload shape |\n| Clock skew | Edge case failures | Add small leeway (30-60s) |\n\n**Share your actual middleware code** if you want a precise diagnosis \u2014 the bug is almost certainly one of the above.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 17.9,
+  "_meta": {
+    "track": "C",
+    "task": "auth-middleware-fix",
+    "category": "bugfix",
+    "condition": "baseline",
+    "run_num": 6,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 28,
+    "timestamp": 1776585162
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "input_tokens": 109,
+  "output_tokens": 582,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## Refactored with Async/Await\n\nHere's the refactored version with several improvements:\n\n```javascript\nasync function getUser(id) {\n  const rows = await db.query('SELECT * FROM users WHERE id = ?', [id]);\n\n  if (!rows.length) {\n    throw new Error(`User with id \"${id}\" not found`);\n  }\n\n  return rows[0];\n}\n```\n\n### Usage Example\n\n```javascript\n// Basic usage\ntry {\n  const user = await getUser(1);\n  console.log(user);\n} catch (err) {\n  console.error('Failed to get user:', err.message);\n}\n\n// Or with .catch()\nconst user = await getUser(1).catch(err => {\n  console.error('Failed to get user:', err.message);\n});\n```\n\n---\n\n### What Changed and Why\n\n| Before | After | Reason |\n|---|---|---|\n| `callback(err)` | `throw new Error(...)` | Async functions reject the returned Promise on throw |\n| `callback(null, rows[0])` | `return rows[0]` | Async functions resolve the returned Promise on return |\n| Manual error threading | `try/catch` at call site | Cleaner, built-in error propagation |\n\n---\n\n### Important Caveat\n\nThis assumes **`db.query` already returns a Promise**. If it's still callback-based, you'll need to promisify it first:\n\n```javascript\n// Option 1 \u2014 Node's built-in util.promisify (simplest)\nconst { promisify } = require('util');\nconst dbQuery = promisify(db.query.bind(db));\n\nasync function getUser(id) {\n  const rows = await dbQuery('SELECT * FROM users WHERE id = ?', [id]);\n\n  if (!rows.length) {\n    throw new Error(`User with id \"${id}\" not found`);\n  }\n\n  return rows[0];\n}\n\n// Option 2 \u2014 Manual Promise wrapper (most control)\nfunction dbQuery(sql, params) {\n  return new Promise((resolve, reject) => {\n    db.query(sql, params, (err, rows) => {\n      if (err) reject(err);\n      else resolve(rows);\n    });\n  });\n}\n```\n\n> **Tip:** Most modern database libraries (pg, mysql2, better-sqlite3) support Promises natively \u2014 check your driver's docs before manually promisifying.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 8.69,
+  "_meta": {
+    "track": "C",
+    "task": "async-refactor",
+    "category": "refactor",
+    "condition": "baseline",
+    "run_num": 3,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 28,
+    "timestamp": 1776585507
+  }
+}

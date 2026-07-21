@@ -1,0 +1,39 @@
+{
+  "input_tokens": 3904,
+  "output_tokens": 324,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Two critical issues:\n\n**1. SQL Injection** (critical)\n```js\n// Vulnerable \u2014 attacker passes: 1 OR 1=1\n`SELECT * FROM users WHERE id = ${req.params.id}`\n\n// Fix \u2014 parameterized query:\ndb.query('SELECT * FROM users WHERE id = ?', [req.params.id])\n```\n\n**2. Mass data exposure** (high)\n`SELECT *` returns all columns \u2014 passwords, tokens, PII. Select only what the client needs.\n\n**3. No error handling** (medium)\nUnhandled rejection crashes the process or leaks stack traces.\n\nFixed version:\n```js\napp.get('/api/users/:id', async (req, res) => {\n  try {\n    const [user] = await db.query(\n      'SELECT id, name, email FROM users WHERE id = ?',\n      [req.params.id]\n    );\n    if (!user) return res.status(404).json({ error: 'Not found' });\n    res.json(user);\n  } catch {\n    res.status(500).json({ error: 'Internal server error' });\n  }\n});\n```\n\nAlso consider: auth middleware so `/api/users/:id` requires login and users can't fetch other users' data.",
+  "thinking_text": "The user wants a security review of this Express route handler.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 5.77,
+  "_meta": {
+    "track": "C",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "caveman",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 16401,
+    "timestamp": 1776614094,
+    "level": 0,
+    "ordering": [
+      3,
+      8,
+      5,
+      4,
+      1,
+      7,
+      6,
+      9,
+      2,
+      0
+    ],
+    "chunks_present": [],
+    "num_chunks": 0,
+    "behavioral_chars": 12880,
+    "chunk_chars": 0
+  }
+}

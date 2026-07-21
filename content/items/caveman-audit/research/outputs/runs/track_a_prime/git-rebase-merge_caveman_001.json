@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1082,
+  "output_tokens": 453,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## Merge vs Rebase\n\n**Merge** \u2014 join branches, keep full history. Creates merge commit.\n\n```\nA---B---C  (main)\n     \\     \\\n      D---E--M  (merge commit)\n```\n\n**Rebase** \u2014 replay commits on top of target. Linear history, no merge commit.\n\n```\nA---B---C---D'---E'  (rebased)\n```\n\n---\n\n## Use Merge When\n\n- Public/shared branch (never rebase shared history)\n- Want preserve exact what happened, when\n- PR merge into main \u2192 standard practice\n- Reverting easier with explicit merge commit\n\n## Use Rebase When\n\n- Local feature branch, not yet pushed\n- Want clean linear history before PR\n- `git pull --rebase` to avoid noise merge commits on fast pull\n- Squash messy WIP commits before review\n\n---\n\n## Tradeoffs\n\n| | Merge | Rebase |\n|---|---|---|\n| History | True, messy | Clean, rewritten |\n| Conflict | Resolve once | Resolve per commit |\n| Safe on shared? | Yes | **No** |\n| Blame/bisect | Harder | Easy |\n| Revert | Clear target | Can revert individual replayed commits |\n\n---\n\n## Golden Rule\n\n> Never rebase commits already pushed to shared branch.\n\nRebase rewrites SHA hashes. Others have old SHAs \u2192 chaos, force-push required, teammates hate you.\n\n---\n\n## Quick Decision\n\n- On own feature branch, cleaning up? \u2192 **rebase**\n- Merging feature into main/dev? \u2192 **merge**\n- Pulling latest from main into feature? \u2192 `git pull --rebase` or `git fetch + git rebase origin/main`\n- Anything public/shared? \u2192 **merge, always**",
+  "thinking_text": "The user wants an explanation of git rebase vs merge. I'm in caveman mode (full by default).",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 11.01,
+  "_meta": {
+    "track": "A_prime",
+    "task": "git-rebase-merge",
+    "category": "explanation",
+    "condition": "caveman",
+    "run_num": 1,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776610587
+  }
+}

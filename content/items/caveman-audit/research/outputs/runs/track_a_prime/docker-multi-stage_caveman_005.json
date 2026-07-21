@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1092,
+  "output_tokens": 734,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "3-stage build. Deps \u2192 Build \u2192 Runtime. Final image = Alpine + compiled JS only.\n\n```dockerfile\n# \u2500\u2500 Stage 1: Install dependencies \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nFROM node:20-alpine AS deps\n\nWORKDIR /app\n\n# Copy manifests first \u2014 layer cache hit if unchanged\nCOPY package*.json ./\n\n# Install ALL deps (need devDeps to compile)\nRUN npm ci --frozen-lockfile\n\n# \u2500\u2500 Stage 2: Compile TypeScript \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nFROM node:20-alpine AS builder\n\nWORKDIR /app\n\n# Pull node_modules from deps stage\nCOPY --from=deps /app/node_modules ./node_modules\nCOPY . .\n\nRUN npm run build   # tsc \u2192 emits to /app/dist\n\n# \u2500\u2500 Stage 3: Runtime \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nFROM node:20-alpine AS runtime\n\nENV NODE_ENV=production\nWORKDIR /app\n\nCOPY package*.json ./\n\n# Prod deps only \u2014 no tsc, no ts-node, no types\nRUN npm ci --frozen-lockfile --omit=dev && \\\n    npm cache clean --force\n\n# Compiled output only \u2014 no .ts source\nCOPY --from=builder /app/dist ./dist\n\n# Don't run as root\nRUN addgroup -S appgroup && adduser -S appuser -G appgroup\nUSER appuser\n\nEXPOSE 3000\n\nCMD [\"node\", \"dist/index.js\"]\n```\n\n## What each decision buys\n\n| Choice | Why |\n|---|---|\n| `node:20-alpine` | ~180MB vs ~1GB full image |\n| 3 stages | Source + devDeps never reach runtime |\n| `npm ci --frozen-lockfile` | Reproducible, faster than `install` |\n| `--omit=dev` in runtime | Drops TypeScript, ts-node, type packages |\n| `npm cache clean` | Removes download cache from layer |\n| Non-root user | Security baseline |\n| `COPY package*.json` before source | Layer cache: dep install skips if manifests unchanged |\n\n## Assumed `tsconfig.json`\n\n```json\n{\n  \"compilerOptions\": {\n    \"outDir\": \"./dist\",\n    \"rootDir\": \"./src\",\n    \"module\": \"commonjs\",\n    \"target\": \"es2022\",\n    \"strict\": true\n  },\n  \"include\": [\"src\"]\n}\n```\n\n## `package.json` build script need\n\n```json\n\"scripts\": {\n  \"build\": \"tsc --project tsconfig.json\"\n}\n```\n\n## Size check\n\n```bash\ndocker build -t myapp .\ndocker images myapp   # expect ~150-200MB vs ~1.5GB naive single-stage\n```\n\nAdjust `dist/index.js` \u2192 match `outDir` + entrypoint in tsconfig.",
+  "thinking_text": "The user wants a multi-stage Dockerfile for Node.js TypeScript app. Caveman mode is active (full by default).",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 28.01,
+  "_meta": {
+    "track": "A_prime",
+    "task": "docker-multi-stage",
+    "category": "devops",
+    "condition": "caveman",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776610885
+  }
+}

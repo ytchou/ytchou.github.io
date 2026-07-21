@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 10966,
+  "duration_api_ms": 10909,
+  "num_turns": 1,
+  "result": "Key factors:\n\n**Before splitting, ask:**\n\n1. **Where's the pain?** Slow \u2260 microservices problem. Profile first. Slow DB query, N+1, missing index fix faster than re-architecture.\n\n2. **Team size** \u2014 Conway's Law bites. <10 devs? Microservices add coordination overhead that kills you. Works when teams own services independently.\n\n3. **Domain boundaries clear?** Splitting along wrong seams = distributed monolith. Worse than original. Run event storming first, find real bounded contexts.\n\n4. **Ops maturity** \u2014 Microservices need: service discovery, distributed tracing, centralized logging, circuit breakers, container orchestration. Django monolith needs none of that. Team ready?\n\n5. **Data coupling** \u2014 Django ORM across models = shared DB everywhere. Splitting services means splitting data. Foreign keys become API calls. Transactions become sagas. Hard.\n\n6. **Deployment cadence** \u2014 If all features ship together anyway, no benefit to splitting. Microservices pay off when teams need independent deploy cycles.\n\n**Cheaper wins first:**\n- Async tasks \u2192 Celery\n- Read replicas for slow queries\n- Caching layer (Redis)\n- Django `select_related`/`prefetch_related` fixes\n- Horizontal scaling behind load balancer\n\n**If you do split:**\nStart with strangler fig pattern \u2014 extract one high-load, low-coupling service. Auth, notifications, file processing are common first cuts. Don't rewrite everything at once.\n\n**Rule of thumb:** Monolith until the pain of staying is clearly worse than cost of splitting. Most teams split too early.",
+  "stop_reason": "end_turn",
+  "session_id": "8344b469-bf44-4c5a-974e-09fa30413a3d",
+  "total_cost_usd": 0.034013550000000004,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6413,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 431,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6413,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 431,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6413,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6413
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 431,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6413,
+      "webSearchRequests": 0,
+      "costUSD": 0.034013550000000004,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "45bd205d-6f1b-43bd-b231-6ca96117569d",
+  "_meta": {
+    "track": "B",
+    "task": "microservices-monolith",
+    "category": "architecture",
+    "condition": "caveman",
+    "run_num": 11,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 12.5,
+    "timestamp": 1776776447,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

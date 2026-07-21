@@ -1,0 +1,22 @@
+{
+  "input_tokens": 138,
+  "output_tokens": 600,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## Refactored with Async/Await\n\n```javascript\nasync function getUser(id) {\n  const rows = await db.query('SELECT * FROM users WHERE id = ?', [id]);\n\n  if (!rows.length) {\n    throw new Error(`User with id ${id} not found`);\n  }\n\n  return rows[0];\n}\n```\n\n### Usage\n\n```javascript\n// Basic usage\nconst user = await getUser(1);\n\n// With error handling\ntry {\n  const user = await getUser(1);\n  console.log(user);\n} catch (err) {\n  console.error('Failed to get user:', err.message);\n}\n```\n\n---\n\n### If `db.query` Doesn't Natively Return a Promise\n\nWrap it using `util.promisify` or a manual Promise:\n\n**Option A \u2014 `util.promisify` (recommended)**\n```javascript\nconst { promisify } = require('util');\nconst dbQuery = promisify(db.query).bind(db);\n\nasync function getUser(id) {\n  const rows = await dbQuery('SELECT * FROM users WHERE id = ?', [id]);\n\n  if (!rows.length) {\n    throw new Error(`User with id ${id} not found`);\n  }\n\n  return rows[0];\n}\n```\n\n**Option B \u2014 Manual Promise wrapper**\n```javascript\nfunction queryAsync(sql, params) {\n  return new Promise((resolve, reject) => {\n    db.query(sql, params, (err, rows) => {\n      if (err) reject(err);\n      else resolve(rows);\n    });\n  });\n}\n\nasync function getUser(id) {\n  const rows = await queryAsync('SELECT * FROM users WHERE id = ?', [id]);\n\n  if (!rows.length) {\n    throw new Error(`User with id ${id} not found`);\n  }\n\n  return rows[0];\n}\n```\n\n---\n\n### Key Changes\n\n| Before | After |\n|---|---|\n| `callback(err)` | `throw new Error(...)` |\n| `callback(null, result)` | `return result` |\n| Error-first callback pattern | Native `try/catch` |\n| Nested callbacks | Linear, readable flow |\n\n> **Tip:** Most modern database libraries (e.g., `mysql2`, `pg`, `mongoose`) support promises natively, making `util.promisify` unnecessary.",
+  "thinking_text": "The user wants to refactor a callback-based Node.js function to use async/await.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 7.86,
+  "_meta": {
+    "track": "A_prime",
+    "task": "async-refactor",
+    "category": "refactor",
+    "condition": "baseline",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 28,
+    "timestamp": 1776610606
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 6691,
+  "duration_api_ms": 6632,
+  "num_turns": 1,
+  "result": "Race condition from read-modify-write pattern. Two requests read same value before either writes back.\n\n**Wrong (causes race):**\n```js\nconst { rows } = await db.query('SELECT count FROM counters WHERE id = $1', [id]);\nconst newCount = rows[0].count + 1;\nawait db.query('UPDATE counters SET count = $1 WHERE id = $2', [newCount, id]);\n```\n\n**Fix \u2014 atomic update, return new value:**\n```js\nconst { rows } = await db.query(\n  'UPDATE counters SET count = count + 1 WHERE id = $1 RETURNING count',\n  [id]\n);\nreturn rows[0].count;\n```\n\nSingle statement. Postgres handles atomicity. No race possible.\n\n---\n\nIf counter row might not exist yet, use upsert:\n```js\nconst { rows } = await db.query(`\n  INSERT INTO counters (id, count) VALUES ($1, 1)\n  ON CONFLICT (id) DO UPDATE SET count = counters.count + 1\n  RETURNING count\n`, [id]);\nreturn rows[0].count;\n```\n\nRoot cause: never read then write in separate queries for derived values. Push arithmetic into SQL.",
+  "stop_reason": "end_turn",
+  "session_id": "04bd5bfd-9a7b-4fed-8c8f-93696b7f8ef1",
+  "total_cost_usd": 0.032494800000000004,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6408,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 331,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6408,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 331,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6408,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6408
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 331,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6408,
+      "webSearchRequests": 0,
+      "costUSD": 0.032494800000000004,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "18d7b35f-ed8c-45fd-908e-09c2e9e21353",
+  "_meta": {
+    "track": "B",
+    "task": "race-condition-debug",
+    "category": "debugging",
+    "condition": "caveman",
+    "run_num": 6,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 8.33,
+    "timestamp": 1776776576,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

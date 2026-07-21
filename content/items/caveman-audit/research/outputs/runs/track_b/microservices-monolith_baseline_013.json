@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 12251,
+  "duration_api_ms": 13671,
+  "num_turns": 1,
+  "result": "The core question is whether your pain is **operational** (deploy, scale, team) or **code** (coupling, complexity). Microservices fix the former but often worsen the latter if you split prematurely.\n\n**Before splitting, audit these factors:**\n\n**1. Where is the actual slowness?**\nProfile first. If it's a few hot endpoints or DB queries, you can often fix that with caching, DB indexing, async tasks (Celery), or read replicas \u2014 no split needed.\n\n**2. Domain boundaries**\nCan you draw clean seams in your data model? If tables are heavily joined across logical domains, splitting will force distributed joins or data duplication \u2014 often worse than the monolith.\n\n**3. Team structure (Conway's Law)**\nMicroservices pay off when separate teams own separate services. If it's one team, you'll likely spend more time on inter-service plumbing than product work.\n\n**4. Operational maturity**\nMicroservices require: service discovery, distributed tracing, centralized logging, contract testing, and more complex deployments. Do you have that infrastructure today?\n\n**5. Consistency requirements**\nDjango's ORM + transactions are free. Cross-service consistency requires sagas or two-phase commits \u2014 hard to get right.\n\n---\n\n**A pragmatic path for Django specifically:**\n\n1. **Modularize internally first** \u2014 enforce domain boundaries with Django apps, limit cross-app model imports. This is often 80% of the benefit.\n2. **Extract only what needs independent scaling** \u2014 a media processing service, a heavy reporting job. Not everything at once.\n3. **Strangler fig pattern** \u2014 put a reverse proxy (nginx/API gateway) in front and carve off services incrementally, rather than a big-bang rewrite.\n\nThe most common mistake is splitting on technical layers (auth service, user service) instead of business capabilities (checkout, inventory). Split by what changes independently, not what looks neat on a diagram.",
+  "stop_reason": "end_turn",
+  "session_id": "29c1efe5-a15e-4066-b0cf-686199cd167a",
+  "total_cost_usd": 0.013090999999999998,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17060,
+    "output_tokens": 500,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 500,
+        "cache_read_input_tokens": 17060,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 374,
+      "outputTokens": 18,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000464,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 500,
+      "cacheReadInputTokens": 17060,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.012627,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "f9433632-9c68-46fa-95c4-f251af866aea",
+  "_meta": {
+    "track": "B",
+    "task": "microservices-monolith",
+    "category": "architecture",
+    "condition": "baseline",
+    "run_num": 13,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 14.02,
+    "timestamp": 1776776421,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

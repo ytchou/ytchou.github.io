@@ -1,0 +1,22 @@
+{
+  "input_tokens": 1085,
+  "output_tokens": 357,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Object prop = new ref each render. React compare by ref, not value. Always different \u2192 always re-render.\n\n**Fix options:**\n\n1. **`useMemo`** \u2014 memoize object in parent:\n```js\nconst config = useMemo(() => ({ color: 'red', size: 10 }), []);\n```\n\n2. **`React.memo`** \u2014 skip re-render if props \"equal\":\n```js\nconst Child = React.memo(MyComponent);\n```\nStill fail if object inline. Combine with `useMemo`.\n\n3. **`React.memo` + custom compare** \u2014 deep equality:\n```js\nconst Child = React.memo(MyComponent, (prev, next) =>\n  JSON.stringify(prev.config) === JSON.stringify(next.config)\n);\n```\nExpensive for big objects. Avoid hot paths.\n\n4. **Lift object outside component** \u2014 if static:\n```js\nconst CONFIG = { color: 'red', size: 10 }; // outside fn\n\nfunction Parent() {\n  return <Child config={CONFIG} />;\n}\n```\nBest if no runtime deps.\n\n**Root cause summary:**\n```\ninline object \u2192 new ref per render \u2192 React sees \"changed\" \u2192 child re-renders\n```\n\nMost cases: `useMemo` in parent + `React.memo` on child. Check with React DevTools Profiler to confirm.",
+  "thinking_text": "The user is asking about React re-rendering. Caveman mode is active (full by default).",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 8.43,
+  "_meta": {
+    "track": "A_prime",
+    "task": "react-rerender",
+    "category": "debugging",
+    "condition": "caveman",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 3519,
+    "timestamp": 1776610356
+  }
+}

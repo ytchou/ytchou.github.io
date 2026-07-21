@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1063,
+  "output_tokens": 662,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## Monolith \u2192 Microservices: Consider First\n\n**Split only if monolith actually broken.** Most teams split too early.\n\n---\n\n### Diagnose Real Problem\n\nSlow \u2260 need microservices. Slow = maybe:\n- Bad queries (fix with indexes/caching)\n- Missing async workers (Celery)\n- No caching layer (Redis)\n- Underpowered infra\n\n**Profile first.** Django Debug Toolbar + pg `EXPLAIN ANALYZE`. Fix obvious wins before architecture surgery.\n\n---\n\n### Key Factors\n\n**1. Team structure**\nConway's Law real. Microservices work when teams own services independently. One team + microservices = coordination hell. Need: clear ownership, separate deploys, separate on-call.\n\n**2. Domain boundaries**\nCan you draw clean lines? If modules share DB tables constantly, split = distributed monolith (worst of both). Need: bounded contexts that rarely cross. DDD helps map this.\n\n**3. Failure tolerance**\nMicroservices = network calls = new failure modes. Need: circuit breakers, retries, timeouts, distributed tracing. Ops burden multiplies fast.\n\n**4. Data ownership**\nHardest part. Each service needs own DB or you gain nothing. Shared DB = tight coupling survives the split. Cross-service queries become API calls or events \u2014 painful to retrofit.\n\n**5. Scale profile**\nWhich part actually needs scale? Maybe only one module (e.g. image processing, search). Extract *that* first. Don't split what doesn't need it.\n\n**6. Deployment maturity**\nMicroservices need: containers, orchestration (K8s), CI/CD per service, centralized logging, distributed tracing (Jaeger/Datadog). Not there yet = microservices hurt more than help.\n\n---\n\n### Middle Path (Usually Right Answer)\n\n```\nMonolith \u2192 Modular Monolith \u2192 Extract hot services\n```\n\n1. **Enforce module boundaries** inside Django (separate apps, no cross-app model imports)\n2. **Extract async work** to Celery workers\n3. **Add caching** (Redis, DB query cache)\n4. **Extract one high-value service** (e.g. notifications, PDF gen) \u2014 learn the ops cost\n5. **Decide** if pain worth continuing\n\n---\n\n### Split When\n\n- Teams blocked by each other deploying\n- One domain needs different scaling/language/release cadence\n- Compliance requires isolation (e.g. payments)\n- Monolith genuinely too large to reason about\n\n### Don't Split When\n\n- Slow queries fixable\n- Team < ~8 engineers\n- No clear domain boundaries\n- Ops infra not ready\n\n---\n\n**Bottom line:** Microservices trade code complexity for ops complexity. Most Django monoliths need optimization + modularization, not a split.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 19.51,
+  "_meta": {
+    "track": "C",
+    "task": "microservices-monolith",
+    "category": "architecture",
+    "condition": "caveman",
+    "run_num": 1,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585674
+  }
+}

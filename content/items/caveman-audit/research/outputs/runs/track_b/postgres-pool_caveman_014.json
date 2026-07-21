@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 10912,
+  "duration_api_ms": 10852,
+  "num_turns": 1,
+  "result": "Use `pg` (node-postgres) with `Pool`:\n\n```js\nimport { Pool } from 'pg';\n\nconst pool = new Pool({\n  host: process.env.DB_HOST,\n  port: parseInt(process.env.DB_PORT ?? '5432'),\n  database: process.env.DB_NAME,\n  user: process.env.DB_USER,\n  password: process.env.DB_PASSWORD,\n\n  // Pool sizing\n  max: 20,                // max connections\n  min: 2,                 // keep alive connections\n  idleTimeoutMillis: 30_000,    // close idle after 30s\n  connectionTimeoutMillis: 5_000, // fail if can't connect in 5s\n  allowExitOnIdle: false,\n});\n\n// Catch pool-level errors (e.g. dropped connections)\npool.on('error', (err) => {\n  console.error('Unexpected pool error', err);\n  // Don't crash \u2014 pool auto-recovers\n});\n```\n\n**Query with error handling:**\n\n```js\nasync function query(sql, params) {\n  const client = await pool.connect(); // throws if connectionTimeout exceeded\n  try {\n    const result = await client.query(sql, params);\n    return result.rows;\n  } catch (err) {\n    // Optionally: detect retryable errors (e.g. 40001 serialization_failure)\n    throw err;\n  } finally {\n    client.release(); // always release, even on error\n  }\n}\n```\n\n**For transactions:**\n\n```js\nasync function withTransaction(fn) {\n  const client = await pool.connect();\n  try {\n    await client.query('BEGIN');\n    const result = await fn(client);\n    await client.query('COMMIT');\n    return result;\n  } catch (err) {\n    await client.query('ROLLBACK');\n    throw err;\n  } finally {\n    client.release();\n  }\n}\n```\n\n**Graceful shutdown:**\n\n```js\nprocess.on('SIGTERM', async () => {\n  await pool.end(); // waits for active queries to finish\n  process.exit(0);\n});\n```\n\nKey points:\n- `pool.query()` fine for one-off queries (auto-acquire/release), but use `pool.connect()` for transactions\n- `client.release(true)` destroys connection instead of returning to pool \u2014 use on unrecoverable errors\n- Set `max` based on Postgres `max_connections` minus connections reserved for other apps/admin",
+  "stop_reason": "end_turn",
+  "session_id": "272b19cb-cd12-4864-aae9-ea8e4bed88ce",
+  "total_cost_usd": 0.0156795,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 18035,
+    "output_tokens": 684,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 684,
+        "cache_read_input_tokens": 18035,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 684,
+      "cacheReadInputTokens": 18035,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0156795,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "b3b5b632-4401-4e86-9e7f-541ad5e4ea19",
+  "_meta": {
+    "track": "B",
+    "task": "postgres-pool",
+    "category": "setup",
+    "condition": "caveman",
+    "run_num": 14,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 12.5,
+    "timestamp": 1776776308,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

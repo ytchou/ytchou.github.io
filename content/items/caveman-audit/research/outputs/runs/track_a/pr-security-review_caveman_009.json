@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1095,
+  "output_tokens": 521,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "**3 critical issues:**\n\n**1. SQL Injection** (critical)\nDirect param interpolation. Attacker sends `1 OR 1=1` \u2192 dumps whole table. Or `1; DROP TABLE users--`.\n\nFix \u2014 parameterized query:\n```js\nconst query = 'SELECT * FROM users WHERE id = ?';\ndb.query(query, [req.params.id]).then(...)\n```\n\n**2. No auth/authz**\nAny caller gets any user's data. No token check, no ownership check.\n\nFix:\n```js\nif (req.user.id !== req.params.id && !req.user.isAdmin) {\n  return res.status(403).json({ error: 'Forbidden' });\n}\n```\n\n**3. No error handling**\nDB fail \u2192 unhandled rejection \u2192 crash or leak stack trace to client.\n\nFix:\n```js\ndb.query(query, [req.params.id])\n  .then(user => {\n    if (!user) return res.status(404).json({ error: 'Not found' });\n    res.json(user);\n  })\n  .catch(err => {\n    console.error(err);          // log internally\n    res.status(500).json({ error: 'Server error' }); // no leak\n  });\n```\n\n**Hardened version:**\n```js\napp.get('/api/users/:id', authenticate, async (req, res) => {\n  if (req.user.id !== req.params.id && !req.user.isAdmin) {\n    return res.status(403).json({ error: 'Forbidden' });\n  }\n  try {\n    const user = await db.query('SELECT id, name, email FROM users WHERE id = ?', [req.params.id]);\n    if (!user) return res.status(404).json({ error: 'Not found' });\n    res.json(user);\n  } catch (err) {\n    console.error(err);\n    res.status(500).json({ error: 'Server error' });\n  }\n});\n```\n\nNote `SELECT *` \u2192 `SELECT id, name, email`. Never expose password hash, internal flags, etc.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 8.76,
+  "_meta": {
+    "track": "C",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "caveman",
+    "run_num": 9,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585823
+  }
+}

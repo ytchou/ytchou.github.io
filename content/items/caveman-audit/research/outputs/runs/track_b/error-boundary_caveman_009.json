@@ -1,0 +1,89 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 33080,
+  "duration_api_ms": 33006,
+  "num_turns": 6,
+  "result": "No write permission. Here's full implementation \u2014 paste manually:\n\n```tsx\nimport { Component, type ErrorInfo, type ReactNode } from \"react\";\n\ninterface Props {\n  children: ReactNode;\n  fallback?: ReactNode;\n  onError?: (error: Error, info: ErrorInfo) => void;\n  onReset?: () => void;\n}\n\ninterface State {\n  error: Error | null;\n  componentStack: string | null;\n}\n\nexport class ErrorBoundary extends Component<Props, State> {\n  state: State = { error: null, componentStack: null };\n\n  static getDerivedStateFromError(error: Error): Partial<State> {\n    return { error };\n  }\n\n  componentDidCatch(error: Error, info: ErrorInfo): void {\n    const stack = info.componentStack ?? null;\n    console.error(\"[ErrorBoundary]\", {\n      timestamp: new Date().toISOString(),\n      message: error.message,\n      stack: error.stack,\n      componentStack: stack,\n    });\n    this.props.onError?.(error, info);\n    this.setState({ componentStack: stack });\n  }\n\n  reset = (): void => {\n    this.props.onReset?.();\n    this.setState({ error: null, componentStack: null });\n  };\n\n  render(): ReactNode {\n    const { error } = this.state;\n\n    if (error) {\n      if (this.props.fallback) return this.props.fallback;\n\n      return (\n        <div role=\"alert\" style={{ padding: \"1rem\", border: \"1px solid red\" }}>\n          <h2>Something went wrong</h2>\n          <pre style={{ whiteSpace: \"pre-wrap\", color: \"red\" }}>\n            {error.message}\n          </pre>\n          <button onClick={this.reset}>Try Again</button>\n        </div>\n      );\n    }\n\n    return this.props.children;\n  }\n}\n```\n\n**Changes from existing file:**\n\n| Added | Why |\n|-------|-----|\n| `onError` prop | Custom log sink (Sentry, Datadog, etc.) |\n| `onReset` prop | Caller hook for state cleanup before retry |\n| Structured log object | `timestamp` + `stack` + `componentStack` all in one `console.error` call |\n\n**Usage:**\n```tsx\n<ErrorBoundary\n  onError={(err, info) => Sentry.captureException(err, { extra: info })}\n  onReset={() => queryClient.clear()}\n>\n  <MyComponent />\n</ErrorBoundary>\n```\n\n`reset()` clears state \u2192 React retries render from scratch. `fallback` prop overrides default UI when custom error screen needed.",
+  "stop_reason": "end_turn",
+  "session_id": "32567884-7002-4336-a5f3-d3095a0aa678",
+  "total_cost_usd": 0.10087215,
+  "usage": {
+    "input_tokens": 7,
+    "cache_creation_input_tokens": 12479,
+    "cache_read_input_tokens": 90183,
+    "output_tokens": 1800,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 12479,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 1,
+        "output_tokens": 711,
+        "cache_read_input_tokens": 21560,
+        "cache_creation_input_tokens": 263,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 263
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 7,
+      "outputTokens": 1800,
+      "cacheReadInputTokens": 90183,
+      "cacheCreationInputTokens": 12479,
+      "webSearchRequests": 0,
+      "costUSD": 0.10087215,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [
+    {
+      "tool_name": "Write",
+      "tool_use_id": "toolu_01DTUpyWezdUjJtTcBwuBthv",
+      "tool_input": {
+        "file_path": "/Users/ytchou/project/portfolio/projects/caveman-audit/src/components/ErrorBoundary.tsx",
+        "content": "import { Component, type ErrorInfo, type ReactNode } from \"react\";\n\ninterface Props {\n  children: ReactNode;\n  fallback?: ReactNode;\n  onError?: (error: Error, info: ErrorInfo) => void;\n  onReset?: () => void;\n}\n\ninterface State {\n  error: Error | null;\n  componentStack: string | null;\n}\n\nexport class ErrorBoundary extends Component<Props, State> {\n  state: State = { error: null, componentStack: null };\n\n  static getDerivedStateFromError(error: Error): Partial<State> {\n    return { error };\n  }\n\n  componentDidCatch(error: Error, info: ErrorInfo): void {\n    const stack = info.componentStack ?? null;\n    console.error(\"[ErrorBoundary]\", {\n      timestamp: new Date().toISOString(),\n      message: error.message,\n      stack: error.stack,\n      componentStack: stack,\n    });\n    this.props.onError?.(error, info);\n    this.setState({ componentStack: stack });\n  }\n\n  reset = (): void => {\n    this.props.onReset?.();\n    this.setState({ error: null, componentStack: null });\n  };\n\n  render(): ReactNode {\n    const { error } = this.state;\n\n    if (error) {\n      if (this.props.fallback) return this.props.fallback;\n\n      return (\n        <div role=\"alert\" style={{ padding: \"1rem\", border: \"1px solid red\" }}>\n          <h2>Something went wrong</h2>\n          <pre style={{ whiteSpace: \"pre-wrap\", color: \"red\" }}>\n            {error.message}\n          </pre>\n          <button onClick={this.reset}>Try Again</button>\n        </div>\n      );\n    }\n\n    return this.props.children;\n  }\n}\n"
+      }
+    },
+    {
+      "tool_name": "Edit",
+      "tool_use_id": "toolu_01RD81MaNSWzLDrxknjmKNkw",
+      "tool_input": {
+        "file_path": "/Users/ytchou/project/portfolio/projects/caveman-audit/src/components/ErrorBoundary.tsx",
+        "old_string": "interface Props {\n  children: ReactNode;\n  fallback?: ReactNode;\n}",
+        "new_string": "interface Props {\n  children: ReactNode;\n  fallback?: ReactNode;\n  onError?: (error: Error, info: ErrorInfo) => void;\n  onReset?: () => void;\n}",
+        "replace_all": false
+      }
+    }
+  ],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "995fa612-6330-43cd-9fe3-682ae5efbf38",
+  "_meta": {
+    "track": "B",
+    "task": "error-boundary",
+    "category": "implementation",
+    "condition": "caveman",
+    "run_num": 9,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 34.58,
+    "timestamp": 1776776734,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

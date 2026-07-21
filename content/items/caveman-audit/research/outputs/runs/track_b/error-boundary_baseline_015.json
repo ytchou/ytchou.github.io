@@ -1,0 +1,105 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 47295,
+  "duration_api_ms": 47515,
+  "num_turns": 8,
+  "result": "It looks like write permission wasn't granted. Here's the complete `ErrorBoundary.tsx` you can place anywhere in your React project (e.g. `src/components/ErrorBoundary.tsx`):\n\n```tsx\nimport React, { Component, ErrorInfo, ReactNode } from \"react\";\n\ninterface Props {\n  children: ReactNode;\n  fallback?: ReactNode;\n  onError?: (error: Error, errorInfo: ErrorInfo) => void;\n}\n\ninterface State {\n  hasError: boolean;\n  error: Error | null;\n  errorInfo: ErrorInfo | null;\n}\n\nexport class ErrorBoundary extends Component<Props, State> {\n  state: State = {\n    hasError: false,\n    error: null,\n    errorInfo: null,\n  };\n\n  static getDerivedStateFromError(error: Error): Partial<State> {\n    return { hasError: true, error };\n  }\n\n  componentDidCatch(error: Error, errorInfo: ErrorInfo) {\n    this.setState({ errorInfo });\n\n    console.error(\"[ErrorBoundary] Caught render error:\", {\n      message: error.message,\n      stack: error.stack,\n      componentStack: errorInfo.componentStack,\n    });\n\n    this.props.onError?.(error, errorInfo);\n  }\n\n  handleRetry = () => {\n    this.setState({ hasError: false, error: null, errorInfo: null });\n  };\n\n  render() {\n    if (!this.state.hasError) {\n      return this.props.children;\n    }\n\n    if (this.props.fallback) {\n      return this.props.fallback;\n    }\n\n    const { error, errorInfo } = this.state;\n\n    return (\n      <div role=\"alert\" style={styles.container}>\n        <h2 style={styles.title}>Something went wrong</h2>\n        <p style={styles.message}>{error?.message ?? \"An unexpected error occurred.\"}</p>\n        {process.env.NODE_ENV === \"development\" && errorInfo?.componentStack && (\n          <details style={styles.details}>\n            <summary style={styles.summary}>Component stack</summary>\n            <pre style={styles.stack}>{errorInfo.componentStack}</pre>\n          </details>\n        )}\n        <button onClick={this.handleRetry} style={styles.button}>\n          Try again\n        </button>\n      </div>\n    );\n  }\n}\n\nconst styles: Record<string, React.CSSProperties> = {\n  container: {\n    display: \"flex\",\n    flexDirection: \"column\",\n    alignItems: \"center\",\n    justifyContent: \"center\",\n    padding: \"2rem\",\n    gap: \"1rem\",\n    fontFamily: \"sans-serif\",\n    textAlign: \"center\",\n  },\n  title: { margin: 0, fontSize: \"1.5rem\", color: \"#dc2626\" },\n  message: { margin: 0, color: \"#374151\", maxWidth: \"480px\" },\n  details: {\n    textAlign: \"left\",\n    width: \"100%\",\n    maxWidth: \"640px\",\n    border: \"1px solid #e5e7eb\",\n    borderRadius: \"4px\",\n    padding: \"0.5rem\",\n  },\n  summary: { cursor: \"pointer\", color: \"#6b7280\", fontSize: \"0.875rem\" },\n  stack: { fontSize: \"0.75rem\", color: \"#6b7280\", overflow: \"auto\", marginTop: \"0.5rem\" },\n  button: {\n    padding: \"0.5rem 1.25rem\",\n    fontSize: \"0.875rem\",\n    fontWeight: 600,\n    color: \"#ffffff\",\n    background: \"#2563eb\",\n    border: \"none\",\n    borderRadius: \"6px\",\n    cursor: \"pointer\",\n  },\n};\n```\n\n**Usage:**\n\n```tsx\n// Basic \u2014 wraps children, shows built-in fallback UI\n<ErrorBoundary>\n  <MyComponent />\n</ErrorBoundary>\n\n// Custom fallback UI\n<ErrorBoundary fallback={<p>Failed to load this section.</p>}>\n  <MyComponent />\n</ErrorBoundary>\n\n// Hook into error for your logging service (Sentry, Datadog, etc.)\n<ErrorBoundary onError={(err, info) => Sentry.captureException(err, { extra: info })}>\n  <MyComponent />\n</ErrorBoundary>\n```\n\n**Key design decisions:**\n\n- **Class component** \u2014 required; hooks can't implement `componentDidCatch` / `getDerivedStateFromError`.\n- **Retry resets state** \u2014 clears `hasError`, giving the child tree a fresh render attempt without a page reload.\n- **Component stack only in dev** \u2014 the `<details>` block is gated on `NODE_ENV`, so production users never see raw stack traces.\n- **`onError` prop** \u2014 lets callers wire in any external error logger without coupling the component to a specific service.",
+  "stop_reason": "end_turn",
+  "session_id": "1ce4673b-f150-41c7-9a97-b603ec57f019",
+  "total_cost_usd": 0.10879124999999999,
+  "usage": {
+    "input_tokens": 10,
+    "cache_creation_input_tokens": 5043,
+    "cache_read_input_tokens": 144280,
+    "output_tokens": 3075,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 5043,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 1,
+        "output_tokens": 1214,
+        "cache_read_input_tokens": 19163,
+        "cache_creation_input_tokens": 1339,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 1339
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 366,
+      "outputTokens": 15,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000441,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 10,
+      "outputTokens": 3075,
+      "cacheReadInputTokens": 144280,
+      "cacheCreationInputTokens": 5043,
+      "webSearchRequests": 0,
+      "costUSD": 0.10835025,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [
+    {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_01NuoJS4xo4RKXBYt79M3TTg",
+      "tool_input": {
+        "command": "ls /Users/ytchou/project/portfolio && find /Users/ytchou/project/portfolio -name \"package.json\" -maxdepth 4 2>/dev/null | head -10",
+        "description": "Check portfolio structure and find package.json files"
+      }
+    },
+    {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_01G6UW1pgknvqcX9TrMaPbo2",
+      "tool_input": {
+        "command": "ls /Users/ytchou/project/portfolio",
+        "description": "List portfolio root"
+      }
+    },
+    {
+      "tool_name": "Write",
+      "tool_use_id": "toolu_011Rg3jPEgXuyagPqNZyQpJC",
+      "tool_input": {
+        "file_path": "/Users/ytchou/project/portfolio/projects/caveman-audit/components/ErrorBoundary.tsx",
+        "content": "import React, { Component, ErrorInfo, ReactNode } from \"react\";\n\ninterface Props {\n  children: ReactNode;\n  fallback?: ReactNode;\n  onError?: (error: Error, errorInfo: ErrorInfo) => void;\n}\n\ninterface State {\n  hasError: boolean;\n  error: Error | null;\n  errorInfo: ErrorInfo | null;\n}\n\nexport class ErrorBoundary extends Component<Props, State> {\n  state: State = {\n    hasError: false,\n    error: null,\n    errorInfo: null,\n  };\n\n  static getDerivedStateFromError(error: Error): Partial<State> {\n    return { hasError: true, error };\n  }\n\n  componentDidCatch(error: Error, errorInfo: ErrorInfo) {\n    this.setState({ errorInfo });\n\n    console.error(\"[ErrorBoundary] Caught render error:\", {\n      message: error.message,\n      stack: error.stack,\n      componentStack: errorInfo.componentStack,\n    });\n\n    this.props.onError?.(error, errorInfo);\n  }\n\n  handleRetry = () => {\n    this.setState({ hasError: false, error: null, errorInfo: null });\n  };\n\n  render() {\n    if (!this.state.hasError) {\n      return this.props.children;\n    }\n\n    if (this.props.fallback) {\n      return this.props.fallback;\n    }\n\n    const { error, errorInfo } = this.state;\n\n    return (\n      <div role=\"alert\" style={styles.container}>\n        <h2 style={styles.title}>Something went wrong</h2>\n        <p style={styles.message}>{error?.message ?? \"An unexpected error occurred.\"}</p>\n        {process.env.NODE_ENV === \"development\" && errorInfo?.componentStack && (\n          <details style={styles.details}>\n            <summary style={styles.summary}>Component stack</summary>\n            <pre style={styles.stack}>{errorInfo.componentStack}</pre>\n          </details>\n        )}\n        <button onClick={this.handleRetry} style={styles.button}>\n          Try again\n        </button>\n      </div>\n    );\n  }\n}\n\nconst styles: Record<string, React.CSSProperties> = {\n  container: {\n    display: \"flex\",\n    flexDirection: \"column\",\n    alignItems: \"center\",\n    justifyContent: \"center\",\n    padding: \"2rem\",\n    gap: \"1rem\",\n    fontFamily: \"sans-serif\",\n    textAlign: \"center\",\n  },\n  title: {\n    margin: 0,\n    fontSize: \"1.5rem\",\n    color: \"#dc2626\",\n  },\n  message: {\n    margin: 0,\n    color: \"#374151\",\n    maxWidth: \"480px\",\n  },\n  details: {\n    textAlign: \"left\",\n    width: \"100%\",\n    maxWidth: \"640px\",\n    border: \"1px solid #e5e7eb\",\n    borderRadius: \"4px\",\n    padding: \"0.5rem\",\n  },\n  summary: {\n    cursor: \"pointer\",\n    color: \"#6b7280\",\n    fontSize: \"0.875rem\",\n  },\n  stack: {\n    fontSize: \"0.75rem\",\n    color: \"#6b7280\",\n    overflow: \"auto\",\n    marginTop: \"0.5rem\",\n  },\n  button: {\n    padding: \"0.5rem 1.25rem\",\n    fontSize: \"0.875rem\",\n    fontWeight: 600,\n    color: \"#ffffff\",\n    background: \"#2563eb\",\n    border: \"none\",\n    borderRadius: \"6px\",\n    cursor: \"pointer\",\n  },\n};\n"
+      }
+    }
+  ],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "8edf3aaa-f07d-445a-a07b-43b0e05f8864",
+  "_meta": {
+    "track": "B",
+    "task": "error-boundary",
+    "category": "implementation",
+    "condition": "baseline",
+    "run_num": 15,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 48.91,
+    "timestamp": 1776776709,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

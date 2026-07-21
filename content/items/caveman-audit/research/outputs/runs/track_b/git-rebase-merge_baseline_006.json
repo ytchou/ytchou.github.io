@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 13174,
+  "duration_api_ms": 16935,
+  "num_turns": 1,
+  "result": "## Git Merge vs. Git Rebase\n\nBoth integrate changes from one branch into another, but they do it differently.\n\n---\n\n### `git merge`\n\nCreates a **merge commit** that ties together the histories of both branches. The original commits on both branches are preserved exactly as they were.\n\n```\n      A---B---C  feature\n     /         \\\nD---E---F---G---H  main  (H is the merge commit)\n```\n\n**Use when:**\n- Integrating a completed feature branch into `main`\n- Working on a shared/public branch (preserves the true history)\n- You want a clear record of when branches diverged and reunited\n\n---\n\n### `git rebase`\n\n**Replays** your commits on top of another branch. This rewrites commit history \u2014 each commit gets a new SHA.\n\n```\nBefore:          After rebase onto main:\n  A---B  feature       A'--B'  feature\n /                    /\nD---E---F  main   D---E---F  main\n```\n\n**Use when:**\n- Keeping a feature branch up-to-date with `main` during development\n- You want a clean, linear history before merging\n- Working on a **private/local** branch that hasn't been pushed\n\n---\n\n### Key Tradeoffs\n\n| | Merge | Rebase |\n|---|---|---|\n| History | Preserves exact history | Rewrites history (new SHAs) |\n| Commits | Adds a merge commit | No extra commits |\n| Readability | Can get noisy with many merges | Clean, linear |\n| Safety | Safe on any branch | **Dangerous on shared branches** |\n| Conflicts | Resolve once | Resolve per-commit being replayed |\n\n---\n\n### The Golden Rule of Rebase\n\n> Never rebase a branch that others are working on.\n\nRewriting SHAs on a pushed branch forces everyone else to reconcile their work against the new history \u2014 this causes significant confusion and pain.\n\n**Common workflow:** rebase your feature branch onto `main` while developing (to stay current and resolve conflicts early), then merge (or squash-merge) into `main` when done.",
+  "stop_reason": "end_turn",
+  "session_id": "fc3e8e87-a174-4fd7-a268-2917232c37a1",
+  "total_cost_usd": 0.03220630000000001,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 5414,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 530,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 5414,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 530,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 5414,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 5414
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 364,
+      "outputTokens": 18,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.00045400000000000003,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 530,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 5414,
+      "webSearchRequests": 0,
+      "costUSD": 0.031752300000000004,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "a57cc57b-a008-49f3-869b-3c6563c895a2",
+  "_meta": {
+    "track": "B",
+    "task": "git-rebase-merge",
+    "category": "explanation",
+    "condition": "baseline",
+    "run_num": 6,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 14.84,
+    "timestamp": 1776776312,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

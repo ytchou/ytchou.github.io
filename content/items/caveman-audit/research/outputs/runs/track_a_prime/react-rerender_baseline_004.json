@@ -1,0 +1,22 @@
+{
+  "input_tokens": 72,
+  "output_tokens": 816,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## The Problem: Reference Equality\n\nWhen you pass an object as a prop, React uses **reference equality** (`===`) to compare props. A new object literal creates a new reference every render, even if the contents are identical.\n\n```jsx\n// \u274c This creates a NEW object reference on every parent render\nfunction Parent() {\n  const [count, setCount] = useState(0);\n  \n  return (\n    <Child config={{ theme: \"dark\", size: \"large\" }} /> // new reference each time\n  );\n}\n```\n\n---\n\n## Solutions\n\n### 1. `useMemo` \u2014 Memoize the object\n```jsx\nfunction Parent() {\n  const [count, setCount] = useState(0);\n  \n  const config = useMemo(() => ({\n    theme: \"dark\",\n    size: \"large\"\n  }), []); // only recreates when dependencies change\n  \n  return <Child config={config} />;\n}\n```\n\n### 2. `React.memo` \u2014 Skip re-renders when props are equal\n```jsx\n// \u274c Still broken without useMemo - memo uses shallow comparison\nconst Child = React.memo(({ config }) => {\n  return <div>{config.theme}</div>;\n});\n```\n\n```jsx\n// \u2705 Works correctly together\nconst Child = React.memo(({ config }) => {\n  return <div>{config.theme}</div>;\n});\n\nfunction Parent() {\n  const config = useMemo(() => ({ theme: \"dark\" }), []);\n  return <Child config={config} />;\n}\n```\n\n### 3. Move static objects outside the component\n```jsx\n// \u2705 Best for truly static data - same reference always\nconst CONFIG = { theme: \"dark\", size: \"large\" };\n\nfunction Parent() {\n  return <Child config={CONFIG} />;\n}\n```\n\n### 4. Custom comparison with `React.memo`\n```jsx\nconst Child = React.memo(({ config }) => {\n  return <div>{config.theme}</div>;\n}, (prevProps, nextProps) => {\n  // return true to SKIP re-render, false to re-render\n  return prevProps.config.theme === nextProps.config.theme &&\n         prevProps.config.size === nextProps.config.size;\n});\n```\n\n---\n\n## Debugging Tips\n\n```jsx\n// Check what's actually changing\nconst Child = React.memo(({ config }) => {\n  const renderCount = useRef(0);\n  console.log(\"Render #\", ++renderCount.current, config);\n  \n  return <div>{config.theme}</div>;\n});\n\n// Or use the why-did-you-render library\n// npm install @welldone-software/why-did-you-render\n```\n\n---\n\n## Quick Decision Guide\n\n| Situation | Solution |\n|-----------|----------|\n| Object never changes | Move outside component |\n| Object depends on props/state | `useMemo` |\n| Preventing child re-renders | `React.memo` + `useMemo` |\n| Complex comparison logic | `React.memo` with custom comparator |\n\n**The root cause is always the same:** JavaScript objects are compared by reference, not value, so `{ a: 1 } === { a: 1 }` is **`false`**.",
+  "thinking_text": "The user is asking about React component re-rendering issues when passing objects as props. This is a very common React performance issue related to reference equality.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 14.26,
+  "_meta": {
+    "track": "A_prime",
+    "task": "react-rerender",
+    "category": "debugging",
+    "condition": "baseline",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 28,
+    "timestamp": 1776610347
+  }
+}

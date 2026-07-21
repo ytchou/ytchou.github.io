@@ -1,0 +1,21 @@
+{
+  "input_tokens": 40,
+  "output_tokens": 931,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "# Git Merge vs Git Rebase\n\n## What They Do\n\n**Merge** joins two branches by creating a new \"merge commit\" that has two parents:\n```\n      A---B---C  feature\n     /         \\\nD---E---F---G---H  main (after merge)\n```\n\n**Rebase** replays your commits on top of another branch, rewriting history:\n```\n              A'--B'--C'  feature (after rebase)\n             /\nD---E---F---G  main\n```\n\n---\n\n## Core Difference\n\n| | Merge | Rebase |\n|---|---|---|\n| History | Preserves exact history | Rewrites history |\n| Commits | Adds a merge commit | Replays commits as new ones |\n| SHA hashes | Unchanged | **Changed** (new commits) |\n| Traceability | Shows when branches diverged | Linear, cleaner log |\n\n---\n\n## When to Use Each\n\n### Use **Merge** when:\n- Integrating a completed feature into `main`\n- Working on a **shared/public branch** (never rebase these)\n- You want to preserve the exact history of what happened and when\n- Merging long-lived branches where context matters\n\n```bash\ngit checkout main\ngit merge feature/my-feature\n```\n\n### Use **Rebase** when:\n- Updating your **local feature branch** with latest changes from main\n- Cleaning up messy local commits before a PR\n- You want a linear, readable history\n- Working on a **private branch** only you use\n\n```bash\ngit checkout feature/my-feature\ngit rebase main\n```\n\n---\n\n## The Golden Rule\n\n> **Never rebase commits that exist outside your local repository**\n\nIf others have based work on your commits, rewriting those commits with rebase causes serious problems \u2014 their history diverges from yours and merging becomes painful.\n\n---\n\n## Practical Tradeoffs\n\n### Merge pros/cons\n```\n\u2705 Safe \u2014 never rewrites history\n\u2705 Preserves full context (when did branches diverge?)\n\u2705 Simple to understand and undo\n\u274c Creates extra merge commits\n\u274c History can become tangled (\"spaghetti history\")\n```\n\n### Rebase pros/cons\n```\n\u2705 Clean, linear history \u2014 easier to read with git log\n\u2705 Easier to use git bisect to find bugs\n\u2705 No unnecessary merge commits\n\u274c Rewrites history \u2014 dangerous on shared branches\n\u274c Harder to recover from mistakes\n\u274c Loses context of when work was originally done\n```\n\n---\n\n## Common Workflows\n\n### Workflow 1: Rebase locally, merge to main\n```bash\n# Keep your feature branch current\ngit checkout feature/login\ngit rebase main          # clean up your local history\n\n# When done, merge to main\ngit checkout main\ngit merge feature/login  # or use a PR\n```\n\n### Workflow 2: Interactive rebase to clean up commits\n```bash\n# Squash/edit your last 3 commits before sharing\ngit rebase -i HEAD~3\n```\nThis lets you combine, reorder, or reword commits \u2014 very useful before opening a PR.\n\n### Workflow 3: Merge only (simpler teams)\n```bash\n# Just always merge \u2014 safe and straightforward\ngit merge main           # update feature branch\ngit merge feature/login  # integrate when done\n```\n\n---\n\n## Quick Decision Guide\n\n```\nIs the branch public/shared?\n  YES \u2192 Always use merge\n  NO  \u2192 Is history cleanliness important?\n          YES \u2192 Rebase (then merge)\n          NO  \u2192 Either works, merge is safer\n```\n\n---\n\n## Bottom Line\n\n- **Merge** = safe, honest, preserves history \u2014 good default\n- **Rebase** = clean, linear history \u2014 powerful but requires discipline\n- Many teams use **both**: rebase locally to keep branches tidy, merge to integrate into main\n\nThe most important thing is agreeing on a consistent workflow with your team.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 20.2,
+  "_meta": {
+    "track": "C",
+    "task": "git-rebase-merge",
+    "category": "explanation",
+    "condition": "baseline",
+    "run_num": 9,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 28,
+    "timestamp": 1776585471
+  }
+}

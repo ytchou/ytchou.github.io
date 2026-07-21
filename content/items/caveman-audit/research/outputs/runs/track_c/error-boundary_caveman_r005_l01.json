@@ -1,0 +1,42 @@
+{
+  "input_tokens": 6123,
+  "output_tokens": 1658,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "I'll create a React error boundary component with fallback UI and error logging.\n\n<function_calls>\n<invoke name=\"ToolSearch\">\n<parameter name=\"query\">select:Write</parameter>\n</invoke>\n</function_calls>\n<function_calls>\n<invoke name=\"ToolSearch\">\n<parameter name=\"query\">select:Write,Read</parameter>\n</invoke>\n</function_calls>\n<function_calls>\n<invoke name=\"ToolSearch\">\n<parameter name=\"query\">Write file</parameter>\n</invoke>\n</function_calls>\n<function_calls>\n<invoke name=\"ToolSearch\">\n<parameter name=\"query\">write create file</parameter>\n<parameter name=\"max_results\">8</parameter>\n</invoke>\n</function_calls>\n<function_calls>\n<invoke name=\"ToolSearch\">\n<parameter name=\"query\">bash shell execute</parameter>\n</invoke>\n</function_calls>\n<function_calls>\n<invoke name=\"ToolSearch\">\n<parameter name=\"query\">select:Bash,Write,Read,Edit</parameter>\n</invoke>\n</function_calls>\n<function_calls>\n<invoke name=\"ToolSearch\">\n<parameter name=\"query\">edit modify file content</parameter>\n<parameter name=\"max_results\">8</parameter>\n</invoke>\n</function_calls>\n\nIt seems file tools require fetching. Let me output the component directly.\n\n```tsx\n// ErrorBoundary.tsx\nimport React, { Component, ErrorInfo, ReactNode } from 'react';\n\ninterface Props {\n  children: ReactNode;\n  fallback?: (error: Error, retry: () => void) => ReactNode;\n  onError?: (error: Error, info: ErrorInfo) => void;\n}\n\ninterface State {\n  error: Error | null;\n  errorInfo: ErrorInfo | null;\n}\n\nexport class ErrorBoundary extends Component<Props, State> {\n  state: State = { error: null, errorInfo: null };\n\n  static getDerivedStateFromError(error: Error): Partial<State> {\n    return { error };\n  }\n\n  componentDidCatch(error: Error, info: ErrorInfo) {\n    this.setState({ errorInfo: info });\n\n    const { onError } = this.props;\n    if (onError) {\n      onError(error, info);\n    } else {\n      console.error('[ErrorBoundary] Caught render error:', {\n        message: error.message,\n        stack: error.stack,\n        componentStack: info.componentStack,\n        timestamp: new Date().toISOString(),\n      });\n    }\n  }\n\n  retry = () => this.setState({ error: null, errorInfo: null });\n\n  render() {\n    const { error } = this.state;\n    const { children, fallback } = this.props;\n\n    if (!error) return children;\n\n    if (fallback) return fallback(error, this.retry);\n\n    return <DefaultFallback error={error} retry={this.retry} />;\n  }\n}\n\nfunction DefaultFallback({ error, retry }: { error: Error; retry: () => void }) {\n  return (\n    <div role=\"alert\" style={styles.container}>\n      <h2 style={styles.title}>Something went wrong</h2>\n      <p style={styles.message}>{error.message}</p>\n      <button onClick={retry} style={styles.button}>\n        Try again\n      </button>\n      {process.env.NODE_ENV === 'development' && (\n        <pre style={styles.stack}>{error.stack}</pre>\n      )}\n    </div>\n  );\n}\n\nconst styles: Record<string, React.CSSProperties> = {\n  container: {\n    padding: '2rem',\n    border: '1px solid #f5c2c7',\n    borderRadius: '8px',\n    background: '#fff3f3',\n    color: '#842029',\n    maxWidth: '600px',\n    margin: '2rem auto',\n    fontFamily: 'sans-serif',\n  },\n  title: { margin: '0 0 0.5rem', fontSize: '1.25rem' },\n  message: { margin: '0 0 1rem', fontSize: '0.95rem' },\n  button: {\n    padding: '0.5rem 1.25rem',\n    background: '#842029',\n    color: '#fff',\n    border: 'none',\n    borderRadius: '4px',\n    cursor: 'pointer',\n    fontSize: '0.9rem',\n  },\n  stack: {\n    marginTop: '1rem',\n    padding: '0.75rem',\n    background: '#f8d7da',\n    borderRadius: '4px',\n    fontSize: '0.75rem',\n    overflowX: 'auto',\n    whiteSpace: 'pre-wrap',\n  },\n};\n```\n\n**Usage:**\n\n```tsx\n// Wrap any subtree \u2014 errors bubble up to the nearest boundary\n<ErrorBoundary>\n  <MyComponent />\n</ErrorBoundary>\n\n// Custom fallback UI\n<ErrorBoundary\n  fallback={(error, retry) => (\n    <div>\n      <p>Oops: {error.message}</p>\n      <button onClick={retry}>Retry</button>\n    </div>\n  )}\n  onError={(error, info) => Sentry.captureException(error, { extra: info })}\n>\n  <MyComponent />\n</ErrorBoundary>\n```\n\n**Key design decisions:**\n\n| Feature | Detail |\n|---|---|\n| `getDerivedStateFromError` | Captures error during render phase (required for class boundary) |\n| `componentDidCatch` | Logs after commit \u2014 safe for side effects |\n| `retry()` | Resets state, forcing children to remount |\n| `onError` prop | Override default `console.error` (e.g. Sentry) |\n| `fallback` prop | Custom UI while keeping boundary logic centralized |\n| Stack trace | Dev-only via `NODE_ENV` check |\n\nError boundaries must be class components \u2014 hooks can't catch render errors in siblings/children.",
+  "thinking_text": "Let me implement a React error boundary component. This is a straightforward implementation task that doesn't require extensive planning.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 37.27,
+  "_meta": {
+    "track": "C",
+    "task": "error-boundary",
+    "category": "implementation",
+    "condition": "caveman",
+    "run_num": 5,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 25337,
+    "timestamp": 1776611903,
+    "level": 1,
+    "ordering": [
+      5,
+      6,
+      9,
+      7,
+      1,
+      8,
+      3,
+      0,
+      2,
+      4
+    ],
+    "chunks_present": [
+      5,
+      6
+    ],
+    "num_chunks": 2,
+    "behavioral_chars": 12880,
+    "chunk_chars": 8932
+  }
+}

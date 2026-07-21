@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 9815,
+  "duration_api_ms": 9754,
+  "num_turns": 1,
+  "result": "```dockerfile\n# syntax=docker/dockerfile:1\n\n# \u2500\u2500 Stage 1: deps \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nFROM node:22-alpine AS deps\nWORKDIR /app\n\nCOPY package*.json ./\nRUN npm ci --ignore-scripts\n\n# \u2500\u2500 Stage 2: build \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nFROM node:22-alpine AS build\nWORKDIR /app\n\nCOPY --from=deps /app/node_modules ./node_modules\nCOPY . .\nRUN npm run build\n\n# \u2500\u2500 Stage 3: prune \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nFROM node:22-alpine AS prune\nWORKDIR /app\n\nCOPY package*.json ./\nRUN npm ci --omit=dev --ignore-scripts\n\n# \u2500\u2500 Stage 4: runtime \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nFROM node:22-alpine AS runtime\nWORKDIR /app\n\nENV NODE_ENV=production\n\n# Non-root user \u2014 alpine ships this already\nUSER node\n\nCOPY --from=prune --chown=node:node /app/node_modules ./node_modules\nCOPY --from=build --chown=node:node /app/dist ./dist\n\nEXPOSE 3000\nCMD [\"node\", \"dist/index.js\"]\n```\n\nKey decisions:\n\n| Choice | Why |\n|---|---|\n| `alpine` base | ~50 MB vs ~900 MB for `node:22` |\n| Separate `deps` stage | Layer cache \u2014 reinstall only when `package*.json` changes |\n| Separate `prune` stage | `--omit=dev` strips devDeps; keeps build stage intact for cache |\n| `--ignore-scripts` | Prevents postinstall scripts from running as root during install |\n| `USER node` | Alpine's built-in non-root user; no `adduser` needed |\n| Only copy `dist/` + `node_modules` | No `src/`, `tsconfig.json`, test files, or `.env` in runtime image |\n\nAssumes `tsconfig.json` `outDir` is `dist` and entrypoint is `dist/index.js`. Adjust `CMD` to match your actual entrypoint.",
+  "stop_reason": "end_turn",
+  "session_id": "0e79df27-6d71-4981-bf17-9e81766acc0e",
+  "total_cost_usd": 0.03611355,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6413,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 571,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6413,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 571,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6413,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6413
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 571,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6413,
+      "webSearchRequests": 0,
+      "costUSD": 0.03611355,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "73f17974-ea0d-4c8b-a660-f02f6c93de7d",
+  "_meta": {
+    "track": "B",
+    "task": "docker-multi-stage",
+    "category": "devops",
+    "condition": "caveman",
+    "run_num": 15,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 11.45,
+    "timestamp": 1776776549,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

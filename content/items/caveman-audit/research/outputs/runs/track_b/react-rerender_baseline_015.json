@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 10211,
+  "duration_api_ms": 11706,
+  "num_turns": 1,
+  "result": "Objects in JavaScript are compared by reference, not by value. Every render creates a new object literal `{}` \u2014 even if the contents are identical, it's a different reference, so React sees a \"changed\" prop and re-renders.\n\n**Common causes:**\n\n```jsx\n// New object created on every render \u2014 child always re-renders\n<MyComponent config={{ theme: 'dark', size: 'lg' }} />\n\n// Same problem with inline arrays\n<MyComponent items={[1, 2, 3]} />\n\n// Same problem with inline callbacks\n<MyComponent onClick={() => doSomething()} />\n```\n\n**Fixes:**\n\n1. **`useMemo`** \u2014 memoize the object so the reference stays stable across renders:\n   ```jsx\n   const config = useMemo(() => ({ theme: 'dark', size: 'lg' }), [theme, size]);\n   <MyComponent config={config} />\n   ```\n\n2. **`useCallback`** \u2014 same idea for functions:\n   ```jsx\n   const handleClick = useCallback(() => doSomething(), []);\n   <MyComponent onClick={handleClick} />\n   ```\n\n3. **Move constants outside the component** \u2014 if the object never changes, define it at module scope:\n   ```jsx\n   const DEFAULT_CONFIG = { theme: 'dark', size: 'lg' };\n   function Parent() {\n     return <MyComponent config={DEFAULT_CONFIG} />;\n   }\n   ```\n\n4. **`React.memo`** on the child** \u2014 wrap the child component so it does a shallow prop comparison before re-rendering:\n   ```jsx\n   const MyComponent = React.memo(({ config }) => { ... });\n   ```\n\nThe most common fix is `React.memo` on the child *plus* `useMemo`/`useCallback` on the parent for any object/function props. `React.memo` alone won't help if the parent keeps passing new references \u2014 the shallow comparison will still see them as changed.",
+  "stop_reason": "end_turn",
+  "session_id": "d45d975e-6d77-45c2-b35c-c081c715a696",
+  "total_cost_usd": 0.0130519,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 17053,
+    "output_tokens": 498,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 498,
+        "cache_read_input_tokens": 17053,
+        "cache_creation_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 367,
+      "outputTokens": 18,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000457,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 498,
+      "cacheReadInputTokens": 17053,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0125949,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "cbaf8419-8e4a-4433-b81f-1d260d4b5bda",
+  "_meta": {
+    "track": "B",
+    "task": "react-rerender",
+    "category": "debugging",
+    "condition": "baseline",
+    "run_num": 15,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 11.87,
+    "timestamp": 1776776182,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "input_tokens": 6316,
+  "output_tokens": 242,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Two critical issues:\n\n**1. SQL Injection** \u2014 `req.params.id` injected directly into query string. Attacker sends `/api/users/1 OR 1=1` \u2192 dumps entire table.\n\n**2. No error handling** \u2014 DB failure crashes silently or leaks stack trace to client.\n\n**Fix:**\n\n```js\napp.get('/api/users/:id', async (req, res) => {\n  try {\n    const user = await db.query('SELECT * FROM users WHERE id = ?', [req.params.id]);\n    if (!user) return res.status(404).json({ error: 'Not found' });\n    res.json(user);\n  } catch {\n    res.status(500).json({ error: 'Internal server error' });\n  }\n});\n```\n\n**Also consider:** auth/authz check before returning user data, and stripping sensitive fields (password hash, tokens) from the response.",
+  "thinking_text": "The user wants a security review of this Express route handler.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 5.05,
+  "_meta": {
+    "track": "C",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "caveman",
+    "run_num": 1,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 25525,
+    "timestamp": 1776613208,
+    "level": 1,
+    "ordering": [
+      8,
+      6,
+      9,
+      3,
+      7,
+      1,
+      5,
+      4,
+      2,
+      0
+    ],
+    "chunks_present": [
+      6,
+      8
+    ],
+    "num_chunks": 2,
+    "behavioral_chars": 12880,
+    "chunk_chars": 9120
+  }
+}

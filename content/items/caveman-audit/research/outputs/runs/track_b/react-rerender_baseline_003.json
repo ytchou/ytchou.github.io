@@ -1,0 +1,80 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 8026,
+  "duration_api_ms": 9293,
+  "num_turns": 1,
+  "result": "The most common cause: you're creating a new object literal on every render, so even though the *values* are the same, the *reference* changes \u2014 and React's prop comparison is reference equality (`===`), not deep equality.\n\n```jsx\n// This creates a new object on every render of the parent\n<MyComponent config={{ theme: 'dark', size: 'lg' }} />\n```\n\n**Fixes, in order of preference:**\n\n**1. Move the object outside the component** (if it's static)\n```jsx\nconst CONFIG = { theme: 'dark', size: 'lg' };\n\nfunction Parent() {\n  return <MyComponent config={CONFIG} />;\n}\n```\n\n**2. `useMemo`** (if the object depends on props/state)\n```jsx\nconst config = useMemo(() => ({ theme, size }), [theme, size]);\nreturn <MyComponent config={config} />;\n```\n\n**3. `React.memo` on the child** (if you want deep comparison)\n```jsx\nconst MyComponent = React.memo(({ config }) => { ... }, (prev, next) =>\n  prev.config.theme === next.config.theme && prev.config.size === next.config.size\n);\n```\n\n**The root issue:** `React.memo` and `PureComponent` use shallow comparison by default. `{ a: 1 } === { a: 1 }` is `false` in JS \u2014 two object literals are always different references.\n\nThe cleanest solution is almost always `useMemo` \u2014 it keeps the object stable across renders without requiring custom comparison logic in the child.",
+  "stop_reason": "end_turn",
+  "session_id": "9b1feef8-71ee-4ae4-9f81-dcbed9734522",
+  "total_cost_usd": 0.0310193,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 5410,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 452,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 5410,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 452,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 5410,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 5410
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 367,
+      "outputTokens": 17,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000452,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    },
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 452,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 5410,
+      "webSearchRequests": 0,
+      "costUSD": 0.0305673,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "8c3e06df-0e24-4b93-9e51-c15c2748a6bc",
+  "_meta": {
+    "track": "B",
+    "task": "react-rerender",
+    "category": "debugging",
+    "condition": "baseline",
+    "run_num": 3,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 12.52,
+    "timestamp": 1776774649,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "api_error_status": null,
+  "duration_ms": 4052,
+  "duration_api_ms": 3971,
+  "num_turns": 1,
+  "result": "```javascript\nasync function getUser(id) {\n  const rows = await db.query('SELECT * FROM users WHERE id = ?', [id]);\n  if (!rows.length) throw new Error('Not found');\n  return rows[0];\n}\n```\n\nAssumes `db.query` returns promise. If not, wrap it:\n\n```javascript\nasync function getUser(id) {\n  const rows = await new Promise((resolve, reject) => {\n    db.query('SELECT * FROM users WHERE id = ?', [id], (err, rows) => {\n      if (err) reject(err);\n      else resolve(rows);\n    });\n  });\n  if (!rows.length) throw new Error('Not found');\n  return rows[0];\n}\n```\n\nCallers use `try/catch` instead of checking `err` param.",
+  "stop_reason": "end_turn",
+  "session_id": "d1840403-ef11-4b19-a134-14702bed8b61",
+  "total_cost_usd": 0.0311298,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 6472,
+    "cache_read_input_tokens": 11636,
+    "output_tokens": 224,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 6472,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [
+      {
+        "input_tokens": 3,
+        "output_tokens": 224,
+        "cache_read_input_tokens": 11636,
+        "cache_creation_input_tokens": 6472,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6472
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-sonnet-4-6": {
+      "inputTokens": 3,
+      "outputTokens": 224,
+      "cacheReadInputTokens": 11636,
+      "cacheCreationInputTokens": 6472,
+      "webSearchRequests": 0,
+      "costUSD": 0.0311298,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "uuid": "f602b65c-4d58-48d4-83b9-7484807ce7ce",
+  "_meta": {
+    "track": "B",
+    "task": "async-refactor",
+    "category": "refactor",
+    "condition": "caveman",
+    "run_num": 8,
+    "model": "claude-sonnet-4-6",
+    "wall_clock_sec": 5.7,
+    "timestamp": 1776776384,
+    "claude_config_dir": "/Users/ytchou/.claude-clean"
+  }
+}

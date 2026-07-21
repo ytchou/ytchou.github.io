@@ -1,0 +1,21 @@
+{
+  "input_tokens": 1049,
+  "output_tokens": 434,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Use `pg` pool. Config:\n\n```js\nimport { Pool } from 'pg';\n\nconst pool = new Pool({\n  connectionString: process.env.DATABASE_URL,\n\n  // Pool sizing\n  max: 20,          // max connections (default 10)\n  min: 2,           // keep alive when idle\n  idleTimeoutMillis: 30_000,    // kill idle conn after 30s\n  connectionTimeoutMillis: 5_000, // fail fast if can't connect in 5s\n  allowExitOnIdle: true,        // let process exit if pool idle\n});\n```\n\nError handling:\n\n```js\n// Catch pool-level errors (network drop, DB restart)\npool.on('error', (err, client) => {\n  console.error('Idle client error:', err.message);\n  // Don't crash \u2014 pool auto-removes bad client\n});\n\n// Query wrapper with timeout + release guarantee\nasync function query(sql, params) {\n  const client = await pool.connect();\n  try {\n    await client.query('SET statement_timeout = 10000'); // 10s per query\n    return await client.query(sql, params);\n  } finally {\n    client.release(); // ALWAYS release \u2014 even on throw\n  }\n}\n```\n\nShutdown:\n\n```js\nprocess.on('SIGTERM', async () => {\n  await pool.end(); // drain pool, close all conn\n  process.exit(0);\n});\n```\n\nKey rules:\n- `finally` release \u2192 no conn leak\n- `pool.on('error')` \u2192 no unhandled rejection crash\n- `connectionTimeoutMillis` \u2192 fail fast, not hang\n- `statement_timeout` \u2192 kill runaway queries server-side\n- Size `max` to DB's `max_connections` minus headroom for other services",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 26.79,
+  "_meta": {
+    "track": "C",
+    "task": "postgres-pool",
+    "category": "setup",
+    "condition": "caveman",
+    "run_num": 2,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 3519,
+    "timestamp": 1776585339
+  }
+}

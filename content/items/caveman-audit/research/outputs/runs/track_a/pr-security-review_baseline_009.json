@@ -1,0 +1,21 @@
+{
+  "input_tokens": 82,
+  "output_tokens": 977,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "## Security Issues in This Route Handler\n\n### 1. \ud83d\udea8 Critical: SQL Injection\n```javascript\n// VULNERABLE - Direct string interpolation\nconst query = `SELECT * FROM users WHERE id = ${req.params.id}`;\n\n// Attacker can pass: id = \"1 OR 1=1\"\n// Resulting query: SELECT * FROM users WHERE id = 1 OR 1=1\n// Returns ALL users in the database\n```\n\n### 2. \ud83d\udea8 Critical: No Authentication/Authorization\n```javascript\n// Anyone can query any user's data\n// No check that the requester is allowed to see this user\napp.get('/api/users/:id', (req, res) => { ... });\n```\n\n### 3. \u26a0\ufe0f High: No Input Validation\n```javascript\n// id could be anything - negative numbers, strings, null, 9999999999\nconst { id } = req.params; // completely unchecked\n```\n\n### 4. \u26a0\ufe0f High: No Error Handling\n```javascript\n// Unhandled rejection crashes the server or leaks error details\ndb.query(query).then(user => res.json(user));\n// No .catch() handler\n```\n\n### 5. \u26a0\ufe0f Medium: Overfetching with SELECT *\n```javascript\n// Returns ALL columns, potentially including:\n// passwords, tokens, SSNs, internal fields\n```\n\n---\n\n## Secure Rewrite\n\n```javascript\nconst { param, validationResult } = require('express-validator');\n\n// Middleware: authentication\nconst authenticate = (req, res, next) => {\n  const token = req.headers.authorization?.split(' ')[1];\n  if (!token) return res.status(401).json({ error: 'Unauthorized' });\n\n  try {\n    req.user = jwt.verify(token, process.env.JWT_SECRET);\n    next();\n  } catch {\n    res.status(401).json({ error: 'Invalid token' });\n  }\n};\n\n// Middleware: authorization\nconst authorizeUserAccess = (req, res, next) => {\n  const isAdmin = req.user.role === 'admin';\n  const isSelf = req.user.id === parseInt(req.params.id, 10);\n\n  if (!isAdmin && !isSelf) {\n    return res.status(403).json({ error: 'Forbidden' });\n  }\n  next();\n};\n\napp.get(\n  '/api/users/:id',\n  authenticate,\n  authorizeUserAccess,\n  [param('id').isInt({ min: 1 }).withMessage('ID must be a positive integer')],\n  async (req, res) => {\n    // Validate input\n    const errors = validationResult(req);\n    if (!errors.isEmpty()) {\n      return res.status(400).json({ errors: errors.array() });\n    }\n\n    try {\n      // Parameterized query prevents SQL injection\n      const [user] = await db.query(\n        'SELECT id, name, email, created_at FROM users WHERE id = ?',\n        [req.params.id]  // passed separately, never interpolated\n      );\n\n      if (!user) {\n        return res.status(404).json({ error: 'User not found' });\n      }\n\n      res.json(user);\n    } catch (err) {\n      // Log internally, don't expose details to client\n      console.error('Database error:', err);\n      res.status(500).json({ error: 'Internal server error' });\n    }\n  }\n);\n```\n\n---\n\n## Summary Table\n\n| Issue | Severity | Fix |\n|---|---|---|\n| SQL Injection | Critical | Parameterized queries |\n| No auth/authz | Critical | JWT + ownership check |\n| No input validation | High | express-validator |\n| No error handling | High | try/catch + .catch() |\n| SELECT * overfetch | Medium | Explicit column list |\n\n> **Key principle:** Never trust user input \u2014 validate, sanitize, and use parameterized queries for anything touching a database.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 20.06,
+  "_meta": {
+    "track": "C",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "baseline",
+    "run_num": 9,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "system_len_chars": 28,
+    "timestamp": 1776585766
+  }
+}

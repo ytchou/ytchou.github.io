@@ -1,0 +1,39 @@
+{
+  "input_tokens": 2884,
+  "output_tokens": 304,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "text": "Two vulnerabilities:\n\n**1. SQL Injection (Critical)**\n`req.params.id` is interpolated directly into the query. An attacker can pass `1 OR 1=1` to dump all users, or `1; DROP TABLE users` to destroy data.\n\n**Fix: use a parameterized query**\n```js\nconst query = 'SELECT * FROM users WHERE id = ?';\ndb.query(query, [req.params.id]).then(user => res.json(user));\n```\n\n**2. Missing error handling (Medium)**\nA failed query causes an unhandled rejection, which leaks a stack trace to the client (in many frameworks) and may crash the process.\n\n**Fix: add a catch block**\n```js\napp.get('/api/users/:id', (req, res) => {\n  db.query('SELECT * FROM users WHERE id = ?', [req.params.id])\n    .then(user => res.json(user))\n    .catch(() => res.status(500).json({ error: 'Internal server error' }));\n});\n```\n\n**Minor: `SELECT *`** returns every column \u2014 avoid exposing password hashes or internal fields by selecting only the columns the client needs.",
+  "thinking_text": "The user wants a security review of this Express route handler.",
+  "stop_reason": "end_turn",
+  "wall_clock_sec": 34.5,
+  "_meta": {
+    "track": "C",
+    "task": "pr-security-review",
+    "category": "code-review",
+    "condition": "baseline",
+    "run_num": 4,
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 16384,
+    "thinking_budget": 4000,
+    "system_len_chars": 12880,
+    "timestamp": 1776613876,
+    "level": 0,
+    "ordering": [
+      2,
+      9,
+      6,
+      1,
+      5,
+      4,
+      0,
+      8,
+      7,
+      3
+    ],
+    "chunks_present": [],
+    "num_chunks": 0,
+    "behavioral_chars": 12880,
+    "chunk_chars": 0
+  }
+}
