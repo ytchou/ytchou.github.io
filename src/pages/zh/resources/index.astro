@@ -1,0 +1,9 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ResourcesHub from '../../../components/ResourcesHub.astro';
+const resources = await getCollection('resources', ({ data }) => data.topic === 'design');
+---
+<BaseLayout title="資源 — Patrick" description="經過整理、實際可用的設計與產品資源。">
+  <ResourcesHub resources={resources} lang="zh" />
+</BaseLayout>

@@ -19,6 +19,7 @@ const base = lang === 'zh' ? '/zh' : '';
         <a href={`${base}/#journey`} class="nav-link">{t('nav.journey')}</a>
         <a href={`${base}/#writing`} class="nav-link">{t('nav.writing')}</a>
         <a href={`${base}/#building`} class="nav-link">{t('nav.building')}</a>
+        <a href={`${base}/resources`} class="nav-link">{t('nav.resources')}</a>
       </div>
 
       <!-- Dark mode toggle -->
@@ -71,6 +72,9 @@ const base = lang === 'zh' ? '/zh' : '';
   .nav-logo:hover { opacity: 0.6; }
 
   .nav-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
     font-size: 0.875rem;
     color: var(--color-muted);
     text-decoration: none;
@@ -83,8 +87,8 @@ const base = lang === 'zh' ? '/zh' : '';
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     border: 1px solid var(--color-border);
     background: transparent;
@@ -110,9 +114,12 @@ const base = lang === 'zh' ? '/zh' : '';
   :global(:root:not([data-theme])) .icon-sun { display: inline; }
 
   .lang-toggle {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
     font-size: 0.75rem;
     font-weight: 500;
-    padding: 0.25rem 0.625rem;
+    padding: 0 0.75rem;
     border-radius: 999px;
     border: 1px solid var(--color-border);
     color: var(--color-muted);
