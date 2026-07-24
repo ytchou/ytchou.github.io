@@ -1,212 +1,211 @@
 [
   {
-    "id": "inter", "topic": "design", "category": "typography", "name": "Inter", "url": "https://fonts.google.com/specimen/Inter", "tags": ["sans serif", "UI"],
-    "summary": { "en": "A highly legible variable sans designed for screens and dense interfaces.", "zh": "專為螢幕與資訊密集介面設計、閱讀性很高的可變無襯線字體。" },
-    "bestFor": { "en": "Product interfaces, dashboards, and dependable body copy.", "zh": "產品介面、儀表板，以及穩定耐讀的內文字體。" },
-    "availability": "free", "license": "SIL Open Font License", "language": ["Latin", "Greek", "Cyrillic"], "typographyTier": "foundation", "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
+    "id": "component-gallery",
+    "group": "component-discovery",
+    "name": "The Component Gallery",
+    "url": "https://component.gallery/",
+    "screenshot": "/images/resources/catalogs/component-gallery.webp",
+    "tags": ["design systems", "patterns", "research"],
+    "description": {
+      "en": "A cross-system reference showing how real design systems name and implement common interface components.",
+      "zh": "整理真實設計系統如何命名與實作常見介面元件的跨系統參考庫。"
+    },
+    "bestFor": {
+      "en": "Comparing established patterns before designing or naming a component.",
+      "zh": "在設計或命名元件前，比較業界已建立的實作模式。"
+    },
+    "addedDate": "2026-07-24",
+    "lastCheckedDate": "2026-07-24",
+    "screenshotCapturedDate": "2026-07-24"
   },
   {
-    "id": "source-sans-3", "topic": "design", "category": "typography", "name": "Source Sans 3", "url": "https://fonts.google.com/specimen/Source+Sans+3", "tags": ["sans serif", "editorial"],
-    "summary": { "en": "An open-source sans with a broad family and calm, readable texture.", "zh": "字重完整、字面平穩耐讀的開源無襯線字體家族。" },
-    "bestFor": { "en": "Long-form reading, documentation, and restrained product UI.", "zh": "長文閱讀、文件網站與風格克制的產品介面。" },
-    "availability": "free", "license": "SIL Open Font License", "language": ["Latin", "Greek", "Cyrillic"], "typographyTier": "foundation", "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
+    "id": "21st-dev",
+    "group": "component-discovery",
+    "name": "21st.dev",
+    "url": "https://21st.dev/",
+    "screenshot": "/images/resources/catalogs/21st-dev.webp",
+    "tags": ["React", "marketplace", "AI-native"],
+    "description": {
+      "en": "A community marketplace for React and Tailwind components, templates, and themes from independent design engineers.",
+      "zh": "由獨立設計工程師共同建立的 React 與 Tailwind 元件、範本和主題市集。"
+    },
+    "bestFor": {
+      "en": "Browsing a broad catalog or bringing component ideas into AI-assisted workflows.",
+      "zh": "瀏覽大量元件，或把元件靈感帶進 AI 輔助開發流程。"
+    },
+    "addedDate": "2026-07-24",
+    "lastCheckedDate": "2026-07-24",
+    "screenshotCapturedDate": "2026-07-24"
   },
   {
-    "id": "noto-sans", "topic": "design", "category": "typography", "name": "Noto Sans", "url": "https://fonts.google.com/noto/specimen/Noto+Sans", "tags": ["sans serif", "multilingual"],
-    "summary": { "en": "A neutral global type family built for consistent multilingual coverage.", "zh": "為多語系一致性而打造、中性且涵蓋廣泛的全球字體家族。" },
-    "bestFor": { "en": "International products and systems that need broad script support.", "zh": "需要支援多種文字系統的國際化產品與設計系統。" },
-    "availability": "free", "license": "SIL Open Font License", "language": ["Multilingual"], "typographyTier": "foundation", "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
+    "id": "shadcn-ui",
+    "group": "foundations",
+    "name": "shadcn/ui",
+    "url": "https://ui.shadcn.com/",
+    "screenshot": "/images/resources/catalogs/shadcn-ui.webp",
+    "tags": ["React", "Tailwind CSS", "open code"],
+    "description": {
+      "en": "Accessible, customizable component source code that becomes part of your own React codebase.",
+      "zh": "可客製、具備無障礙基礎，並直接成為 React 專案原始碼的元件集合。"
+    },
+    "bestFor": {
+      "en": "Starting a product design system while keeping full ownership of the implementation.",
+      "zh": "建立產品設計系統，同時保有完整的實作掌控權。"
+    },
+    "addedDate": "2026-07-24",
+    "lastCheckedDate": "2026-07-24",
+    "screenshotCapturedDate": "2026-07-24"
   },
   {
-    "id": "noto-serif", "topic": "design", "category": "typography", "name": "Noto Serif", "url": "https://fonts.google.com/noto/specimen/Noto+Serif", "tags": ["serif", "multilingual"],
-    "summary": { "en": "A versatile global serif with a composed reading rhythm across scripts.", "zh": "跨文字系統仍維持沉穩閱讀節奏的多用途全球襯線字體。" },
-    "bestFor": { "en": "Multilingual editorial layouts, reports, and long-form text.", "zh": "多語系編輯版面、報告與長篇內文。" },
-    "availability": "free", "license": "SIL Open Font License", "language": ["Multilingual"], "typographyTier": "foundation", "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
+    "id": "react-aria",
+    "group": "foundations",
+    "name": "React Aria",
+    "url": "https://react-aria.adobe.com/",
+    "screenshot": "/images/resources/catalogs/react-aria.webp",
+    "tags": ["React", "accessibility", "headless"],
+    "description": {
+      "en": "Adobe's unstyled React components and hooks for robust keyboard, touch, and assistive-technology behavior.",
+      "zh": "Adobe 提供的無樣式 React 元件與 hooks，處理鍵盤、觸控及輔助科技互動。"
+    },
+    "bestFor": {
+      "en": "Complex widgets where accessibility and interaction behavior cannot be improvised.",
+      "zh": "無障礙與互動行為不能靠臨場拼湊的複雜元件。"
+    },
+    "addedDate": "2026-07-24",
+    "lastCheckedDate": "2026-07-24",
+    "screenshotCapturedDate": "2026-07-24"
   },
   {
-    "id": "ibm-plex-sans", "topic": "design", "category": "typography", "name": "IBM Plex Sans", "url": "https://fonts.google.com/specimen/IBM+Plex+Sans", "tags": ["sans serif", "technical"],
-    "summary": { "en": "A precise sans that balances technical structure with a human voice.", "zh": "兼具技術結構與人味、細節精準的無襯線字體。" },
-    "bestFor": { "en": "Technical products, data-heavy pages, and brand systems.", "zh": "技術產品、資料密集頁面與品牌設計系統。" },
-    "availability": "free", "license": "SIL Open Font License", "language": ["Latin", "Greek", "Cyrillic"], "typographyTier": "foundation", "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
+    "id": "morphin",
+    "group": "motion-expressive-ui",
+    "name": "Morphin",
+    "url": "https://morphin.dev/",
+    "screenshot": "/images/resources/catalogs/morphin.webp",
+    "tags": ["motion", "product UI", "shadcn"],
+    "description": {
+      "en": "A catalog of polished motion patterns and animated components aimed at real product flows.",
+      "zh": "聚焦真實產品流程的精緻動態模式與動畫元件目錄。"
+    },
+    "bestFor": {
+      "en": "Dashboards, uploads, tables, navigation, and other in-product interactions.",
+      "zh": "儀表板、上傳、表格、導覽及其他產品內互動。"
+    },
+    "addedDate": "2026-07-24",
+    "lastCheckedDate": "2026-07-24",
+    "screenshotCapturedDate": "2026-07-24"
   },
   {
-    "id": "ibm-plex-mono", "topic": "design", "category": "typography", "name": "IBM Plex Mono", "url": "https://fonts.google.com/specimen/IBM+Plex+Mono", "tags": ["monospace", "technical"],
-    "summary": { "en": "A readable monospaced companion with distinctive but controlled details.", "zh": "辨識度明確但不搶戲、適合閱讀的等寬字體。" },
-    "bestFor": { "en": "Code, technical metadata, tables, and numeric labels.", "zh": "程式碼、技術中繼資料、表格與數字標籤。" },
-    "availability": "free", "license": "SIL Open Font License", "language": ["Latin", "Cyrillic"], "typographyTier": "foundation", "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
+    "id": "aceternity-ui",
+    "group": "motion-expressive-ui",
+    "name": "Aceternity UI",
+    "url": "https://ui.aceternity.com/",
+    "screenshot": "/images/resources/catalogs/aceternity-ui.webp",
+    "tags": ["motion", "landing pages", "React"],
+    "description": {
+      "en": "A visually dramatic collection of animated React components, backgrounds, and landing-page sections.",
+      "zh": "視覺張力鮮明的 React 動畫元件、背景效果與登陸頁區塊集合。"
+    },
+    "bestFor": {
+      "en": "High-impact marketing pages that need expressive motion quickly.",
+      "zh": "需要快速加入強烈動態效果的高衝擊力行銷頁面。"
+    },
+    "addedDate": "2026-07-24",
+    "lastCheckedDate": "2026-07-24",
+    "screenshotCapturedDate": "2026-07-24"
   },
   {
-    "id": "manrope", "topic": "design", "category": "typography", "name": "Manrope", "url": "https://fonts.google.com/specimen/Manrope", "tags": ["sans serif", "geometric"],
-    "summary": { "en": "A modern geometric sans with open forms and a friendly, polished tone.", "zh": "字腔開放、氣質友善俐落的現代幾何無襯線字體。" },
-    "bestFor": { "en": "Contemporary SaaS brands, landing pages, and UI headings.", "zh": "現代 SaaS 品牌、登陸頁與介面標題。" },
-    "availability": "free", "license": "SIL Open Font License", "language": ["Latin", "Cyrillic"], "typographyTier": "personality", "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
+    "id": "magic-ui",
+    "group": "motion-expressive-ui",
+    "name": "Magic UI",
+    "url": "https://magicui.design/",
+    "screenshot": "/images/resources/catalogs/magic-ui.webp",
+    "tags": ["motion", "marketing", "shadcn"],
+    "description": {
+      "en": "Animated components and effects designed to layer cleanly onto a shadcn-style foundation.",
+      "zh": "能自然疊加在 shadcn 風格基礎上的動畫元件與視覺效果。"
+    },
+    "bestFor": {
+      "en": "Adding restrained polish to product marketing and portfolio surfaces.",
+      "zh": "替產品行銷頁與作品集加入節制而精緻的動態質感。"
+    },
+    "addedDate": "2026-07-24",
+    "lastCheckedDate": "2026-07-24",
+    "screenshotCapturedDate": "2026-07-24"
   },
   {
-    "id": "work-sans", "topic": "design", "category": "typography", "name": "Work Sans", "url": "https://fonts.google.com/specimen/Work+Sans", "tags": ["sans serif", "versatile"],
-    "summary": { "en": "A practical sans with warm details that scales from interface text to display.", "zh": "帶有溫度、能從介面小字延伸到展示標題的實用無襯線字體。" },
-    "bestFor": { "en": "Friendly digital products and editorial websites.", "zh": "親切的數位產品與編輯型網站。" },
-    "availability": "free", "license": "SIL Open Font License", "language": ["Latin", "Vietnamese"], "typographyTier": "personality", "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
+    "id": "react-bits",
+    "group": "motion-expressive-ui",
+    "name": "React Bits",
+    "url": "https://www.reactbits.dev/",
+    "screenshot": "/images/resources/catalogs/react-bits.webp",
+    "tags": ["motion", "React", "effects"],
+    "description": {
+      "en": "A browsable collection of animated backgrounds, text treatments, effects, and interactive React components.",
+      "zh": "可瀏覽的 React 動畫背景、文字效果、視覺特效與互動元件集合。"
+    },
+    "bestFor": {
+      "en": "Finding a specific visual effect without building its animation from scratch.",
+      "zh": "尋找特定視覺效果，不必從零開始製作動畫。"
+    },
+    "addedDate": "2026-07-24",
+    "lastCheckedDate": "2026-07-24",
+    "screenshotCapturedDate": "2026-07-24"
   },
   {
-    "id": "dm-sans", "topic": "design", "category": "typography", "name": "DM Sans", "url": "https://fonts.google.com/specimen/DM+Sans", "tags": ["sans serif", "geometric"],
-    "summary": { "en": "A low-contrast geometric sans tuned for clean digital communication.", "zh": "低對比、適合清楚數位溝通的幾何無襯線字體。" },
-    "bestFor": { "en": "Marketing sites, lightweight product UI, and compact headings.", "zh": "行銷網站、輕量產品介面與精簡標題。" },
-    "availability": "free", "license": "SIL Open Font License", "language": ["Latin"], "typographyTier": "personality", "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
+    "id": "kinetics",
+    "group": "motion-expressive-ui",
+    "name": "Kinetics",
+    "url": "https://kinetics.colorion.co/",
+    "screenshot": "/images/resources/catalogs/kinetics.webp",
+    "tags": ["motion", "spring physics", "CSS"],
+    "description": {
+      "en": "A focused library of spring-physics interface animations with live tuning and copyable implementations.",
+      "zh": "專注彈簧物理介面動畫的工具庫，提供即時調校與可複製實作。"
+    },
+    "bestFor": {
+      "en": "Learning and tuning motion that should feel physical rather than decorative.",
+      "zh": "學習與調整具有物理感、而非純裝飾性的動態效果。"
+    },
+    "addedDate": "2026-07-24",
+    "lastCheckedDate": "2026-07-24",
+    "screenshotCapturedDate": "2026-07-24"
   },
   {
-    "id": "lora", "topic": "design", "category": "typography", "name": "Lora", "url": "https://fonts.google.com/specimen/Lora", "tags": ["serif", "editorial"],
-    "summary": { "en": "A contemporary serif with calligraphic roots and an approachable reading texture.", "zh": "帶有書寫根源、閱讀質地親切的當代襯線字體。" },
-    "bestFor": { "en": "Essays, storytelling, and editorial brands that need warmth.", "zh": "散文、故事內容，以及需要溫度的編輯品牌。" },
-    "availability": "free", "license": "SIL Open Font License", "language": ["Latin", "Cyrillic"], "typographyTier": "personality", "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
+    "id": "reicon",
+    "group": "icons-supporting-tools",
+    "name": "Reicon",
+    "url": "https://reicon.dev/",
+    "screenshot": "/images/resources/catalogs/reicon.webp",
+    "tags": ["icons", "SVG", "multi-framework"],
+    "description": {
+      "en": "A large handcrafted SVG icon catalog with outline and filled styles across multiple frameworks.",
+      "zh": "大型手工 SVG 圖示目錄，提供線框、填滿風格與多框架支援。"
+    },
+    "bestFor": {
+      "en": "Searching a consistent icon family before reaching for one-off assets.",
+      "zh": "在尋找零散素材前，先從一致的圖示家族中挑選。"
+    },
+    "addedDate": "2026-07-24",
+    "lastCheckedDate": "2026-07-24",
+    "screenshotCapturedDate": "2026-07-24"
   },
   {
-    "id": "merriweather", "topic": "design", "category": "typography", "name": "Merriweather", "url": "https://fonts.google.com/specimen/Merriweather", "tags": ["serif", "reading"],
-    "summary": { "en": "A sturdy screen serif with generous forms and clear hierarchy.", "zh": "字形寬裕、層次清楚，專為螢幕閱讀打造的穩健襯線字體。" },
-    "bestFor": { "en": "Long articles, knowledge bases, and text-forward sites.", "zh": "長篇文章、知識庫與文字為主的網站。" },
-    "availability": "free", "license": "SIL Open Font License", "language": ["Latin", "Cyrillic"], "typographyTier": "personality", "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
-  },
-  {
-    "id": "libre-franklin", "topic": "design", "category": "typography", "name": "Libre Franklin", "url": "https://fonts.google.com/specimen/Libre+Franklin", "tags": ["sans serif", "editorial"],
-    "summary": { "en": "A broad, confident grotesque family with strong editorial range.", "zh": "字族完整、語氣自信，具有編輯彈性的 Grotesque 無襯線字體。" },
-    "bestFor": { "en": "Editorial systems, cultural institutions, and expressive UI.", "zh": "編輯系統、文化機構與具表情的介面。" },
-    "availability": "free", "license": "SIL Open Font License", "language": ["Latin"], "typographyTier": "personality", "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
-  },
-  {
-    "id": "playfair-display", "topic": "design", "category": "typography", "name": "Playfair Display", "url": "https://fonts.google.com/specimen/Playfair+Display", "tags": ["serif", "high contrast"],
-    "summary": { "en": "A high-contrast transitional serif that brings immediate editorial drama.", "zh": "高對比的過渡型襯線字體，能迅速建立編輯感與戲劇張力。" },
-    "bestFor": { "en": "Large headlines, luxury positioning, and editorial moments.", "zh": "大型標題、精品定位與需要編輯張力的段落。" },
-    "availability": "free", "license": "SIL Open Font License", "language": ["Latin", "Cyrillic"], "typographyTier": "display", "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
-  },
-  {
-    "id": "bodoni-moda", "topic": "design", "category": "typography", "name": "Bodoni Moda", "url": "https://fonts.google.com/specimen/Bodoni+Moda", "tags": ["serif", "fashion"],
-    "summary": { "en": "A digital Bodoni revival with sharp contrast and fashion-led elegance.", "zh": "對比銳利、帶有時尚優雅氣質的數位 Bodoni 復刻。" },
-    "bestFor": { "en": "Fashion, arts, hospitality, and short premium headlines.", "zh": "時尚、藝術、旅宿品牌與精簡的高質感標題。" },
-    "availability": "free", "license": "SIL Open Font License", "language": ["Latin"], "typographyTier": "display", "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
-  },
-  {
-    "id": "cormorant-garamond", "topic": "design", "category": "typography", "name": "Cormorant Garamond", "url": "https://fonts.google.com/specimen/Cormorant+Garamond", "tags": ["serif", "classical"],
-    "summary": { "en": "An expressive Garamond-inspired family with delicate, classical proportions.", "zh": "比例細緻、富有表情的 Garamond 風格古典襯線字體家族。" },
-    "bestFor": { "en": "Arts, literature, invitations, and elegant display settings.", "zh": "藝術、文學、邀請函與優雅的展示排版。" },
-    "availability": "free", "license": "SIL Open Font License", "language": ["Latin", "Cyrillic"], "typographyTier": "display", "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
-  },
-  {
-    "id": "fraunces", "topic": "design", "category": "typography", "name": "Fraunces", "url": "https://fonts.google.com/specimen/Fraunces", "tags": ["serif", "variable"],
-    "summary": { "en": "A variable display serif with soft curves, wit, and adjustable character.", "zh": "曲線柔和、富有趣味，能調整個性的可變展示襯線字體。" },
-    "bestFor": { "en": "Food, culture, packaging, and brands that welcome playfulness.", "zh": "飲食、文化、包裝，以及容得下玩心的品牌。" },
-    "availability": "free", "license": "SIL Open Font License", "language": ["Latin", "Vietnamese"], "typographyTier": "display", "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
-  },
-  {
-    "id": "abril-fatface", "topic": "design", "category": "typography", "name": "Abril Fatface", "url": "https://fonts.google.com/specimen/Abril+Fatface", "tags": ["serif", "display"],
-    "summary": { "en": "A bold single-style display face inspired by heavy advertising type.", "zh": "靈感來自粗重廣告字體、只有單一字重的醒目展示字體。" },
-    "bestFor": { "en": "Short headlines, posters, and visual accents used sparingly.", "zh": "短標題、海報與少量使用的視覺重點。" },
-    "availability": "free", "license": "SIL Open Font License", "language": ["Latin"], "typographyTier": "display", "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
-  },
-  {
-    "id": "bungee", "topic": "design", "category": "typography", "name": "Bungee", "url": "https://fonts.google.com/specimen/Bungee", "tags": ["sans serif", "display"],
-    "summary": { "en": "A loud urban display family designed to work horizontally and vertically.", "zh": "聲量鮮明、可橫排也可直排的都市風展示字體家族。" },
-    "bestFor": { "en": "Signage, posters, campaigns, and deliberately loud identity work.", "zh": "招牌、海報、活動視覺與刻意張揚的識別設計。" },
-    "availability": "free", "license": "SIL Open Font License", "language": ["Latin"], "typographyTier": "display", "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
-  },
-  {
-    "id": "atkinson-hyperlegible", "topic": "design", "category": "typography", "name": "Atkinson Hyperlegible", "url": "https://fonts.google.com/specimen/Atkinson+Hyperlegible", "tags": ["sans serif", "accessibility"],
-    "summary": { "en": "A typeface designed with differentiated letterforms to improve character recognition.", "zh": "透過拉大字形差異，提升字元辨識度的無襯線字體。" },
-    "bestFor": { "en": "Accessible reading experiences and interfaces where clarity leads.", "zh": "重視清楚辨識的無障礙閱讀體驗與介面。" },
-    "availability": "free", "license": "SIL Open Font License", "language": ["Latin"], "typographyTier": "special-use", "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
-  },
-  {
-    "id": "lexend", "topic": "design", "category": "typography", "name": "Lexend", "url": "https://fonts.google.com/specimen/Lexend", "tags": ["sans serif", "accessibility"],
-    "summary": { "en": "A reading-focused sans with generous spacing and multiple width options.", "zh": "以閱讀為核心、間距寬裕並提供多種字寬選擇的無襯線字體。" },
-    "bestFor": { "en": "Education, reading tools, and layouts that prioritize fluency.", "zh": "教育、閱讀工具與優先考量閱讀流暢度的版面。" },
-    "availability": "free", "license": "SIL Open Font License", "language": ["Latin", "Vietnamese"], "typographyTier": "special-use", "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
-  },
-  {
-    "id": "jetbrains-mono", "topic": "design", "category": "typography", "name": "JetBrains Mono", "url": "https://fonts.google.com/specimen/JetBrains+Mono", "tags": ["monospace", "code"],
-    "summary": { "en": "A developer-oriented monospace with clear punctuation and optional ligatures.", "zh": "標點清晰、提供連字功能，為開發者設計的等寬字體。" },
-    "bestFor": { "en": "Code editors, technical documentation, and developer products.", "zh": "程式碼編輯器、技術文件與開發者產品。" },
-    "availability": "free", "license": "SIL Open Font License", "language": ["Latin", "Greek", "Cyrillic"], "typographyTier": "special-use", "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
-  },
-  {
-    "id": "space-mono", "topic": "design", "category": "typography", "name": "Space Mono", "url": "https://fonts.google.com/specimen/Space+Mono", "tags": ["monospace", "display"],
-    "summary": { "en": "A distinctive monospaced family with geometric forms and editorial energy.", "zh": "具有幾何字形與編輯張力、辨識度鮮明的等寬字體家族。" },
-    "bestFor": { "en": "Creative technology brands, labels, and expressive metadata.", "zh": "創意科技品牌、標籤與帶有個性的中繼資料。" },
-    "availability": "free", "license": "SIL Open Font License", "language": ["Latin"], "typographyTier": "special-use", "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
-  },
-  {
-    "id": "noto-sans-tc", "topic": "design", "category": "typography", "name": "Noto Sans Traditional Chinese", "url": "https://fonts.google.com/noto/specimen/Noto+Sans+TC", "tags": ["sans serif", "Traditional Chinese"],
-    "summary": { "en": "A comprehensive Traditional Chinese sans designed to pair across the Noto family.", "zh": "字集完整、能與 Noto 家族跨語系搭配的繁體中文無襯線字體。" },
-    "bestFor": { "en": "Traditional Chinese interfaces, localization, and dependable body text.", "zh": "繁體中文介面、多語系在地化與穩定耐讀的內文。" },
-    "availability": "free", "license": "SIL Open Font License", "language": ["Traditional Chinese", "Latin"], "typographyTier": "special-use", "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
-  },
-  {
-    "id": "noto-serif-tc", "topic": "design", "category": "typography", "name": "Noto Serif Traditional Chinese", "url": "https://fonts.google.com/noto/specimen/Noto+Serif+TC", "tags": ["serif", "Traditional Chinese"],
-    "summary": { "en": "A full Traditional Chinese serif family with a composed editorial voice.", "zh": "字集完整、帶有沉穩編輯語氣的繁體中文襯線字體家族。" },
-    "bestFor": { "en": "Traditional Chinese publishing, essays, and cultural storytelling.", "zh": "繁體中文出版、散文與文化敘事。" },
-    "availability": "free", "license": "SIL Open Font License", "language": ["Traditional Chinese", "Latin"], "typographyTier": "special-use", "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
-  },
-  {
-    "id": "radix-primitives", "topic": "design", "category": "components", "name": "Radix Primitives", "url": "https://www.radix-ui.com/primitives", "tags": ["React", "unstyled"],
-    "summary": { "en": "Low-level accessible components for building custom React design systems.", "zh": "用來打造自訂 React 設計系統的底層無障礙元件。" },
-    "bestFor": { "en": "Teams that want behavior and accessibility without prescribed styling.", "zh": "需要完整互動與無障礙基礎、但想自行掌握樣式的團隊。" },
-    "availability": "free", "license": "MIT", "language": ["English"], "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
-  },
-  {
-    "id": "shadcn-ui", "topic": "design", "category": "components", "name": "shadcn/ui", "url": "https://ui.shadcn.com/", "tags": ["React", "Tailwind CSS"],
-    "summary": { "en": "Composable component source code you copy into and adapt within your project.", "zh": "把元件原始碼直接帶進專案，再依需求組合與調整的工具集。" },
-    "bestFor": { "en": "Product teams that value ownership, speed, and Tailwind-based customization.", "zh": "重視原始碼掌控、開發速度與 Tailwind 客製化的產品團隊。" },
-    "availability": "free", "license": "MIT", "language": ["English"], "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
-  },
-  {
-    "id": "headless-ui", "topic": "design", "category": "components", "name": "Headless UI", "url": "https://headlessui.com/", "tags": ["React", "Vue"],
-    "summary": { "en": "Unstyled accessible UI components designed to integrate with utility-first CSS.", "zh": "能與工具類 CSS 整合、未預設外觀的無障礙介面元件。" },
-    "bestFor": { "en": "React or Vue projects that need common interaction patterns quickly.", "zh": "需要快速導入常見互動模式的 React 或 Vue 專案。" },
-    "availability": "free", "license": "MIT", "language": ["English"], "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
-  },
-  {
-    "id": "react-aria-components", "topic": "design", "category": "components", "name": "React Aria Components", "url": "https://react-spectrum.adobe.com/react-aria/components.html", "tags": ["React", "accessibility"],
-    "summary": { "en": "Accessible React components with robust interaction behavior and flexible styling.", "zh": "互動行為完整、樣式彈性高的無障礙 React 元件。" },
-    "bestFor": { "en": "Complex product UI where keyboard and screen-reader behavior must be reliable.", "zh": "鍵盤與螢幕閱讀器行為必須可靠的複雜產品介面。" },
-    "availability": "free", "license": "Apache-2.0", "language": ["English"], "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
-  },
-  {
-    "id": "ark-ui", "topic": "design", "category": "components", "name": "Ark UI", "url": "https://ark-ui.com/", "tags": ["headless", "multi-framework"],
-    "summary": { "en": "Headless components built from state machines for several frontend frameworks.", "zh": "以狀態機為基礎、支援多種前端框架的無樣式元件。" },
-    "bestFor": { "en": "Design systems that need consistent behavior across framework choices.", "zh": "需要在不同框架間維持一致互動行為的設計系統。" },
-    "availability": "free", "license": "MIT", "language": ["English"], "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
-  },
-  {
-    "id": "base-ui", "topic": "design", "category": "components", "name": "Base UI", "url": "https://base-ui.com/", "tags": ["React", "unstyled"],
-    "summary": { "en": "Unstyled React components focused on accessibility, composability, and control.", "zh": "聚焦無障礙、可組合性與掌控度的無樣式 React 元件。" },
-    "bestFor": { "en": "Custom React interfaces that need primitives without a visual theme.", "zh": "需要底層元件、但不想被視覺主題綁住的 React 介面。" },
-    "availability": "free", "license": "MIT", "language": ["English"], "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
-  },
-  {
-    "id": "motion", "topic": "design", "category": "motion", "name": "Motion", "url": "https://motion.dev/", "tags": ["animation", "JavaScript"],
-    "summary": { "en": "A production animation library for JavaScript, React, and Vue interfaces.", "zh": "適用於 JavaScript、React 與 Vue 介面的產品級動畫函式庫。" },
-    "bestFor": { "en": "Interaction feedback, layout transitions, gestures, and scroll effects.", "zh": "互動回饋、版面轉場、手勢與捲動效果。" },
-    "availability": "freemium", "language": ["English"], "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
-  },
-  {
-    "id": "gsap", "topic": "design", "category": "motion", "name": "GSAP", "url": "https://gsap.com/", "tags": ["animation", "JavaScript"],
-    "summary": { "en": "A mature animation platform for precise timelines and complex web motion.", "zh": "適合精準時間軸與複雜網頁動態效果的成熟動畫平台。" },
-    "bestFor": { "en": "Campaign sites, storytelling, SVG animation, and sequenced motion.", "zh": "活動網站、敘事體驗、SVG 動畫與序列式動態效果。" },
-    "availability": "free", "language": ["English"], "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
-  },
-  {
-    "id": "lucide", "topic": "design", "category": "icons", "name": "Lucide", "url": "https://lucide.dev/", "tags": ["icons", "SVG"],
-    "summary": { "en": "A consistent open-source icon set with lightweight SVGs and framework packages.", "zh": "風格一致、提供輕量 SVG 與各框架套件的開源圖示集。" },
-    "bestFor": { "en": "Product interfaces that need a broad, restrained icon vocabulary.", "zh": "需要完整且克制圖示語彙的產品介面。" },
-    "availability": "free", "license": "ISC", "language": ["English"], "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
-  },
-  {
-    "id": "a11y-project", "topic": "design", "category": "accessibility", "name": "The A11Y Project", "url": "https://www.a11yproject.com/", "tags": ["accessibility", "checklist"],
-    "summary": { "en": "A community-driven collection of accessibility guidance, checklists, and patterns.", "zh": "由社群共同維護的無障礙指南、檢查清單與實作模式。" },
-    "bestFor": { "en": "Practical accessibility reviews and building team-wide fundamentals.", "zh": "實際進行無障礙檢查，以及建立團隊共同基礎。" },
-    "availability": "free", "language": ["English"], "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
-  },
-  {
-    "id": "laws-of-ux", "topic": "design", "category": "reference", "name": "Laws of UX", "url": "https://lawsofux.com/", "tags": ["UX", "psychology"],
-    "summary": { "en": "A concise visual reference connecting psychology principles to interface design.", "zh": "把心理學原則與介面設計連結起來的精簡視覺參考。" },
-    "bestFor": { "en": "Design critique, decision framing, and explaining interaction choices.", "zh": "設計評圖、決策框架，以及說明互動設計選擇。" },
-    "availability": "free", "language": ["English"], "addedDate": "2026-07-24", "lastCheckedDate": "2026-07-24"
+    "id": "icon-animator",
+    "group": "icons-supporting-tools",
+    "name": "Icon Animator",
+    "url": "https://www.iconanimator.app/",
+    "screenshot": "/images/resources/catalogs/icon-animator.webp",
+    "tags": ["icons", "animation", "SVG"],
+    "description": {
+      "en": "A browser-based tool for turning compatible SVG icons into adjustable stroke-draw animations.",
+      "zh": "把相容 SVG 圖示轉成可調整描邊動畫的瀏覽器工具。"
+    },
+    "bestFor": {
+      "en": "Quick icon micro-interactions without setting up a motion project.",
+      "zh": "不必建立完整動畫專案，就能快速製作圖示微互動。"
+    },
+    "addedDate": "2026-07-24",
+    "lastCheckedDate": "2026-07-24",
+    "screenshotCapturedDate": "2026-07-24"
   }
 ]

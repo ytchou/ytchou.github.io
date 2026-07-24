@@ -14,7 +14,7 @@ const locale = isZh ? 'zh-TW' : 'en-US';
 <header class="page-header">
   <p class="section-kicker">{isZh ? '收藏' : 'Directory'}</p>
   <h1>{isZh ? '資源' : 'Resources'}</h1>
-  <p>{isZh ? '經過整理、實際可用的設計與產品資源。' : 'A considered directory of practical design and product resources.'}</p>
+  <p>{isZh ? '值得反覆使用的設計與產品目錄。' : 'A considered collection of design and product catalogs worth returning to.'}</p>
 </header>
 
 {resources.length > 0 && (
@@ -22,10 +22,10 @@ const locale = isZh ? 'zh-TW' : 'en-US';
     <div>
       <p class="topic-label">{isZh ? '主題 01' : 'Topic 01'}</p>
       <h2>{isZh ? '設計' : 'Design'}</h2>
-      <p>{isZh ? '字體、元件、動態效果、圖示、無障礙與設計參考。' : 'Typography, components, motion, icons, accessibility, and reference.'}</p>
+      <p>{isZh ? '介面元件、動態效果、圖示與設計研究目錄。' : 'Visual catalogs for interface components, motion, icons, and design research.'}</p>
     </div>
     <div class="topic-meta">
-      <span>{resources.length} {isZh ? '項資源' : 'resources'}</span>
+      <span>{resources.length} {isZh ? '個目錄' : 'catalogs'}</span>
       {freshness && <span>{isZh ? '資料檢查至' : 'Reviewed through'} {freshness.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' })}</span>}
     </div>
   </a>

@@ -4,92 +4,100 @@ import type { Lang } from '../i18n/ui';
 
 interface Props {
   resource: ResourceEntry;
-  index: number;
   lang: Lang;
   labels: {
     bestFor: string;
-    reviewed: string;
     visit: string;
     opensNewTab: string;
-    availability: Record<ResourceEntry['data']['availability'], string>;
+    preview: string;
   };
 }
 
-const { resource, index, lang, labels } = Astro.props;
+const { resource, lang, labels } = Astro.props;
 const { data } = resource;
-const locale = lang === 'zh' ? 'zh-TW' : 'en-US';
+const linkLabel = `${labels.visit} ${data.name} (${labels.opensNewTab})`;
 ---
 
 <article class="resource-card">
-  <div class="resource-index" aria-hidden="true">{String(index).padStart(2, '0')}</div>
+  <a
+    href={data.url}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="resource-image-link"
+    aria-label={linkLabel}
+  >
+    <img
+      src={data.screenshot}
+      alt={`${data.name} ${labels.preview}`}
+      width="1280"
+      height="800"
+      loading="lazy"
+      decoding="async"
+    />
+  </a>
   <div class="resource-body">
     <div class="resource-heading">
-      <div>
-        <h3>{data.name}</h3>
-        <p class="resource-summary">{data.summary[lang]}</p>
-      </div>
-      <a
-        href={data.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="resource-link"
-        aria-label={`${labels.visit} ${data.name} (${labels.opensNewTab})`}
-      >
-        {labels.visit}<span aria-hidden="true"> ↗</span>
-      </a>
+      <h3>
+        <a href={data.url} target="_blank" rel="noopener noreferrer" aria-label={linkLabel}>
+          {data.name}<span aria-hidden="true"> ↗</span>
+        </a>
+      </h3>
     </div>
+    <p class="resource-description">{data.description[lang]}</p>
     <p class="resource-best-for"><strong>{labels.bestFor}</strong> {data.bestFor[lang]}</p>
-    <ul class="resource-meta" aria-label={`${data.name} metadata`}>
-      <li>{labels.availability[data.availability]}</li>
-      {data.license && <li>{data.license}</li>}
-      <li>{data.language.join(' / ')}</li>
-      {data.tags.map(tag => <li>{tag}</li>)}
+    <ul class="resource-tags" aria-label={`${data.name} tags`}>
+      {data.tags.map(tag => <li class="tag">{tag}</li>)}
     </ul>
-    <p class="resource-reviewed">
-      {labels.reviewed} <time datetime={data.lastCheckedDate.toISOString().slice(0, 10)}>{data.lastCheckedDate.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' })}</time>
-    </p>
   </div>
 </article>
 
 <style>
   .resource-card {
-    display: grid;
-    grid-template-columns: 3.25rem minmax(0, 1fr);
-    border-top: 1px solid var(--color-border);
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: var(--color-bg);
+    box-shadow: var(--shadow-card);
+    transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
   }
-  .resource-index {
-    padding: 1.5rem 0;
-    color: var(--color-text-subtle);
-    font: 0.75rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+  .resource-card:hover {
+    border-color: var(--color-border-hover);
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-2px);
   }
-  .resource-body { padding: 1.5rem 0; min-width: 0; }
-  .resource-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 1.5rem; }
-  h3 { margin: 0; color: var(--color-text); font-size: 1.25rem; font-weight: 600; line-height: 1.35; }
-  .resource-summary { margin: 0.35rem 0 0; max-width: 66ch; color: var(--color-text-secondary); font-size: 0.9375rem; line-height: 1.65; }
-  .resource-link {
+  .resource-image-link {
+    display: block;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+  .resource-image-link img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    transition: transform 350ms ease;
+  }
+  .resource-card:hover .resource-image-link img { transform: scale(1.015); }
+  .resource-body { padding: 1.25rem; }
+  .resource-heading h3 { margin: 0; font-size: 1.25rem; font-weight: 600; line-height: 1.35; }
+  .resource-heading a {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
     min-height: 48px;
-    padding: 0 1rem;
-    border: 1px solid var(--color-border-strong);
-    border-radius: var(--radius-tag);
     color: var(--color-text);
-    font-size: 0.8125rem;
-    font-weight: 500;
     text-decoration: none;
-    white-space: nowrap;
-    transition: border-color var(--transition-base), color var(--transition-base);
   }
-  .resource-link:hover { border-color: var(--color-text); color: var(--color-accent); }
-  .resource-best-for { margin: 1rem 0 0; color: var(--color-muted); font-size: 0.875rem; line-height: 1.6; }
+  .resource-heading a:hover { color: var(--color-accent); }
+  .resource-description { margin: 0.5rem 0 0; color: var(--color-text-secondary); font-size: 0.9375rem; line-height: 1.65; }
+  .resource-best-for { margin: 0.9rem 0 0; color: var(--color-muted); font-size: 0.875rem; line-height: 1.6; }
   .resource-best-for strong { color: var(--color-text); font-weight: 600; }
-  .resource-meta { display: flex; flex-wrap: wrap; gap: 0.4rem; list-style: none; padding: 0; margin: 1rem 0 0; }
-  .resource-meta li { padding: 0.25rem 0.625rem; border: 1px solid var(--color-border-strong); border-radius: var(--radius-tag); color: var(--color-tag-text); font-size: 0.6875rem; line-height: 1.4; }
-  .resource-reviewed { margin: 0.75rem 0 0; color: var(--color-text-subtle); font: 0.6875rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; }
-  @media (max-width: 639px) {
-    .resource-card { grid-template-columns: 2.25rem minmax(0, 1fr); }
-    .resource-heading { display: block; }
-    .resource-link { margin-top: 1rem; width: 100%; }
+  .resource-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; list-style: none; margin: 1rem 0 0; padding: 0; }
+  @media (prefers-reduced-motion: reduce) {
+    .resource-card, .resource-image-link img { transition: none; }
+    .resource-card:hover { transform: none; }
   }
 </style>

@@ -1,90 +1,61 @@
 ---
 import ResourceCard from './ResourceCard.astro';
-import { groupResources, resourceCategories, type ResourceEntry } from '../services/resources';
+import { groupResources, resourceGroups, type ResourceEntry } from '../services/resources';
 import type { Lang } from '../i18n/ui';
 
 interface Props { resources: ResourceEntry[]; lang: Lang; }
 const { resources, lang } = Astro.props;
 const isZh = lang === 'zh';
 const groups = groupResources(resources);
-const categoryLabels = isZh
-  ? { typography: '字體', components: '元件', motion: '動態效果', icons: '圖示', accessibility: '無障礙', reference: '參考' }
-  : { typography: 'Typography', components: 'Components', motion: 'Motion', icons: 'Icons', accessibility: 'Accessibility', reference: 'Reference' };
+const groupCopy = isZh
+  ? {
+      'component-discovery': { title: '元件探索', description: '跨設計系統比較模式，或從大型社群目錄尋找現成靈感。' },
+      foundations: { title: '基礎元件', description: '建立產品介面時，負責結構、行為與無障礙的可靠起點。' },
+      'motion-expressive-ui': { title: '動態與表現型介面', description: '從產品微互動到行銷頁效果，快速探索不同動態語彙。' },
+      'icons-supporting-tools': { title: '圖示與輔助工具', description: '尋找一致的圖示素材，並製作小而有目的的視覺互動。' },
+    }
+  : {
+      'component-discovery': { title: 'Component discovery', description: 'Compare patterns across design systems or browse broad community catalogs for a useful starting point.' },
+      foundations: { title: 'Foundations', description: 'Reliable starting points for the structure, behavior, and accessibility of product interfaces.' },
+      'motion-expressive-ui': { title: 'Motion and expressive UI', description: 'Explore motion languages ranging from product micro-interactions to high-impact marketing effects.' },
+      'icons-supporting-tools': { title: 'Icons and supporting tools', description: 'Find consistent visual assets and create small, purposeful interface moments.' },
+    };
 const labels = {
   bestFor: isZh ? '適合用在' : 'Best for',
-  reviewed: isZh ? '最近檢查：' : 'Reviewed:',
-  visit: isZh ? '前往網站' : 'Visit site',
+  visit: isZh ? '前往' : 'Visit',
   opensNewTab: isZh ? '另開新分頁' : 'opens in a new tab',
-  availability: isZh
-    ? { free: '免費', freemium: '部分免費', paid: '付費' }
-    : { free: 'Free', freemium: 'Freemium', paid: 'Paid' },
+  preview: isZh ? '網站預覽' : 'website preview',
 };
-let index = 0;
 ---
 
 <header class="page-header">
   <a href={isZh ? '/zh/resources' : '/resources'} class="back-link">← {isZh ? '所有資源' : 'All resources'}</a>
   <p class="section-kicker">{isZh ? '資源 / 主題 01' : 'Resources / Topic 01'}</p>
-  <h1>{isZh ? '設計' : 'Design'}</h1>
-  <p>{isZh ? '精選字體、介面工具與參考資料，重點放在何時、為何值得使用。' : 'Curated type, interface tools, and references—organized around when and why to use them.'}</p>
-  <p class="count">{resources.length} {isZh ? '項資源' : 'resources'}</p>
+  <h1>{isZh ? '設計目錄' : 'Design catalogs'}</h1>
+  <p>{isZh ? '我會實際回訪的介面元件、動態效果與設計研究目錄。' : 'Visual directories for interface components, motion, and design research that are worth returning to.'}</p>
+  <p class="count">{resources.length} {isZh ? '個目錄' : 'catalogs'}</p>
 </header>
 
-<div class="filter-bar" id="resource-filters" role="group" aria-label={isZh ? '依類別篩選' : 'Filter by category'}>
-  <button type="button" class="filter-pill active" data-category="all" aria-pressed="true">{isZh ? '全部' : 'All'} <span>{resources.length}</span></button>
-  {resourceCategories.map(category => (
-    <button type="button" class="filter-pill" data-category={category} aria-pressed="false">
-      {categoryLabels[category]} <span>{groups.get(category)?.length ?? 0}</span>
-    </button>
-  ))}
-</div>
-
-<div id="resource-groups">
-  {resourceCategories.map(category => {
-    const group = groups.get(category) ?? [];
-    if (group.length === 0) return null;
+<div class="resource-groups">
+  {resourceGroups.map(group => {
+    const groupResources = groups.get(group) ?? [];
+    if (groupResources.length === 0) return null;
     return (
-      <section class="resource-group" data-category={category} aria-labelledby={`heading-${category}`}>
+      <section class="resource-group" aria-labelledby={`heading-${group}`}>
         <div class="group-heading">
-          <h2 id={`heading-${category}`}>{categoryLabels[category]}</h2>
-          <span>{String(group.length).padStart(2, '0')}</span>
+          <div>
+            <h2 id={`heading-${group}`}>{groupCopy[group].title}</h2>
+            <p>{groupCopy[group].description}</p>
+          </div>
+          <span>{String(groupResources.length).padStart(2, '0')}</span>
         </div>
-        {group.map(resource => {
-          index += 1;
-          return <ResourceCard resource={resource} index={index} lang={lang} labels={labels} />;
-        })}
+        <div class="resource-grid">
+          {groupResources.map(resource => <ResourceCard resource={resource} lang={lang} labels={labels} />)}
+        </div>
       </section>
     );
   })}
 </div>
-
-<p class="empty-state" id="resource-empty" hidden>{isZh ? '這個類別目前沒有資源。' : 'No resources are available in this category.'}</p>
-
-<script>
-  const filterBar = document.getElementById('resource-filters');
-  const groupsRoot = document.getElementById('resource-groups');
-  const emptyState = document.getElementById('resource-empty');
-
-  filterBar?.addEventListener('click', event => {
-    const button = (event.target as HTMLElement).closest<HTMLButtonElement>('button[data-category]');
-    if (!button || !groupsRoot) return;
-
-    const selected = button.dataset.category ?? 'all';
-    filterBar.querySelectorAll<HTMLButtonElement>('button[data-category]').forEach(filter => {
-      const active = filter === button;
-      filter.classList.toggle('active', active);
-      filter.setAttribute('aria-pressed', String(active));
-    });
-
-    let visible = 0;
-    groupsRoot.querySelectorAll<HTMLElement>('.resource-group').forEach(group => {
-      const match = selected === 'all' || group.dataset.category === selected;
-      group.hidden = !match;
-      if (match) visible += 1;
-    });
-    if (emptyState) emptyState.hidden = visible > 0;
-  });
-</script>
 
 <style>
   .page-header { position: relative; padding-bottom: 2rem; border-bottom: 1px solid var(--color-border); }
@@ -93,17 +64,15 @@ let index = 0;
   h1 { margin: 0; color: var(--color-text); font-size: clamp(2.75rem, 7vw, 4.5rem); font-weight: 600; letter-spacing: -0.04em; line-height: 1; }
   .page-header > p:not(.section-kicker, .count) { margin: 1rem 0 0; max-width: 64ch; color: var(--color-muted); }
   .count { position: absolute; right: 0; bottom: 2rem; margin: 0; color: var(--color-text-subtle); font: 0.75rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; }
-  .filter-bar { display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 1.5rem 0; position: sticky; top: 65px; z-index: 5; background: color-mix(in srgb, var(--color-bg) 96%, transparent); backdrop-filter: blur(8px); }
-  .filter-pill { display: inline-flex; align-items: center; gap: 0.45rem; min-height: 48px; padding: 0 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-tag); background: var(--color-bg); color: var(--color-text-muted); cursor: pointer; font: 500 0.75rem/1 var(--font-sans); transition: border-color var(--transition-base), background var(--transition-base), color var(--transition-base); }
-  .filter-pill span { color: var(--color-text-subtle); font: 0.6875rem/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
-  .filter-pill:hover { border-color: var(--color-border-hover); color: var(--color-text); }
-  .filter-pill.active { border-color: var(--color-accent); background: var(--color-accent); color: var(--color-bg); }
-  .filter-pill.active span { color: inherit; }
-  .resource-group { padding: 3rem 0 1rem; }
-  .resource-group[hidden] { display: none; }
-  .group-heading { display: flex; align-items: baseline; justify-content: space-between; padding-bottom: 1rem; }
+  .resource-group { padding-top: 4rem; }
+  .group-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 2rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--color-border); }
   .group-heading h2 { margin: 0; color: var(--color-text); font-size: 1.75rem; font-weight: 600; letter-spacing: -0.02em; }
+  .group-heading p { margin: 0.45rem 0 0; max-width: 64ch; color: var(--color-muted); font-size: 0.875rem; line-height: 1.6; }
   .group-heading span { color: var(--color-text-subtle); font: 0.75rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; }
-  .empty-state { padding: 4rem 0; text-align: center; color: var(--color-muted); }
-  @media (max-width: 639px) { .count { position: static; margin-top: 1rem; } .filter-bar { margin-inline: -2rem; padding-inline: 2rem; overflow-x: auto; flex-wrap: nowrap; } .filter-pill { flex: 0 0 auto; } }
+  .resource-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+  @media (max-width: 767px) {
+    .count { position: static; margin-top: 1rem; }
+    .resource-group { padding-top: 3rem; }
+    .resource-grid { grid-template-columns: 1fr; }
+  }
 </style>
