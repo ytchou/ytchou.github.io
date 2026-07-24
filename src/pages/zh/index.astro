@@ -12,7 +12,7 @@ import headshot from '../../assets/headshot.jpeg';
 const t = useTranslations('zh');
 
 const allPosts = await getCollection('blog', ({ data }) => data.lang === 'zh' && !data.draft);
-const resources = await getCollection('resources', ({ data }) => data.topic === 'design');
+const resources = await getCollection('resources');
 const latestPosts = sortPosts(allPosts).slice(0, 3);
 const featuredProjects = projects.filter(p => p.featured);
 ---
@@ -65,7 +65,7 @@ const featuredProjects = projects.filter(p => p.featured);
         <h3>設計</h3>
         <p>{t('home.resources-body')}</p>
       </div>
-      <span>{resources.length} 項資源 →</span>
+      <span>{resources.length} 個目錄 →</span>
     </a>
   </section>
 

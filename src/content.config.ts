@@ -23,19 +23,16 @@ const localizedText = z.object({
 const resources = defineCollection({
   loader: file('./src/content/resources.json'),
   schema: z.object({
-    topic: z.literal('design'),
-    category: z.enum(['typography', 'components', 'motion', 'icons', 'accessibility', 'reference']),
+    group: z.enum(['component-discovery', 'foundations', 'motion-expressive-ui', 'icons-supporting-tools']),
     name: z.string().min(1),
     url: z.string().url(),
-    tags: z.array(z.string().min(1)).min(1),
-    summary: localizedText,
+    screenshot: z.string().startsWith('/images/resources/catalogs/'),
+    tags: z.array(z.string().min(1)).min(1).max(3),
+    description: localizedText,
     bestFor: localizedText,
-    availability: z.enum(['free', 'freemium', 'paid']),
-    license: z.string().min(1).optional(),
-    language: z.array(z.string().min(1)).min(1),
-    typographyTier: z.enum(['foundation', 'personality', 'display', 'special-use']).optional(),
     addedDate: z.coerce.date(),
     lastCheckedDate: z.coerce.date(),
+    screenshotCapturedDate: z.coerce.date(),
   }),
 });
 

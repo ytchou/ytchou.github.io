@@ -2,8 +2,8 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import ResourcesDirectory from '../../../components/ResourcesDirectory.astro';
-const resources = await getCollection('resources', ({ data }) => data.topic === 'design');
+const resources = await getCollection('resources');
 ---
-<BaseLayout title="設計資源 — Patrick" description="精選字體、介面工具與設計參考，並提供實際使用建議。">
+<BaseLayout title="設計目錄 — Patrick" description="介面元件、動態效果、圖示與設計研究目錄。">
   <ResourcesDirectory resources={resources} lang="zh" />
 </BaseLayout>
