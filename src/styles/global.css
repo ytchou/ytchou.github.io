@@ -120,6 +120,11 @@ main { flex: 1; }
 
 a { color: inherit; }
 
+:where(a, button):focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
 .font-display { font-family: var(--font-display); }
 
 /* Prose styles for blog post content */

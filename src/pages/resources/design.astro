@@ -1,0 +1,9 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ResourcesDirectory from '../../components/ResourcesDirectory.astro';
+const resources = await getCollection('resources', ({ data }) => data.topic === 'design');
+---
+<BaseLayout title="Design Resources — Patrick" description="Curated typography, interface tools, and design references with practical guidance.">
+  <ResourcesDirectory resources={resources} lang="en" />
+</BaseLayout>

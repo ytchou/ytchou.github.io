@@ -1,0 +1,45 @@
+---
+import type { ResourceEntry } from '../services/resources';
+import { getCollectionFreshness } from '../services/resources';
+import type { Lang } from '../i18n/ui';
+
+interface Props { resources: ResourceEntry[]; lang: Lang; }
+const { resources, lang } = Astro.props;
+const isZh = lang === 'zh';
+const base = isZh ? '/zh' : '';
+const freshness = getCollectionFreshness(resources);
+const locale = isZh ? 'zh-TW' : 'en-US';
+---
+
+<header class="page-header">
+  <p class="section-kicker">{isZh ? '收藏' : 'Directory'}</p>
+  <h1>{isZh ? '資源' : 'Resources'}</h1>
+  <p>{isZh ? '經過整理、實際可用的設計與產品資源。' : 'A considered directory of practical design and product resources.'}</p>
+</header>
+
+{resources.length > 0 && (
+  <a class="topic-card" href={`${base}/resources/design`}>
+    <div>
+      <p class="topic-label">{isZh ? '主題 01' : 'Topic 01'}</p>
+      <h2>{isZh ? '設計' : 'Design'}</h2>
+      <p>{isZh ? '字體、元件、動態效果、圖示、無障礙與設計參考。' : 'Typography, components, motion, icons, accessibility, and reference.'}</p>
+    </div>
+    <div class="topic-meta">
+      <span>{resources.length} {isZh ? '項資源' : 'resources'}</span>
+      {freshness && <span>{isZh ? '資料檢查至' : 'Reviewed through'} {freshness.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' })}</span>}
+    </div>
+  </a>
+)}
+
+<style>
+  .page-header { padding-bottom: 2rem; border-bottom: 1px solid var(--color-border); margin-bottom: 2rem; }
+  h1 { margin: 0; color: var(--color-text); font-size: clamp(2.75rem, 7vw, 4.5rem); font-weight: 600; letter-spacing: -0.04em; line-height: 1; }
+  .page-header > p:last-child { margin: 1rem 0 0; color: var(--color-muted); max-width: 60ch; }
+  .topic-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2rem; padding: 2rem; border: 1px solid var(--color-border); border-radius: var(--radius-card); text-decoration: none; transition: border-color var(--transition-base), background var(--transition-base); }
+  .topic-card:hover { border-color: var(--color-accent); background: var(--color-surface); }
+  .topic-label { margin: 0 0 0.75rem; color: var(--color-accent); font: 0.6875rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; text-transform: uppercase; letter-spacing: 0.12em; }
+  h2 { margin: 0; color: var(--color-text); font-size: 2rem; line-height: 1.2; }
+  .topic-card p:last-child { margin: 0.75rem 0 0; color: var(--color-muted); }
+  .topic-meta { display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; color: var(--color-text-subtle); font: 0.75rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: nowrap; }
+  @media (max-width: 639px) { .topic-card { grid-template-columns: 1fr; padding: 1.5rem; } .topic-meta { align-items: flex-start; gap: 0.5rem; white-space: normal; } }
+</style>
