@@ -2,9 +2,12 @@ import { access, readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const expectedGroups = {
-  'component-discovery': ['component-gallery', '21st-dev'],
+  'interface-web-inspiration': ['mobbin', 'noiced', 'recent-design', 'dribbble'],
+  'brand-editorial-social': ['posts-design', 'deck-gallery', 'logosystem', 'brand-guidelines'],
+  typography: ['fonts-in-use', 'free-faces'],
+  'component-discovery': ['component-gallery', '21st-dev', 'lander-figma-blocks'],
   foundations: ['shadcn-ui', 'react-aria'],
-  'motion-expressive-ui': ['morphin', 'aceternity-ui', 'magic-ui', 'react-bits', 'kinetics'],
+  'motion-expressive-ui': ['morphin', 'aceternity-ui', 'magic-ui', 'react-bits', 'kinetics', 'eldora-ui'],
   'icons-supporting-tools': ['reicon', 'icon-animator'],
 };
 

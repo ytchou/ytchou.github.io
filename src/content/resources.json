@@ -1,5 +1,195 @@
 [
   {
+    "id": "mobbin",
+    "group": "interface-web-inspiration",
+    "name": "Mobbin",
+    "url": "https://mobbin.com/",
+    "screenshot": "/images/resources/catalogs/mobbin.webp",
+    "tags": ["product UI", "user flows", "mobile and web"],
+    "description": {
+      "en": "A searchable reference library of real mobile and web product screens, interface elements, and complete user flows.",
+      "zh": "收錄真實行動裝置與網站產品畫面、介面元素及完整使用流程的可搜尋參考庫。"
+    },
+    "bestFor": {
+      "en": "Studying how established products solve a specific screen or multi-step interaction.",
+      "zh": "研究成熟產品如何處理特定畫面或多步驟互動。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "id": "noiced",
+    "group": "interface-web-inspiration",
+    "name": "Noiced",
+    "url": "https://noiced.com/",
+    "screenshot": "/images/resources/catalogs/noiced.webp",
+    "tags": ["web design", "curated", "live sites"],
+    "description": {
+      "en": "A compact, opinionated feed of noteworthy live websites selected for daily web design inspiration.",
+      "zh": "精簡而有明確品味的優秀網站清單，持續提供每日網站設計靈感。"
+    },
+    "bestFor": {
+      "en": "Finding a fresh visual direction without wading through a large popularity-driven gallery.",
+      "zh": "不必翻找受熱門度主導的大型圖庫，也能快速找到新鮮的視覺方向。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "id": "recent-design",
+    "group": "interface-web-inspiration",
+    "name": "Recent",
+    "url": "https://recent.design/",
+    "screenshot": "/images/resources/catalogs/recent-design.webp",
+    "tags": ["multidisciplinary", "curated", "discovery"],
+    "description": {
+      "en": "A broad curated feed spanning interfaces, websites, branding, typography, motion, editorial work, and digital products.",
+      "zh": "涵蓋介面、網站、品牌、字體、動態、編輯設計與數位產品的綜合精選目錄。"
+    },
+    "bestFor": {
+      "en": "Starting broad when you need references across more than one design discipline.",
+      "zh": "需要跨越多種設計領域尋找參考時，先從廣泛的精選內容開始。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "id": "dribbble",
+    "group": "interface-web-inspiration",
+    "name": "Dribbble",
+    "url": "https://dribbble.com/",
+    "screenshot": "/images/resources/catalogs/dribbble.webp",
+    "tags": ["community", "visual exploration", "designers"],
+    "description": {
+      "en": "A large designer community and visual showcase covering interfaces, branding, illustration, animation, and portfolios.",
+      "zh": "大型設計師社群與視覺作品平台，涵蓋介面、品牌、插畫、動畫與作品集。"
+    },
+    "bestFor": {
+      "en": "Exploring many visual directions quickly or discovering designers with a particular style.",
+      "zh": "快速探索大量視覺方向，或尋找具備特定風格的設計師。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "id": "posts-design",
+    "group": "brand-editorial-social",
+    "name": "posts.design",
+    "url": "https://posts.design/",
+    "screenshot": "/images/resources/catalogs/posts-design.webp",
+    "tags": ["social media", "launches", "content design"],
+    "description": {
+      "en": "A curated reference wall for well-designed social posts, product announcements, launches, and visual updates.",
+      "zh": "精選社群貼文、產品公告、發布內容與視覺更新的設計參考牆。"
+    },
+    "bestFor": {
+      "en": "Planning a launch post or translating product news into a clear visual format.",
+      "zh": "規劃產品發布貼文，或把產品消息轉化成清楚的視覺格式。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "id": "deck-gallery",
+    "group": "brand-editorial-social",
+    "name": "Deck Gallery",
+    "url": "https://deck.gallery/",
+    "screenshot": "/images/resources/catalogs/deck-gallery.webp",
+    "tags": ["presentations", "reports", "editorial"],
+    "description": {
+      "en": "A curated collection of presentation decks and individual slides across pitches, reports, guidelines, portfolios, and strategy.",
+      "zh": "精選簡報與單頁投影片目錄，涵蓋提案、報告、品牌規範、作品集與策略。"
+    },
+    "bestFor": {
+      "en": "Finding structure and visual pacing for a specific kind of presentation.",
+      "zh": "為特定類型的簡報尋找內容結構與視覺節奏。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "id": "logosystem",
+    "group": "brand-editorial-social",
+    "name": "Logosystem",
+    "url": "https://logosystem.co/",
+    "screenshot": "/images/resources/catalogs/logosystem.webp",
+    "tags": ["logos", "brand identity", "filters"],
+    "description": {
+      "en": "A focused logo inspiration library organized by type, industry, style, shape, color, and mood.",
+      "zh": "依類型、產業、風格、形狀、色彩與氛圍整理的標誌設計靈感庫。"
+    },
+    "bestFor": {
+      "en": "Building a precise logo moodboard or comparing directions for a new identity.",
+      "zh": "建立精準的標誌情緒板，或比較新品牌識別的可能方向。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "id": "brand-guidelines",
+    "group": "brand-editorial-social",
+    "name": "Brand Guidelines",
+    "url": "https://www.brandguidelines.net/",
+    "screenshot": "/images/resources/catalogs/brand-guidelines.webp",
+    "tags": ["brand systems", "guidelines", "identity"],
+    "description": {
+      "en": "A showcase of real brand guideline documents linking to identity systems created in-house and by design studios.",
+      "zh": "收錄企業內部與設計工作室製作的真實品牌規範文件與識別系統。"
+    },
+    "bestFor": {
+      "en": "Seeing how a visual identity becomes practical rules, assets, and documentation.",
+      "zh": "觀察視覺識別如何轉化為可執行的規則、素材與文件。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "id": "fonts-in-use",
+    "group": "typography",
+    "name": "Fonts In Use",
+    "url": "https://fontsinuse.com/",
+    "screenshot": "/images/resources/catalogs/fonts-in-use.webp",
+    "tags": ["typography", "case studies", "real-world use"],
+    "description": {
+      "en": "An independent archive documenting typefaces as they appear in real branding, editorial, packaging, software, and web projects.",
+      "zh": "記錄字體在真實品牌、編輯、包裝、軟體與網站專案中如何使用的獨立資料庫。"
+    },
+    "bestFor": {
+      "en": "Evaluating a typeface through finished work instead of an isolated specimen.",
+      "zh": "透過完成作品而非單獨字體樣張，判斷字體的實際效果。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "id": "free-faces",
+    "group": "typography",
+    "name": "Free Faces",
+    "url": "https://www.freefaces.gallery/",
+    "screenshot": "/images/resources/catalogs/free-faces.webp",
+    "tags": ["typefaces", "free licenses", "discovery"],
+    "description": {
+      "en": "A visually led catalog of typefaces available under various free licenses, organized by broad typographic style.",
+      "zh": "以視覺瀏覽為主的字體目錄，收錄採用各類免費授權的字體，並依主要字體風格分類。"
+    },
+    "bestFor": {
+      "en": "Discovering distinctive type options before confirming the license on the original source.",
+      "zh": "先探索具有特色的字體選項，再回到原始來源確認授權範圍。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
     "id": "component-gallery",
     "group": "component-discovery",
     "name": "The Component Gallery",
@@ -36,6 +226,25 @@
     "addedDate": "2026-07-24",
     "lastCheckedDate": "2026-07-24",
     "screenshotCapturedDate": "2026-07-24"
+  },
+  {
+    "id": "lander-figma-blocks",
+    "group": "component-discovery",
+    "name": "Lander Figma Blocks",
+    "url": "https://blocks.lander.studio/",
+    "screenshot": "/images/resources/catalogs/lander-figma-blocks.webp",
+    "tags": ["Figma", "layout blocks", "learning"],
+    "description": {
+      "en": "A collection of free Figma layout blocks recreated for close inspection, remixing, and hands-on design study.",
+      "zh": "可在 Figma 中仔細拆解、重新組合與動手研究的免費版面區塊集合。"
+    },
+    "bestFor": {
+      "en": "Learning layout decisions by taking polished interface sections apart pixel by pixel.",
+      "zh": "逐像素拆解完成度高的介面區塊，理解背後的版面決策。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
   },
   {
     "id": "shadcn-ui",
@@ -169,6 +378,25 @@
     "addedDate": "2026-07-24",
     "lastCheckedDate": "2026-07-24",
     "screenshotCapturedDate": "2026-07-24"
+  },
+  {
+    "id": "eldora-ui",
+    "group": "motion-expressive-ui",
+    "name": "Eldora UI",
+    "url": "https://www.eldoraui.site/",
+    "screenshot": "/images/resources/catalogs/eldora-ui.webp",
+    "tags": ["motion", "React", "open source"],
+    "description": {
+      "en": "A copyable collection of animated React and Tailwind components, effects, and larger page blocks for expressive interfaces.",
+      "zh": "可複製使用的 React 與 Tailwind 動畫元件、視覺效果及大型頁面區塊集合。"
+    },
+    "bestFor": {
+      "en": "Adding animated product or landing-page sections while retaining access to the implementation.",
+      "zh": "為產品或登陸頁加入動畫區塊，同時保留對實作程式碼的掌控。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
   },
   {
     "id": "reicon",

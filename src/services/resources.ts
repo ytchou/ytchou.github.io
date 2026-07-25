@@ -1,6 +1,14 @@
 import type { CollectionEntry } from 'astro:content';
 
-export const resourceGroups = ['component-discovery', 'foundations', 'motion-expressive-ui', 'icons-supporting-tools'] as const;
+export const resourceGroups = [
+  'interface-web-inspiration',
+  'brand-editorial-social',
+  'typography',
+  'component-discovery',
+  'foundations',
+  'motion-expressive-ui',
+  'icons-supporting-tools',
+] as const;
 export type ResourceGroup = typeof resourceGroups[number];
 export type ResourceEntry = CollectionEntry<'resources'>;
 

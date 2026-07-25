@@ -9,12 +9,18 @@ const isZh = lang === 'zh';
 const groups = groupResources(resources);
 const groupCopy = isZh
   ? {
+      'interface-web-inspiration': { title: '介面與網站靈感', description: '從真實產品流程與精選網站中，研究版面、互動與視覺方向。' },
+      'brand-editorial-social': { title: '品牌、編輯與社群設計', description: '探索標誌、品牌規範、簡報與社群內容如何建立一致的視覺語言。' },
+      typography: { title: '字體排印', description: '從真實案例與可用字體目錄中，研究字體如何影響作品的語氣與層次。' },
       'component-discovery': { title: '元件探索', description: '跨設計系統比較模式，或從大型社群目錄尋找現成靈感。' },
       foundations: { title: '基礎元件', description: '建立產品介面時，負責結構、行為與無障礙的可靠起點。' },
       'motion-expressive-ui': { title: '動態與表現型介面', description: '從產品微互動到行銷頁效果，快速探索不同動態語彙。' },
       'icons-supporting-tools': { title: '圖示與輔助工具', description: '尋找一致的圖示素材，並製作小而有目的的視覺互動。' },
     }
   : {
+      'interface-web-inspiration': { title: 'Interface and web inspiration', description: 'Study layouts, interactions, and visual direction through real product flows and curated websites.' },
+      'brand-editorial-social': { title: 'Brand, editorial, and social', description: 'Explore how logos, guidelines, decks, and social content build coherent visual languages.' },
+      typography: { title: 'Typography', description: 'Study how type shapes tone and hierarchy through real-world examples and usable typeface catalogs.' },
       'component-discovery': { title: 'Component discovery', description: 'Compare patterns across design systems or browse broad community catalogs for a useful starting point.' },
       foundations: { title: 'Foundations', description: 'Reliable starting points for the structure, behavior, and accessibility of product interfaces.' },
       'motion-expressive-ui': { title: 'Motion and expressive UI', description: 'Explore motion languages ranging from product micro-interactions to high-impact marketing effects.' },
@@ -32,7 +38,7 @@ const labels = {
   <a href={isZh ? '/zh/resources' : '/resources'} class="back-link">← {isZh ? '所有資源' : 'All resources'}</a>
   <p class="section-kicker">{isZh ? '資源 / 主題 01' : 'Resources / Topic 01'}</p>
   <h1>{isZh ? '設計目錄' : 'Design catalogs'}</h1>
-  <p>{isZh ? '我會實際回訪的介面元件、動態效果與設計研究目錄。' : 'Visual directories for interface components, motion, and design research that are worth returning to.'}</p>
+  <p>{isZh ? '我會實際回訪的介面、品牌、字體、元件與動態設計目錄。' : 'Visual directories for interface, brand, typography, component, and motion design that are worth returning to.'}</p>
   <p class="count">{resources.length} {isZh ? '個目錄' : 'catalogs'}</p>
 </header>
 
