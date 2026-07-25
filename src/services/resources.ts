@@ -7,6 +7,7 @@ export const resourceGroups = [
   'component-discovery',
   'foundations',
   'motion-expressive-ui',
+  'visualization-diagramming',
   'icons-supporting-tools',
 ] as const;
 export type ResourceGroup = typeof resourceGroups[number];

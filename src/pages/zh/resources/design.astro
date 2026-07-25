@@ -4,6 +4,6 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import ResourcesDirectory from '../../../components/ResourcesDirectory.astro';
 const resources = await getCollection('resources');
 ---
-<BaseLayout title="設計目錄 — Patrick" description="介面元件、動態效果、圖示與設計研究目錄。">
+<BaseLayout title="設計資源 — Patrick" description="涵蓋介面、品牌、字體、元件、動態與視覺化的實用參考與工具。">
   <ResourcesDirectory resources={resources} lang="zh" />
 </BaseLayout>

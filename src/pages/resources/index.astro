@@ -4,6 +4,6 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import ResourcesHub from '../../components/ResourcesHub.astro';
 const resources = await getCollection('resources');
 ---
-<BaseLayout title="Resources — Patrick" description="A considered collection of design and product catalogs worth returning to.">
+<BaseLayout title="Resources — Patrick" description="A considered collection of design references and working tools worth returning to.">
   <ResourcesHub resources={resources} lang="en" />
 </BaseLayout>

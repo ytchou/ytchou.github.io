@@ -76,6 +76,25 @@
     "screenshotCapturedDate": "2026-07-26"
   },
   {
+    "id": "best-website-templates",
+    "group": "interface-web-inspiration",
+    "name": "Best Website Templates",
+    "url": "https://bestwebsitetemplate.com/",
+    "screenshot": "/images/resources/catalogs/best-website-templates.webp",
+    "tags": ["templates", "Webflow and Framer", "Shopify"],
+    "description": {
+      "en": "An independently curated library of Webflow, Framer, and Shopify templates reviewed for both design and implementation quality.",
+      "zh": "獨立精選的 Webflow、Framer 與 Shopify 範本庫，同時檢視視覺設計與實作品質。"
+    },
+    "bestFor": {
+      "en": "Choosing a polished starting point without evaluating every template marketplace listing yourself.",
+      "zh": "不必逐一檢查範本市集的所有項目，也能找到完成度高的起點。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
     "id": "posts-design",
     "group": "brand-editorial-social",
     "name": "posts.design",
@@ -393,6 +412,25 @@
     "bestFor": {
       "en": "Adding animated product or landing-page sections while retaining access to the implementation.",
       "zh": "為產品或登陸頁加入動畫區塊，同時保留對實作程式碼的掌控。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "id": "excalidraw",
+    "group": "visualization-diagramming",
+    "name": "Excalidraw",
+    "url": "https://excalidraw.com/",
+    "screenshot": "/images/resources/catalogs/excalidraw.webp",
+    "tags": ["diagramming", "whiteboard", "open source"],
+    "description": {
+      "en": "A collaborative, hand-drawn-style canvas for turning flows, systems, and early ideas into diagrams quickly.",
+      "zh": "具手繪風格的協作畫布，能快速把流程、系統關係與早期想法整理成圖解。"
+    },
+    "bestFor": {
+      "en": "Explaining a complex idea before its structure is stable enough for formal design documentation.",
+      "zh": "在結構尚未穩定到能寫成正式設計文件前，先把複雜想法說清楚。"
     },
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",

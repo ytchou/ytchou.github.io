@@ -2,12 +2,13 @@ import { access, readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const expectedGroups = {
-  'interface-web-inspiration': ['mobbin', 'noiced', 'recent-design', 'dribbble'],
+  'interface-web-inspiration': ['mobbin', 'noiced', 'recent-design', 'dribbble', 'best-website-templates'],
   'brand-editorial-social': ['posts-design', 'deck-gallery', 'logosystem', 'brand-guidelines'],
   typography: ['fonts-in-use', 'free-faces'],
   'component-discovery': ['component-gallery', '21st-dev', 'lander-figma-blocks'],
   foundations: ['shadcn-ui', 'react-aria'],
   'motion-expressive-ui': ['morphin', 'aceternity-ui', 'magic-ui', 'react-bits', 'kinetics', 'eldora-ui'],
+  'visualization-diagramming': ['excalidraw'],
   'icons-supporting-tools': ['reicon', 'icon-animator'],
 };
 
@@ -38,4 +39,4 @@ for (const catalog of catalogs) {
   await access(path.resolve('public', catalog.screenshot.slice(1)));
 }
 
-console.log(`Validated ${catalogs.length} catalog-level resources and their screenshots.`);
+console.log(`Validated ${catalogs.length} design resources and their screenshots.`);

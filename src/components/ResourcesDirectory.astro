@@ -15,6 +15,7 @@ const groupCopy = isZh
       'component-discovery': { title: '元件探索', description: '跨設計系統比較模式，或從大型社群目錄尋找現成靈感。' },
       foundations: { title: '基礎元件', description: '建立產品介面時，負責結構、行為與無障礙的可靠起點。' },
       'motion-expressive-ui': { title: '動態與表現型介面', description: '從產品微互動到行銷頁效果，快速探索不同動態語彙。' },
+      'visualization-diagramming': { title: '視覺化與圖解', description: '快速畫出流程、系統關係與想法，讓複雜內容更容易討論與理解。' },
       'icons-supporting-tools': { title: '圖示與輔助工具', description: '尋找一致的圖示素材，並製作小而有目的的視覺互動。' },
     }
   : {
@@ -24,6 +25,7 @@ const groupCopy = isZh
       'component-discovery': { title: 'Component discovery', description: 'Compare patterns across design systems or browse broad community catalogs for a useful starting point.' },
       foundations: { title: 'Foundations', description: 'Reliable starting points for the structure, behavior, and accessibility of product interfaces.' },
       'motion-expressive-ui': { title: 'Motion and expressive UI', description: 'Explore motion languages ranging from product micro-interactions to high-impact marketing effects.' },
+      'visualization-diagramming': { title: 'Visualization and diagramming', description: 'Sketch flows, system relationships, and ideas quickly so complex subjects are easier to discuss and understand.' },
       'icons-supporting-tools': { title: 'Icons and supporting tools', description: 'Find consistent visual assets and create small, purposeful interface moments.' },
     };
 const labels = {
@@ -37,9 +39,9 @@ const labels = {
 <header class="page-header">
   <a href={isZh ? '/zh/resources' : '/resources'} class="back-link">← {isZh ? '所有資源' : 'All resources'}</a>
   <p class="section-kicker">{isZh ? '資源 / 主題 01' : 'Resources / Topic 01'}</p>
-  <h1>{isZh ? '設計目錄' : 'Design catalogs'}</h1>
-  <p>{isZh ? '我會實際回訪的介面、品牌、字體、元件與動態設計目錄。' : 'Visual directories for interface, brand, typography, component, and motion design that are worth returning to.'}</p>
-  <p class="count">{resources.length} {isZh ? '個目錄' : 'catalogs'}</p>
+  <h1>{isZh ? '設計資源' : 'Design resources'}</h1>
+  <p>{isZh ? '我會實際回訪的介面、品牌、字體、元件、動態與視覺化設計資源。' : 'Useful references and working tools for interface, brand, typography, component, motion, and visual design.'}</p>
+  <p class="count">{resources.length} {isZh ? '項資源' : 'resources'}</p>
 </header>
 
 <div class="resource-groups">
