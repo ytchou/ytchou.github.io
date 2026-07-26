@@ -171,6 +171,26 @@
     "screenshotCapturedDate": "2026-07-26"
   },
   {
+    "topic": "design",
+    "id": "logos-lndev",
+    "group": "brand-editorial-social",
+    "name": "SVG Logos",
+    "url": "https://logos.lndev.me/",
+    "screenshot": "/images/resources/catalogs/logos-lndev.webp",
+    "tags": ["logos", "SVG", "brand assets"],
+    "description": {
+      "en": "A searchable library of free SVG logos for apps, developer tools, and technology brands, with quick copy and download workflows.",
+      "zh": "可搜尋的免費 SVG 標誌庫，收錄應用程式、開發工具與科技品牌，支援快速複製與下載。"
+    },
+    "bestFor": {
+      "en": "Finding a ready-to-use brand mark before drawing or exporting a logo asset yourself; check each brand's guidelines before use.",
+      "zh": "在自行繪製或匯出標誌素材前，先尋找可直接使用的品牌標誌；使用前請確認各品牌的規範。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
     "id": "brand-guidelines",
     "group": "brand-editorial-social",
     "name": "Brand Guidelines",

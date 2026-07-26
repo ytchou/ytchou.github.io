@@ -3,7 +3,7 @@ import path from 'node:path';
 
 const expectedGroups = {
   'interface-web-inspiration': ['mobbin', 'noiced', 'recent-design', 'dribbble', 'best-website-templates', 'awwwards'],
-  'brand-editorial-social': ['posts-design', 'deck-gallery', 'logosystem', 'brand-guidelines'],
+  'brand-editorial-social': ['posts-design', 'deck-gallery', 'logosystem', 'logos-lndev', 'brand-guidelines'],
   typography: ['fonts-in-use', 'free-faces'],
   'component-discovery': ['component-gallery', '21st-dev', 'lander-figma-blocks', 'forever-components'],
   foundations: ['shadcn-ui', 'react-aria'],
