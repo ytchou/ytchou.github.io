@@ -23,6 +23,7 @@ const localizedText = z.object({
 const resources = defineCollection({
   loader: file('./src/content/resources.json'),
   schema: z.object({
+    topic: z.enum(['design', 'security']).default('design'),
     group: z.enum([
       'interface-web-inspiration',
       'brand-editorial-social',
@@ -32,6 +33,7 @@ const resources = defineCollection({
       'motion-expressive-ui',
       'visualization-diagramming',
       'icons-supporting-tools',
+      'agentic-security',
     ]),
     name: z.string().min(1),
     url: z.string().url(),

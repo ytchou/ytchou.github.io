@@ -9,8 +9,11 @@ export const resourceGroups = [
   'motion-expressive-ui',
   'visualization-diagramming',
   'icons-supporting-tools',
+  'agentic-security',
 ] as const;
 export type ResourceGroup = typeof resourceGroups[number];
+export const resourceTopics = ['design', 'security'] as const;
+export type ResourceTopic = typeof resourceTopics[number];
 export type ResourceEntry = CollectionEntry<'resources'>;
 
 export function groupResources(resources: ResourceEntry[]): Map<ResourceGroup, ResourceEntry[]> {

@@ -511,5 +511,45 @@
     "addedDate": "2026-07-24",
     "lastCheckedDate": "2026-07-24",
     "screenshotCapturedDate": "2026-07-24"
+  },
+  {
+    "topic": "security",
+    "id": "cloudflare-security-audit-skill",
+    "group": "agentic-security",
+    "name": "Cloudflare Security Audit Skill",
+    "url": "https://github.com/cloudflare/security-audit-skill",
+    "screenshot": "/images/resources/catalogs/cloudflare-security-audit-skill.webp",
+    "tags": ["security audit", "coding agents", "open source"],
+    "description": {
+      "en": "A multi-phase coding-agent skill for recon, vulnerability hunting, adversarial validation, structured findings, and independent verification.",
+      "zh": "支援偵察、漏洞搜尋、對抗式驗證、結構化發現與獨立複核的多階段 coding agent 安全稽核技能。"
+    },
+    "bestFor": {
+      "en": "Studying how to turn a coding agent into a disciplined security-audit workflow for authorized codebases.",
+      "zh": "研究如何把 coding agent 轉化為有紀律的安全稽核流程，並只用於獲得授權的程式碼。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "topic": "security",
+    "id": "visa-vulnerability-agentic-harness",
+    "group": "agentic-security",
+    "name": "Visa Vulnerability Agentic Harness",
+    "url": "https://github.com/visa/visa-vulnerability-agentic-harness",
+    "screenshot": "/images/resources/catalogs/visa-vulnerability-agentic-harness.webp",
+    "tags": ["SAST", "agentic security", "remediation"],
+    "description": {
+      "en": "An open-source agentic SAST pipeline covering threat modeling, multi-lens analysis, adversarial verification, remediation, and fix validation.",
+      "zh": "涵蓋威脅建模、多視角分析、對抗式驗證、修補與修補驗證的開源 agentic SAST 流程。"
+    },
+    "bestFor": {
+      "en": "Understanding an end-to-end vulnerability workflow; scan only authorized repositories, and review every generated finding or fix before adoption.",
+      "zh": "理解端到端漏洞處理流程；只掃描獲得授權的儲存庫，並在採用前人工檢視所有產生的發現與修補。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
   }
 ]

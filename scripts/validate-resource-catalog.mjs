@@ -10,6 +10,7 @@ const expectedGroups = {
   'motion-expressive-ui': ['morphin', 'aceternity-ui', 'magic-ui', 'react-bits', 'kinetics', 'eldora-ui'],
   'visualization-diagramming': ['excalidraw'],
   'icons-supporting-tools': ['reicon', 'icon-animator'],
+  'agentic-security': ['cloudflare-security-audit-skill', 'visa-vulnerability-agentic-harness'],
 };
 
 const catalogPath = path.resolve('src/content/resources.json');
@@ -29,6 +30,10 @@ for (const catalog of catalogs) {
   if (!expectedGroups[catalog.group]?.includes(catalog.id)) {
     throw new Error(`${catalog.id} has an unexpected group: ${catalog.group}.`);
   }
+  const expectedTopic = catalog.group === 'agentic-security' ? 'security' : 'design';
+  if ((catalog.topic ?? 'design') !== expectedTopic) {
+    throw new Error(`${catalog.id} has an unexpected topic: ${catalog.topic ?? 'design'}.`);
+  }
   for (const field of ['description', 'bestFor']) {
     if (!catalog[field]?.en || !catalog[field]?.zh) throw new Error(`${catalog.id} is missing localized ${field} copy.`);
   }
@@ -41,4 +46,4 @@ for (const catalog of catalogs) {
   await access(path.resolve('public', catalog.screenshot.slice(1)));
 }
 
-console.log(`Validated ${catalogs.length} design resources and their screenshots.`);
+console.log(`Validated ${catalogs.length} resources and their screenshots.`);
