@@ -513,6 +513,106 @@
     "screenshotCapturedDate": "2026-07-24"
   },
   {
+    "topic": "design",
+    "id": "web-interface-guidelines",
+    "group": "design-engineering",
+    "name": "Web Interface Guidelines",
+    "url": "https://interfaces.rauno.me/",
+    "screenshot": "/images/resources/catalogs/web-interface-guidelines.webp",
+    "tags": ["interface design", "accessibility", "frontend"],
+    "description": {
+      "en": "A living, practical checklist for the interaction, typography, motion, touch, performance, accessibility, and design details that make web interfaces feel considered.",
+      "zh": "持續更新的實用清單，整理讓網站介面更完整的互動、字體、動態、觸控、效能、無障礙與設計細節。"
+    },
+    "bestFor": {
+      "en": "Auditing the details of a web interface before polishing a release.",
+      "zh": "在打磨版本前，逐項檢查網站介面的細節。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "topic": "design",
+    "id": "pasito",
+    "group": "design-engineering",
+    "name": "Pasito",
+    "url": "https://joshpuckett.me/pasito",
+    "screenshot": "/images/resources/catalogs/pasito.webp",
+    "tags": ["components", "React", "motion"],
+    "description": {
+      "en": "A small, dependency-free, fully themeable fluid stepper component with click navigation and optional autoplay.",
+      "zh": "小巧、無相依且可完整主題化的流動式 stepper 元件，支援點擊導覽與選用的自動播放。"
+    },
+    "bestFor": {
+      "en": "Adding a polished, stateful stepper without assembling the interaction from scratch.",
+      "zh": "不必從零組合互動，就能加入完成度高且具狀態的 stepper。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "topic": "design",
+    "id": "vaul",
+    "group": "design-engineering",
+    "name": "Vaul",
+    "url": "https://vaul.emilkowal.ski/",
+    "screenshot": "/images/resources/catalogs/vaul.webp",
+    "tags": ["React", "drawer", "components"],
+    "description": {
+      "en": "A focused drawer component for React, presented with documentation and an interactive example.",
+      "zh": "專注於抽屜互動的 React 元件，提供文件與可操作的示範。"
+    },
+    "bestFor": {
+      "en": "Studying a polished React drawer interaction before building a similar pattern yourself.",
+      "zh": "在自行建立類似模式前，研究完成度高的 React 抽屜互動。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "topic": "design",
+    "id": "manage-design-projects",
+    "group": "design-engineering",
+    "name": "Manage design projects",
+    "url": "https://linear.app/method/manage-design-projects",
+    "screenshot": "/images/resources/catalogs/manage-design-projects.webp",
+    "tags": ["design process", "collaboration", "product teams"],
+    "description": {
+      "en": "Linear's guide to managing design projects, from verifying the problem and exploring options to feedback, direction, and design–engineering handoff.",
+      "zh": "Linear 的設計專案管理方法，從確認問題、探索方案，到回饋、定案與設計工程交接。"
+    },
+    "bestFor": {
+      "en": "Structuring collaborative design work when requirements and solutions are still evolving.",
+      "zh": "在需求與解法仍持續變動時，建立協作設計工作的結構。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "topic": "design",
+    "id": "developing-taste",
+    "group": "design-engineering",
+    "name": "Developing Taste",
+    "url": "https://emilkowal.ski/ui/developing-taste",
+    "screenshot": "/images/resources/catalogs/developing-taste.webp",
+    "tags": ["design practice", "critique", "craft"],
+    "description": {
+      "en": "A practical essay on developing design taste by studying strong work, naming why it works, and practicing deliberately.",
+      "zh": "透過研究優秀作品、說清楚它為何有效並刻意練習，培養設計品味的實用文章。"
+    },
+    "bestFor": {
+      "en": "Building a repeatable critique habit instead of relying on instinct alone.",
+      "zh": "建立可重複的設計評析習慣，而不只依賴直覺。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
     "topic": "security",
     "id": "cloudflare-security-audit-skill",
     "group": "agentic-security",

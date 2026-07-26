@@ -9,11 +9,11 @@ const isZh = lang === 'zh';
 const groups = groupResources(resources);
 const topicCopy = isZh
   ? {
-      design: { kicker: '資源 / 主題 01', title: '設計資源', description: '我會實際回訪的介面、品牌、字體、元件、動態與視覺化設計資源。' },
+      design: { kicker: '資源 / 主題 01', title: '設計資源', description: '我會實際回訪的介面、品牌、字體、元件、動態、視覺化與設計工程資源。' },
       security: { kicker: '資源 / 主題 02', title: 'AI 安全與漏洞工程', description: '探索 AI 輔助安全稽核、漏洞發現、修補與驗證的開源方法。' },
     }
   : {
-      design: { kicker: 'Resources / Topic 01', title: 'Design resources', description: 'Useful references and working tools for interface, brand, typography, component, motion, and visual design.' },
+      design: { kicker: 'Resources / Topic 01', title: 'Design resources', description: 'Useful references and working tools for interface, brand, typography, components, motion, visualization, and design engineering.' },
       security: { kicker: 'Resources / Topic 02', title: 'AI security and vulnerability engineering', description: 'Open-source approaches to AI-assisted security audits, vulnerability discovery, remediation, and verification.' },
     };
 const groupCopy = isZh
@@ -26,6 +26,7 @@ const groupCopy = isZh
       'motion-expressive-ui': { title: '動態與表現型介面', description: '從產品微互動到行銷頁效果，快速探索不同動態語彙。' },
       'visualization-diagramming': { title: '視覺化與圖解', description: '快速畫出流程、系統關係與想法，讓複雜內容更容易討論與理解。' },
       'icons-supporting-tools': { title: '圖示與輔助工具', description: '尋找一致的圖示素材，並製作小而有目的的視覺互動。' },
+      'design-engineering': { title: '設計工程', description: '把視覺品味、互動細節與前端實作放在同一個工作流程中。' },
       'agentic-security': { title: '代理式安全稽核', description: '以多階段代理流程探索、驗證、報告並修補程式碼漏洞。' },
     }
   : {
@@ -37,6 +38,7 @@ const groupCopy = isZh
       'motion-expressive-ui': { title: 'Motion and expressive UI', description: 'Explore motion languages ranging from product micro-interactions to high-impact marketing effects.' },
       'visualization-diagramming': { title: 'Visualization and diagramming', description: 'Sketch flows, system relationships, and ideas quickly so complex subjects are easier to discuss and understand.' },
       'icons-supporting-tools': { title: 'Icons and supporting tools', description: 'Find consistent visual assets and create small, purposeful interface moments.' },
+      'design-engineering': { title: 'Design engineering', description: 'Bring visual taste, interaction details, and frontend implementation into the same working practice.' },
       'agentic-security': { title: 'Agentic security audits', description: 'Explore multi-stage agent workflows for finding, validating, reporting, and remediating code vulnerabilities.' },
     };
 const labels = {

@@ -33,6 +33,7 @@ const resources = defineCollection({
       'motion-expressive-ui',
       'visualization-diagramming',
       'icons-supporting-tools',
+      'design-engineering',
       'agentic-security',
     ]),
     name: z.string().min(1),

@@ -9,11 +9,11 @@ const base = isZh ? '/zh' : '';
 const locale = isZh ? 'zh-TW' : 'en-US';
 const topicCopy: Record<ResourceTopic, { label: string; title: string; description: string; path: string }> = isZh
   ? {
-      design: { label: '主題 01', title: '設計', description: '涵蓋介面、品牌、字體、元件、動態與視覺化的實用資源。', path: 'design' },
+      design: { label: '主題 01', title: '設計', description: '涵蓋介面、品牌、字體、元件、動態、視覺化與設計工程的實用資源。', path: 'design' },
       security: { label: '主題 02', title: 'AI 安全與漏洞工程', description: '探索 AI 輔助安全稽核、漏洞發現、修補與驗證的開源方法。', path: 'security' },
     }
   : {
-      design: { label: 'Topic 01', title: 'Design', description: 'Useful resources for interface, brand, typography, components, motion, and visualization.', path: 'design' },
+      design: { label: 'Topic 01', title: 'Design', description: 'Useful resources for interface, brand, typography, components, motion, visualization, and design engineering.', path: 'design' },
       security: { label: 'Topic 02', title: 'AI security and vulnerability engineering', description: 'Open-source approaches to AI-assisted security audits, vulnerability discovery, remediation, and verification.', path: 'security' },
     };
 ---

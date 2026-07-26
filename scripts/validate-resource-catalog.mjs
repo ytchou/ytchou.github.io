@@ -10,6 +10,7 @@ const expectedGroups = {
   'motion-expressive-ui': ['morphin', 'aceternity-ui', 'magic-ui', 'react-bits', 'kinetics', 'eldora-ui'],
   'visualization-diagramming': ['excalidraw'],
   'icons-supporting-tools': ['reicon', 'icon-animator'],
+  'design-engineering': ['web-interface-guidelines', 'pasito', 'vaul', 'manage-design-projects', 'developing-taste'],
   'agentic-security': ['cloudflare-security-audit-skill', 'visa-vulnerability-agentic-harness', 'shannon', 'snyk-agent-scan'],
 };
 

@@ -9,6 +9,7 @@ export const resourceGroups = [
   'motion-expressive-ui',
   'visualization-diagramming',
   'icons-supporting-tools',
+  'design-engineering',
   'agentic-security',
 ] as const;
 export type ResourceGroup = typeof resourceGroups[number];
