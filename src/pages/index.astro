@@ -13,6 +13,8 @@ const t = useTranslations('en');
 
 const allPosts = await getCollection('blog', ({ data }) => data.lang === 'en' && !data.draft);
 const resources = await getCollection('resources');
+const designResources = resources.filter(resource => resource.data.topic === 'design');
+const securityResources = resources.filter(resource => resource.data.topic === 'security');
 const latestPosts = sortPosts(allPosts).slice(0, 3);
 const featuredProjects = projects.filter(p => p.featured);
 ---
@@ -79,13 +81,22 @@ const featuredProjects = projects.filter(p => p.featured);
       <h2 class="section-title">{t('home.resources-title')}</h2>
       <a href="/resources" class="section-more">{t('home.all-resources')}</a>
     </div>
-    <a href="/resources/design" class="resource-preview">
-      <div>
-        <h3>Design</h3>
-        <p>{t('home.resources-body')}</p>
-      </div>
-      <span>{resources.length} catalogs →</span>
-    </a>
+    <div class="resource-previews">
+      <a href="/resources/design" class="resource-preview">
+        <div>
+          <h3>Design</h3>
+          <p>{t('home.resources-body')}</p>
+        </div>
+        <span>{designResources.length} resources →</span>
+      </a>
+      {securityResources.length > 0 && <a href="/resources/security" class="resource-preview">
+        <div>
+          <h3>AI Security &amp; Vulnerability Engineering</h3>
+          <p>{t('home.security-resources-body')}</p>
+        </div>
+        <span>{securityResources.length} resources →</span>
+      </a>}
+    </div>
   </section>
 
   <!-- ── Journey ──────────────────────────────────────── -->
@@ -221,6 +232,7 @@ const featuredProjects = projects.filter(p => p.featured);
     text-decoration: none;
     transition: border-color var(--transition-base), background var(--transition-base);
   }
+  .resource-previews { display: grid; gap: 1rem; }
   .resource-preview:hover { border-color: var(--color-accent); background: var(--color-surface); }
   .resource-preview h3 { margin: 0; font-size: 1.25rem; }
   .resource-preview p { margin: 0.35rem 0 0; color: var(--color-muted); font-size: 0.875rem; }

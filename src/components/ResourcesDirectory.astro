@@ -1,24 +1,45 @@
 ---
 import ResourceCard from './ResourceCard.astro';
-import { groupResources, resourceGroups, type ResourceEntry } from '../services/resources';
+import { groupResources, resourceGroups, type ResourceEntry, type ResourceTopic } from '../services/resources';
 import type { Lang } from '../i18n/ui';
 
-interface Props { resources: ResourceEntry[]; lang: Lang; }
-const { resources, lang } = Astro.props;
+interface Props { resources: ResourceEntry[]; lang: Lang; topic?: ResourceTopic; }
+const { resources, lang, topic = 'design' } = Astro.props;
 const isZh = lang === 'zh';
 const groups = groupResources(resources);
+const topicCopy = isZh
+  ? {
+      design: { kicker: '資源 / 主題 01', title: '設計資源', description: '我會實際回訪的介面、品牌、字體、元件、動態、視覺化與設計工程資源。' },
+      security: { kicker: '資源 / 主題 02', title: 'AI 安全與漏洞工程', description: '探索 AI 輔助安全稽核、漏洞發現、修補與驗證的開源方法。' },
+    }
+  : {
+      design: { kicker: 'Resources / Topic 01', title: 'Design resources', description: 'Useful references and working tools for interface, brand, typography, components, motion, visualization, and design engineering.' },
+      security: { kicker: 'Resources / Topic 02', title: 'AI security and vulnerability engineering', description: 'Open-source approaches to AI-assisted security audits, vulnerability discovery, remediation, and verification.' },
+    };
 const groupCopy = isZh
   ? {
+      'interface-web-inspiration': { title: '介面與網站靈感', description: '從真實產品流程與精選網站中，研究版面、互動與視覺方向。' },
+      'brand-editorial-social': { title: '品牌、編輯與社群設計', description: '探索標誌、品牌規範、簡報與社群內容如何建立一致的視覺語言。' },
+      typography: { title: '字體排印', description: '從真實案例與可用字體目錄中，研究字體如何影響作品的語氣與層次。' },
       'component-discovery': { title: '元件探索', description: '跨設計系統比較模式，或從大型社群目錄尋找現成靈感。' },
       foundations: { title: '基礎元件', description: '建立產品介面時，負責結構、行為與無障礙的可靠起點。' },
       'motion-expressive-ui': { title: '動態與表現型介面', description: '從產品微互動到行銷頁效果，快速探索不同動態語彙。' },
+      'visualization-diagramming': { title: '視覺化與圖解', description: '快速畫出流程、系統關係與想法，讓複雜內容更容易討論與理解。' },
       'icons-supporting-tools': { title: '圖示與輔助工具', description: '尋找一致的圖示素材，並製作小而有目的的視覺互動。' },
+      'design-engineering': { title: '設計工程', description: '把視覺品味、互動細節與前端實作放在同一個工作流程中。' },
+      'agentic-security': { title: '代理式安全稽核', description: '以多階段代理流程探索、驗證、報告並修補程式碼漏洞。' },
     }
   : {
+      'interface-web-inspiration': { title: 'Interface and web inspiration', description: 'Study layouts, interactions, and visual direction through real product flows and curated websites.' },
+      'brand-editorial-social': { title: 'Brand, editorial, and social', description: 'Explore how logos, guidelines, decks, and social content build coherent visual languages.' },
+      typography: { title: 'Typography', description: 'Study how type shapes tone and hierarchy through real-world examples and usable typeface catalogs.' },
       'component-discovery': { title: 'Component discovery', description: 'Compare patterns across design systems or browse broad community catalogs for a useful starting point.' },
       foundations: { title: 'Foundations', description: 'Reliable starting points for the structure, behavior, and accessibility of product interfaces.' },
       'motion-expressive-ui': { title: 'Motion and expressive UI', description: 'Explore motion languages ranging from product micro-interactions to high-impact marketing effects.' },
+      'visualization-diagramming': { title: 'Visualization and diagramming', description: 'Sketch flows, system relationships, and ideas quickly so complex subjects are easier to discuss and understand.' },
       'icons-supporting-tools': { title: 'Icons and supporting tools', description: 'Find consistent visual assets and create small, purposeful interface moments.' },
+      'design-engineering': { title: 'Design engineering', description: 'Bring visual taste, interaction details, and frontend implementation into the same working practice.' },
+      'agentic-security': { title: 'Agentic security audits', description: 'Explore multi-stage agent workflows for finding, validating, reporting, and remediating code vulnerabilities.' },
     };
 const labels = {
   bestFor: isZh ? '適合用在' : 'Best for',
@@ -30,10 +51,10 @@ const labels = {
 
 <header class="page-header">
   <a href={isZh ? '/zh/resources' : '/resources'} class="back-link">← {isZh ? '所有資源' : 'All resources'}</a>
-  <p class="section-kicker">{isZh ? '資源 / 主題 01' : 'Resources / Topic 01'}</p>
-  <h1>{isZh ? '設計目錄' : 'Design catalogs'}</h1>
-  <p>{isZh ? '我會實際回訪的介面元件、動態效果與設計研究目錄。' : 'Visual directories for interface components, motion, and design research that are worth returning to.'}</p>
-  <p class="count">{resources.length} {isZh ? '個目錄' : 'catalogs'}</p>
+  <p class="section-kicker">{topicCopy[topic].kicker}</p>
+  <h1>{topicCopy[topic].title}</h1>
+  <p>{topicCopy[topic].description}</p>
+  <p class="count">{resources.length} {isZh ? '項資源' : 'resources'}</p>
 </header>
 
 <div class="resource-groups">

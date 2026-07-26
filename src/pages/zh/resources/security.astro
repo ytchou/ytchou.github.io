@@ -1,0 +1,10 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ResourcesDirectory from '../../../components/ResourcesDirectory.astro';
+const resources = (await getCollection('resources')).filter(resource => resource.data.topic === 'security');
+---
+
+<BaseLayout title="AI 安全與漏洞工程 — Patrick" description="探索 AI 輔助安全稽核、漏洞發現、修補與驗證的開源方法。">
+  <ResourcesDirectory resources={resources} lang="zh" topic="security" />
+</BaseLayout>

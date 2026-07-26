@@ -2,8 +2,8 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ResourcesDirectory from '../../components/ResourcesDirectory.astro';
-const resources = await getCollection('resources');
+const resources = (await getCollection('resources')).filter(resource => resource.data.topic === 'design');
 ---
-<BaseLayout title="Design Catalogs — Patrick" description="Visual catalogs for interface components, motion, icons, and design research.">
-  <ResourcesDirectory resources={resources} lang="en" />
+<BaseLayout title="Design Resources — Patrick" description="Useful references and working tools for interface, brand, typography, components, motion, visualization, and design engineering.">
+  <ResourcesDirectory resources={resources} lang="en" topic="design" />
 </BaseLayout>

@@ -13,6 +13,8 @@ const t = useTranslations('zh');
 
 const allPosts = await getCollection('blog', ({ data }) => data.lang === 'zh' && !data.draft);
 const resources = await getCollection('resources');
+const designResources = resources.filter(resource => resource.data.topic === 'design');
+const securityResources = resources.filter(resource => resource.data.topic === 'security');
 const latestPosts = sortPosts(allPosts).slice(0, 3);
 const featuredProjects = projects.filter(p => p.featured);
 ---
@@ -60,13 +62,22 @@ const featuredProjects = projects.filter(p => p.featured);
       <h2 class="section-title">{t('home.resources-title')}</h2>
       <a href="/zh/resources" class="section-more">{t('home.all-resources')}</a>
     </div>
-    <a href="/zh/resources/design" class="resource-preview">
-      <div>
-        <h3>設計</h3>
-        <p>{t('home.resources-body')}</p>
-      </div>
-      <span>{resources.length} 個目錄 →</span>
-    </a>
+    <div class="resource-previews">
+      <a href="/zh/resources/design" class="resource-preview">
+        <div>
+          <h3>設計</h3>
+          <p>{t('home.resources-body')}</p>
+        </div>
+        <span>{designResources.length} 項資源 →</span>
+      </a>
+      {securityResources.length > 0 && <a href="/zh/resources/security" class="resource-preview">
+        <div>
+          <h3>AI 安全與漏洞工程</h3>
+          <p>{t('home.security-resources-body')}</p>
+        </div>
+        <span>{securityResources.length} 項資源 →</span>
+      </a>}
+    </div>
   </section>
 
   <!-- ── Journey ──────────────────────────────────────── -->
@@ -205,6 +216,7 @@ const featuredProjects = projects.filter(p => p.featured);
     text-decoration: none;
     transition: border-color var(--transition-base), background var(--transition-base);
   }
+  .resource-previews { display: grid; gap: 1rem; }
   .resource-preview:hover { border-color: var(--color-accent); background: var(--color-surface); }
   .resource-preview h3 { margin: 0; font-size: 1.25rem; }
   .resource-preview p { margin: 0.35rem 0 0; color: var(--color-muted); font-size: 0.875rem; }

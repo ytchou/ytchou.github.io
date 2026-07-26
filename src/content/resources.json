@@ -1,5 +1,253 @@
 [
   {
+    "id": "mobbin",
+    "group": "interface-web-inspiration",
+    "name": "Mobbin",
+    "url": "https://mobbin.com/",
+    "screenshot": "/images/resources/catalogs/mobbin.webp",
+    "tags": ["product UI", "user flows", "mobile and web"],
+    "description": {
+      "en": "A searchable reference library of real mobile and web product screens, interface elements, and complete user flows.",
+      "zh": "收錄真實行動裝置與網站產品畫面、介面元素及完整使用流程的可搜尋參考庫。"
+    },
+    "bestFor": {
+      "en": "Studying how established products solve a specific screen or multi-step interaction.",
+      "zh": "研究成熟產品如何處理特定畫面或多步驟互動。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "id": "noiced",
+    "group": "interface-web-inspiration",
+    "name": "Noiced",
+    "url": "https://noiced.com/",
+    "screenshot": "/images/resources/catalogs/noiced.webp",
+    "tags": ["web design", "curated", "live sites"],
+    "description": {
+      "en": "A compact, opinionated feed of noteworthy live websites selected for daily web design inspiration.",
+      "zh": "精簡而有明確品味的優秀網站清單，持續提供每日網站設計靈感。"
+    },
+    "bestFor": {
+      "en": "Finding a fresh visual direction without wading through a large popularity-driven gallery.",
+      "zh": "不必翻找受熱門度主導的大型圖庫，也能快速找到新鮮的視覺方向。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "id": "recent-design",
+    "group": "interface-web-inspiration",
+    "name": "Recent",
+    "url": "https://recent.design/",
+    "screenshot": "/images/resources/catalogs/recent-design.webp",
+    "tags": ["multidisciplinary", "curated", "discovery"],
+    "description": {
+      "en": "A broad curated feed spanning interfaces, websites, branding, typography, motion, editorial work, and digital products.",
+      "zh": "涵蓋介面、網站、品牌、字體、動態、編輯設計與數位產品的綜合精選目錄。"
+    },
+    "bestFor": {
+      "en": "Starting broad when you need references across more than one design discipline.",
+      "zh": "需要跨越多種設計領域尋找參考時，先從廣泛的精選內容開始。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "id": "dribbble",
+    "group": "interface-web-inspiration",
+    "name": "Dribbble",
+    "url": "https://dribbble.com/",
+    "screenshot": "/images/resources/catalogs/dribbble.webp",
+    "tags": ["community", "visual exploration", "designers"],
+    "description": {
+      "en": "A large designer community and visual showcase covering interfaces, branding, illustration, animation, and portfolios.",
+      "zh": "大型設計師社群與視覺作品平台，涵蓋介面、品牌、插畫、動畫與作品集。"
+    },
+    "bestFor": {
+      "en": "Exploring many visual directions quickly or discovering designers with a particular style.",
+      "zh": "快速探索大量視覺方向，或尋找具備特定風格的設計師。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "id": "best-website-templates",
+    "group": "interface-web-inspiration",
+    "name": "Best Website Templates",
+    "url": "https://bestwebsitetemplate.com/",
+    "screenshot": "/images/resources/catalogs/best-website-templates.webp",
+    "tags": ["templates", "Webflow and Framer", "Shopify"],
+    "description": {
+      "en": "An independently curated library of Webflow, Framer, and Shopify templates reviewed for both design and implementation quality.",
+      "zh": "獨立精選的 Webflow、Framer 與 Shopify 範本庫，同時檢視視覺設計與實作品質。"
+    },
+    "bestFor": {
+      "en": "Choosing a polished starting point without evaluating every template marketplace listing yourself.",
+      "zh": "不必逐一檢查範本市集的所有項目，也能找到完成度高的起點。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "id": "awwwards",
+    "group": "interface-web-inspiration",
+    "name": "Awwwards",
+    "url": "https://www.awwwards.com/",
+    "screenshot": "/images/resources/catalogs/awwwards.webp",
+    "tags": ["web design", "awards", "live sites"],
+    "description": {
+      "en": "A juried showcase recognizing ambitious websites from designers, developers, studios, and agencies around the world.",
+      "zh": "由評審選出的網站作品平台，收錄全球設計師、開發者、工作室與代理商的前沿作品。"
+    },
+    "bestFor": {
+      "en": "Studying high-craft visual direction, interaction, and implementation in live production websites.",
+      "zh": "研究正式上線網站中的高完成度視覺方向、互動與實作。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "id": "posts-design",
+    "group": "brand-editorial-social",
+    "name": "posts.design",
+    "url": "https://posts.design/",
+    "screenshot": "/images/resources/catalogs/posts-design.webp",
+    "tags": ["social media", "launches", "content design"],
+    "description": {
+      "en": "A curated reference wall for well-designed social posts, product announcements, launches, and visual updates.",
+      "zh": "精選社群貼文、產品公告、發布內容與視覺更新的設計參考牆。"
+    },
+    "bestFor": {
+      "en": "Planning a launch post or translating product news into a clear visual format.",
+      "zh": "規劃產品發布貼文，或把產品消息轉化成清楚的視覺格式。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "id": "deck-gallery",
+    "group": "brand-editorial-social",
+    "name": "Deck Gallery",
+    "url": "https://deck.gallery/",
+    "screenshot": "/images/resources/catalogs/deck-gallery.webp",
+    "tags": ["presentations", "reports", "editorial"],
+    "description": {
+      "en": "A curated collection of presentation decks and individual slides across pitches, reports, guidelines, portfolios, and strategy.",
+      "zh": "精選簡報與單頁投影片目錄，涵蓋提案、報告、品牌規範、作品集與策略。"
+    },
+    "bestFor": {
+      "en": "Finding structure and visual pacing for a specific kind of presentation.",
+      "zh": "為特定類型的簡報尋找內容結構與視覺節奏。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "id": "logosystem",
+    "group": "brand-editorial-social",
+    "name": "Logosystem",
+    "url": "https://logosystem.co/",
+    "screenshot": "/images/resources/catalogs/logosystem.webp",
+    "tags": ["logos", "brand identity", "filters"],
+    "description": {
+      "en": "A focused logo inspiration library organized by type, industry, style, shape, color, and mood.",
+      "zh": "依類型、產業、風格、形狀、色彩與氛圍整理的標誌設計靈感庫。"
+    },
+    "bestFor": {
+      "en": "Building a precise logo moodboard or comparing directions for a new identity.",
+      "zh": "建立精準的標誌情緒板，或比較新品牌識別的可能方向。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "topic": "design",
+    "id": "logos-lndev",
+    "group": "brand-editorial-social",
+    "name": "SVG Logos",
+    "url": "https://logos.lndev.me/",
+    "screenshot": "/images/resources/catalogs/logos-lndev.webp",
+    "tags": ["logos", "SVG", "brand assets"],
+    "description": {
+      "en": "A searchable library of free SVG logos for apps, developer tools, and technology brands, with quick copy and download workflows.",
+      "zh": "可搜尋的免費 SVG 標誌庫，收錄應用程式、開發工具與科技品牌，支援快速複製與下載。"
+    },
+    "bestFor": {
+      "en": "Finding a ready-to-use brand mark before drawing or exporting a logo asset yourself; check each brand's guidelines before use.",
+      "zh": "在自行繪製或匯出標誌素材前，先尋找可直接使用的品牌標誌；使用前請確認各品牌的規範。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "id": "brand-guidelines",
+    "group": "brand-editorial-social",
+    "name": "Brand Guidelines",
+    "url": "https://www.brandguidelines.net/",
+    "screenshot": "/images/resources/catalogs/brand-guidelines.webp",
+    "tags": ["brand systems", "guidelines", "identity"],
+    "description": {
+      "en": "A showcase of real brand guideline documents linking to identity systems created in-house and by design studios.",
+      "zh": "收錄企業內部與設計工作室製作的真實品牌規範文件與識別系統。"
+    },
+    "bestFor": {
+      "en": "Seeing how a visual identity becomes practical rules, assets, and documentation.",
+      "zh": "觀察視覺識別如何轉化為可執行的規則、素材與文件。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "id": "fonts-in-use",
+    "group": "typography",
+    "name": "Fonts In Use",
+    "url": "https://fontsinuse.com/",
+    "screenshot": "/images/resources/catalogs/fonts-in-use.webp",
+    "tags": ["typography", "case studies", "real-world use"],
+    "description": {
+      "en": "An independent archive documenting typefaces as they appear in real branding, editorial, packaging, software, and web projects.",
+      "zh": "記錄字體在真實品牌、編輯、包裝、軟體與網站專案中如何使用的獨立資料庫。"
+    },
+    "bestFor": {
+      "en": "Evaluating a typeface through finished work instead of an isolated specimen.",
+      "zh": "透過完成作品而非單獨字體樣張，判斷字體的實際效果。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "id": "free-faces",
+    "group": "typography",
+    "name": "Free Faces",
+    "url": "https://www.freefaces.gallery/",
+    "screenshot": "/images/resources/catalogs/free-faces.webp",
+    "tags": ["typefaces", "free licenses", "discovery"],
+    "description": {
+      "en": "A visually led catalog of typefaces available under various free licenses, organized by broad typographic style.",
+      "zh": "以視覺瀏覽為主的字體目錄，收錄採用各類免費授權的字體，並依主要字體風格分類。"
+    },
+    "bestFor": {
+      "en": "Discovering distinctive type options before confirming the license on the original source.",
+      "zh": "先探索具有特色的字體選項，再回到原始來源確認授權範圍。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
     "id": "component-gallery",
     "group": "component-discovery",
     "name": "The Component Gallery",
@@ -36,6 +284,44 @@
     "addedDate": "2026-07-24",
     "lastCheckedDate": "2026-07-24",
     "screenshotCapturedDate": "2026-07-24"
+  },
+  {
+    "id": "lander-figma-blocks",
+    "group": "component-discovery",
+    "name": "Lander Figma Blocks",
+    "url": "https://blocks.lander.studio/",
+    "screenshot": "/images/resources/catalogs/lander-figma-blocks.webp",
+    "tags": ["Figma", "layout blocks", "learning"],
+    "description": {
+      "en": "A collection of free Figma layout blocks recreated for close inspection, remixing, and hands-on design study.",
+      "zh": "可在 Figma 中仔細拆解、重新組合與動手研究的免費版面區塊集合。"
+    },
+    "bestFor": {
+      "en": "Learning layout decisions by taking polished interface sections apart pixel by pixel.",
+      "zh": "逐像素拆解完成度高的介面區塊，理解背後的版面決策。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "id": "forever-components",
+    "group": "component-discovery",
+    "name": "Forever Components",
+    "url": "https://forever-components.vercel.app/infinite/",
+    "screenshot": "/images/resources/catalogs/forever-components.webp",
+    "tags": ["animated components", "creative coding", "copyable code"],
+    "description": {
+      "en": "An endless spatial canvas of original animated web components that can be opened individually and copied into a project.",
+      "zh": "以無限空間畫布呈現原創網頁動畫元件，可逐一開啟查看並把程式碼複製到專案中。"
+    },
+    "bestFor": {
+      "en": "Exploring unconventional interaction ideas through a playful, highly visual browsing experience.",
+      "zh": "透過具有玩心且高度視覺化的瀏覽方式，探索非典型的互動構想。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
   },
   {
     "id": "shadcn-ui",
@@ -171,6 +457,44 @@
     "screenshotCapturedDate": "2026-07-24"
   },
   {
+    "id": "eldora-ui",
+    "group": "motion-expressive-ui",
+    "name": "Eldora UI",
+    "url": "https://www.eldoraui.site/",
+    "screenshot": "/images/resources/catalogs/eldora-ui.webp",
+    "tags": ["motion", "React", "open source"],
+    "description": {
+      "en": "A copyable collection of animated React and Tailwind components, effects, and larger page blocks for expressive interfaces.",
+      "zh": "可複製使用的 React 與 Tailwind 動畫元件、視覺效果及大型頁面區塊集合。"
+    },
+    "bestFor": {
+      "en": "Adding animated product or landing-page sections while retaining access to the implementation.",
+      "zh": "為產品或登陸頁加入動畫區塊，同時保留對實作程式碼的掌控。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "id": "excalidraw",
+    "group": "visualization-diagramming",
+    "name": "Excalidraw",
+    "url": "https://excalidraw.com/",
+    "screenshot": "/images/resources/catalogs/excalidraw.webp",
+    "tags": ["diagramming", "whiteboard", "open source"],
+    "description": {
+      "en": "A collaborative, hand-drawn-style canvas for turning flows, systems, and early ideas into diagrams quickly.",
+      "zh": "具手繪風格的協作畫布，能快速把流程、系統關係與早期想法整理成圖解。"
+    },
+    "bestFor": {
+      "en": "Explaining a complex idea before its structure is stable enough for formal design documentation.",
+      "zh": "在結構尚未穩定到能寫成正式設計文件前，先把複雜想法說清楚。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
     "id": "reicon",
     "group": "icons-supporting-tools",
     "name": "Reicon",
@@ -207,5 +531,185 @@
     "addedDate": "2026-07-24",
     "lastCheckedDate": "2026-07-24",
     "screenshotCapturedDate": "2026-07-24"
+  },
+  {
+    "topic": "design",
+    "id": "web-interface-guidelines",
+    "group": "design-engineering",
+    "name": "Web Interface Guidelines",
+    "url": "https://interfaces.rauno.me/",
+    "screenshot": "/images/resources/catalogs/web-interface-guidelines.webp",
+    "tags": ["interface design", "accessibility", "frontend"],
+    "description": {
+      "en": "A living, practical checklist for the interaction, typography, motion, touch, performance, accessibility, and design details that make web interfaces feel considered.",
+      "zh": "持續更新的實用清單，整理讓網站介面更完整的互動、字體、動態、觸控、效能、無障礙與設計細節。"
+    },
+    "bestFor": {
+      "en": "Auditing the details of a web interface before polishing a release.",
+      "zh": "在打磨版本前，逐項檢查網站介面的細節。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "topic": "design",
+    "id": "pasito",
+    "group": "design-engineering",
+    "name": "Pasito",
+    "url": "https://joshpuckett.me/pasito",
+    "screenshot": "/images/resources/catalogs/pasito.webp",
+    "tags": ["components", "React", "motion"],
+    "description": {
+      "en": "A small, dependency-free, fully themeable fluid stepper component with click navigation and optional autoplay.",
+      "zh": "小巧、無相依且可完整主題化的流動式 stepper 元件，支援點擊導覽與選用的自動播放。"
+    },
+    "bestFor": {
+      "en": "Adding a polished, stateful stepper without assembling the interaction from scratch.",
+      "zh": "不必從零組合互動，就能加入完成度高且具狀態的 stepper。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "topic": "design",
+    "id": "vaul",
+    "group": "design-engineering",
+    "name": "Vaul",
+    "url": "https://vaul.emilkowal.ski/",
+    "screenshot": "/images/resources/catalogs/vaul.webp",
+    "tags": ["React", "drawer", "components"],
+    "description": {
+      "en": "A focused drawer component for React, presented with documentation and an interactive example.",
+      "zh": "專注於抽屜互動的 React 元件，提供文件與可操作的示範。"
+    },
+    "bestFor": {
+      "en": "Studying a polished React drawer interaction before building a similar pattern yourself.",
+      "zh": "在自行建立類似模式前，研究完成度高的 React 抽屜互動。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "topic": "design",
+    "id": "manage-design-projects",
+    "group": "design-engineering",
+    "name": "Manage design projects",
+    "url": "https://linear.app/method/manage-design-projects",
+    "screenshot": "/images/resources/catalogs/manage-design-projects.webp",
+    "tags": ["design process", "collaboration", "product teams"],
+    "description": {
+      "en": "Linear's guide to managing design projects, from verifying the problem and exploring options to feedback, direction, and design–engineering handoff.",
+      "zh": "Linear 的設計專案管理方法，從確認問題、探索方案，到回饋、定案與設計工程交接。"
+    },
+    "bestFor": {
+      "en": "Structuring collaborative design work when requirements and solutions are still evolving.",
+      "zh": "在需求與解法仍持續變動時，建立協作設計工作的結構。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "topic": "design",
+    "id": "developing-taste",
+    "group": "design-engineering",
+    "name": "Developing Taste",
+    "url": "https://emilkowal.ski/ui/developing-taste",
+    "screenshot": "/images/resources/catalogs/developing-taste.webp",
+    "tags": ["design practice", "critique", "craft"],
+    "description": {
+      "en": "A practical essay on developing design taste by studying strong work, naming why it works, and practicing deliberately.",
+      "zh": "透過研究優秀作品、說清楚它為何有效並刻意練習，培養設計品味的實用文章。"
+    },
+    "bestFor": {
+      "en": "Building a repeatable critique habit instead of relying on instinct alone.",
+      "zh": "建立可重複的設計評析習慣，而不只依賴直覺。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "topic": "security",
+    "id": "cloudflare-security-audit-skill",
+    "group": "agentic-security",
+    "name": "Cloudflare Security Audit Skill",
+    "url": "https://github.com/cloudflare/security-audit-skill",
+    "screenshot": "/images/resources/catalogs/cloudflare-security-audit-skill.webp",
+    "tags": ["security audit", "coding agents", "open source"],
+    "description": {
+      "en": "A multi-phase coding-agent skill for recon, vulnerability hunting, adversarial validation, structured findings, and independent verification.",
+      "zh": "支援偵察、漏洞搜尋、對抗式驗證、結構化發現與獨立複核的多階段 coding agent 安全稽核技能。"
+    },
+    "bestFor": {
+      "en": "Studying how to turn a coding agent into a disciplined security-audit workflow for authorized codebases.",
+      "zh": "研究如何把 coding agent 轉化為有紀律的安全稽核流程，並只用於獲得授權的程式碼。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "topic": "security",
+    "id": "visa-vulnerability-agentic-harness",
+    "group": "agentic-security",
+    "name": "Visa Vulnerability Agentic Harness",
+    "url": "https://github.com/visa/visa-vulnerability-agentic-harness",
+    "screenshot": "/images/resources/catalogs/visa-vulnerability-agentic-harness.webp",
+    "tags": ["SAST", "agentic security", "remediation"],
+    "description": {
+      "en": "An open-source agentic SAST pipeline covering threat modeling, multi-lens analysis, adversarial verification, remediation, and fix validation.",
+      "zh": "涵蓋威脅建模、多視角分析、對抗式驗證、修補與修補驗證的開源 agentic SAST 流程。"
+    },
+    "bestFor": {
+      "en": "Understanding an end-to-end vulnerability workflow; scan only authorized repositories, and review every generated finding or fix before adoption.",
+      "zh": "理解端到端漏洞處理流程；只掃描獲得授權的儲存庫，並在採用前人工檢視所有產生的發現與修補。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "topic": "security",
+    "id": "shannon",
+    "group": "agentic-security",
+    "name": "Shannon",
+    "url": "https://github.com/KeygraphHQ/shannon",
+    "screenshot": "/images/resources/catalogs/shannon.webp",
+    "tags": ["AI pentesting", "white-box security", "open source"],
+    "description": {
+      "en": "An autonomous, white-box AI pentester for web applications and APIs that combines source analysis with live exploitation to validate exploitable vulnerabilities.",
+      "zh": "以白箱方式分析網站應用程式與 API 原始碼，並透過實際利用驗證漏洞的自主 AI 滲透測試工具。"
+    },
+    "bestFor": {
+      "en": "Studying proof-by-exploitation workflows; run only against sandboxed systems you own or have explicit written authorization to test.",
+      "zh": "研究以可重現利用證明漏洞的測試流程；只在沙盒或明確獲得書面授權的系統上執行。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "topic": "security",
+    "id": "snyk-agent-scan",
+    "group": "agentic-security",
+    "name": "Snyk Agent Scan",
+    "url": "https://github.com/snyk/agent-scan",
+    "screenshot": "/images/resources/catalogs/agent-scan.webp",
+    "tags": ["MCP security", "agent skills", "supply chain"],
+    "description": {
+      "en": "A Snyk scanner that inventories AI agents, MCP servers, and agent skills, checking for prompt injection and other agent supply-chain threats.",
+      "zh": "Snyk 的安全掃描器，可盤點 AI agents、MCP servers 與 agent skills，檢查提示注入及其他供應鏈風險。"
+    },
+    "bestFor": {
+      "en": "Auditing local agent components before use; scan untrusted MCP configurations inside a sandbox and review commands before consent.",
+      "zh": "在採用前稽核本機上的 agent 元件；對不受信任的 MCP 設定檔先在沙盒中掃描，並在同意執行前檢查指令。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
   }
 ]

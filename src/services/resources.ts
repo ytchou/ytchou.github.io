@@ -1,7 +1,20 @@
 import type { CollectionEntry } from 'astro:content';
 
-export const resourceGroups = ['component-discovery', 'foundations', 'motion-expressive-ui', 'icons-supporting-tools'] as const;
+export const resourceGroups = [
+  'interface-web-inspiration',
+  'brand-editorial-social',
+  'typography',
+  'component-discovery',
+  'foundations',
+  'motion-expressive-ui',
+  'visualization-diagramming',
+  'icons-supporting-tools',
+  'design-engineering',
+  'agentic-security',
+] as const;
 export type ResourceGroup = typeof resourceGroups[number];
+export const resourceTopics = ['design', 'security'] as const;
+export type ResourceTopic = typeof resourceTopics[number];
 export type ResourceEntry = CollectionEntry<'resources'>;
 
 export function groupResources(resources: ResourceEntry[]): Map<ResourceGroup, ResourceEntry[]> {

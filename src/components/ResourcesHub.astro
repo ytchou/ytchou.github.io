@@ -1,38 +1,54 @@
 ---
-import type { ResourceEntry } from '../services/resources';
-import { getCollectionFreshness } from '../services/resources';
+import { getCollectionFreshness, resourceTopics, type ResourceEntry, type ResourceTopic } from '../services/resources';
 import type { Lang } from '../i18n/ui';
 
 interface Props { resources: ResourceEntry[]; lang: Lang; }
 const { resources, lang } = Astro.props;
 const isZh = lang === 'zh';
 const base = isZh ? '/zh' : '';
-const freshness = getCollectionFreshness(resources);
 const locale = isZh ? 'zh-TW' : 'en-US';
+const topicCopy: Record<ResourceTopic, { label: string; title: string; description: string; path: string }> = isZh
+  ? {
+      design: { label: '主題 01', title: '設計', description: '涵蓋介面、品牌、字體、元件、動態、視覺化與設計工程的實用資源。', path: 'design' },
+      security: { label: '主題 02', title: 'AI 安全與漏洞工程', description: '探索 AI 輔助安全稽核、漏洞發現、修補與驗證的開源方法。', path: 'security' },
+    }
+  : {
+      design: { label: 'Topic 01', title: 'Design', description: 'Useful resources for interface, brand, typography, components, motion, visualization, and design engineering.', path: 'design' },
+      security: { label: 'Topic 02', title: 'AI security and vulnerability engineering', description: 'Open-source approaches to AI-assisted security audits, vulnerability discovery, remediation, and verification.', path: 'security' },
+    };
 ---
 
 <header class="page-header">
   <p class="section-kicker">{isZh ? '收藏' : 'Directory'}</p>
   <h1>{isZh ? '資源' : 'Resources'}</h1>
-  <p>{isZh ? '值得反覆使用的設計與產品目錄。' : 'A considered collection of design and product catalogs worth returning to.'}</p>
+  <p>{isZh ? '值得反覆使用的設計與安全參考、工具。' : 'A considered collection of design and security references worth returning to.'}</p>
 </header>
 
-{resources.length > 0 && (
-  <a class="topic-card" href={`${base}/resources/design`}>
-    <div>
-      <p class="topic-label">{isZh ? '主題 01' : 'Topic 01'}</p>
-      <h2>{isZh ? '設計' : 'Design'}</h2>
-      <p>{isZh ? '介面元件、動態效果、圖示與設計研究目錄。' : 'Visual catalogs for interface components, motion, icons, and design research.'}</p>
-    </div>
-    <div class="topic-meta">
-      <span>{resources.length} {isZh ? '個目錄' : 'catalogs'}</span>
-      {freshness && <span>{isZh ? '資料檢查至' : 'Reviewed through'} {freshness.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' })}</span>}
-    </div>
-  </a>
-)}
+<div class="topic-list">
+  {resourceTopics.map(topic => {
+    const topicResources = resources.filter(resource => resource.data.topic === topic);
+    if (topicResources.length === 0) return null;
+    const freshness = getCollectionFreshness(topicResources);
+    const copy = topicCopy[topic];
+    return (
+      <a class="topic-card" href={`${base}/resources/${copy.path}`}>
+        <div>
+          <p class="topic-label">{copy.label}</p>
+          <h2>{copy.title}</h2>
+          <p>{copy.description}</p>
+        </div>
+        <div class="topic-meta">
+          <span>{topicResources.length} {isZh ? '項資源' : 'resources'}</span>
+          {freshness && <span>{isZh ? '資料檢查至' : 'Reviewed through'} {freshness.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' })}</span>}
+        </div>
+      </a>
+    );
+  })}
+</div>
 
 <style>
   .page-header { padding-bottom: 2rem; border-bottom: 1px solid var(--color-border); margin-bottom: 2rem; }
+  .topic-list { display: grid; gap: 1rem; }
   h1 { margin: 0; color: var(--color-text); font-size: clamp(2.75rem, 7vw, 4.5rem); font-weight: 600; letter-spacing: -0.04em; line-height: 1; }
   .page-header > p:last-child { margin: 1rem 0 0; color: var(--color-muted); max-width: 60ch; }
   .topic-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2rem; padding: 2rem; border: 1px solid var(--color-border); border-radius: var(--radius-card); text-decoration: none; transition: border-color var(--transition-base), background var(--transition-base); }
