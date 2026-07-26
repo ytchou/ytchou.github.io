@@ -551,5 +551,45 @@
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
     "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "topic": "security",
+    "id": "shannon",
+    "group": "agentic-security",
+    "name": "Shannon",
+    "url": "https://github.com/KeygraphHQ/shannon",
+    "screenshot": "/images/resources/catalogs/shannon.webp",
+    "tags": ["AI pentesting", "white-box security", "open source"],
+    "description": {
+      "en": "An autonomous, white-box AI pentester for web applications and APIs that combines source analysis with live exploitation to validate exploitable vulnerabilities.",
+      "zh": "以白箱方式分析網站應用程式與 API 原始碼，並透過實際利用驗證漏洞的自主 AI 滲透測試工具。"
+    },
+    "bestFor": {
+      "en": "Studying proof-by-exploitation workflows; run only against sandboxed systems you own or have explicit written authorization to test.",
+      "zh": "研究以可重現利用證明漏洞的測試流程；只在沙盒或明確獲得書面授權的系統上執行。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "topic": "security",
+    "id": "snyk-agent-scan",
+    "group": "agentic-security",
+    "name": "Snyk Agent Scan",
+    "url": "https://github.com/snyk/agent-scan",
+    "screenshot": "/images/resources/catalogs/agent-scan.webp",
+    "tags": ["MCP security", "agent skills", "supply chain"],
+    "description": {
+      "en": "A Snyk scanner that inventories AI agents, MCP servers, and agent skills, checking for prompt injection and other agent supply-chain threats.",
+      "zh": "Snyk 的安全掃描器，可盤點 AI agents、MCP servers 與 agent skills，檢查提示注入及其他供應鏈風險。"
+    },
+    "bestFor": {
+      "en": "Auditing local agent components before use; scan untrusted MCP configurations inside a sandbox and review commands before consent.",
+      "zh": "在採用前稽核本機上的 agent 元件；對不受信任的 MCP 設定檔先在沙盒中掃描，並在同意執行前檢查指令。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
   }
 ]

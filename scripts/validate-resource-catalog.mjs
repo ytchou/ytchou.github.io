@@ -10,7 +10,7 @@ const expectedGroups = {
   'motion-expressive-ui': ['morphin', 'aceternity-ui', 'magic-ui', 'react-bits', 'kinetics', 'eldora-ui'],
   'visualization-diagramming': ['excalidraw'],
   'icons-supporting-tools': ['reicon', 'icon-animator'],
-  'agentic-security': ['cloudflare-security-audit-skill', 'visa-vulnerability-agentic-harness'],
+  'agentic-security': ['cloudflare-security-audit-skill', 'visa-vulnerability-agentic-harness', 'shannon', 'snyk-agent-scan'],
 };
 
 const catalogPath = path.resolve('src/content/resources.json');
