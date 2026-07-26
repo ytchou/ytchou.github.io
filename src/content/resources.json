@@ -95,6 +95,25 @@
     "screenshotCapturedDate": "2026-07-26"
   },
   {
+    "id": "awwwards",
+    "group": "interface-web-inspiration",
+    "name": "Awwwards",
+    "url": "https://www.awwwards.com/",
+    "screenshot": "/images/resources/catalogs/awwwards.webp",
+    "tags": ["web design", "awards", "live sites"],
+    "description": {
+      "en": "A juried showcase recognizing ambitious websites from designers, developers, studios, and agencies around the world.",
+      "zh": "由評審選出的網站作品平台，收錄全球設計師、開發者、工作室與代理商的前沿作品。"
+    },
+    "bestFor": {
+      "en": "Studying high-craft visual direction, interaction, and implementation in live production websites.",
+      "zh": "研究正式上線網站中的高完成度視覺方向、互動與實作。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
     "id": "posts-design",
     "group": "brand-editorial-social",
     "name": "posts.design",
@@ -260,6 +279,25 @@
     "bestFor": {
       "en": "Learning layout decisions by taking polished interface sections apart pixel by pixel.",
       "zh": "逐像素拆解完成度高的介面區塊，理解背後的版面決策。"
+    },
+    "addedDate": "2026-07-26",
+    "lastCheckedDate": "2026-07-26",
+    "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "id": "forever-components",
+    "group": "component-discovery",
+    "name": "Forever Components",
+    "url": "https://forever-components.vercel.app/infinite/",
+    "screenshot": "/images/resources/catalogs/forever-components.webp",
+    "tags": ["animated components", "creative coding", "copyable code"],
+    "description": {
+      "en": "An endless spatial canvas of original animated web components that can be opened individually and copied into a project.",
+      "zh": "以無限空間畫布呈現原創網頁動畫元件，可逐一開啟查看並把程式碼複製到專案中。"
+    },
+    "bestFor": {
+      "en": "Exploring unconventional interaction ideas through a playful, highly visual browsing experience.",
+      "zh": "透過具有玩心且高度視覺化的瀏覽方式，探索非典型的互動構想。"
     },
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",

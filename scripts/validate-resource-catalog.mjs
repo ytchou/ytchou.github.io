@@ -2,10 +2,10 @@ import { access, readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const expectedGroups = {
-  'interface-web-inspiration': ['mobbin', 'noiced', 'recent-design', 'dribbble', 'best-website-templates'],
+  'interface-web-inspiration': ['mobbin', 'noiced', 'recent-design', 'dribbble', 'best-website-templates', 'awwwards'],
   'brand-editorial-social': ['posts-design', 'deck-gallery', 'logosystem', 'brand-guidelines'],
   typography: ['fonts-in-use', 'free-faces'],
-  'component-discovery': ['component-gallery', '21st-dev', 'lander-figma-blocks'],
+  'component-discovery': ['component-gallery', '21st-dev', 'lander-figma-blocks', 'forever-components'],
   foundations: ['shadcn-ui', 'react-aria'],
   'motion-expressive-ui': ['morphin', 'aceternity-ui', 'magic-ui', 'react-bits', 'kinetics', 'eldora-ui'],
   'visualization-diagramming': ['excalidraw'],
@@ -16,11 +16,13 @@ const catalogPath = path.resolve('src/content/resources.json');
 const catalogs = JSON.parse(await readFile(catalogPath, 'utf8'));
 const expectedIds = Object.values(expectedGroups).flat();
 const ids = catalogs.map(catalog => catalog.id);
+const urls = catalogs.map(catalog => new URL(catalog.url).href.replace(/\/$/, ''));
 
 if (catalogs.length !== expectedIds.length) {
   throw new Error(`Expected ${expectedIds.length} catalogs, found ${catalogs.length}.`);
 }
-if (new Set(ids).size !== ids.length) throw new Error('Catalog IDs must be unique.');
+if (new Set(ids).size !== ids.length) throw new Error('Resource IDs must be unique.');
+if (new Set(urls).size !== urls.length) throw new Error('Resource URLs must be unique after normalization.');
 if (ids.join(',') !== expectedIds.join(',')) throw new Error('Catalog editorial order does not match the approved design.');
 
 for (const catalog of catalogs) {
