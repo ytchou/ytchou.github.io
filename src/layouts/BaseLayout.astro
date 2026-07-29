@@ -20,12 +20,12 @@ const htmlLang = lang === 'zh' ? 'zh-TW' : 'en';
   <head>
     <BaseHead title={title} description={description} />
     <script is:inline>
-      // Apply saved theme immediately to prevent flash
+      // Apply saved theme and catalog view immediately to prevent flash
       (function() {
-        const saved = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const theme = saved || 'light';
+        const theme = localStorage.getItem('theme') || 'light';
         document.documentElement.setAttribute('data-theme', theme);
+        const view = localStorage.getItem('catalog-view') === 'list' ? 'list' : 'grid';
+        document.documentElement.setAttribute('data-catalog-view', view);
       })();
     </script>
   </head>

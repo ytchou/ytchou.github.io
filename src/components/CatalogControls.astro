@@ -1,0 +1,225 @@
+---
+import { useTranslations } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
+
+export interface CatalogChip {
+  value: string;
+  label: string;
+  count?: number;
+}
+
+interface Props {
+  chips: CatalogChip[];
+  lang: Lang;
+  showViewToggle?: boolean;
+}
+
+const { chips, lang, showViewToggle = false } = Astro.props;
+const t = useTranslations(lang);
+
+// A single chip is not a filter — it is the whole catalog. Hide the row rather than
+// render a control that can only ever be "on" (the security topic has one group).
+const showChips = chips.length > 1;
+// Only meaningful when the chips partition the set (e.g. resource groups). Callers whose
+// chips overlap — a project can carry several tags — omit `count` and get no total.
+const totalCount = chips.reduce((sum, chip) => sum + (chip.count ?? 0), 0);
+const render = showChips || showViewToggle;
+---
+
+{render && (
+  <div class="catalog-controls" data-catalog-controls>
+    {showChips && (
+      <div class="chip-row" role="group" aria-label={t('catalog.filter-label')}>
+        <button type="button" class="chip is-active" data-filter-value="all" aria-pressed="true">
+          {t('catalog.all')}
+          {totalCount > 0 && <span class="chip-count">{totalCount}</span>}
+        </button>
+        {chips.map(chip => (
+          <button type="button" class="chip" data-filter-value={chip.value} aria-pressed="false">
+            {chip.label}
+            {chip.count !== undefined && <span class="chip-count">{chip.count}</span>}
+          </button>
+        ))}
+      </div>
+    )}
+
+    {showViewToggle && (
+      <div class="view-toggle" role="group" aria-label={t('catalog.view-label')}>
+        <button type="button" class="view-button is-active" data-catalog-view-value="grid" aria-pressed="true" title={t('catalog.view-grid')}>
+          <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false">
+            <rect x="1" y="1" width="6" height="6" rx="1" /><rect x="9" y="1" width="6" height="6" rx="1" />
+            <rect x="1" y="9" width="6" height="6" rx="1" /><rect x="9" y="9" width="6" height="6" rx="1" />
+          </svg>
+          <span>{t('catalog.view-grid')}</span>
+        </button>
+        <button type="button" class="view-button" data-catalog-view-value="list" aria-pressed="false" title={t('catalog.view-list')}>
+          <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false">
+            <rect x="1" y="2" width="14" height="2" rx="1" /><rect x="1" y="7" width="14" height="2" rx="1" />
+            <rect x="1" y="12" width="14" height="2" rx="1" />
+          </svg>
+          <span>{t('catalog.view-list')}</span>
+        </button>
+      </div>
+    )}
+  </div>
+)}
+
+<style>
+  .catalog-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .chip-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35em 0.85em;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-tag);
+    background: transparent;
+    color: var(--color-text-muted);
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: border-color var(--transition-base), background var(--transition-base), color var(--transition-base);
+  }
+  .chip:hover { border-color: var(--color-border-hover); color: var(--color-text); }
+  .chip.is-active {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-bg);
+  }
+  .chip-count {
+    font: 0.6875rem/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    opacity: 0.65;
+  }
+
+  .view-toggle {
+    display: inline-flex;
+    /* Keeps the toggle on the right edge even when the chip row wraps past it,
+       lining it up with the right-aligned resource count above. */
+    margin-left: auto;
+    gap: 0.25rem;
+    padding: 0.2rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-tag);
+  }
+  .view-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3em 0.75em;
+    border: none;
+    border-radius: var(--radius-tag);
+    background: transparent;
+    color: var(--color-text-muted);
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background var(--transition-base), color var(--transition-base);
+  }
+  .view-button svg { fill: currentColor; }
+  .view-button:hover { color: var(--color-text); }
+  .view-button.is-active { background: var(--color-surface); color: var(--color-text); }
+
+  .chip:focus-visible,
+  .view-button:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+  @media (max-width: 767px) {
+    .view-button span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .chip, .view-button { transition: none; }
+  }
+</style>
+
+<style is:global>
+  /* Toggled by the script on elements owned by consumer components, so these
+     cannot be scoped. `hidden` also drops the node from the accessibility tree. */
+  [data-filter-item][hidden],
+  [data-filter-group][hidden],
+  [data-filter-empty][hidden] { display: none !important; }
+</style>
+
+<script>
+  const VIEW_KEY = 'catalog-view';
+
+  const bar = document.querySelector<HTMLElement>('[data-catalog-controls]');
+  const target = document.querySelector<HTMLElement>('[data-catalog-target]');
+
+  function applyFilter(value: string) {
+    if (!target) return;
+
+    let total = 0;
+    target.querySelectorAll<HTMLElement>('[data-filter-item]').forEach(item => {
+      const values = (item.dataset.filterValues ?? '').split(',').filter(Boolean);
+      const match = value === 'all' || values.includes(value);
+      item.hidden = !match;
+      if (match) total++;
+    });
+
+    // Groups are optional; when present, collapse the ones left with nothing in them
+    // and rewrite their counts so the heading never contradicts what is on screen.
+    target.querySelectorAll<HTMLElement>('[data-filter-group]').forEach(group => {
+      const visible = [...group.querySelectorAll<HTMLElement>('[data-filter-item]')]
+        .filter(item => !item.hidden).length;
+      group.hidden = visible === 0;
+      const countEl = group.querySelector<HTMLElement>('[data-filter-count]');
+      if (countEl) countEl.textContent = String(visible).padStart(2, '0');
+    });
+
+    const totalEl = document.querySelector<HTMLElement>('[data-filter-total]');
+    if (totalEl) totalEl.textContent = String(total);
+
+    const emptyEl = document.querySelector<HTMLElement>('[data-filter-empty]');
+    if (emptyEl) emptyEl.hidden = total > 0;
+  }
+
+  function setView(view: string) {
+    document.documentElement.setAttribute('data-catalog-view', view);
+    try {
+      localStorage.setItem(VIEW_KEY, view);
+    } catch {
+      // Private mode or storage disabled — the view still applies for this page.
+    }
+    syncViewButtons(view);
+  }
+
+  function syncViewButtons(view: string) {
+    bar?.querySelectorAll<HTMLButtonElement>('[data-catalog-view-value]').forEach(button => {
+      const active = button.dataset.catalogViewValue === view;
+      button.classList.toggle('is-active', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
+  }
+
+  if (bar) {
+    bar.addEventListener('click', event => {
+      const chip = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-filter-value]');
+      if (chip) {
+        bar.querySelectorAll<HTMLButtonElement>('[data-filter-value]').forEach(other => {
+          const active = other === chip;
+          other.classList.toggle('is-active', active);
+          other.setAttribute('aria-pressed', String(active));
+        });
+        applyFilter(chip.dataset.filterValue ?? 'all');
+        return;
+      }
+
+      const viewButton = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-catalog-view-value]');
+      if (viewButton) setView(viewButton.dataset.catalogViewValue ?? 'grid');
+    });
+
+    // The inline head guard already set the attribute; mirror it onto the buttons,
+    // which were server-rendered assuming the grid default.
+    syncViewButtons(document.documentElement.getAttribute('data-catalog-view') ?? 'grid');
+  }
+</script>
