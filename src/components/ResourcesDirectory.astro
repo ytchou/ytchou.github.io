@@ -1,6 +1,8 @@
 ---
 import ResourceCard from './ResourceCard.astro';
+import CatalogControls from './CatalogControls.astro';
 import { groupResources, resourceGroups, type ResourceEntry, type ResourceTopic } from '../services/resources';
+import { useTranslations } from '../i18n/utils';
 import type { Lang } from '../i18n/ui';
 
 interface Props { resources: ResourceEntry[]; lang: Lang; topic?: ResourceTopic; }
@@ -47,6 +49,16 @@ const labels = {
   opensNewTab: isZh ? '另開新分頁' : 'opens in a new tab',
   preview: isZh ? '網站預覽' : 'website preview',
 };
+const t = useTranslations(lang);
+
+// groupResources() already returns groups in canonical resourceGroups order.
+const chips = resourceGroups
+  .filter(group => (groups.get(group) ?? []).length > 0)
+  .map(group => ({
+    value: group,
+    label: groupCopy[group].title,
+    count: (groups.get(group) ?? []).length,
+  }));
 ---
 
 <header class="page-header">
@@ -54,29 +66,39 @@ const labels = {
   <p class="section-kicker">{topicCopy[topic].kicker}</p>
   <h1>{topicCopy[topic].title}</h1>
   <p>{topicCopy[topic].description}</p>
-  <p class="count">{resources.length} {isZh ? '項資源' : 'resources'}</p>
+  <p class="count" aria-live="polite"><span data-filter-total>{resources.length}</span> {isZh ? '項資源' : 'resources'}</p>
 </header>
 
-<div class="resource-groups">
+<div class="controls-row">
+  <CatalogControls chips={chips} lang={lang} showViewToggle />
+</div>
+
+<div class="resource-groups" data-catalog-target>
   {resourceGroups.map(group => {
     const groupResources = groups.get(group) ?? [];
     if (groupResources.length === 0) return null;
     return (
-      <section class="resource-group" aria-labelledby={`heading-${group}`}>
+      <section class="resource-group" aria-labelledby={`heading-${group}`} data-filter-group>
         <div class="group-heading">
           <div>
             <h2 id={`heading-${group}`}>{groupCopy[group].title}</h2>
             <p>{groupCopy[group].description}</p>
           </div>
-          <span>{String(groupResources.length).padStart(2, '0')}</span>
+          <span data-filter-count>{String(groupResources.length).padStart(2, '0')}</span>
         </div>
         <div class="resource-grid">
-          {groupResources.map(resource => <ResourceCard resource={resource} lang={lang} labels={labels} />)}
+          {groupResources.map(resource => (
+            <div class="resource-item" data-filter-item data-filter-values={group}>
+              <ResourceCard resource={resource} lang={lang} labels={labels} />
+            </div>
+          ))}
         </div>
       </section>
     );
   })}
 </div>
+
+<p class="empty-state" data-filter-empty hidden>{t('catalog.empty')}</p>
 
 <style>
   .page-header { position: relative; padding-bottom: 2rem; border-bottom: 1px solid var(--color-border); }
@@ -85,12 +107,21 @@ const labels = {
   h1 { margin: 0; color: var(--color-text); font-size: clamp(2.75rem, 7vw, 4.5rem); font-weight: 600; letter-spacing: -0.04em; line-height: 1; }
   .page-header > p:not(.section-kicker, .count) { margin: 1rem 0 0; max-width: 64ch; color: var(--color-muted); }
   .count { position: absolute; right: 0; bottom: 2rem; margin: 0; color: var(--color-text-subtle); font: 0.75rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .controls-row { padding-top: 2rem; }
+  .empty-state { margin: 4rem 0; color: var(--color-muted); font-size: 0.9375rem; text-align: center; }
   .resource-group { padding-top: 4rem; }
   .group-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 2rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--color-border); }
   .group-heading h2 { margin: 0; color: var(--color-text); font-size: 1.75rem; font-weight: 600; letter-spacing: -0.02em; }
   .group-heading p { margin: 0.45rem 0 0; max-width: 64ch; color: var(--color-muted); font-size: 0.875rem; line-height: 1.6; }
   .group-heading span { color: var(--color-text-subtle); font: 0.75rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; }
   .resource-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+  .resource-item { min-width: 0; }
+
+  /* List view: single column of screenshot-less rows. The card owns its own
+     list appearance (see ResourceCard.astro); the directory only sets the track. */
+  :global([data-catalog-view='list']) .resource-grid { grid-template-columns: 1fr; gap: 0.75rem; }
+  :global([data-catalog-view='list']) .resource-group { padding-top: 3rem; }
+
   @media (max-width: 767px) {
     .count { position: static; margin-top: 1rem; }
     .resource-group { padding-top: 3rem; }

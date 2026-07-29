@@ -96,6 +96,18 @@ const linkLabel = `${labels.visit} ${data.name} (${labels.opensNewTab})`;
   .resource-best-for { margin: 0.9rem 0 0; color: var(--color-muted); font-size: 0.875rem; line-height: 1.6; }
   .resource-best-for strong { color: var(--color-text); font-weight: 600; }
   .resource-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; list-style: none; margin: 1rem 0 0; padding: 0; }
+
+  /* List view — dropping the screenshot is the point: it makes the page scannable,
+     and because the img is lazy it is never fetched while hidden. */
+  :global([data-catalog-view='list']) .resource-image-link { display: none; }
+  :global([data-catalog-view='list']) .resource-card:hover { transform: none; }
+  :global([data-catalog-view='list']) .resource-body { padding: 1rem 1.25rem; }
+  :global([data-catalog-view='list']) .resource-heading h3 { font-size: 1.0625rem; }
+  :global([data-catalog-view='list']) .resource-heading a { min-height: 32px; }
+  :global([data-catalog-view='list']) .resource-description { margin-top: 0.25rem; font-size: 0.875rem; }
+  :global([data-catalog-view='list']) .resource-best-for { margin-top: 0.5rem; }
+  :global([data-catalog-view='list']) .resource-tags { margin-top: 0.6rem; }
+
   @media (prefers-reduced-motion: reduce) {
     .resource-card, .resource-image-link img { transition: none; }
     .resource-card:hover { transform: none; }

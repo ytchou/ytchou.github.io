@@ -1,10 +1,12 @@
 # E2E journey catalog
 
-The repository does not currently have a Playwright configuration or E2E test runner. The journeys below are queued until project-level E2E tooling is adopted.
+Playwright is configured as of 2026-07-29 (`playwright.config.ts`, `npm run test:e2e`, chromium only, preview server on port 4322). Specs live in `e2e/tests/` and run on every PR via `.github/workflows/ci.yml`. Journeys still marked *Queued* below have no spec yet.
 
-The current collection renders 33 Design resources and 4 AI security resources (schema defaults included). The hub and directory expose those counts with locale-specific labels, so the pending journeys cover both the values and their presentation.
+The current collection renders 33 Design resources and 4 AI security resources (schema defaults included). **These counts describe the default unfiltered, grid-view state** — the catalog filter chips rewrite both the header total and the per-group `NN` badges, so any assertion on them must run before a chip is clicked or after resetting via `All`.
 
-| Priority | Journey | Routes | Intended target | Status |
+| Priority | Journey | Routes | Target | Status |
 | --- | --- | --- | --- | --- |
-| P1 | Browse the bilingual Resources hub and open either topic without crossing locales | `/resources`, `/resources/design`, `/resources/security`, `/zh/resources`, `/zh/resources/design`, `/zh/resources/security` | Smoke, cross-browser | Blocked: no E2E tooling |
-| P2 | Browse grouped Design and AI security catalogs and open a source in a new tab | `/resources/design`, `/resources/security`, `/zh/resources/design`, `/zh/resources/security` | Deep, Chromium | Blocked: no E2E tooling |
+| P1 | Browse the bilingual Resources hub and open either topic without crossing locales | `/resources`, `/resources/design`, `/resources/security`, `/zh/resources`, `/zh/resources/design`, `/zh/resources/security` | Smoke, cross-browser | Queued |
+| P2 | Browse grouped Design and AI security catalogs and open a source in a new tab | `/resources/design`, `/resources/security`, `/zh/resources/design`, `/zh/resources/security` | Deep, Chromium | Queued |
+| P2 | Filter a resource catalog by group and switch between grid and list view | `/resources/design`, `/resources/security`, `/zh/resources/design` | Chromium | Covered — `e2e/tests/catalog-controls.spec.ts` |
+| P3 | Filter the projects catalog by tag in both locales | `/projects`, `/zh/projects` | Chromium | Covered — `e2e/tests/projects-filter.spec.ts` |
