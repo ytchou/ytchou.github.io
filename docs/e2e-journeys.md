@@ -2,7 +2,7 @@
 
 Playwright is configured as of 2026-07-29 (`playwright.config.ts`, `npm run test:e2e`, chromium only, preview server on port 4322). Specs live in `e2e/tests/` and run on every PR via `.github/workflows/ci.yml`. Journeys still marked *Queued* below have no spec yet.
 
-The current collection renders 33 Design resources and 4 AI security resources (schema defaults included). **These counts describe the default unfiltered, grid-view state** — the catalog filter chips rewrite both the header total and the per-group `NN` badges, so any assertion on them must run before a chip is clicked or after resetting via `All`.
+The current collection renders 37 Design resources and 4 AI security resources (schema defaults included). **These counts describe the default unfiltered, grid-view state** — the catalog filter chips rewrite both the header total and the per-group `NN` badges, so any assertion on them must run before a chip is clicked or after resetting via `All`.
 
 | Priority | Journey | Routes | Target | Status |
 | --- | --- | --- | --- | --- |
