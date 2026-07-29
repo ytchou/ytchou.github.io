@@ -324,6 +324,25 @@
     "screenshotCapturedDate": "2026-07-26"
   },
   {
+    "id": "uiverse",
+    "group": "component-discovery",
+    "name": "Uiverse",
+    "url": "https://uiverse.io/",
+    "screenshot": "/images/resources/catalogs/uiverse.webp",
+    "tags": ["CSS and Tailwind", "community", "open source"],
+    "description": {
+      "en": "A community-built library of several thousand open-source UI elements, each copyable as plain HTML/CSS, Tailwind, React, or Figma.",
+      "zh": "由社群共同建立的開源介面元素庫，收錄數千個元件，每個都可複製為純 HTML/CSS、Tailwind、React 或 Figma 格式。"
+    },
+    "bestFor": {
+      "en": "Borrowing a visual treatment for a single element, then rebuilding it on accessible primitives — submissions are community-made and rarely keyboard- or screen-reader-ready.",
+      "zh": "為單一元素借用視覺處理手法，再以無障礙基礎元件重新實作——社群投稿的元件通常未考量鍵盤操作與螢幕閱讀器。"
+    },
+    "addedDate": "2026-07-28",
+    "lastCheckedDate": "2026-07-28",
+    "screenshotCapturedDate": "2026-07-28"
+  },
+  {
     "id": "shadcn-ui",
     "group": "foundations",
     "name": "shadcn/ui",
@@ -474,6 +493,25 @@
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
     "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "id": "css-text-effects",
+    "group": "motion-expressive-ui",
+    "name": "CSS Text Effects",
+    "url": "https://text-effects.colorion.co/",
+    "screenshot": "/images/resources/catalogs/css-text-effects.webp",
+    "tags": ["motion", "typography", "CSS"],
+    "description": {
+      "en": "A library of 66 animated text effects built in pure CSS, each self-contained and offered alongside a ready-made prompt for coding agents.",
+      "zh": "收錄 66 種純 CSS 文字動畫效果的工具庫，每個效果皆可獨立使用，並附上可直接交給編碼代理的提示詞。"
+    },
+    "bestFor": {
+      "en": "Adding a single expressive headline or wordmark animation without pulling in a JavaScript motion dependency.",
+      "zh": "在不引入 JavaScript 動畫套件的前提下，為單一標題或字標加上具表現力的動態效果。"
+    },
+    "addedDate": "2026-07-28",
+    "lastCheckedDate": "2026-07-28",
+    "screenshotCapturedDate": "2026-07-28"
   },
   {
     "id": "excalidraw",
@@ -631,6 +669,46 @@
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
     "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "topic": "design",
+    "id": "impeccable",
+    "group": "design-engineering",
+    "name": "Impeccable",
+    "url": "https://github.com/pbakaus/impeccable",
+    "screenshot": "/images/resources/catalogs/impeccable.webp",
+    "tags": ["coding agents", "design review", "open source"],
+    "description": {
+      "en": "An open-source design language for AI coding agents, pairing a design skill and commands with a deterministic detector for common AI design anti-patterns.",
+      "zh": "為 AI coding agent 打造的開源設計語言，結合設計技能與指令，並以規則式偵測器找出常見的 AI 設計壞習慣。"
+    },
+    "bestFor": {
+      "en": "Raising the design quality of agent-generated interfaces without reviewing every screen by hand.",
+      "zh": "不必逐一手動檢視每個畫面，就能提升 agent 產生介面的設計品質。"
+    },
+    "addedDate": "2026-07-27",
+    "lastCheckedDate": "2026-07-27",
+    "screenshotCapturedDate": "2026-07-27"
+  },
+  {
+    "topic": "design",
+    "id": "agentation",
+    "group": "design-engineering",
+    "name": "Agentation",
+    "url": "https://github.com/benjitaylor/agentation",
+    "screenshot": "/images/resources/catalogs/agentation.webp",
+    "tags": ["coding agents", "visual feedback", "React"],
+    "description": {
+      "en": "A React dev-mode overlay for annotating interface elements in the browser, exporting each note with its CSS selector, position, and context as Markdown.",
+      "zh": "在瀏覽器中標注介面元素的 React 開發模式覆蓋層，可將每則註記連同 CSS 選擇器、位置與脈絡匯出成 Markdown。"
+    },
+    "bestFor": {
+      "en": "Pointing a coding agent at the exact element you want changed instead of describing it in prose.",
+      "zh": "與其用文字描述，不如直接把 coding agent 指向你想修改的那個元素。"
+    },
+    "addedDate": "2026-07-27",
+    "lastCheckedDate": "2026-07-27",
+    "screenshotCapturedDate": "2026-07-27"
   },
   {
     "topic": "security",
