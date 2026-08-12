@@ -210,6 +210,25 @@
     "screenshotCapturedDate": "2026-07-26"
   },
   {
+    "id": "color-bears",
+    "group": "brand-editorial-social",
+    "name": "Color Bears",
+    "url": "https://www.threads.com/@color.bears",
+    "screenshot": "/images/resources/catalogs/color-bears.webp",
+    "tags": ["color palettes", "hex codes", "social feed"],
+    "description": {
+      "en": "A Threads account posting free color palette cards, each swatch captioned with its name and hex code. The paid dictionary it promotes is optional.",
+      "zh": "以 Threads 帳號形式免費發布配色卡片，每個色塊都標註色名與 hex 色碼；其推廣的付費色彩字典並非必要。"
+    },
+    "bestFor": {
+      "en": "Grabbing a ready-made palette with usable hex values when a project needs a starting color direction.",
+      "zh": "在專案需要初步配色方向時，直接取用附帶 hex 色碼的現成調色盤。"
+    },
+    "addedDate": "2026-08-09",
+    "lastCheckedDate": "2026-08-09",
+    "screenshotCapturedDate": "2026-08-09"
+  },
+  {
     "id": "fonts-in-use",
     "group": "typography",
     "name": "Fonts In Use",
@@ -514,6 +533,25 @@
     "screenshotCapturedDate": "2026-07-28"
   },
   {
+    "id": "generative-loaders",
+    "group": "motion-expressive-ui",
+    "name": "Generative Loaders",
+    "url": "https://generativeloaders.com/",
+    "screenshot": "/images/resources/catalogs/generative-loaders.webp",
+    "tags": ["loading states", "React", "generative UI"],
+    "description": {
+      "en": "An open-source React library of 42 animated loading indicators split across text, inline, and image variants, each with an adjustable animation speed.",
+      "zh": "開源的 React 動態載入指示器套件，收錄 42 種文字、行內與圖片三類變體，每一種都可調整動畫速度。"
+    },
+    "bestFor": {
+      "en": "Filling the wait in AI-generated interfaces, where streaming responses need a loading state that matches the content being produced.",
+      "zh": "為 AI 生成介面填補等待時間，讓串流輸出搭配符合該內容型態的載入狀態。"
+    },
+    "addedDate": "2026-08-09",
+    "lastCheckedDate": "2026-08-09",
+    "screenshotCapturedDate": "2026-08-09"
+  },
+  {
     "id": "excalidraw",
     "group": "visualization-diagramming",
     "name": "Excalidraw",
@@ -711,6 +749,86 @@
     "screenshotCapturedDate": "2026-07-27"
   },
   {
+    "topic": "design",
+    "id": "design-engineer-tools",
+    "group": "design-engineering",
+    "name": "Design Engineer Tools",
+    "url": "https://designengineer.tools/",
+    "screenshot": "/images/resources/catalogs/design-engineer-tools.webp",
+    "tags": ["tool directory", "creative technology", "web workflow"],
+    "description": {
+      "en": "A categorized directory of tools for web-focused design engineers, spanning inspiration, AI coding, components, motion, 3D, utilities, and more.",
+      "zh": "為網站設計工程師整理的分類工具目錄，涵蓋靈感、AI 程式開發、元件、動態、3D、實用工具等領域。"
+    },
+    "bestFor": {
+      "en": "Scanning the broader design-engineering landscape when you know the task or medium but not which tool to use.",
+      "zh": "已知要處理的工作或媒介，卻還不確定該用哪項工具時，用來快速瀏覽更完整的設計工程工具版圖。"
+    },
+    "addedDate": "2026-08-03",
+    "lastCheckedDate": "2026-08-03",
+    "screenshotCapturedDate": "2026-08-03"
+  },
+  {
+    "topic": "design",
+    "id": "refero-styles",
+    "group": "design-engineering",
+    "name": "Refero Styles",
+    "url": "https://styles.refero.design/",
+    "screenshot": "/images/resources/catalogs/refero-styles.webp",
+    "tags": ["design systems", "AI coding", "DESIGN.md"],
+    "description": {
+      "en": "A library of design systems extracted from real product websites and published as DESIGN.md files that coding agents can read directly.",
+      "zh": "從真實產品網站萃取設計系統，並整理成程式開發代理可直接讀取的 DESIGN.md 檔案庫。"
+    },
+    "bestFor": {
+      "en": "Handing an AI coding assistant a concrete visual reference so generated UI follows a chosen system instead of defaulting to a generic look.",
+      "zh": "把具體的視覺參考交給 AI 程式助理，讓產出的介面依循選定的設計系統，而不是落入千篇一律的預設樣貌。"
+    },
+    "addedDate": "2026-08-08",
+    "lastCheckedDate": "2026-08-08",
+    "screenshotCapturedDate": "2026-08-08"
+  },
+  {
+    "topic": "design",
+    "id": "ui-design-dictionary",
+    "group": "design-engineering",
+    "name": "UI Design Dictionary",
+    "url": "https://ui-design-dictionary.pages.dev/",
+    "screenshot": "/images/resources/catalogs/ui-design-dictionary.webp",
+    "tags": ["UI patterns", "interface design", "reference"],
+    "description": {
+      "en": "A searchable library of UI patterns spanning navigation, layout, forms, feedback, commerce, mobile, and other product interface needs.",
+      "zh": "可搜尋的 UI 模式資料庫，涵蓋導覽、版面、表單、回饋、商務、行動介面與其他產品介面需求。"
+    },
+    "bestFor": {
+      "en": "Naming and comparing common interface patterns when designing a product screen or explaining UI to an AI coding assistant.",
+      "zh": "設計產品畫面，或向 AI 程式助理說明介面時，用來辨識與比較常見的介面模式。"
+    },
+    "addedDate": "2026-08-12",
+    "lastCheckedDate": "2026-08-12",
+    "screenshotCapturedDate": "2026-08-12"
+  },
+  {
+    "topic": "design",
+    "id": "vibe-coding-glossary",
+    "group": "design-engineering",
+    "name": "Vibe Coding Glossary",
+    "url": "https://vibecoding-glossary.pages.dev/",
+    "screenshot": "/images/resources/catalogs/vibe-coding-glossary.webp",
+    "tags": ["UI vocabulary", "AI coding", "CSS basics"],
+    "description": {
+      "en": "A visual glossary of web UI parts, styles, interactions, and CSS fundamentals for describing interfaces clearly to AI coding assistants.",
+      "zh": "以視覺化方式整理網站 UI 元件、樣式、互動與 CSS 基礎，幫助更清楚地向 AI 程式助理描述介面。"
+    },
+    "bestFor": {
+      "en": "Learning the vocabulary needed to turn a vague interface idea into a precise prompt for an AI-built website.",
+      "zh": "學習把模糊的介面想法轉成精準 AI 網站製作提示所需的詞彙。"
+    },
+    "addedDate": "2026-08-12",
+    "lastCheckedDate": "2026-08-12",
+    "screenshotCapturedDate": "2026-08-12"
+  },
+  {
     "topic": "security",
     "id": "cloudflare-security-audit-skill",
     "group": "agentic-security",
@@ -789,5 +907,25 @@
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
     "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "topic": "security",
+    "id": "codex-security",
+    "group": "agentic-security",
+    "name": "OpenAI Codex Security",
+    "url": "https://github.com/openai/codex-security",
+    "screenshot": "/images/resources/catalogs/codex-security.webp",
+    "tags": ["vulnerability scanning", "CLI and SDK", "open source"],
+    "description": {
+      "en": "OpenAI's Apache-2.0 CLI and TypeScript SDK that scans a codebase for vulnerabilities, compares findings across scans, and proposes fixes.",
+      "zh": "OpenAI 以 Apache-2.0 授權釋出的 CLI 與 TypeScript SDK，可掃描程式碼庫的漏洞、比較多次掃描的差異並提出修補建議。"
+    },
+    "bestFor": {
+      "en": "Wiring model-driven scans into a DevSecOps loop and tracking regressions between runs; scan only repositories you are authorized to test, and review every finding and fix before acting on it.",
+      "zh": "把模型驅動的掃描接進 DevSecOps 流程並追蹤兩次執行之間的回歸；只掃描獲得授權的儲存庫，並在採用前人工檢視所有發現與修補。"
+    },
+    "addedDate": "2026-07-30",
+    "lastCheckedDate": "2026-07-30",
+    "screenshotCapturedDate": "2026-07-30"
   }
 ]
