@@ -2,7 +2,7 @@ import { access, readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const expectedGroups = {
-  'interface-web-inspiration': ['mobbin', 'noiced', 'recent-design', 'dribbble', 'best-website-templates', 'awwwards'],
+  'interface-web-inspiration': ['mobbin', 'macapp-supply', 'loadmore', 'noiced', 'recent-design', 'dribbble', 'best-website-templates', 'footer-design', 'awwwards'],
   'brand-editorial-social': ['posts-design', 'deck-gallery', 'logosystem', 'logos-lndev', 'brand-guidelines', 'color-bears'],
   typography: ['fonts-in-use', 'free-faces'],
   'component-discovery': ['component-gallery', '21st-dev', 'lander-figma-blocks', 'forever-components', 'uiverse'],
