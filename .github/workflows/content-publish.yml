@@ -1,7 +1,5 @@
 # Required repo secrets:
 # - CLAUDE_CODE_OAUTH_TOKEN
-# - AGENT_HUB_SUPABASE_URL
-# - AGENT_HUB_SUPABASE_SERVICE_KEY
 # - TODOIST_API_TOKEN
 
 name: Content Publish
