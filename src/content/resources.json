@@ -19,6 +19,44 @@
     "screenshotCapturedDate": "2026-07-26"
   },
   {
+    "id": "macapp-supply",
+    "group": "interface-web-inspiration",
+    "name": "Macapp Supply",
+    "url": "https://macapp.supply/",
+    "screenshot": "/images/resources/catalogs/macapp-supply.webp",
+    "tags": ["macOS apps", "product UI", "curated"],
+    "description": {
+      "en": "A hand-picked shelf of beautifully designed macOS apps, with a quick visual browse of useful desktop products.",
+      "zh": "精選設計精美的 macOS 應用程式，讓你快速瀏覽實用的桌面產品與介面。"
+    },
+    "bestFor": {
+      "en": "Studying polished native macOS interface and interaction patterns when designing a desktop product.",
+      "zh": "設計桌面產品時，研究完成度高的原生 macOS 介面與互動模式。"
+    },
+    "addedDate": "2026-08-19",
+    "lastCheckedDate": "2026-08-19",
+    "screenshotCapturedDate": "2026-08-19"
+  },
+  {
+    "id": "loadmore",
+    "group": "interface-web-inspiration",
+    "name": "loadmo.re",
+    "url": "https://loadmo.re/",
+    "screenshot": "/images/resources/catalogs/loadmore.webp",
+    "tags": ["mobile web", "interactive", "curated"],
+    "description": {
+      "en": "A curated archive of distinctive mobile websites and unconventional digital experiences, browsable by visual and interaction tags.",
+      "zh": "精選獨特行動網站與非典型數位體驗的資料庫，可依視覺與互動標籤瀏覽。"
+    },
+    "bestFor": {
+      "en": "Finding expressive mobile-web references when a standard responsive layout feels too predictable.",
+      "zh": "當標準響應式版面過於制式時，尋找更具表現力的行動網頁參考。"
+    },
+    "addedDate": "2026-08-19",
+    "lastCheckedDate": "2026-08-19",
+    "screenshotCapturedDate": "2026-08-19"
+  },
+  {
     "id": "noiced",
     "group": "interface-web-inspiration",
     "name": "Noiced",
@@ -93,6 +131,25 @@
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
     "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "id": "footer-design",
+    "group": "interface-web-inspiration",
+    "name": "Footer Design",
+    "url": "https://www.footer.design/",
+    "screenshot": "/images/resources/catalogs/footer-design.webp",
+    "tags": ["footers", "web design", "patterns"],
+    "description": {
+      "en": "A curated gallery of website footers organized across typographic, illustrative, grid, animated, and dark styles.",
+      "zh": "精選網站頁尾畫廊，依字體、插畫、網格、動畫與深色等風格整理。"
+    },
+    "bestFor": {
+      "en": "Studying how a page closes with navigation, utility links, and a final visual gesture.",
+      "zh": "研究頁面如何以導覽、實用連結與最後的視覺收束完成頁尾。"
+    },
+    "addedDate": "2026-08-19",
+    "lastCheckedDate": "2026-08-19",
+    "screenshotCapturedDate": "2026-08-19"
   },
   {
     "id": "awwwards",
