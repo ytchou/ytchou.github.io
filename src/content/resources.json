@@ -152,6 +152,25 @@
     "screenshotCapturedDate": "2026-08-19"
   },
   {
+    "id": "details-so",
+    "group": "interface-web-inspiration",
+    "name": "Details.so",
+    "url": "https://www.details.so/",
+    "screenshot": "/images/resources/catalogs/details-so.webp",
+    "tags": ["web design", "interactions", "curated"],
+    "description": {
+      "en": "A weekly gallery of exceptional websites filed by the exact detail each capture shows — hero, footer, button, navigation, page transition, scroll animation — with a vault of copyable snippets alongside.",
+      "zh": "每週更新的優秀網站畫廊，每則擷取都依其展示的細節歸類，如 hero、頁尾、按鈕、導覽、頁面轉場與捲動動畫，並附上可複製的程式碼片段。"
+    },
+    "bestFor": {
+      "en": "Comparing how many sites handle one specific element or interaction, instead of scanning whole pages for the part you need.",
+      "zh": "針對單一元素或互動，橫向比較多個網站的做法，不必逐頁翻找所需的片段。"
+    },
+    "addedDate": "2026-08-21",
+    "lastCheckedDate": "2026-08-21",
+    "screenshotCapturedDate": "2026-08-21"
+  },
+  {
     "id": "awwwards",
     "group": "interface-web-inspiration",
     "name": "Awwwards",
@@ -417,6 +436,25 @@
     "addedDate": "2026-07-28",
     "lastCheckedDate": "2026-07-28",
     "screenshotCapturedDate": "2026-07-28"
+  },
+  {
+    "id": "opensource-ui",
+    "group": "component-discovery",
+    "name": "Opensource UI",
+    "url": "https://opensourceui.in/",
+    "screenshot": "/images/resources/catalogs/opensource-ui.webp",
+    "tags": ["React", "copy-paste", "open source"],
+    "description": {
+      "en": "A free, MIT-licensed library of 154 copy-paste React and Tailwind components across 26 categories, spanning buttons and widgets alongside device mockups and annotation callouts.",
+      "zh": "免費且採 MIT 授權的元件庫，收錄 154 個可複製貼上的 React 與 Tailwind 元件，分為 26 個類別，涵蓋按鈕、小工具，以及裝置外框與註解標示等元件。"
+    },
+    "bestFor": {
+      "en": "Taking a consistently styled component as source you own — including presentation pieces like device frames and callouts — with no dependency and no attribution required.",
+      "zh": "取得風格一致且由自己掌握的元件原始碼，包含裝置外框與註解標示等簡報用元件，不需引入相依套件，也無須標註出處。"
+    },
+    "addedDate": "2026-08-21",
+    "lastCheckedDate": "2026-08-21",
+    "screenshotCapturedDate": "2026-08-21"
   },
   {
     "id": "shadcn-ui",
@@ -807,6 +845,26 @@
   },
   {
     "topic": "design",
+    "id": "boneyard",
+    "group": "design-engineering",
+    "name": "Boneyard",
+    "url": "https://github.com/0xGF/boneyard",
+    "screenshot": "/images/resources/catalogs/boneyard.webp",
+    "tags": ["loading states", "build tooling", "open source"],
+    "description": {
+      "en": "An open-source framework that generates skeleton loading screens from real components at build time, capturing each layout across breakpoints for React, Vue, Svelte, Angular, and React Native.",
+      "zh": "開源框架，在建置階段直接從真實元件產生骨架載入畫面，並跨斷點擷取各自的版面，支援 React、Vue、Svelte、Angular 與 React Native。"
+    },
+    "bestFor": {
+      "en": "Replacing hand-measured placeholder screens with generated ones — a production dependency with a build step, not a snippet to copy.",
+      "zh": "以自動產生的骨架取代手工測量的載入佔位畫面；這是需要建置步驟的正式相依套件，而非可直接複製的片段。"
+    },
+    "addedDate": "2026-08-21",
+    "lastCheckedDate": "2026-08-21",
+    "screenshotCapturedDate": "2026-08-21"
+  },
+  {
+    "topic": "design",
     "id": "design-engineer-tools",
     "group": "design-engineering",
     "name": "Design Engineer Tools",
@@ -884,6 +942,26 @@
     "addedDate": "2026-08-12",
     "lastCheckedDate": "2026-08-12",
     "screenshotCapturedDate": "2026-08-12"
+  },
+  {
+    "topic": "design",
+    "id": "jakub-antalik",
+    "group": "design-engineering",
+    "name": "Jakub Antalik",
+    "url": "https://jakubantalik.com/",
+    "screenshot": "/images/resources/catalogs/jakub-antalik.webp",
+    "tags": ["motion", "portfolio", "React"],
+    "description": {
+      "en": "The personal site of a product designer and engineer, re-themed live from a panel of font, colour, radius, and background controls, alongside released motion components such as Transitions.dev, Border Beam, and Liquid Metal.",
+      "zh": "產品設計師兼工程師的個人網站，可透過字體、顏色、圓角與背景控制面板即時改變頁面樣式，並展示 Transitions.dev、Border Beam、Liquid Metal 等已發布的動態元件。"
+    },
+    "bestFor": {
+      "en": "Studying how a design engineer makes a portfolio demonstrate its own craft instead of describing it, and lifting the motion components it ships.",
+      "zh": "研究設計工程師如何讓作品集直接展現工藝本身而非只是描述，並取用其中發布的動態元件。"
+    },
+    "addedDate": "2026-08-21",
+    "lastCheckedDate": "2026-08-21",
+    "screenshotCapturedDate": "2026-08-21"
   },
   {
     "topic": "security",
