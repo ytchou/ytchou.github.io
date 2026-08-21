@@ -2,15 +2,15 @@ import { access, readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const expectedGroups = {
-  'interface-web-inspiration': ['mobbin', 'macapp-supply', 'loadmore', 'noiced', 'recent-design', 'dribbble', 'best-website-templates', 'footer-design', 'awwwards'],
+  'interface-web-inspiration': ['mobbin', 'macapp-supply', 'loadmore', 'noiced', 'recent-design', 'dribbble', 'best-website-templates', 'footer-design', 'details-so', 'awwwards'],
   'brand-editorial-social': ['posts-design', 'deck-gallery', 'logosystem', 'logos-lndev', 'brand-guidelines', 'color-bears'],
   typography: ['fonts-in-use', 'free-faces'],
-  'component-discovery': ['component-gallery', '21st-dev', 'lander-figma-blocks', 'forever-components', 'uiverse'],
+  'component-discovery': ['component-gallery', '21st-dev', 'lander-figma-blocks', 'forever-components', 'uiverse', 'opensource-ui'],
   foundations: ['shadcn-ui', 'react-aria'],
   'motion-expressive-ui': ['morphin', 'aceternity-ui', 'magic-ui', 'react-bits', 'kinetics', 'eldora-ui', 'css-text-effects', 'generative-loaders'],
   'visualization-diagramming': ['excalidraw'],
   'icons-supporting-tools': ['reicon', 'icon-animator'],
-  'design-engineering': ['web-interface-guidelines', 'pasito', 'vaul', 'manage-design-projects', 'developing-taste', 'impeccable', 'agentation', 'design-engineer-tools', 'refero-styles', 'ui-design-dictionary', 'vibe-coding-glossary'],
+  'design-engineering': ['web-interface-guidelines', 'pasito', 'vaul', 'manage-design-projects', 'developing-taste', 'impeccable', 'agentation', 'boneyard', 'design-engineer-tools', 'refero-styles', 'ui-design-dictionary', 'vibe-coding-glossary', 'jakub-antalik'],
   'agentic-security': ['cloudflare-security-audit-skill', 'visa-vulnerability-agentic-harness', 'shannon', 'snyk-agent-scan', 'codex-security'],
 };
 
