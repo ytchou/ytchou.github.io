@@ -647,6 +647,25 @@
     "screenshotCapturedDate": "2026-08-09"
   },
   {
+    "id": "threeui",
+    "group": "motion-expressive-ui",
+    "name": "ThreeUI",
+    "url": "https://threeui.com/browse",
+    "screenshot": "/images/resources/catalogs/threeui.webp",
+    "tags": ["Three.js and WebGL", "agent-ready", "freemium"],
+    "description": {
+      "en": "A catalog of 210 procedural Three.js and WebGL components — heroes, shaders, backgrounds, and landing-page templates — each copyable as code or as a prompt, with an MCP server for coding agents. The app and the Community tier are MIT licensed; a Pro tier unlocks the rest.",
+      "zh": "收錄 210 個程序化 Three.js 與 WebGL 元件的目錄，涵蓋 hero、shader、背景與到達頁模板，每一項都能複製成程式碼或提示詞，並提供給 coding agent 使用的 MCP server。應用程式與 Community 層採 MIT 授權，其餘內容需訂閱 Pro。"
+    },
+    "bestFor": {
+      "en": "Adding a 3D or shader-driven hero to a page without writing WebGL from scratch, and for handing those components straight to a coding agent through the MCP server.",
+      "zh": "在不從零手寫 WebGL 的情況下，為頁面加上 3D 或 shader 驅動的 hero，並透過 MCP server 把這些元件直接交給 coding agent。"
+    },
+    "addedDate": "2026-08-22",
+    "lastCheckedDate": "2026-08-22",
+    "screenshotCapturedDate": "2026-08-22"
+  },
+  {
     "id": "excalidraw",
     "group": "visualization-diagramming",
     "name": "Excalidraw",

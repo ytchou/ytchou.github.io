@@ -7,7 +7,7 @@ const expectedGroups = {
   typography: ['fonts-in-use', 'free-faces'],
   'component-discovery': ['component-gallery', '21st-dev', 'lander-figma-blocks', 'forever-components', 'uiverse', 'opensource-ui'],
   foundations: ['shadcn-ui', 'react-aria'],
-  'motion-expressive-ui': ['morphin', 'aceternity-ui', 'magic-ui', 'react-bits', 'kinetics', 'eldora-ui', 'css-text-effects', 'generative-loaders'],
+  'motion-expressive-ui': ['morphin', 'aceternity-ui', 'magic-ui', 'react-bits', 'kinetics', 'eldora-ui', 'css-text-effects', 'generative-loaders', 'threeui'],
   'visualization-diagramming': ['excalidraw'],
   'icons-supporting-tools': ['reicon', 'icon-animator'],
   'design-engineering': ['web-interface-guidelines', 'pasito', 'vaul', 'manage-design-projects', 'developing-taste', 'impeccable', 'agentation', 'boneyard', 'design-engineer-tools', 'refero-styles', 'ui-design-dictionary', 'vibe-coding-glossary', 'jakub-antalik'],
