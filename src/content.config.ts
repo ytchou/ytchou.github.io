@@ -6,12 +6,16 @@ const blog = defineCollection({
   loader: glob({ base: './src/content/blog', pattern: '**/*.{md,mdx}' }),
   schema: z.object({
     title: z.string(),
-    description: z.string(),
+    description: z.string().optional(),
     date: z.coerce.date(),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
     lang: z.enum(['en', 'zh']).default('en'),
     pinned: z.boolean().default(false),
+    series: z.string().optional(),
+    day: z.number().optional(),
+    chapter: z.number().optional(),
+    notion: z.string().optional(),
   }),
 });
 
@@ -48,17 +52,4 @@ const resources = defineCollection({
   }),
 });
 
-const ironman = defineCollection({
-  loader: glob({ base: './content/ironman', pattern: '*.md' }),
-  schema: z.object({
-    title: z.string(),
-    day: z.number(),
-    chapter: z.number(),
-    publish: z.coerce.date(),
-    platform: z.string().default('ithome'),
-    status: z.string().default('skeleton'),
-    notion: z.string().optional(),
-  }),
-});
-
-export const collections = { blog, resources, ironman };
+export const collections = { blog, resources };
