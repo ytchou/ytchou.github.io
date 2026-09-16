@@ -2,9 +2,10 @@
 title: "把商業問題翻成技術問題：資料、搜尋與探索"
 day: 2
 chapter: 1
-publish: 2026-09-16
-platform: ithome
-status: drafted
+date: 2026-09-16
+tags: [鐵人賽]
+lang: zh
+series: ironman
 notion: https://app.notion.com/p/patrickytc/Day-02-discovery-problem-3b10d2d793cf8123aaa8f276f1f16fec
 ---
 
@@ -20,7 +21,6 @@ notion: https://app.notion.com/p/patrickytc/Day-02-discovery-problem-3b10d2d793c
 
 只有先把這三個問題定義清楚，才知道 AI 到底該出現在哪裡，又有哪些地方其實不需要 AI。
 
----
 
 ## 如何有系統性地抓取資料進資料庫？
 
@@ -55,7 +55,7 @@ notion: https://app.notion.com/p/patrickytc/Day-02-discovery-problem-3b10d2d793c
 
 > **Agent 負責 decision-making，code 負責 reliable execution。**
 
-![AI 不需要做完整條 pipeline](images/day-02-control-execution-plane.png)
+![AI 不需要做完整條 pipeline](/images/ironman/day-02-control-execution-plane.png)
 
 至於 Agent 到底應該負責哪些 decision、要做成一顆 Agent 還是拆成多個 Agent，以及這樣的迭代流程怎麼設計，就是後面幾天會繼續討論的內容。
 
@@ -63,7 +63,6 @@ notion: https://app.notion.com/p/patrickytc/Day-02-discovery-problem-3b10d2d793c
 
 這其實是一個典型的 **entity disambiguation** 問題，也是我認為 AI 在資料 pipeline 裡真正有價值的地方：**不是把原本 deterministic 的程式全部換成 AI，而是把那些過去很難寫成明確規則的判斷交給它。**
 
----
 
 ## 搜尋真正要對應的，是使用者的情境與意圖
 
@@ -105,11 +104,10 @@ notion: https://app.notion.com/p/patrickytc/Day-02-discovery-problem-3b10d2d793c
 
 一邊描述「人在找什麼」，另一邊描述「產品是什麼」。**兩邊講同一套語言，才有辦法真正對得上。**
 
-![同一套語言，才有辦法對得上](images/day-02-query-product-representation.png)
+![同一套語言，才有辦法對得上](/images/ironman/day-02-query-product-representation.png)
 
 接下來的三十天內我們會深入討論以下的話題：這些 product features 應該怎麼定義？哪些可以從 structured data 取得，哪些需要 AI inference？Query 又應該如何拆解？最後要使用 filtering、semantic retrieval、ranking，還是幾種方法一起搭配？
 
----
 
 ## 使用者不知道要找什麼的時候，Discovery Layer 要替他先開口
 
@@ -140,13 +138,12 @@ notion: https://app.notion.com/p/patrickytc/Day-02-discovery-problem-3b10d2d793c
 
 > **搜尋比較像是在回答需求，探索則還要幫忙形成需求。**
 
-![Search 回答需求，Discovery 形成需求](images/day-02-search-vs-discovery.png)
+![Search 回答需求，Discovery 形成需求](/images/ironman/day-02-search-vs-discovery.png)
 
 而且「情境」本身只回答了第一個問題：哪些產品應該進入這個 candidate pool？真正進入這個 pool 之後，還是要有另一套 discovery ranking logic 來決定誰先出現。
 
 要做到這件事，需要的底層資料其實和搜尋高度重疊。產品本身必須有夠細的 representation：它是做什麼的、適合什麼場合、什麼材質、什麼風格、什麼價位，以及它和哪些產品相似或互補。搜尋和探索因此可以建立在同一套 product representation 上，只是最後 optimize 的 ranking objective 不一樣。
 
----
 
 ## 如果把這些概念落到產品介面
 

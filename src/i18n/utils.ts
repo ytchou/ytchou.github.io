@@ -23,11 +23,6 @@ export function sortPosts(posts: CollectionEntry<'blog'>[]): CollectionEntry<'bl
   });
 }
 
-/** Sort ironman posts by day number ascending. */
-export function sortIronmanPosts(posts: CollectionEntry<'ironman'>[]): CollectionEntry<'ironman'>[] {
-  return [...posts].sort((a, b) => a.data.day - b.data.day);
-}
-
 /** Strip the language-directory prefix from a content collection post ID to get a clean URL slug. */
 export function getPostSlug(id: string): string {
   return id.startsWith('zh/') ? id.slice(3) : id;

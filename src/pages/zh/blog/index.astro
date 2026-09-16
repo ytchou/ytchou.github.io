@@ -66,7 +66,7 @@ const regularPosts = allPosts.filter(p => !p.data.pinned);
                 </div>
                 <div class="archive-content">
                   <h3 class="archive-title">{post.data.title}</h3>
-                  <p class="archive-desc">{post.data.description}</p>
+                  {post.data.description && <p class="archive-desc">{post.data.description}</p>}
                 </div>
               </a>
             </li>
