@@ -3,18 +3,18 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { useTranslations, sortPosts, getPostSlug } from '../../../i18n/utils';
 
-const t = useTranslations('zh');
+const t = useTranslations('en');
 
-const allPosts = sortPosts(await getCollection('blog', ({ data }) => data.lang === 'zh' && !data.draft));
+const allPosts = sortPosts(await getCollection('blog', ({ data }) => data.lang === 'en' && !data.draft));
 const pinnedPosts = allPosts.filter(p => p.data.pinned);
 const regularPosts = allPosts.filter(p => !p.data.pinned);
 ---
 
-<BaseLayout title={`${t('blog.title')} — 周永堂`} description={t('blog.subtitle')}>
+<BaseLayout title={`${t('blog.title')} — Patrick`} description={t('blog.subtitle')}>
   <!-- Archive header -->
   <div class="blog-header mb-12">
-    <div class="eyebrow">封存</div>
-    <h1 class="font-display text-5xl font-bold tracking-tight mt-1 mb-2" style="line-height: 1.05; color: var(--color-text);">文章</h1>
+    <div class="eyebrow">Archive</div>
+    <h1 class="font-display text-5xl font-bold tracking-tight mt-1 mb-2" style="line-height: 1.05; color: var(--color-text);">Writing</h1>
     <p style="color: var(--color-muted);">{t('blog.subtitle')}</p>
   </div>
 
@@ -22,17 +22,17 @@ const regularPosts = allPosts.filter(p => !p.data.pinned);
   {pinnedPosts.length > 0 && (
     <section class="mb-12">
       <div class="section-label mb-5">
-        <span>精選</span>
+        <span>Featured</span>
       </div>
       <div class="featured-grid">
         {pinnedPosts.map(post => {
           const slug = getPostSlug(post.id);
-          const formatted = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' });
+          const formatted = post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
           return (
-            <a href={`/zh/blog/${slug}`} class="featured-card no-underline group">
+            <a href={`/en/blog/${slug}`} class="featured-card no-underline group" data-tags={post.data.tags?.join(',') ?? ''}>
               <div class="featured-card-visual">
                 <div class="featured-card-rule"></div>
-                <span class="featured-badge">精選</span>
+                <span class="featured-badge">Featured</span>
               </div>
               <div class="featured-card-body">
                 <h2 class="featured-title font-display text-xl font-bold leading-snug mb-2">{post.data.title}</h2>
@@ -50,23 +50,23 @@ const regularPosts = allPosts.filter(p => !p.data.pinned);
   {regularPosts.length > 0 && (
     <section>
       <div class="section-label mb-5">
-        <span>所有文章</span>
+        <span>All posts</span>
       </div>
       <ul class="archive-list">
         {regularPosts.map(post => {
           const slug = getPostSlug(post.id);
           const year = post.data.date.getFullYear();
-          const monthDay = post.data.date.toLocaleDateString('zh-TW', { month: 'short', day: 'numeric' });
+          const monthDay = post.data.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
           return (
             <li class="archive-item">
-              <a href={`/zh/blog/${slug}`} class="archive-link group no-underline">
+              <a href={`/en/blog/${slug}`} class="archive-link group no-underline">
                 <div class="archive-meta">
                   <span class="archive-year">{year}</span>
                   <span class="archive-date">{monthDay}</span>
                 </div>
                 <div class="archive-content">
                   <h3 class="archive-title">{post.data.title}</h3>
-                  {post.data.description && <p class="archive-desc">{post.data.description}</p>}
+                  <p class="archive-desc">{post.data.description}</p>
                 </div>
               </a>
             </li>
@@ -77,7 +77,7 @@ const regularPosts = allPosts.filter(p => !p.data.pinned);
   )}
 
   {allPosts.length === 0 && (
-    <p style="color: var(--color-muted);" class="py-12 text-center">尚無文章，請稍後回來查看。</p>
+    <p class="py-12 text-center" style="color: var(--color-muted);">No posts yet — check back soon.</p>
   )}
 </BaseLayout>
 
@@ -125,7 +125,7 @@ const regularPosts = allPosts.filter(p => !p.data.pinned);
   }
   @media (min-width: 640px) {
     .featured-grid {
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     }
   }
 

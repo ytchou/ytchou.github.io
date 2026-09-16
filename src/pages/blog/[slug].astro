@@ -1,17 +1,42 @@
 ---
 import { getCollection, render } from 'astro:content';
 import BlogPostLayout from '../../layouts/BlogPostLayout.astro';
+import { getPostSlug } from '../../i18n/utils';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog', ({ data }) => data.lang === 'en' && !data.draft);
-  return posts.map(post => ({
-    params: { slug: post.id },
-    props: { post },
-  }));
+  const posts = await getCollection('blog', ({ data }) => data.lang === 'zh' && !data.draft);
+  return posts.map((post) => {
+    const slug = getPostSlug(post.id);
+    let prevPost = null;
+    let nextPost = null;
+    let totalDays: number | undefined;
+
+    if (post.data.series) {
+      const seriesPosts = posts
+        .filter(p => p.data.series === post.data.series)
+        .sort((a, b) => (a.data.day ?? 0) - (b.data.day ?? 0));
+      const idx = seriesPosts.findIndex(p => p.id === post.id);
+      totalDays = 30;
+      if (idx > 0) {
+        const p = seriesPosts[idx - 1];
+        prevPost = { slug: getPostSlug(p.id), day: p.data.day!, title: p.data.title };
+      }
+      if (idx < seriesPosts.length - 1) {
+        const n = seriesPosts[idx + 1];
+        nextPost = { slug: getPostSlug(n.id), day: n.data.day!, title: n.data.title };
+      }
+    }
+
+    return {
+      params: { slug },
+      props: { post, prevPost, nextPost, totalDays },
+    };
+  });
 }
 
-const { post } = Astro.props;
-const { Content } = await render(post);
+const { post, prevPost, nextPost, totalDays } = Astro.props;
+const { Content, headings } = await render(post);
+const toc = headings.filter(h => h.depth === 2);
 ---
 
 <BlogPostLayout
@@ -19,7 +44,14 @@ const { Content } = await render(post);
   description={post.data.description}
   date={post.data.date}
   tags={post.data.tags}
-  lang="en"
+  lang="zh"
+  series={post.data.series}
+  day={post.data.day}
+  chapter={post.data.chapter}
+  toc={toc}
+  prevPost={prevPost}
+  nextPost={nextPost}
+  totalDays={totalDays}
 >
   <Content />
 </BlogPostLayout>

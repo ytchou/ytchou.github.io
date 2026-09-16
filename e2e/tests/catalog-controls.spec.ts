@@ -92,7 +92,7 @@ test.describe('grid / list view toggle', () => {
     await page.goto('/resources/design');
     await page.locator('[data-catalog-view-value="list"]').click();
 
-    await page.goto('/zh/resources/design');
+    await page.goto('/en/resources/design');
 
     await expect(page.locator('html')).toHaveAttribute('data-catalog-view', 'list');
     await expect(page.locator('.resource-image-link').first()).toBeHidden();
@@ -114,7 +114,7 @@ test.describe('single-group catalog', () => {
 
 test.describe('localization', () => {
   test('zh catalog renders zh control labels', async ({ page }) => {
-    await page.goto('/zh/resources/design');
+    await page.goto('/resources/design');
 
     await expect(page.locator('[data-filter-value="all"]')).toContainText('所有');
     await expect(page.locator('[data-catalog-view-value="list"]')).toContainText('列表');

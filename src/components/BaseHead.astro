@@ -1,18 +1,25 @@
 ---
 import FallbackImage from '../assets/blog-placeholder-1.jpg';
 import { SITE_TITLE } from '../consts';
-import { getAlternateLangUrl } from '../i18n/utils';
+import { getAlternateLangUrl, getLangFromUrl } from '../i18n/utils';
 
 interface Props {
   title: string;
   description: string;
   image?: typeof FallbackImage;
+  hasAlternateTranslation?: boolean;
 }
 
-const { title, description, image = FallbackImage } = Astro.props;
+const { title, description, image = FallbackImage, hasAlternateTranslation = true } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const enUrl = new URL(getAlternateLangUrl(Astro.url, 'en'), Astro.site);
-const zhUrl = new URL(getAlternateLangUrl(Astro.url, 'zh'), Astro.site);
+const enUrl = lang === 'en'
+  ? canonicalURL
+  : hasAlternateTranslation ? new URL(getAlternateLangUrl(Astro.url, 'en'), Astro.site) : null;
+const zhUrl = lang === 'zh'
+  ? canonicalURL
+  : hasAlternateTranslation ? new URL(getAlternateLangUrl(Astro.url, 'zh'), Astro.site) : null;
+const rssUrl = new URL(lang === 'en' ? '/en/rss.xml' : '/rss.xml', Astro.site);
 ---
 
 <!-- Global Metadata -->
@@ -20,14 +27,14 @@ const zhUrl = new URL(getAlternateLangUrl(Astro.url, 'zh'), Astro.site);
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="sitemap" href="/sitemap-index.xml" />
-<link rel="alternate" type="application/rss+xml" title={SITE_TITLE} href={new URL('rss.xml', Astro.site)} />
+<link rel="alternate" type="application/rss+xml" title={SITE_TITLE} href={rssUrl} />
 <meta name="generator" content={Astro.generator} />
 
 <!-- Canonical + hreflang -->
 <link rel="canonical" href={canonicalURL} />
-<link rel="alternate" hreflang="en" href={enUrl} />
-<link rel="alternate" hreflang="zh-TW" href={zhUrl} />
-<link rel="alternate" hreflang="x-default" href={enUrl} />
+{enUrl && <link rel="alternate" hreflang="en" href={enUrl} />}
+{zhUrl && <link rel="alternate" hreflang="zh-TW" href={zhUrl} />}
+<link rel="alternate" hreflang="x-default" href={zhUrl ?? canonicalURL} />
 
 <!-- Primary Meta -->
 <title>{title}</title>

@@ -6,12 +6,12 @@ import ProjectCard from '../components/ProjectCard.astro';
 import { projects } from '../data/projects';
 import { contactLinks } from '../data/contact';
 import JourneyTimeline from '../components/JourneyTimeline.astro';
-import { useTranslations, sortPosts, getReadingTime } from '../i18n/utils';
+import { useTranslations, sortPosts, getPostSlug, getReadingTime } from '../i18n/utils';
 import headshot from '../assets/headshot.jpeg';
 
-const t = useTranslations('en');
+const t = useTranslations('zh');
 
-const allPosts = await getCollection('blog', ({ data }) => data.lang === 'en' && !data.draft);
+const allPosts = await getCollection('blog', ({ data }) => data.lang === 'zh' && !data.draft);
 const resources = await getCollection('resources');
 const designResources = resources.filter(resource => resource.data.topic === 'design');
 const securityResources = resources.filter(resource => resource.data.topic === 'security');
@@ -20,25 +20,6 @@ const featuredProjects = projects.filter(p => p.featured);
 ---
 
 <BaseLayout title="Patrick C." description={t('hero.tagline')}>
-<script>
-  (async () => {
-    const pref = localStorage.getItem('lang-pref');
-    if (pref === 'zh') { window.location.replace('/zh/'); return; }
-    if (pref === 'en') return;
-    try {
-      const res = await fetch('https://ipapi.co/country/');
-      const country = (await res.text()).trim();
-      if (country === 'TW') {
-        localStorage.setItem('lang-pref', 'zh');
-        window.location.replace('/zh/');
-      } else {
-        localStorage.setItem('lang-pref', 'en');
-      }
-    } catch {
-      // API unavailable — stay on EN
-    }
-  })();
-</script>
 
   <!-- ── Hero ─────────────────────────────────────────── -->
   <section class="pt-4 pb-16">
@@ -76,7 +57,7 @@ const featuredProjects = projects.filter(p => p.featured);
 
   <!-- ── Resources ─────────────────────────────────────── -->
   <section id="resources" class="py-16" style="border-top: 1px solid var(--color-border);">
-    <p class="section-kicker">Resources</p>
+    <p class="section-kicker">資源</p>
     <div class="section-header">
       <h2 class="section-title">{t('home.resources-title')}</h2>
       <a href="/resources" class="section-more">{t('home.all-resources')}</a>
@@ -84,76 +65,84 @@ const featuredProjects = projects.filter(p => p.featured);
     <div class="resource-previews">
       <a href="/resources/design" class="resource-preview">
         <div>
-          <h3>Design</h3>
+          <h3>設計</h3>
           <p>{t('home.resources-body')}</p>
         </div>
-        <span>{designResources.length} resources →</span>
+        <span>{designResources.length} 項資源 →</span>
       </a>
       {securityResources.length > 0 && <a href="/resources/security" class="resource-preview">
         <div>
-          <h3>AI Security &amp; Vulnerability Engineering</h3>
+          <h3>AI 安全與漏洞工程</h3>
           <p>{t('home.security-resources-body')}</p>
         </div>
-        <span>{securityResources.length} resources →</span>
+        <span>{securityResources.length} 項資源 →</span>
       </a>}
     </div>
   </section>
 
   <!-- ── Journey ──────────────────────────────────────── -->
   <section id="journey" class="py-16" style="border-top: 1px solid var(--color-border);">
-    <p class="section-kicker">Journey</p>
+    <p class="section-kicker">旅程</p>
     <h2 class="section-title">{t('home.journey-title')}</h2>
-    <JourneyTimeline lang="en" />
+    <JourneyTimeline lang="zh" />
   </section>
 
   <!-- ── Writing ───────────────────────────────────────── -->
   <section id="writing" class="py-16" style="border-top: 1px solid var(--color-border);">
-    <p class="section-kicker">Writing</p>
+    <p class="section-kicker">文章</p>
     <div class="section-header">
       <h2 class="section-title">{t('home.writing')}</h2>
       <a href="/blog" class="section-more">{t('home.all-posts')}</a>
     </div>
     <div class="flex flex-col gap-4">
-      {latestPosts.map(post => (
-        <a href={`/blog/${post.id}`} class="post-card">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1 min-w-0">
-              <h3 class="post-card-title">
-                {post.data.title}
-              </h3>
-              {post.data.description && (
-                <p class="post-card-desc">{post.data.description}</p>
-              )}
-              <div class="post-card-meta">
-                <span>
-                  {post.data.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                  {' · '}
-                  {getReadingTime(post.body)} min read
-                </span>
+      {latestPosts.map(post => {
+        const slug = getPostSlug(post.id);
+        return (
+          <a href={`/blog/${slug}`} class="post-card">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex-1 min-w-0">
+                <h3 class="post-card-title">
+                  {post.data.title}
+                </h3>
+                {post.data.description && (
+                  <p class="post-card-desc">{post.data.description}</p>
+                )}
+                <div class="post-card-meta">
+                  <span>
+                    {post.data.date.toLocaleDateString('zh-TW', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    {' · '}
+                    {getReadingTime(post.body)} min read
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
-          {post.data.tags && post.data.tags.length > 0 && (
-            <div class="post-card-tags">
-              {post.data.tags.map(tag => (
-                <span class="tag">{tag}</span>
-              ))}
-            </div>
-          )}
-        </a>
-      ))}
+            {post.data.tags && post.data.tags.length > 0 && (
+              <div class="post-card-tags">
+                {post.data.tags.map(tag => (
+                  <span class="tag">{tag}</span>
+                ))}
+              </div>
+            )}
+          </a>
+        );
+      })}
     </div>
+    <a href="/blog/tag/鐵人賽" class="ironman-link">
+      <span class="ironman-badge">鐵人賽</span>
+      <span>挑戰用 30 天利用 Side Project 學習 AI Agents</span>
+      <span class="ironman-arrow">→</span>
+    </a>
   </section>
 
   <!-- ── Building / Projects ───────────────────────────── -->
   <section id="building" class="py-16" style="border-top: 1px solid var(--color-border);">
-    <p class="section-kicker">Projects</p>
+    <p class="section-kicker">專案</p>
     <div class="section-header">
       <h2 class="section-title">{t('home.projects-title')}</h2>
       <a href="/projects" class="section-more">{t('home.all-projects')}</a>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {featuredProjects.map(project => <ProjectCard project={project} />)}
+      {featuredProjects.map(project => <ProjectCard project={project} lang="zh" />)}
     </div>
   </section>
 
@@ -286,5 +275,56 @@ const featuredProjects = projects.filter(p => p.featured);
     margin-top: 0.75rem;
   }
 
+  /* Ironman series link */
+  .ironman-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+    padding: 0.875rem 1.25rem;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--color-text);
+    font-size: 0.875rem;
+    transition: border-color 150ms ease;
+  }
+  .ironman-link:hover {
+    border-color: var(--color-accent);
+  }
+  .ironman-badge {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    padding: 0.2em 0.6em;
+    border-radius: 9999px;
+    border: 1px solid var(--color-border-strong);
+    color: var(--color-accent);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .ironman-arrow {
+    margin-left: auto;
+    color: var(--color-text-subtle);
+    flex-shrink: 0;
+  }
+
+  /* About & contact text */
+  .about-body {
+    font-size: 1rem;
+    line-height: 1.75;
+    color: var(--color-muted);
+    max-width: 60ch;
+    margin: 0 0 1.25rem;
+  }
+  .read-more-link {
+    font-size: 0.875rem;
+    color: var(--color-text);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 1px;
+    transition: border-color var(--transition-base);
+  }
+  .read-more-link:hover { border-color: var(--color-text); }
 
 </style>

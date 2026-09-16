@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
-import BaseLayout from '../../../../layouts/BaseLayout.astro';
-import { getPostSlug } from '../../../../i18n/utils';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getPostSlug } from '../../../i18n/utils';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog', ({ data }) => data.lang === 'zh' && !data.draft);
@@ -19,17 +19,22 @@ export async function getStaticPaths() {
       : [...tagPosts].sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
     return {
       params: { tag },
-      props: { tag, posts: sorted, isSeries },
+      props: { tag, posts: sorted },
     };
   });
 }
 
-const { tag, posts, isSeries } = Astro.props;
+const { tag, posts } = Astro.props;
 ---
 
-<BaseLayout title={`${tag} — 周永堂`} description={`標籤：${tag}`}>
+<BaseLayout
+  title={`${tag} — 周永堂`}
+  description={`標籤：${tag}`}
+  alternateLangUrl="/en/blog"
+  hasAlternateTranslation={false}
+>
   <div class="tag-header mb-12">
-    <a href="/zh/blog" class="back-link">← 所有文章</a>
+    <a href="/blog" class="back-link">← 所有文章</a>
     <div class="eyebrow">標籤</div>
     <h1 class="font-display text-5xl font-bold tracking-tight mt-1 mb-2" style="line-height: 1.05; color: var(--color-text);">{tag}</h1>
     <p style="color: var(--color-muted);">{posts.length} 篇文章</p>
@@ -42,7 +47,7 @@ const { tag, posts, isSeries } = Astro.props;
           const slug = getPostSlug(post.id);
           return (
             <li class="archive-item">
-              <a href={`/zh/blog/${slug}`} class="archive-link group no-underline">
+              <a href={`/blog/${slug}`} class="archive-link group no-underline">
                 <div class="archive-meta">
                   {post.data.day != null ? (
                     <span class="archive-day">Day {post.data.day}</span>

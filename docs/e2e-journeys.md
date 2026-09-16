@@ -6,7 +6,8 @@ The current collection renders 37 Design resources and 4 AI security resources (
 
 | Priority | Journey | Routes | Target | Status |
 | --- | --- | --- | --- | --- |
-| P1 | Browse the bilingual Resources hub and open either topic without crossing locales | `/resources`, `/resources/design`, `/resources/security`, `/zh/resources`, `/zh/resources/design`, `/zh/resources/security` | Smoke, cross-browser | Queued |
-| P2 | Browse grouped Design and AI security catalogs and open a source in a new tab | `/resources/design`, `/resources/security`, `/zh/resources/design`, `/zh/resources/security` | Deep, Chromium | Queued |
-| P2 | Filter a resource catalog by group and switch between grid and list view | `/resources/design`, `/resources/security`, `/zh/resources/design` | Chromium | Covered — `e2e/tests/catalog-controls.spec.ts` |
-| P3 | Filter the projects catalog by tag in both locales | `/projects`, `/zh/projects` | Chromium | Covered — `e2e/tests/projects-filter.spec.ts` |
+| P1 | Open the Mandarin-default portfolio, switch to English, and follow an existing `/zh/blog/**` bookmark | `/`, `/en/`, `/zh/blog/**` | Smoke, Chromium | Covered — `e2e/tests/locale-routing.spec.ts` |
+| P1 | Browse the bilingual Resources hub and open either topic without crossing locales | `/resources`, `/resources/design`, `/resources/security`, `/en/resources`, `/en/resources/design`, `/en/resources/security` | Smoke, cross-browser | Queued |
+| P2 | Browse grouped Design and AI security catalogs and open a source in a new tab | `/resources/design`, `/resources/security`, `/en/resources/design`, `/en/resources/security` | Deep, Chromium | Queued |
+| P2 | Filter a resource catalog by group and switch between grid and list view | `/resources/design`, `/resources/security`, `/en/resources/design` | Chromium | Covered — `e2e/tests/catalog-controls.spec.ts` |
+| P3 | Filter the projects catalog by tag in both locales | `/projects`, `/en/projects` | Chromium | Covered — `e2e/tests/projects-filter.spec.ts` |

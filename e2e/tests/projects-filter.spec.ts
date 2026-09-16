@@ -5,8 +5,8 @@ import { expect, test } from '@playwright/test';
 // this exercises the flat-catalog path through the same shared script.
 
 for (const { name, path, allLabel } of [
-  { name: 'en', path: '/projects', allLabel: 'All' },
-  { name: 'zh', path: '/zh/projects', allLabel: '所有' },
+  { name: 'zh', path: '/projects', allLabel: '所有' },
+  { name: 'en', path: '/en/projects', allLabel: 'All' },
 ]) {
   test.describe(`projects tag filter (${name})`, () => {
     test.beforeEach(async ({ page }) => {
