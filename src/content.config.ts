@@ -48,4 +48,17 @@ const resources = defineCollection({
   }),
 });
 
-export const collections = { blog, resources };
+const ironman = defineCollection({
+  loader: glob({ base: './content/ironman', pattern: '*.md' }),
+  schema: z.object({
+    title: z.string(),
+    day: z.number(),
+    chapter: z.number(),
+    publish: z.coerce.date(),
+    platform: z.string().default('ithome'),
+    status: z.string().default('skeleton'),
+    notion: z.string().optional(),
+  }),
+});
+
+export const collections = { blog, resources, ironman };

@@ -52,6 +52,10 @@ export const ui = {
     'contact.link.email': 'Email',
     'contact.link.github': 'GitHub',
     'contact.link.linkedin': 'LinkedIn',
+    'ironman.title': 'Ironman Challenge',
+    'ironman.subtitle': '30-day AI Agents learning journey with a real side project.',
+    'ironman.kicker': 'Ironman',
+    'ironman.back': '← All days',
     'footer.rights': '© {year} Patrick C. All rights reserved.',
   },
   zh: {
@@ -99,6 +103,10 @@ export const ui = {
     'contact.link.email': 'Email',
     'contact.link.github': 'GitHub',
     'contact.link.linkedin': 'LinkedIn',
+    'ironman.title': '鐵人賽',
+    'ironman.subtitle': '挑戰用 30 天利用 Side Project 學習 AI Agents',
+    'ironman.kicker': '鐵人賽',
+    'ironman.back': '← 所有天數',
     'footer.rights': '© {year} Patrick C. 保留所有權利。',
   },
 } as const;

@@ -1,0 +1,75 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { SITE_TITLE } from '../consts';
+import { useTranslations } from '../i18n/utils';
+
+interface Props {
+  title: string;
+  day: number;
+  chapter: number;
+  publishDate: Date;
+}
+const { title, day, chapter, publishDate } = Astro.props;
+const t = useTranslations('zh');
+const formatted = publishDate.toLocaleDateString('zh-TW', {
+  year: 'numeric', month: 'long', day: 'numeric'
+});
+---
+
+<BaseLayout title={`Day ${day}：${title} — ${SITE_TITLE}`} description={title}>
+  <article>
+    <a href="/zh/ironman" class="back-link">{t('ironman.back')}</a>
+    <header class="mb-10 pb-8 border-b" style="border-color: var(--color-border);">
+      <p class="section-kicker">{t('ironman.kicker')}</p>
+      <h1 class="post-title">Day {day}：{title}</h1>
+      <div class="flex items-center gap-4 flex-wrap">
+        <time class="post-date" datetime={publishDate.toISOString()}>{formatted}</time>
+        <ul class="flex flex-wrap gap-1.5 list-none p-0 m-0">
+          <li class="post-tag">{`第 ${chapter} 章`}</li>
+        </ul>
+      </div>
+    </header>
+    <div class="prose prose-gray max-w-none">
+      <slot />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .back-link {
+    display: inline-block;
+    font-size: 0.875rem;
+    color: var(--color-muted);
+    text-decoration: none;
+    margin-bottom: 2.5rem;
+    transition: color 150ms ease;
+  }
+  .back-link:hover {
+    color: var(--color-text);
+  }
+
+  .post-title {
+    font-size: 2.25rem;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    color: var(--color-text);
+    margin: 0 0 0.75rem;
+  }
+
+  .post-date {
+    font-size: 0.875rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: var(--color-text-subtle);
+  }
+
+  .post-tag {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    padding: 0.25rem 0.625rem;
+    border-radius: 9999px;
+    border: 1px solid var(--color-border-strong);
+    color: var(--color-text-secondary);
+    background: transparent;
+  }
+</style>

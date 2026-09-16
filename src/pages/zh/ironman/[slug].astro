@@ -1,0 +1,24 @@
+---
+import { getCollection, render } from 'astro:content';
+import IronmanPostLayout from '../../../layouts/IronmanPostLayout.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('ironman', ({ data }) => data.status !== 'skeleton');
+  return posts.map(post => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+
+<IronmanPostLayout
+  title={post.data.title}
+  day={post.data.day}
+  chapter={post.data.chapter}
+  publishDate={post.data.publish}
+>
+  <Content />
+</IronmanPostLayout>
