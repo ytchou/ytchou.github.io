@@ -55,6 +55,8 @@ notion: https://app.notion.com/p/patrickytc/Day-02-discovery-problem-3b10d2d793c
 
 > **Agent 負責 decision-making，code 負責 reliable execution。**
 
+![AI 不需要做完整條 pipeline](images/day-02-control-execution-plane.png)
+
 至於 Agent 到底應該負責哪些 decision、要做成一顆 Agent 還是拆成多個 Agent，以及這樣的迭代流程怎麼設計，就是後面幾天會繼續討論的內容。
 
 除此之外，LLM 還有另一個傳統 rule-based system 比較難處理的能力：**需要上下文的語意判斷。** 例如 `S'MORE` 既可以指美國常見的點心，也是一個日本戶外用品品牌。如果只做 exact string matching，兩個相同字串很容易被當成同一個 entity；但如果同時考慮網站內容、商品類別、品牌描述等上下文，模型就有機會判斷它們其實代表完全不同的東西。
@@ -103,6 +105,8 @@ notion: https://app.notion.com/p/patrickytc/Day-02-discovery-problem-3b10d2d793c
 
 一邊描述「人在找什麼」，另一邊描述「產品是什麼」。**兩邊講同一套語言，才有辦法真正對得上。**
 
+![同一套語言，才有辦法對得上](images/day-02-query-product-representation.png)
+
 接下來的三十天內我們會深入討論以下的話題：這些 product features 應該怎麼定義？哪些可以從 structured data 取得，哪些需要 AI inference？Query 又應該如何拆解？最後要使用 filtering、semantic retrieval、ranking，還是幾種方法一起搭配？
 
 ---
@@ -128,7 +132,7 @@ notion: https://app.notion.com/p/patrickytc/Day-02-discovery-problem-3b10d2d793c
 - 想找一份送朋友的禮物
 - 開始自己在家煮咖啡
 
-每一個情境底下，我們不是單純放銷量最高的產品，因為 Formoria 並不是一個電商平台。我們更想找的是一組真的和這個情境有關，而且彼此放在一起是合理的 selection，這比較接近「線上選物店」的概念。
+每一個情境底下，我們不是單純放銷量最高的產品，因為這個平台並不是電商。我們更想找的是一組真的和這個情境有關，而且彼此放在一起是合理的 selection，比較接近「線上選物店」的概念。
 
 但這又帶出下一個問題：假設「開始自己煮咖啡」底下有三百個相關產品，到底哪二十個應該先出現？這時候搜尋和探索的 ranking objective 就開始出現差異。
 
@@ -136,9 +140,13 @@ notion: https://app.notion.com/p/patrickytc/Day-02-discovery-problem-3b10d2d793c
 
 > **搜尋比較像是在回答需求，探索則還要幫忙形成需求。**
 
+![Search 回答需求，Discovery 形成需求](images/day-02-search-vs-discovery.png)
+
 而且「情境」本身只回答了第一個問題：哪些產品應該進入這個 candidate pool？真正進入這個 pool 之後，還是要有另一套 discovery ranking logic 來決定誰先出現。
 
 要做到這件事，需要的底層資料其實和搜尋高度重疊。產品本身必須有夠細的 representation：它是做什麼的、適合什麼場合、什麼材質、什麼風格、什麼價位，以及它和哪些產品相似或互補。搜尋和探索因此可以建立在同一套 product representation 上，只是最後 optimize 的 ranking objective 不一樣。
+
+---
 
 ## 如果把這些概念落到產品介面
 
@@ -151,7 +159,7 @@ notion: https://app.notion.com/p/patrickytc/Day-02-discovery-problem-3b10d2d793c
 
 有一個問題我目前其實還沒有完全決定：**產品本身需不需要獨立的 Product Detail Page？**
 
-如果 Formoria 最後的定位是「產品作為入口、品牌作為目的地」，那產品可能只需要作為 discovery card，點擊後進到品牌頁或原始官網；但如果產品本身的資料與關聯逐漸變得夠豐富，那它也可能值得成為一個一級頁面。
+如果這個平台最後的定位是「產品作為入口、品牌作為目的地」，那產品可能只需要作為 discovery card，點擊後進到品牌頁或原始官網；但如果產品本身的資料與關聯逐漸變得夠豐富，那它也可能值得成為一個一級頁面。
 
 這部分我目前還沒有答案。後面幾天會再逐步把這些 surface 畫出來，也會一起討論背後需要哪些資料與 ranking logic。
 
