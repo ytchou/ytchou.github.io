@@ -1,17 +1,27 @@
 ---
 import { getCollection, render } from 'astro:content';
 import IronmanPostLayout from '../../../layouts/IronmanPostLayout.astro';
+import { sortIronmanPosts } from '../../../i18n/utils';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('ironman', ({ data }) => data.status !== 'skeleton');
-  return posts.map(post => ({
+  const posts = sortIronmanPosts(
+    await getCollection('ironman', ({ data }) => data.status !== 'skeleton')
+  );
+  const totalDays = 30;
+  return posts.map((post, i) => ({
     params: { slug: post.id },
-    props: { post },
+    props: {
+      post,
+      prevPost: posts[i - 1] ?? null,
+      nextPost: posts[i + 1] ?? null,
+      totalDays,
+    },
   }));
 }
 
-const { post } = Astro.props;
-const { Content } = await render(post);
+const { post, prevPost, nextPost, totalDays } = Astro.props;
+const { Content, headings } = await render(post);
+const toc = headings.filter(h => h.depth === 2);
 ---
 
 <IronmanPostLayout
@@ -19,6 +29,10 @@ const { Content } = await render(post);
   day={post.data.day}
   chapter={post.data.chapter}
   publishDate={post.data.publish}
+  toc={toc}
+  prevPost={prevPost ? { slug: prevPost.id, day: prevPost.data.day, title: prevPost.data.title } : null}
+  nextPost={nextPost ? { slug: nextPost.id, day: nextPost.data.day, title: nextPost.data.title } : null}
+  totalDays={totalDays}
 >
   <Content />
 </IronmanPostLayout>
