@@ -3,22 +3,31 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import '../styles/global.css';
 import { getLangFromUrl } from '../i18n/utils';
+import { ui } from '../i18n/ui';
 import { SITE_DESCRIPTION } from '../consts';
 
 interface Props {
   title: string;
   description?: string;
+  alternateLangUrl?: string;
+  hasAlternateTranslation?: boolean;
 }
 
-const { title, description = SITE_DESCRIPTION } = Astro.props;
 const lang = getLangFromUrl(Astro.url);
+const defaultDescription = lang === 'zh' ? ui.zh['hero.tagline'] : SITE_DESCRIPTION;
+const {
+  title,
+  description = defaultDescription,
+  alternateLangUrl,
+  hasAlternateTranslation = true,
+} = Astro.props;
 const htmlLang = lang === 'zh' ? 'zh-TW' : 'en';
 ---
 
 <!doctype html>
 <html lang={htmlLang}>
   <head>
-    <BaseHead title={title} description={description} />
+    <BaseHead title={title} description={description} hasAlternateTranslation={hasAlternateTranslation} />
     <script is:inline>
       // Apply saved theme and catalog view immediately to prevent flash
       (function() {
@@ -30,7 +39,7 @@ const htmlLang = lang === 'zh' ? 'zh-TW' : 'en';
     </script>
   </head>
   <body>
-    <Header />
+    <Header alternateLangUrl={alternateLangUrl} />
     <main class="w-full max-w-[1152px] mx-auto px-8 pt-12 pb-16">
       <slot />
     </main>

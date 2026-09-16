@@ -11,7 +11,7 @@ interface Props {
   lang?: Lang;
 }
 const { title, description, date, id, pinned, lang = 'en' } = Astro.props;
-const basePath = lang === 'zh' ? '/zh/blog' : '/blog';
+const basePath = lang === 'zh' ? '/blog' : '/en/blog';
 const slug = getPostSlug(id);
 const formatted = date.toLocaleDateString(lang === 'zh' ? 'zh-TW' : 'en-US', {
   year: 'numeric', month: 'long', day: 'numeric'

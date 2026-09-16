@@ -5,30 +5,30 @@ import CatalogControls from '../components/CatalogControls.astro';
 import { projects } from '../data/projects';
 import { useTranslations } from '../i18n/utils';
 
-const t = useTranslations('en');
+const t = useTranslations('zh');
 
 // Tags overlap across projects, so chips carry no count — see CatalogControls.
 const chips = [...new Set(projects.flatMap(p => p.tags))].sort().map(tag => ({ value: tag, label: tag }));
 ---
 
-<BaseLayout title={`${t('projects.title')} — Patrick`} description={t('projects.subtitle')}>
+<BaseLayout title={`${t('projects.title')} — 周永堂`} description={t('projects.subtitle')}>
   <!-- Page header -->
   <div class="projects-header mb-10">
-    <div class="eyebrow">Portfolio</div>
+    <div class="eyebrow">作品集</div>
     <h1 class="font-display text-5xl font-bold tracking-tight mt-1 mb-2" style="line-height: 1.05; color: var(--color-text);">{t('projects.title')}</h1>
     <p style="color: var(--color-muted);">{t('projects.subtitle')}</p>
   </div>
 
   <!-- Tag filter bar -->
   <div class="mb-8">
-    <CatalogControls chips={chips} lang="en" />
+    <CatalogControls chips={chips} lang="zh" />
   </div>
 
   <!-- Projects grid -->
   <div class="projects-grid" data-catalog-target>
     {projects.map(project => (
       <div class="project-item" data-filter-item data-filter-values={project.tags.join(',')}>
-        <ProjectCard project={project} />
+        <ProjectCard project={project} lang="zh" />
       </div>
     ))}
   </div>

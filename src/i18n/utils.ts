@@ -3,7 +3,7 @@ import { defaultLang, ui, type Lang, type UIKey } from './ui';
 
 export function getLangFromUrl(url: URL): Lang {
   const [, maybeLang] = url.pathname.split('/');
-  if (maybeLang === 'zh') return 'zh';
+  if (maybeLang === 'en') return 'en';
   return defaultLang;
 }
 
@@ -30,11 +30,11 @@ export function getPostSlug(id: string): string {
 
 export function getAlternateLangUrl(url: URL, lang: Lang): string {
   const path = url.pathname;
-  const isZhPath = path === '/zh' || path.startsWith('/zh/');
-  if (lang === 'zh') {
-    return isZhPath ? path : `/zh${path === '/' ? '' : path}`;
+  const isEnPath = path === '/en' || path.startsWith('/en/');
+  if (lang === 'en') {
+    return isEnPath ? path : `/en${path === '/' ? '/' : path}`;
   }
-  return isZhPath ? path.slice(3) || '/' : path;
+  return isEnPath ? path.slice(3) || '/' : path;
 }
 
 /** Estimate reading time in minutes from raw markdown content. */

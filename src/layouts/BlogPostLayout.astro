@@ -37,7 +37,8 @@ const {
 const formatted = date.toLocaleDateString(lang === 'zh' ? 'zh-TW' : 'en-US', {
   year: 'numeric', month: 'long', day: 'numeric'
 });
-const langPrefix = lang === 'zh' ? 'zh/' : '';
+const langPrefix = lang === 'en' ? 'en/' : '';
+const alternateBlogIndex = lang === 'zh' ? '/en/blog' : '/blog';
 const backHref = series
   ? `/${langPrefix}blog/tag/鐵人賽`
   : `/${langPrefix}blog`;
@@ -51,7 +52,12 @@ const displayTitle = series && day != null ? `Day ${day}：${title}` : title;
 const pageTitle = `${displayTitle} — ${SITE_TITLE}`;
 ---
 
-<BaseLayout title={pageTitle} description={description}>
+<BaseLayout
+  title={pageTitle}
+  description={description}
+  alternateLangUrl={alternateBlogIndex}
+  hasAlternateTranslation={false}
+>
   <article>
     <a href={backHref} class="back-link">{backLabel}</a>
     <header class="mb-10 pb-8 border-b" style="border-color: var(--color-border);">

@@ -4,6 +4,6 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import ResourcesDirectory from '../../../components/ResourcesDirectory.astro';
 const resources = (await getCollection('resources')).filter(resource => resource.data.topic === 'design');
 ---
-<BaseLayout title="設計資源 — Patrick" description="涵蓋介面、品牌、字體、元件、動態、視覺化與設計工程的實用參考與工具。">
-  <ResourcesDirectory resources={resources} lang="zh" topic="design" />
+<BaseLayout title="Design Resources — Patrick" description="Useful references and working tools for interface, brand, typography, components, motion, visualization, and design engineering.">
+  <ResourcesDirectory resources={resources} lang="en" topic="design" />
 </BaseLayout>
