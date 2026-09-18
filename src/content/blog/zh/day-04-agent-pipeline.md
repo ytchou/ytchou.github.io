@@ -1,10 +1,12 @@
 ---
 title: "從 Agent 主導到模組化架構：資料獲取工作流程的設計取捨"
+description: "已知路徑用 workflow，需要動態決策時才放入 Agent。從 ETL 視角拆解資料獲取流程的模組化設計與錯誤邊界。"
 day: 4
 chapter: 2
-publish: "2026-09-18"
-platform: "ithome"
-status: "published"
+date: 2026-09-18
+tags: [鐵人賽]
+lang: zh
+series: ironman
 notion: https://app.notion.com/p/patrickytc/Day-04-Agent-3b10d2d793cf815e84f6e227653b58ff
 ---
 
@@ -24,7 +26,7 @@ notion: https://app.notion.com/p/patrickytc/Day-04-Agent-3b10d2d793cf815e84f6e22
 
 [OpenAI 的〈A practical guide to building agents〉](https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/)則建議從簡單設計逐步擴充，避免過早引入多 Agent 的複雜度，並為執行設定明確的退出條件，例如完成輸出、發生錯誤或達到回合上限。
 
-<!-- IMAGE: workflow vs agent 定義對比圖 — workflow 由程式預定路徑，agent 由模型動態決定步驟 -->
+![Workflow vs Agent 定義對比](/images/ironman/day-04-workflow-vs-agent-definition.png)
 
 這些指南沒有規定資料獲取該拆成幾個模組，但提供了一個設計起點：
 
@@ -42,7 +44,7 @@ notion: https://app.notion.com/p/patrickytc/Day-04-Agent-3b10d2d793cf815e84f6e22
 
 如果從「一個外部來源，最後如何變成資料庫裡可用的一筆紀錄」往回拆，大致會經過六個階段：來源探索、內容取得、資料結構化、資料增補、品質驗證，以及合併寫入。
 
-<!-- IMAGE: 資料獲取流程簡圖 — 六個階段：來源探索、內容取得、資料結構化、資料增補、品質驗證、合併寫入 -->
+![資料獲取流程](/images/ironman/day-04-data-acquisition-workflow.png)
 
 從資料工程的角度，可以把這整套系統理解成一條大型的 **AI 輔助 ETL pipeline**：
 
@@ -65,7 +67,7 @@ notion: https://app.notion.com/p/patrickytc/Day-04-Agent-3b10d2d793cf815e84f6e22
 
 如果這些工作都包在同一個大步驟裡，最後只會得到「整次執行失敗」，卻很難知道問題究竟出在哪裡。這也是為什麼我把模組化（modularization）納入架構設計：每個模組都是可以單獨觀察、測試與重跑的工作單位，有自己的輸入、輸出與完成條件，再由外層流程管理順序與依賴關係。
 
-<!-- IMAGE: 模組化錯誤邊界示意圖 — 每個模組獨立失敗，成功結果保留，工具可替換 -->
+![模組化錯誤邊界](/images/ironman/day-04-modular-error-boundaries.png)
 
 這樣做主要帶來三個好處：
 
@@ -89,7 +91,7 @@ notion: https://app.notion.com/p/patrickytc/Day-04-Agent-3b10d2d793cf815e84f6e22
 
 換句話說，Workflow 提供穩定的骨架，Agent 則補上局部情境需要的彈性。
 
-<!-- IMAGE: 最終架構圖 — workflow 骨架中嵌入 agent 模組，程式控制流程，agent 負責動態決策 -->
+![Workflow 中嵌入 Agent 模組](/images/ironman/day-04-workflow-with-agent-blocks.png)
 
 ---
 
