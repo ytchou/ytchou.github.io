@@ -12,10 +12,10 @@ const socialLinks = contactLinks.filter(
 );
 ---
 
-<footer style="border-top: 1px solid var(--color-border); margin-top: 2rem;">
-  <div class="max-w-[1152px] mx-auto px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+<footer class="site-footer">
+  <div class="footer-inner">
     <p class="footer-copy">{rights}</p>
-    <div class="flex items-center gap-5">
+    <div class="footer-links">
       {socialLinks.map(link => (
         <a
           href={link.href}
@@ -31,16 +31,33 @@ const socialLinks = contactLinks.filter(
 </footer>
 
 <style>
+  .site-footer { border-top: 1px solid var(--color-border); }
+  .footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    max-width: 1088px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem;
+  }
+  .footer-links { display: flex; align-items: center; gap: 1rem; }
   .footer-copy {
     font-size: 0.8125rem;
     color: var(--color-muted);
     margin: 0;
   }
   .footer-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
     font-size: 0.8125rem;
     color: var(--color-muted);
     text-decoration: none;
     transition: color var(--transition-base);
   }
   .footer-link:hover { color: var(--color-text); }
+  @media (max-width: 639px) {
+    .footer-inner { align-items: flex-start; flex-direction: column; gap: 0; }
+  }
 </style>

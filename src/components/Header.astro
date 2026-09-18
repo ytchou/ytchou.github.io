@@ -12,28 +12,25 @@ const altLangUrl = alternateLangUrl ?? getAlternateLangUrl(Astro.url, lang === '
 const base = lang === 'en' ? '/en' : '';
 ---
 
-<header class="sticky top-0 z-10 border-b" style="background: color-mix(in srgb, var(--color-bg) 97%, transparent); backdrop-filter: blur(8px); border-color: var(--color-border);">
-  <nav class="max-w-[1152px] mx-auto px-8 py-4 flex items-center justify-between gap-6">
+<header class="site-header">
+  <nav class="site-nav" aria-label={lang === 'zh' ? '主要導覽' : 'Primary navigation'}>
     <a href={`${base}/`} class="nav-logo font-display">
       {t('nav.home')}
     </a>
 
-    <div class="flex items-center gap-1 sm:gap-4">
-      <!-- Section anchor links (hidden on very small screens) -->
-      <div class="hidden sm:flex items-center gap-4">
-        <a href={`${base}/#journey`} class="nav-link">{t('nav.journey')}</a>
-        <a href={`${base}/#writing`} class="nav-link">{t('nav.writing')}</a>
-        <a href={`${base}/#building`} class="nav-link">{t('nav.building')}</a>
-        <a href={`${base}/resources`} class="nav-link">{t('nav.resources')}</a>
-      </div>
+    <div class="nav-links">
+      <a href={`${base}/blog`} class="nav-link">{t('nav.writing')}</a>
+      <a href={`${base}/projects`} class="nav-link">{t('nav.projects')}</a>
+      <a href={`${base}/resources`} class="nav-link">{t('nav.resources')}</a>
+      <a href={`${base}/about`} class="nav-link">{t('nav.about')}</a>
+    </div>
 
-      <!-- Dark mode toggle -->
+    <div class="nav-controls">
       <button id="theme-toggle" aria-label="Toggle dark mode" class="theme-btn">
         <span class="icon-sun">&#x2600;</span>
         <span class="icon-moon">&#x263E;</span>
       </button>
 
-      <!-- Lang toggle -->
       <a href={altLangUrl} id="lang-toggle" class="lang-toggle">
         {t('nav.lang-toggle')}
       </a>
@@ -62,7 +59,27 @@ const base = lang === 'en' ? '/en' : '';
 </script>
 
 <style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-bottom: 1px solid var(--color-border);
+    background: color-mix(in srgb, var(--color-bg) 97%, transparent);
+    backdrop-filter: blur(8px);
+  }
+  .site-nav {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 1.5rem;
+    max-width: 1088px;
+    margin: 0 auto;
+    padding: 0.5rem 1.5rem;
+  }
   .nav-logo {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
     font-size: 17px;
     font-weight: 600;
     color: var(--color-text);
@@ -71,6 +88,17 @@ const base = lang === 'en' ? '/en' : '';
     transition: opacity var(--transition-base);
   }
   .nav-logo:hover { opacity: 0.6; }
+
+  .nav-links,
+  .nav-controls {
+    display: flex;
+    align-items: center;
+  }
+  .nav-links {
+    justify-self: end;
+    gap: 1rem;
+  }
+  .nav-controls { gap: 0.25rem; }
 
   .nav-link {
     display: inline-flex;
@@ -90,8 +118,7 @@ const base = lang === 'en' ? '/en' : '';
     justify-content: center;
     width: 48px;
     height: 48px;
-    border-radius: 50%;
-    border: 1px solid var(--color-border);
+    border: 0;
     background: transparent;
     cursor: pointer;
     font-size: 14px;
@@ -100,7 +127,6 @@ const base = lang === 'en' ? '/en' : '';
     flex-shrink: 0;
   }
   .theme-btn:hover {
-    border-color: var(--color-border-hover);
     color: var(--color-text);
   }
 
@@ -120,16 +146,34 @@ const base = lang === 'en' ? '/en' : '';
     min-height: 48px;
     font-size: 0.75rem;
     font-weight: 500;
-    padding: 0 0.75rem;
-    border-radius: 999px;
-    border: 1px solid var(--color-border);
+    padding: 0 0.5rem;
     color: var(--color-muted);
     text-decoration: none;
     transition: border-color var(--transition-base), color var(--transition-base);
     white-space: nowrap;
   }
   .lang-toggle:hover {
-    border-color: var(--color-border-hover);
     color: var(--color-text);
+  }
+
+  @media (max-width: 639px) {
+    .site-nav {
+      grid-template-columns: 1fr auto;
+      column-gap: 0.75rem;
+      row-gap: 0;
+      padding-bottom: 0;
+    }
+    .nav-links {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      width: 100%;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+    .nav-controls {
+      grid-column: 2;
+      grid-row: 1;
+    }
+    .nav-link { font-size: 0.8125rem; }
   }
 </style>

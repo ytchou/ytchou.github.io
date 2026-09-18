@@ -1,5 +1,6 @@
 ---
 title: "挑戰用 30 天利用 Side Project 學習 AI Agents"
+description: "用一個讓台灣小品牌更容易被找到的 Side Project，記錄 30 天學習 AI Agents 的問題、決策與實作。"
 day: 1
 chapter: 1
 date: 2026-09-15

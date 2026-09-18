@@ -1,255 +1,29 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { useTranslations, sortPosts, getPostSlug } from '../../i18n/utils';
+import BlogPostCard from '../../components/BlogPostCard.astro';
+import { selectPostsForLang, useTranslations } from '../../i18n/utils';
 
 const t = useTranslations('zh');
-
-const allPosts = sortPosts(await getCollection('blog', ({ data }) => data.lang === 'zh' && !data.draft));
-const pinnedPosts = allPosts.filter(p => p.data.pinned);
-const regularPosts = allPosts.filter(p => !p.data.pinned);
+const posts = selectPostsForLang(await getCollection('blog'), 'zh');
 ---
 
 <BaseLayout title={`${t('blog.title')} — 周永堂`} description={t('blog.subtitle')}>
-  <!-- Archive header -->
-  <div class="blog-header mb-12">
-    <div class="eyebrow">封存</div>
-    <h1 class="font-display text-5xl font-bold tracking-tight mt-1 mb-2" style="line-height: 1.05; color: var(--color-text);">文章</h1>
-    <p style="color: var(--color-muted);">{t('blog.subtitle')}</p>
-  </div>
+  <header class="page-header">
+    <p class="section-kicker">封存</p>
+    <h1 class="page-title">文章</h1>
+    <p class="page-description">{t('blog.subtitle')}</p>
+  </header>
 
-  <!-- Pinned / featured posts -->
-  {pinnedPosts.length > 0 && (
-    <section class="mb-12">
-      <div class="section-label mb-5">
-        <span>精選</span>
-      </div>
-      <div class="featured-grid">
-        {pinnedPosts.map(post => {
-          const slug = getPostSlug(post.id);
-          const formatted = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' });
-          return (
-            <a href={`/blog/${slug}`} class="featured-card no-underline group">
-              <div class="featured-card-visual">
-                <div class="featured-card-rule"></div>
-                <span class="featured-badge">精選</span>
-              </div>
-              <div class="featured-card-body">
-                <h2 class="featured-title font-display text-xl font-bold leading-snug mb-2">{post.data.title}</h2>
-                <p class="text-sm line-clamp-2 mb-4" style="color: var(--color-muted);">{post.data.description}</p>
-                <time class="text-xs" style="color: var(--color-text-subtle);" datetime={post.data.date.toISOString()}>{formatted}</time>
-              </div>
-            </a>
-          );
-        })}
-      </div>
-    </section>
-  )}
-
-  <!-- All other posts — archive list -->
-  {regularPosts.length > 0 && (
-    <section>
-      <div class="section-label mb-5">
-        <span>所有文章</span>
-      </div>
-      <ul class="archive-list">
-        {regularPosts.map(post => {
-          const slug = getPostSlug(post.id);
-          const year = post.data.date.getFullYear();
-          const monthDay = post.data.date.toLocaleDateString('zh-TW', { month: 'short', day: 'numeric' });
-          return (
-            <li class="archive-item">
-              <a href={`/blog/${slug}`} class="archive-link group no-underline">
-                <div class="archive-meta">
-                  <span class="archive-year">{year}</span>
-                  <span class="archive-date">{monthDay}</span>
-                </div>
-                <div class="archive-content">
-                  <h3 class="archive-title">{post.data.title}</h3>
-                  {post.data.description && <p class="archive-desc">{post.data.description}</p>}
-                </div>
-              </a>
-            </li>
-          );
-        })}
-      </ul>
-    </section>
-  )}
-
-  {allPosts.length === 0 && (
-    <p style="color: var(--color-muted);" class="py-12 text-center">尚無文章，請稍後回來查看。</p>
+  {posts.length > 0 ? (
+    <div class="post-list">
+      {posts.map(post => <BlogPostCard post={post} uiLang="zh" />)}
+    </div>
+  ) : (
+    <p class="empty-state">尚無文章，請稍後回來查看。</p>
   )}
 </BaseLayout>
 
 <style>
-  .blog-header {
-    border-bottom: 1px solid var(--color-border);
-    padding-bottom: 2rem;
-  }
-
-  .eyebrow {
-    font-size: 0.75rem;
-    font-weight: 400;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--color-accent);
-    margin-bottom: 1rem;
-  }
-
-  .section-label {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-  .section-label span {
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--color-text-subtle);
-    white-space: nowrap;
-  }
-  .section-label::after {
-    content: '';
-    display: block;
-    flex: 1;
-    height: 1px;
-    background: var(--color-border);
-  }
-
-  /* Featured grid */
-  .featured-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-  @media (min-width: 640px) {
-    .featured-grid {
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    }
-  }
-
-  .featured-card {
-    display: flex;
-    flex-direction: column;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-card);
-    overflow: hidden;
-    box-shadow: var(--shadow-card);
-    transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
-  }
-  .featured-card:hover {
-    border-color: var(--color-border-hover);
-    box-shadow: var(--shadow-card-hover);
-    transform: translateY(-3px);
-  }
-
-  .featured-card-visual {
-    position: relative;
-    height: 72px;
-    background-color: var(--color-surface);
-    overflow: hidden;
-    flex-shrink: 0;
-  }
-  .featured-card-rule {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: var(--color-accent);
-    opacity: 0.6;
-  }
-  .featured-badge {
-    position: absolute;
-    top: 14px;
-    left: 16px;
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--color-accent);
-    background: var(--color-surface-tag);
-    border: 1px solid var(--color-border);
-    padding: 0.2em 0.6em;
-    border-radius: 999px;
-  }
-
-  .featured-card-body {
-    padding: 1.25rem;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* Archive list */
-  .archive-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  .archive-item {
-    border-bottom: 1px solid var(--color-border);
-  }
-  .archive-item:last-child {
-    border-bottom: none;
-  }
-
-  .archive-link {
-    display: grid;
-    grid-template-columns: 80px 1fr;
-    gap: 1.25rem;
-    align-items: start;
-    padding: 1.1rem 0;
-    color: inherit;
-  }
-
-  .archive-meta {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    padding-top: 0.15rem;
-  }
-  .archive-year {
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: var(--color-text-subtle);
-    letter-spacing: 0.06em;
-  }
-  .archive-date {
-    font-size: 0.78rem;
-    color: var(--color-text-muted);
-    margin-top: 0.1rem;
-  }
-
-  .archive-title {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--color-text);
-    margin: 0 0 0.25rem;
-    line-height: 1.4;
-    transition: color 200ms ease;
-  }
-  .archive-link:hover .archive-title {
-    color: var(--color-muted);
-  }
-  .archive-desc {
-    font-size: 0.82rem;
-    color: var(--color-text-muted);
-    line-height: 1.5;
-    margin: 0;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .featured-title {
-    color: var(--color-text);
-    transition: color 200ms ease;
-  }
-  .featured-card:hover .featured-title {
-    color: var(--color-muted);
-  }
+  .empty-state { padding: 3rem 0; color: var(--color-muted); text-align: center; }
 </style>

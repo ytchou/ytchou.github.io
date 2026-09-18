@@ -1,330 +1,41 @@
 ---
 import { getCollection } from 'astro:content';
-import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ProjectCard from '../components/ProjectCard.astro';
-import { projects } from '../data/projects';
-import { contactLinks } from '../data/contact';
-import JourneyTimeline from '../components/JourneyTimeline.astro';
-import { useTranslations, sortPosts, getPostSlug, getReadingTime } from '../i18n/utils';
-import headshot from '../assets/headshot.jpeg';
+import BlogPostCard from '../components/BlogPostCard.astro';
+import { selectPostsForLang, useTranslations } from '../i18n/utils';
 
 const t = useTranslations('zh');
-
-const allPosts = await getCollection('blog', ({ data }) => data.lang === 'zh' && !data.draft);
-const resources = await getCollection('resources');
-const designResources = resources.filter(resource => resource.data.topic === 'design');
-const securityResources = resources.filter(resource => resource.data.topic === 'security');
-const latestPosts = sortPosts(allPosts).slice(0, 3);
-const featuredProjects = projects.filter(p => p.featured);
+const posts = selectPostsForLang(await getCollection('blog'), 'zh').slice(0, 5);
 ---
 
-<BaseLayout title="Patrick C." description={t('hero.tagline')}>
-
-  <!-- ── Hero ─────────────────────────────────────────── -->
-  <section class="pt-4 pb-16">
-    <div class="flex items-start justify-between gap-8 mb-8">
-      <div class="flex-1 min-w-0">
-        <h1 class="name-heading mb-2">Patrick C.</h1>
-        <p class="role-label mb-6">{t('hero.role')}</p>
-        <p class="text-base" style="color: var(--color-muted);">{t('hero.tagline')}</p>
-      </div>
-      <div class="shrink-0 pt-1">
-        <Image
-          src={headshot}
-          alt="Patrick C."
-          width={120}
-          height={120}
-          class="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover object-top"
-        />
-      </div>
+<BaseLayout title="Patrick C." description={t('home.intro')}>
+  <section aria-labelledby="home-intro">
+    <h1 id="home-intro" class="home-intro">{t('home.intro')}</h1>
+    <div class="post-list">
+      {posts.map(post => <BlogPostCard post={post} uiLang="zh" />)}
     </div>
-
-    <!-- Social / contact links row -->
-    <div class="flex flex-wrap gap-3">
-      {contactLinks.map(link => (
-        <a
-          href={link.href}
-          class="social-pill"
-          target={link.external ? '_blank' : undefined}
-          rel={link.external ? 'noopener noreferrer' : undefined}
-        >
-          {t(link.labelKey)}
-        </a>
-      ))}
-    </div>
+    <a href="/blog" class="all-posts-link">{t('home.all-posts')} <span aria-hidden="true">→</span></a>
   </section>
-
-  <!-- ── Resources ─────────────────────────────────────── -->
-  <section id="resources" class="py-16" style="border-top: 1px solid var(--color-border);">
-    <p class="section-kicker">資源</p>
-    <div class="section-header">
-      <h2 class="section-title">{t('home.resources-title')}</h2>
-      <a href="/resources" class="section-more">{t('home.all-resources')}</a>
-    </div>
-    <div class="resource-previews">
-      <a href="/resources/design" class="resource-preview">
-        <div>
-          <h3>設計</h3>
-          <p>{t('home.resources-body')}</p>
-        </div>
-        <span>{designResources.length} 項資源 →</span>
-      </a>
-      {securityResources.length > 0 && <a href="/resources/security" class="resource-preview">
-        <div>
-          <h3>AI 安全與漏洞工程</h3>
-          <p>{t('home.security-resources-body')}</p>
-        </div>
-        <span>{securityResources.length} 項資源 →</span>
-      </a>}
-    </div>
-  </section>
-
-  <!-- ── Journey ──────────────────────────────────────── -->
-  <section id="journey" class="py-16" style="border-top: 1px solid var(--color-border);">
-    <p class="section-kicker">旅程</p>
-    <h2 class="section-title">{t('home.journey-title')}</h2>
-    <JourneyTimeline lang="zh" />
-  </section>
-
-  <!-- ── Writing ───────────────────────────────────────── -->
-  <section id="writing" class="py-16" style="border-top: 1px solid var(--color-border);">
-    <p class="section-kicker">文章</p>
-    <div class="section-header">
-      <h2 class="section-title">{t('home.writing')}</h2>
-      <a href="/blog" class="section-more">{t('home.all-posts')}</a>
-    </div>
-    <div class="flex flex-col gap-4">
-      {latestPosts.map(post => {
-        const slug = getPostSlug(post.id);
-        return (
-          <a href={`/blog/${slug}`} class="post-card">
-            <div class="flex items-start justify-between gap-4">
-              <div class="flex-1 min-w-0">
-                <h3 class="post-card-title">
-                  {post.data.title}
-                </h3>
-                {post.data.description && (
-                  <p class="post-card-desc">{post.data.description}</p>
-                )}
-                <div class="post-card-meta">
-                  <span>
-                    {post.data.date.toLocaleDateString('zh-TW', { month: 'short', day: 'numeric', year: 'numeric' })}
-                    {' · '}
-                    {getReadingTime(post.body)} min read
-                  </span>
-                </div>
-              </div>
-            </div>
-            {post.data.tags && post.data.tags.length > 0 && (
-              <div class="post-card-tags">
-                {post.data.tags.map(tag => (
-                  <span class="tag">{tag}</span>
-                ))}
-              </div>
-            )}
-          </a>
-        );
-      })}
-    </div>
-    <a href="/blog/tag/鐵人賽" class="ironman-link">
-      <span class="ironman-badge">鐵人賽</span>
-      <span>挑戰用 30 天利用 Side Project 學習 AI Agents</span>
-      <span class="ironman-arrow">→</span>
-    </a>
-  </section>
-
-  <!-- ── Building / Projects ───────────────────────────── -->
-  <section id="building" class="py-16" style="border-top: 1px solid var(--color-border);">
-    <p class="section-kicker">專案</p>
-    <div class="section-header">
-      <h2 class="section-title">{t('home.projects-title')}</h2>
-      <a href="/projects" class="section-more">{t('home.all-projects')}</a>
-    </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {featuredProjects.map(project => <ProjectCard project={project} lang="zh" />)}
-    </div>
-  </section>
-
-
 </BaseLayout>
 
 <style>
-  /* Hero typography */
-  .name-heading {
-    font-family: var(--font-display);
-    font-size: clamp(2.75rem, 5vw, 3.75rem);
-    font-weight: 600;
-    line-height: 0.95;
-    letter-spacing: -0.025em;
-    color: var(--color-text);
-  }
-  .role-label {
-    font-size: 0.8125rem;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+  .home-intro {
+    max-width: 34rem;
+    margin: 0 0 3rem;
     color: var(--color-muted);
+    font-size: 1.125rem;
+    font-weight: 400;
+    line-height: 1.7;
   }
-
-  /* Social pill buttons in hero */
-  .social-pill {
+  .all-posts-link {
     display: inline-flex;
     align-items: center;
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
-    font-weight: 400;
-    color: var(--color-text);
-    text-decoration: none;
-    border: 1px solid var(--color-border-strong);
-    border-radius: 9999px;
-    transition: border-color 150ms ease, color 150ms ease;
-  }
-  .social-pill:hover {
-    border-color: var(--color-text);
-  }
-
-  /* Section structure */
-  .section-header {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    margin-bottom: 1.5rem;
-  }
-  .section-title {
-    font-size: 1.875rem;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    color: var(--color-text);
-  }
-  .section-more {
-    font-size: 0.875rem;
-    color: var(--color-text);
-    text-decoration: none;
-    padding: 0.5rem 1rem;
-    border: 1px solid var(--color-border-strong);
-    border-radius: 9999px;
-    transition: border-color 150ms ease, color 150ms ease;
-  }
-  .section-more:hover {
-    border-color: var(--color-text);
-  }
-  .resource-preview {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 2rem;
-    padding: 1.5rem;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-card);
-    color: var(--color-text);
-    text-decoration: none;
-    transition: border-color var(--transition-base), background var(--transition-base);
-  }
-  .resource-previews { display: grid; gap: 1rem; }
-  .resource-preview:hover { border-color: var(--color-accent); background: var(--color-surface); }
-  .resource-preview h3 { margin: 0; font-size: 1.25rem; }
-  .resource-preview p { margin: 0.35rem 0 0; color: var(--color-muted); font-size: 0.875rem; }
-  .resource-preview span { color: var(--color-text-subtle); font: 0.75rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: nowrap; }
-  @media (max-width: 639px) { .resource-preview { align-items: flex-start; flex-direction: column; gap: 1rem; } }
-
-  /* Blog post cards */
-  .post-card {
-    display: block;
-    text-decoration: none;
-    border: 1px solid var(--color-border);
-    border-radius: 12px;
-    padding: 1.25rem;
-    transition: border-color 150ms ease;
-  }
-  .post-card:hover {
-    border-color: var(--color-accent);
-  }
-  .post-card:hover .post-card-title {
-    color: var(--color-accent);
-  }
-  :global([data-theme="dark"]) .post-card:hover {
-    border-color: var(--color-accent-soft);
-  }
-  :global([data-theme="dark"]) .post-card:hover .post-card-title {
-    color: var(--color-accent-soft);
-  }
-  .post-card-title {
-    font-size: 1.25rem;
-    font-weight: 500;
-    color: var(--color-text);
-    margin: 0 0 0.25rem;
-    line-height: 1.4;
-    transition: color 150ms ease;
-  }
-  .post-card-desc {
-    font-size: 0.875rem;
-    line-height: 1.6;
-    color: var(--color-text-secondary);
-    margin: 0 0 0.5rem;
-  }
-  .post-card-meta {
-    font-size: 0.75rem;
-    color: var(--color-text-subtle);
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  }
-  .post-card-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.375rem;
-    margin-top: 0.75rem;
-  }
-
-  /* Ironman series link */
-  .ironman-link {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-top: 1.25rem;
-    padding: 0.875rem 1.25rem;
-    border: 1px solid var(--color-border);
-    border-radius: 12px;
-    text-decoration: none;
-    color: var(--color-text);
-    font-size: 0.875rem;
-    transition: border-color 150ms ease;
-  }
-  .ironman-link:hover {
-    border-color: var(--color-accent);
-  }
-  .ironman-badge {
-    font-size: 0.6875rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    padding: 0.2em 0.6em;
-    border-radius: 9999px;
-    border: 1px solid var(--color-border-strong);
-    color: var(--color-accent);
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-  .ironman-arrow {
-    margin-left: auto;
-    color: var(--color-text-subtle);
-    flex-shrink: 0;
-  }
-
-  /* About & contact text */
-  .about-body {
-    font-size: 1rem;
-    line-height: 1.75;
+    gap: 0.4rem;
+    min-height: 48px;
+    margin-top: 1.5rem;
     color: var(--color-muted);
-    max-width: 60ch;
-    margin: 0 0 1.25rem;
-  }
-  .read-more-link {
     font-size: 0.875rem;
-    color: var(--color-text);
     text-decoration: none;
-    border-bottom: 1px solid var(--color-border);
-    padding-bottom: 1px;
-    transition: border-color var(--transition-base);
   }
-  .read-more-link:hover { border-color: var(--color-text); }
-
+  .all-posts-link:hover { color: var(--color-text); }
 </style>

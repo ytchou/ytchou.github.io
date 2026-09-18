@@ -5,6 +5,6 @@ import ResourcesDirectory from '../../../components/ResourcesDirectory.astro';
 const resources = (await getCollection('resources')).filter(resource => resource.data.topic === 'security');
 ---
 
-<BaseLayout title="AI Security Resources — Patrick" description="Open-source approaches to AI-assisted security audits, vulnerability discovery, remediation, and verification.">
+<BaseLayout title="AI Security Resources — Patrick" description="Open-source approaches to AI-assisted security audits, vulnerability discovery, remediation, and verification." layout="gallery">
   <ResourcesDirectory resources={resources} lang="en" topic="security" />
 </BaseLayout>

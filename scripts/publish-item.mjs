@@ -105,11 +105,14 @@ function parseFrontmatter(content) {
   return { fields, body };
 }
 
-function buildAstroFrontmatter(fields, lang) {
+function buildAstroFrontmatter(fields, lang, srcPath) {
   const date = dateOverride || new Date().toISOString().slice(0, 10);
 
   // Description: seo_description → subtitle → description
   const description = fields.seo_description || fields.subtitle || fields.description || '';
+  if (typeof description !== 'string' || description.trim() === '') {
+    throw new Error(`Error: ${srcPath} requires seo_description, subtitle, or description`);
+  }
 
   const out = { title: fields.title || '', description, date, lang };
 
@@ -170,7 +173,7 @@ function copyCharts() {
 function processEdition(srcPath, outPath, lang, imgPrefix) {
   const raw = readFileSync(srcPath, 'utf-8');
   const { fields, body } = parseFrontmatter(raw);
-  const astroFm = buildAstroFrontmatter(fields, lang);
+  const astroFm = buildAstroFrontmatter(fields, lang, srcPath);
   const rewrittenBody = rewriteChartRefs(body, imgPrefix);
   const output = serializeFrontmatter(astroFm) + '\n' + rewrittenBody;
 

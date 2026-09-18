@@ -35,7 +35,7 @@ test('Given an existing Mandarin article bookmark, when it opens, then it reache
   );
   await expect(page.locator('meta[name="description"]')).toHaveAttribute(
     'content',
-    '台灣資料科學家，用數據打造有意義的事。',
+    '用一個讓台灣小品牌更容易被找到的 Side Project，記錄 30 天學習 AI Agents 的問題、決策與實作。',
   );
   await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveCount(0);
   await expect(page.locator('#lang-toggle')).toHaveAttribute('href', '/en/blog');
