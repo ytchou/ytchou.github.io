@@ -11,13 +11,13 @@ const t = useTranslations('en');
 const chips = [...new Set(projects.flatMap(p => p.tags))].sort().map(tag => ({ value: tag, label: tag }));
 ---
 
-<BaseLayout title={`${t('projects.title')} — Patrick`} description={t('projects.subtitle')}>
+<BaseLayout title={`${t('projects.title')} — Patrick`} description={t('projects.subtitle')} layout="gallery">
   <!-- Page header -->
-  <div class="projects-header mb-10">
-    <div class="eyebrow">Portfolio</div>
-    <h1 class="font-display text-5xl font-bold tracking-tight mt-1 mb-2" style="line-height: 1.05; color: var(--color-text);">{t('projects.title')}</h1>
-    <p style="color: var(--color-muted);">{t('projects.subtitle')}</p>
-  </div>
+  <header class="page-header">
+    <p class="section-kicker">Portfolio</p>
+    <h1 class="page-title">{t('projects.title')}</h1>
+    <p class="page-description">{t('projects.subtitle')}</p>
+  </header>
 
   <!-- Tag filter bar -->
   <div class="mb-8">
@@ -40,20 +40,6 @@ const chips = [...new Set(projects.flatMap(p => p.tags))].sort().map(tag => ({ v
 </BaseLayout>
 
 <style>
-  .projects-header {
-    border-bottom: 1px solid var(--color-border);
-    padding-bottom: 2rem;
-  }
-
-  .eyebrow {
-    font-size: 0.75rem;
-    font-weight: 400;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--color-accent);
-    margin-bottom: 1rem;
-  }
-
   .projects-grid {
     display: grid;
     grid-template-columns: 1fr;

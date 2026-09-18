@@ -6,12 +6,11 @@ const blog = defineCollection({
   loader: glob({ base: './src/content/blog', pattern: '**/*.{md,mdx}' }),
   schema: z.object({
     title: z.string(),
-    description: z.string().optional(),
+    description: z.string().trim().min(1),
     date: z.coerce.date(),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
     lang: z.enum(['en', 'zh']).default('en'),
-    pinned: z.boolean().default(false),
     series: z.string().optional(),
     day: z.number().optional(),
     chapter: z.number().optional(),

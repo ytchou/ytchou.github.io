@@ -1,43 +1,79 @@
 ---
+import type { CollectionEntry } from 'astro:content';
 import type { Lang } from '../i18n/ui';
 import { getPostSlug } from '../i18n/utils';
 
 interface Props {
-  title: string;
-  description: string;
-  date: Date;
-  id: string;
-  pinned: boolean;
-  lang?: Lang;
+  post: CollectionEntry<'blog'>;
+  uiLang: Lang;
 }
-const { title, description, date, id, pinned, lang = 'en' } = Astro.props;
-const basePath = lang === 'zh' ? '/blog' : '/en/blog';
-const slug = getPostSlug(id);
-const formatted = date.toLocaleDateString(lang === 'zh' ? 'zh-TW' : 'en-US', {
-  year: 'numeric', month: 'long', day: 'numeric'
-});
+
+const { post, uiLang } = Astro.props;
+const sourceLang = post.data.lang;
+const slug = getPostSlug(post.id);
+const href = sourceLang === 'en' ? `/en/blog/${slug}` : `/blog/${slug}`;
+const formattedDate = post.data.date.toISOString().slice(0, 10);
+const category = post.data.tags[0];
+const isMandarinFallback = uiLang === 'en' && sourceLang === 'zh';
+const contentLang = sourceLang === 'zh' ? 'zh-TW' : 'en';
 ---
 
-<article class="post-card py-5 border-b last:border-0" style="border-color: var(--color-border);">
-  <div class="flex items-start justify-between gap-4">
-    <div class="flex-1 min-w-0">
-      <a href={`${basePath}/${slug}`} class="post-link group block">
-        <h3 class="font-medium post-title transition-colors mb-1 flex items-center gap-2">
-          {pinned && <span class="pinned-dot inline-block w-1.5 h-1.5 rounded-full shrink-0"></span>}
-          {title}
-        </h3>
-        <p class="text-sm post-desc line-clamp-2">{description}</p>
-      </a>
+<article class="post-row" data-post-row data-post-source-lang={sourceLang} lang={contentLang}>
+  <a href={href} class="post-row-link">
+    <div class="post-meta">
+      <time datetime={post.data.date.toISOString()}>{formattedDate}</time>
+      {category && <><span aria-hidden="true">·</span><span>{category}</span></>}
+      {isMandarinFallback && <><span aria-hidden="true">·</span><span>中文</span></>}
     </div>
-    <time class="text-sm post-date shrink-0 mt-0.5" datetime={date.toISOString()}>{formatted}</time>
-  </div>
+    <h2 class="post-title" data-post-title>{post.data.title}</h2>
+    <p class="post-description">{post.data.description}</p>
+  </a>
 </article>
 
 <style>
-  .post-card { color: var(--color-text); }
-  .post-title { color: var(--color-text); }
-  .post-desc { color: var(--color-text-muted); }
-  .post-date { color: var(--color-text-subtle); }
-  .pinned-dot { background-color: var(--color-accent); }
-  .post-link:hover .post-title { color: var(--color-accent); }
+  .post-row {
+    border-bottom: 1px solid var(--color-border);
+  }
+  .post-row:first-child .post-row-link {
+    padding-top: 0;
+  }
+  .post-row-link {
+    display: block;
+    padding: 1.75rem 0;
+    color: inherit;
+    text-decoration: none;
+  }
+  .post-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.55rem;
+    color: var(--color-text-subtle);
+    font: 0.75rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .post-title {
+    margin: 0;
+    color: var(--color-text);
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.45;
+    transition: color var(--transition-base);
+  }
+  .post-description {
+    display: -webkit-box;
+    margin: 0.5rem 0 0;
+    overflow: hidden;
+    color: var(--color-text-muted);
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+  .post-row-link:hover .post-title {
+    color: var(--color-accent);
+  }
+  .post-row-link:focus-visible {
+    border-radius: var(--radius-sm);
+  }
 </style>

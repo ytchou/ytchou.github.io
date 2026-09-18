@@ -1,0 +1,51 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import JourneyTimeline from '../../components/JourneyTimeline.astro';
+import { contactLinks } from '../../data/contact';
+import { useTranslations } from '../../i18n/utils';
+import headshot from '../../assets/headshot.jpeg';
+
+const t = useTranslations('en');
+---
+
+<BaseLayout title="About — Patrick C." description={t('hero.tagline')}>
+  <header class="about-header page-header">
+    <div>
+      <p class="section-kicker">Profile</p>
+      <h1 class="page-title">About</h1>
+      <p class="role-label">{t('hero.role')}</p>
+      <p class="page-description">{t('hero.tagline')}</p>
+    </div>
+    <Image src={headshot} alt="Patrick C." width={120} height={120} class="portrait" />
+  </header>
+
+  <div class="social-links" aria-label="Contact links">
+    {contactLinks.map(link => (
+      <a href={link.href} target={link.external ? '_blank' : undefined} rel={link.external ? 'noopener noreferrer' : undefined}>
+        {t(link.labelKey)}
+      </a>
+    ))}
+  </div>
+
+  <section class="journey-section" aria-labelledby="journey-heading">
+    <p class="section-kicker">Journey</p>
+    <h2 id="journey-heading" class="section-title">{t('home.journey-title')}</h2>
+    <JourneyTimeline lang="en" />
+  </section>
+</BaseLayout>
+
+<style>
+  .about-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 2rem; }
+  .role-label { margin: 1rem 0 0; color: var(--color-text-secondary); font-size: 0.8125rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; }
+  .portrait { flex: 0 0 auto; width: 7.5rem; height: 7.5rem; border-radius: 50%; object-fit: cover; object-position: top; }
+  .social-links { display: flex; flex-wrap: wrap; gap: 1.25rem; margin-bottom: 4rem; }
+  .social-links a { display: inline-flex; align-items: center; min-height: 48px; color: var(--color-muted); font-size: 0.875rem; text-decoration: none; }
+  .social-links a:hover { color: var(--color-text); }
+  .journey-section { padding-top: 3rem; border-top: 1px solid var(--color-border); }
+  .section-title { margin: 0 0 1.5rem; color: var(--color-text); font-size: 1.75rem; font-weight: 600; letter-spacing: -0.02em; }
+  @media (max-width: 519px) {
+    .about-header { flex-direction: column-reverse; }
+    .portrait { width: 6rem; height: 6rem; }
+  }
+</style>
