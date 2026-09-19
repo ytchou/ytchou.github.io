@@ -20,7 +20,7 @@ notion: https://app.notion.com/p/patrickytc/Day-05-3b10d2d793cf81ab9ecec4ec8396a
 
 搜尋系統要回答這句話需要以下的資訊：產品屬於什麼分類、適合什麼情境，有哪些文字、材質與圖片可以描述風格，以及哪些條件需要用明確欄位保存，才能直接比較與篩選。
 
-![查詢需求與資料欄位的對應](/images/ironman/day-05-query-data-requirements.svg)
+![查詢需求與資料欄位的對應](/images/ironman/day-05-query-data-requirements.png)
 
 前面幾天已經談過要怎麼把使用者需求用資料表示，現在要處理下一個問題：**資料獲取流程要怎麼有系統地把需要的資訊找回來、驗證，再存進資料庫？**這些資訊分散在品牌官網、商品頁、社群與購買頁面裡，而且每個網站的結構都不一樣。想用一套固定規則涵蓋所有 edge cases 並不實際；在需要根據現場資訊調整策略的地方，Agent 的動態判斷就開始有價值。
 
@@ -85,7 +85,7 @@ Acquire 和 Products 是流程裡比較需要 Agent 的兩個模組。這裡的�
 
 這裡其實分成兩個階段：前面是在做有限的「探索」，目的是弄清楚資料可能在哪裡；等資訊足夠後，才產生正式的抓取計畫。Agent 必須要清楚的知道目前所讀取的頁面能不能得到所需要的資訊，若資訊不足或是網頁的架構並不如原先想像，則需要根據當下的狀態去動態調整決策，例如改用 rendering、展開更多連結，或補做搜尋。
 
-![Acquire Agent 工作流程](/images/ironman/day-05-acquire-agent-workflow.svg)
+![Acquire Agent 工作流程](/images/ironman/day-05-acquire-agent-workflow.png)
 
 但這個自由有明確邊界。Agent 不能任意發明網址，只能讀 Gather 已經提供的網址，或從這些頁面實際發現的新連結；browser rendering、搜尋次數與總執行時間也都有上限。**Agent 決定下一步做什麼，程式決定它最多可以做到哪裡。**
 
