@@ -8,11 +8,10 @@ const t = useTranslations('en');
 const posts = selectPostsForLang(await getCollection('blog'), 'en');
 ---
 
-<BaseLayout title="Writing — Patrick" description={t('blog.subtitle')}>
+<BaseLayout title="Writing — Patrick" description={t('blog.subtitle')} layout="gallery">
   <header class="page-header">
-    <p class="section-kicker">Archive</p>
-    <h1 class="page-title">Writing</h1>
-    <p class="page-description">{t('blog.subtitle')}</p>
+    <h1 class="page-title">{t('blog.heading')}</h1>
+    <p class="page-description">{t('blog.intro')}</p>
   </header>
 
   {posts.length > 0 ? (

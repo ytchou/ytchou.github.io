@@ -135,3 +135,35 @@ test('Given an English visitor, when they browse the curated homepage, then Chin
   await expect(page).toHaveURL(/\/en\/?$/);
   await expect(page.getByRole('heading', { level: 1, name: 'Patrick C.' })).toBeVisible();
 });
+
+test('Given a visitor exploring the portfolio, destination pages use Patrick’s voice without decorative eyebrow labels', async ({ page }) => {
+  for (const destination of [
+    { path: '/blog', heading: '我正在學的事', intro: '記錄我在資料科學、AI 工作流程與產品實作中的問題、選擇與心得。', eyebrow: '封存' },
+    { path: '/en/blog', heading: 'What I’m learning', intro: 'Notes from my work in data science, AI workflows, and building products.', eyebrow: 'Archive' },
+    { path: '/projects', heading: '我正在做的事', intro: '從資料產品到實用小工具，這些是我把想法做成可用產品的過程。', eyebrow: '作品集' },
+    { path: '/en/projects', heading: 'What I’m building', intro: 'Data products and small tools I’ve made to turn ideas into something useful.', eyebrow: 'Portfolio' },
+    { path: '/resources', heading: '我反覆使用的資源', intro: '做設計、研究 AI 安全與打造產品時，我真正會回頭使用的工具與參考。', eyebrow: '收藏' },
+    { path: '/en/resources', heading: 'Tools I keep coming back to', intro: 'The sites, references, and open-source tools I rely on for design, AI security, and product work.', eyebrow: 'Directory' },
+    { path: '/contact', heading: '來聊聊吧', intro: '有想法、問題，或想聊資料、AI 與產品？寫信給我。', eyebrow: '聯繫' },
+    { path: '/en/contact', heading: 'Let’s talk', intro: 'Have an idea, a question, or want to talk about data, AI, or products? Send me a note.' },
+    { path: '/resources/design', heading: '我的設計工具箱', intro: '做介面、品牌、字體與動態時，我會實際回訪的工具和參考。', eyebrow: '資源 / 主題 01' },
+    { path: '/en/resources/design', heading: 'My design toolbox', intro: 'Tools and references I return to when working on interfaces, brands, typography, and motion.', eyebrow: 'Resources / Topic 01' },
+    { path: '/resources/security', heading: '我如何探索 AI 安全', intro: '這些是我用來理解 AI 輔助安全稽核、找漏洞、修補與驗證的開源工具和方法。', eyebrow: '資源 / 主題 02' },
+    { path: '/en/resources/security', heading: 'How I’m exploring AI security', intro: 'Open-source tools and methods I use to understand AI-assisted audits, vulnerability discovery, remediation, and verification.', eyebrow: 'Resources / Topic 02' },
+  ]) {
+    await page.goto(destination.path);
+    await expect(page.getByRole('heading', { level: 1, name: destination.heading, exact: true })).toBeVisible();
+    await expect(page.getByText(destination.intro, { exact: true })).toBeVisible();
+    if (destination.eyebrow) {
+      await expect(page.getByText(destination.eyebrow, { exact: true })).toHaveCount(0);
+    }
+  }
+
+  await page.goto('/blog/tag/%E9%90%B5%E4%BA%BA%E8%B3%BD');
+  await expect(page.getByRole('heading', { level: 1, name: '鐵人賽', exact: true })).toBeVisible();
+  await expect(page.getByText(/這裡有我寫過的 \d+ 篇相關文章。/)).toBeVisible();
+  await expect(page.getByText('標籤', { exact: true })).toHaveCount(0);
+
+  await page.goto('/blog/day-01-why-this-series');
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Day 1');
+});

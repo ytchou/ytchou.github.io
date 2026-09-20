@@ -45,9 +45,6 @@ const backHref = series
 const backLabel = series
   ? (lang === 'zh' ? '← 所有天數' : '← All days')
   : (lang === 'zh' ? '← 所有文章' : '← All posts');
-const kicker = series
-  ? (lang === 'zh' ? '鐵人賽' : 'Ironman')
-  : (lang === 'zh' ? '部落格' : 'Blog');
 const displayTitle = series && day != null ? `Day ${day}：${title}` : title;
 const pageTitle = `${displayTitle} — ${SITE_TITLE}`;
 ---
@@ -61,7 +58,6 @@ const pageTitle = `${displayTitle} — ${SITE_TITLE}`;
   <article>
     <a href={backHref} class="back-link">{backLabel}</a>
     <header class="mb-10 pb-8 border-b" style="border-color: var(--color-border);">
-      <p class="section-kicker">{kicker}</p>
       <h1 class="post-title">{displayTitle}</h1>
       <div class="flex items-center gap-4 flex-wrap">
         <time class="post-date" datetime={date.toISOString()}>{formatted}</time>

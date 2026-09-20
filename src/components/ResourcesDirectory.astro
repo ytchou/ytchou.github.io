@@ -8,16 +8,12 @@ import type { Lang } from '../i18n/ui';
 interface Props { resources: ResourceEntry[]; lang: Lang; topic?: ResourceTopic; }
 const { resources, lang, topic = 'design' } = Astro.props;
 const isZh = lang === 'zh';
+const t = useTranslations(lang);
 const groups = groupResources(resources);
-const topicCopy = isZh
-  ? {
-      design: { kicker: '資源 / 主題 01', title: '設計資源', description: '我會實際回訪的介面、品牌、字體、元件、動態、視覺化與設計工程資源。' },
-      security: { kicker: '資源 / 主題 02', title: 'AI 安全與漏洞工程', description: '探索 AI 輔助安全稽核、漏洞發現、修補與驗證的開源方法。' },
-    }
-  : {
-      design: { kicker: 'Resources / Topic 01', title: 'Design resources', description: 'Useful references and working tools for interface, brand, typography, components, motion, visualization, and design engineering.' },
-      security: { kicker: 'Resources / Topic 02', title: 'AI security and vulnerability engineering', description: 'Open-source approaches to AI-assisted security audits, vulnerability discovery, remediation, and verification.' },
-    };
+const topicCopy = {
+  design: { title: t('resources.design.heading'), description: t('resources.design.intro') },
+  security: { title: t('resources.security.heading'), description: t('resources.security.intro') },
+};
 const groupCopy = isZh
   ? {
       'interface-web-inspiration': { title: '介面與網站靈感', description: '從真實產品流程與精選網站中，研究版面、互動與視覺方向。' },
@@ -49,8 +45,6 @@ const labels = {
   opensNewTab: isZh ? '另開新分頁' : 'opens in a new tab',
   preview: isZh ? '網站預覽' : 'website preview',
 };
-const t = useTranslations(lang);
-
 // groupResources() already returns groups in canonical resourceGroups order.
 const chips = resourceGroups
   .filter(group => (groups.get(group) ?? []).length > 0)
@@ -63,7 +57,6 @@ const chips = resourceGroups
 
 <header class="page-header">
   <a href={isZh ? '/resources' : '/en/resources'} class="back-link">← {isZh ? '所有資源' : 'All resources'}</a>
-  <p class="section-kicker">{topicCopy[topic].kicker}</p>
   <h1 class="page-title">{topicCopy[topic].title}</h1>
   <p class="page-description">{topicCopy[topic].description}</p>
   <p class="count" aria-live="polite"><span data-filter-total>{resources.length}</span> {isZh ? '項資源' : 'resources'}</p>

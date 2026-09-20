@@ -8,11 +8,10 @@ const t = useTranslations('zh');
 const posts = selectPostsForLang(await getCollection('blog'), 'zh');
 ---
 
-<BaseLayout title={`${t('blog.title')} — 周永堂`} description={t('blog.subtitle')}>
+<BaseLayout title={`${t('blog.title')} — 周永堂`} description={t('blog.subtitle')} layout="gallery">
   <header class="page-header">
-    <p class="section-kicker">封存</p>
-    <h1 class="page-title">文章</h1>
-    <p class="page-description">{t('blog.subtitle')}</p>
+    <h1 class="page-title">{t('blog.heading')}</h1>
+    <p class="page-description">{t('blog.intro')}</p>
   </header>
 
   {posts.length > 0 ? (

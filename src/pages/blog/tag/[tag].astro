@@ -33,9 +33,8 @@ const { tag, posts } = Astro.props;
 >
   <a href="/blog" class="back-link">← 所有文章</a>
   <header class="page-header">
-    <p class="section-kicker">標籤</p>
     <h1 class="page-title">{tag}</h1>
-    <p class="page-description">{posts.length} 篇文章</p>
+    <p class="page-description">這裡有我寫過的 {posts.length} 篇相關文章。</p>
   </header>
 
   <div class="post-list">

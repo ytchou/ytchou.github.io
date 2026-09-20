@@ -2,12 +2,14 @@
 import { Image } from 'astro:assets';
 import { resourceTopics, type ResourceEntry, type ResourceTopic } from '../services/resources';
 import type { Lang } from '../i18n/ui';
+import { useTranslations } from '../i18n/utils';
 import designCover from '../assets/resource-topic-design.svg';
 import securityCover from '../assets/resource-topic-security.svg';
 
 interface Props { resources: ResourceEntry[]; lang: Lang; embedded?: boolean; }
 const { resources, lang, embedded = false } = Astro.props;
 const isZh = lang === 'zh';
+const t = useTranslations(lang);
 const base = isZh ? '' : '/en';
 const TopicHeading = embedded ? 'h3' : 'h2';
 const topicCopy: Record<ResourceTopic, { label: string; title: string; description: string; path: string }> = isZh
@@ -31,9 +33,8 @@ const topics = resourceTopics.map(topic => {
 
 {!embedded && (
   <header class="page-header">
-    <p class="section-kicker">{isZh ? '收藏' : 'Directory'}</p>
-    <h1 class="page-title">{isZh ? '資源' : 'Resources'}</h1>
-    <p class="page-description">{isZh ? '值得反覆使用的設計與安全參考、工具。' : 'A considered collection of design and security references worth returning to.'}</p>
+    <h1 class="page-title">{t('resources.heading')}</h1>
+    <p class="page-description">{t('resources.intro')}</p>
   </header>
 )}
 
