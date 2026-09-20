@@ -23,32 +23,30 @@ const linkLabel = `${labels.visit} ${data.name} (${labels.opensNewTab})`;
     href={data.url}
     target="_blank"
     rel="noopener noreferrer"
-    class="resource-image-link"
+    class="resource-card-link"
     aria-label={linkLabel}
   >
-    <img
-      src={data.screenshot}
-      alt={`${data.name} ${labels.preview}`}
-      width="1280"
-      height="800"
-      loading="lazy"
-      decoding="async"
-    />
-  </a>
-  <div class="resource-body">
-    <div class="resource-heading">
-      <h3>
-        <a href={data.url} target="_blank" rel="noopener noreferrer" aria-label={linkLabel}>
-          {data.name}<span aria-hidden="true"> ↗</span>
-        </a>
-      </h3>
+    <div class="resource-image-wrap" data-resource-image>
+      <img
+        src={data.screenshot}
+        alt={`${data.name} ${labels.preview}`}
+        width="1280"
+        height="800"
+        loading="lazy"
+        decoding="async"
+      />
     </div>
-    <p class="resource-description">{data.description[lang]}</p>
-    <p class="resource-best-for"><strong>{labels.bestFor}</strong> {data.bestFor[lang]}</p>
-    <ul class="resource-tags" aria-label={`${data.name} tags`}>
-      {data.tags.map(tag => <li class="tag">{tag}</li>)}
-    </ul>
-  </div>
+    <div class="resource-body">
+      <div class="resource-heading">
+        <h3>{data.name}<span aria-hidden="true"> ↗</span></h3>
+      </div>
+      <p class="resource-description">{data.description[lang]}</p>
+      <p class="resource-best-for"><strong>{labels.bestFor}</strong> {data.bestFor[lang]}</p>
+      <ul class="resource-tags" aria-label={`${data.name} tags`}>
+        {data.tags.map(tag => <li class="tag">{tag}</li>)}
+      </ul>
+    </div>
+  </a>
 </article>
 
 <style>
@@ -57,59 +55,60 @@ const linkLabel = `${labels.visit} ${data.name} (${labels.opensNewTab})`;
     overflow: hidden;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-card);
-    background: var(--color-bg);
+    background: transparent;
     box-shadow: var(--shadow-card);
-    transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
+    transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base), background var(--transition-base);
   }
-  .resource-card:hover {
+  .resource-card:hover,
+  .resource-card:focus-within {
+    background: var(--color-surface);
     border-color: var(--color-border-hover);
     box-shadow: var(--shadow-card-hover);
-    transform: translateY(-2px);
+    transform: translateY(-3px);
   }
-  .resource-image-link {
-    display: block;
-    aspect-ratio: 16 / 10;
+  .resource-card-link { display: flex; flex-direction: column; height: 100%; color: inherit; text-decoration: none; }
+  .resource-card-link:focus-visible { outline: 2px solid var(--color-accent); outline-offset: -2px; }
+  .resource-image-wrap {
+    aspect-ratio: 16 / 9;
     overflow: hidden;
     border-bottom: 1px solid var(--color-border);
     background: var(--color-surface);
   }
-  .resource-image-link img {
+  .resource-image-wrap img {
     display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: top;
-    transition: transform 350ms ease;
+    transition: transform 400ms ease;
   }
-  .resource-card:hover .resource-image-link img { transform: scale(1.015); }
-  .resource-body { padding: 1.25rem; }
+  .resource-card:hover .resource-image-wrap img,
+  .resource-card:focus-within .resource-image-wrap img { transform: scale(1.03); }
+  .resource-body { display: flex; flex: 1; flex-direction: column; padding: 1.25rem; }
   .resource-heading h3 { margin: 0; font-size: 1.25rem; font-weight: 600; line-height: 1.35; }
-  .resource-heading a {
-    display: inline-flex;
-    align-items: center;
-    min-height: 48px;
-    color: var(--color-text);
-    text-decoration: none;
-  }
-  .resource-heading a:hover { color: var(--color-accent); }
+  .resource-heading { min-height: 48px; color: var(--color-text); transition: opacity var(--transition-base); }
+  .resource-card:hover .resource-heading { opacity: 0.7; }
+  .resource-description,
+  .resource-best-for { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
   .resource-description { margin: 0.5rem 0 0; color: var(--color-text-secondary); font-size: 0.9375rem; line-height: 1.65; }
   .resource-best-for { margin: 0.9rem 0 0; color: var(--color-muted); font-size: 0.875rem; line-height: 1.6; }
   .resource-best-for strong { color: var(--color-text); font-weight: 600; }
-  .resource-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; list-style: none; margin: 1rem 0 0; padding: 0; }
+  .resource-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; list-style: none; margin: auto 0 0; padding: 1rem 0 0; }
 
   /* List view — dropping the screenshot is the point: it makes the page scannable,
      and because the img is lazy it is never fetched while hidden. */
-  :global([data-catalog-view='list']) .resource-image-link { display: none; }
-  :global([data-catalog-view='list']) .resource-card:hover { transform: none; }
+  :global([data-catalog-view='list']) .resource-image-wrap { display: none; }
+  :global([data-catalog-view='list']) .resource-card:hover,
+  :global([data-catalog-view='list']) .resource-card:focus-within { transform: none; }
   :global([data-catalog-view='list']) .resource-body { padding: 1rem 1.25rem; }
   :global([data-catalog-view='list']) .resource-heading h3 { font-size: 1.0625rem; }
-  :global([data-catalog-view='list']) .resource-heading a { min-height: 32px; }
+  :global([data-catalog-view='list']) .resource-heading { min-height: 32px; }
   :global([data-catalog-view='list']) .resource-description { margin-top: 0.25rem; font-size: 0.875rem; }
   :global([data-catalog-view='list']) .resource-best-for { margin-top: 0.5rem; }
-  :global([data-catalog-view='list']) .resource-tags { margin-top: 0.6rem; }
+  :global([data-catalog-view='list']) .resource-tags { margin-top: 0.6rem; padding-top: 0; }
 
   @media (prefers-reduced-motion: reduce) {
-    .resource-card, .resource-image-link img { transition: none; }
-    .resource-card:hover { transform: none; }
+    .resource-card, .resource-image-wrap img { transition: none; }
+    .resource-card:hover, .resource-card:focus-within { transform: none; }
   }
 </style>

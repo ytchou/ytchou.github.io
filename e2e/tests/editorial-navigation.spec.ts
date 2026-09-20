@@ -24,6 +24,8 @@ test('Given a Mandarin visitor, when they browse the curated homepage, then each
   await expect(page.getByRole('heading', { level: 3, name: 'Formoria' })).toBeVisible();
   await expect(page.getByRole('heading', { level: 3, name: '設計', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { level: 3, name: 'AI 安全與漏洞工程' })).toBeVisible();
+  await expect(page.getByRole('link').filter({ has: page.getByRole('heading', { level: 3, name: '設計', exact: true }) })).toHaveAttribute('href', '/resources/design');
+  await expect(page.getByRole('link').filter({ has: page.getByRole('heading', { level: 3, name: 'AI 安全與漏洞工程' }) })).toHaveAttribute('href', '/resources/security');
   await expect(page.getByRole('link', { name: '所有文章', exact: true })).toHaveAttribute('href', '/blog');
   await expect(page.getByRole('link', { name: '所有專案', exact: true })).toHaveAttribute('href', '/projects');
   await expect(page.getByRole('link', { name: '所有資源', exact: true })).toHaveAttribute('href', '/resources');
@@ -71,6 +73,8 @@ test('Given an English visitor, when they browse the curated homepage, then Chin
   await expect(page.getByRole('heading', { level: 3, name: 'Formoria' })).toBeVisible();
   await expect(page.getByRole('heading', { level: 3, name: 'Design' })).toBeVisible();
   await expect(page.getByRole('heading', { level: 3, name: 'AI security and vulnerability engineering' })).toBeVisible();
+  await expect(page.getByRole('link').filter({ has: page.getByRole('heading', { level: 3, name: 'Design' }) })).toHaveAttribute('href', '/en/resources/design');
+  await expect(page.getByRole('link').filter({ has: page.getByRole('heading', { level: 3, name: 'AI security and vulnerability engineering' }) })).toHaveAttribute('href', '/en/resources/security');
   await expect(page.getByRole('link', { name: 'All posts', exact: true })).toHaveAttribute('href', '/en/blog');
   await expect(page.getByRole('link', { name: 'All projects', exact: true })).toHaveAttribute('href', '/en/projects');
   await expect(page.getByRole('link', { name: 'All resources', exact: true })).toHaveAttribute('href', '/en/resources');
