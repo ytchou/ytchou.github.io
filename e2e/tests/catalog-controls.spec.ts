@@ -5,23 +5,21 @@ import { expect, test } from '@playwright/test';
 // internal consistency (chip count == visible cards == header total) is the real contract.
 
 test.describe('resource topic hubs', () => {
-  test('Mandarin topics use the approved collages and open their complete directories', async ({ page }) => {
+  test('Mandarin topics use one approved cover and open their complete directories', async ({ page }) => {
     await page.goto('/resources');
 
     const design = page.getByRole('link').filter({ has: page.getByRole('heading', { name: '設計', exact: true }) });
     const security = page.getByRole('link').filter({ has: page.getByRole('heading', { name: 'AI 安全與漏洞工程' }) });
 
     await expect(design).toHaveAttribute('href', '/resources/design');
-    await expect(design.locator('img')).toHaveCount(3);
-    await expect(design.locator('img').nth(0)).toHaveAttribute('src', '/images/resources/catalogs/threeui.webp');
-    await expect(design.locator('img').nth(1)).toHaveAttribute('src', '/images/resources/catalogs/mobbin.webp');
-    await expect(design.locator('img').nth(2)).toHaveAttribute('src', '/images/resources/catalogs/fonts-in-use.webp');
+    await expect(design.locator('img')).toHaveCount(1);
+    await expect(design.locator('img')).toHaveAttribute('src', /resource-topic-design.*\.svg/);
+    await expect(design.locator('img')).toHaveAttribute('alt', '');
 
     await expect(security).toHaveAttribute('href', '/resources/security');
-    await expect(security.locator('img')).toHaveCount(3);
-    await expect(security.locator('img').nth(0)).toHaveAttribute('src', '/images/resources/catalogs/shannon.webp');
-    await expect(security.locator('img').nth(1)).toHaveAttribute('src', '/images/resources/catalogs/cloudflare-security-audit-skill.webp');
-    await expect(security.locator('img').nth(2)).toHaveAttribute('src', '/images/resources/catalogs/agent-scan.webp');
+    await expect(security.locator('img')).toHaveCount(1);
+    await expect(security.locator('img')).toHaveAttribute('src', /resource-topic-security.*\.svg/);
+    await expect(security.locator('img')).toHaveAttribute('alt', '');
 
     await expect(page.getByText(/資料檢查至/)).toHaveCount(0);
   });

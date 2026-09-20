@@ -41,7 +41,7 @@ export const ui = {
     'contact.link.email': 'Email',
     'contact.link.github': 'GitHub',
     'contact.link.linkedin': 'LinkedIn',
-    'footer.rights': '© {year} Patrick C. All rights reserved.',
+    'footer.rights': '© {year} Patrick C.',
   },
   zh: {
     'nav.home': 'Patrick C.',
@@ -77,7 +77,7 @@ export const ui = {
     'contact.link.email': 'Email',
     'contact.link.github': 'GitHub',
     'contact.link.linkedin': 'LinkedIn',
-    'footer.rights': '© {year} Patrick C. 保留所有權利。',
+    'footer.rights': '© {year} Patrick C.',
   },
 } as const;
 

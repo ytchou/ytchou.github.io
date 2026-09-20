@@ -24,13 +24,29 @@ test('Given a Mandarin visitor, when they browse the curated homepage, then each
   await expect(page.getByRole('heading', { level: 3, name: 'Formoria' })).toBeVisible();
   await expect(page.getByRole('heading', { level: 3, name: '設計', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { level: 3, name: 'AI 安全與漏洞工程' })).toBeVisible();
-  await expect(page.getByRole('link').filter({ has: page.getByRole('heading', { level: 3, name: '設計', exact: true }) })).toHaveAttribute('href', '/resources/design');
-  await expect(page.getByRole('link').filter({ has: page.getByRole('heading', { level: 3, name: 'AI 安全與漏洞工程' }) })).toHaveAttribute('href', '/resources/security');
+  const designTopic = page.getByRole('link').filter({ has: page.getByRole('heading', { level: 3, name: '設計', exact: true }) });
+  const securityTopic = page.getByRole('link').filter({ has: page.getByRole('heading', { level: 3, name: 'AI 安全與漏洞工程' }) });
+  await expect(designTopic).toHaveAttribute('href', '/resources/design');
+  await expect(designTopic.locator('img')).toHaveCount(1);
+  await expect(securityTopic).toHaveAttribute('href', '/resources/security');
+  await expect(securityTopic.locator('img')).toHaveCount(1);
   await expect(page.getByRole('link', { name: '所有文章', exact: true })).toHaveAttribute('href', '/blog');
   await expect(page.getByRole('link', { name: '所有專案', exact: true })).toHaveAttribute('href', '/projects');
   await expect(page.getByRole('link', { name: '所有資源', exact: true })).toHaveAttribute('href', '/resources');
   await expect(page.getByRole('img', { name: 'Patrick C.' })).toHaveCount(0);
   await expect(page.getByRole('heading', { name: '一路走來' })).toHaveCount(0);
+
+  const footer = page.getByRole('contentinfo');
+  await expect(footer).toContainText(`© ${new Date().getFullYear()} Patrick C.`);
+  await expect(footer.getByRole('link', { name: '聯絡', exact: true })).toHaveAttribute('href', '/contact');
+  const github = footer.getByRole('link', { name: 'GitHub', exact: true });
+  await expect(github).toHaveAttribute('href', 'https://github.com/ytchou');
+  await expect(github).toHaveAttribute('target', '_blank');
+  await expect(github).toHaveAttribute('rel', /noopener/);
+  const linkedin = footer.getByRole('link', { name: 'LinkedIn', exact: true });
+  await expect(linkedin).toHaveAttribute('href', 'https://linkedin.com/in/ytchou');
+  await expect(linkedin).toHaveAttribute('target', '_blank');
+  await expect(linkedin).toHaveAttribute('rel', /noreferrer/);
 
   await page.setViewportSize({ width: 768, height: 1024 });
   const homeTitles = await homeRows.locator('[data-post-title]').allTextContents();
@@ -73,11 +89,21 @@ test('Given an English visitor, when they browse the curated homepage, then Chin
   await expect(page.getByRole('heading', { level: 3, name: 'Formoria' })).toBeVisible();
   await expect(page.getByRole('heading', { level: 3, name: 'Design' })).toBeVisible();
   await expect(page.getByRole('heading', { level: 3, name: 'AI security and vulnerability engineering' })).toBeVisible();
-  await expect(page.getByRole('link').filter({ has: page.getByRole('heading', { level: 3, name: 'Design' }) })).toHaveAttribute('href', '/en/resources/design');
-  await expect(page.getByRole('link').filter({ has: page.getByRole('heading', { level: 3, name: 'AI security and vulnerability engineering' }) })).toHaveAttribute('href', '/en/resources/security');
+  const designTopic = page.getByRole('link').filter({ has: page.getByRole('heading', { level: 3, name: 'Design' }) });
+  const securityTopic = page.getByRole('link').filter({ has: page.getByRole('heading', { level: 3, name: 'AI security and vulnerability engineering' }) });
+  await expect(designTopic).toHaveAttribute('href', '/en/resources/design');
+  await expect(designTopic.locator('img')).toHaveCount(1);
+  await expect(securityTopic).toHaveAttribute('href', '/en/resources/security');
+  await expect(securityTopic.locator('img')).toHaveCount(1);
   await expect(page.getByRole('link', { name: 'All posts', exact: true })).toHaveAttribute('href', '/en/blog');
   await expect(page.getByRole('link', { name: 'All projects', exact: true })).toHaveAttribute('href', '/en/projects');
   await expect(page.getByRole('link', { name: 'All resources', exact: true })).toHaveAttribute('href', '/en/resources');
+
+  const footer = page.getByRole('contentinfo');
+  await expect(footer).toContainText(`© ${new Date().getFullYear()} Patrick C.`);
+  await expect(footer.getByRole('link', { name: 'Contact', exact: true })).toHaveAttribute('href', '/en/contact');
+  await expect(footer.getByRole('link', { name: 'GitHub', exact: true })).toHaveAttribute('href', 'https://github.com/ytchou');
+  await expect(footer.getByRole('link', { name: 'LinkedIn', exact: true })).toHaveAttribute('href', 'https://linkedin.com/in/ytchou');
 
   await page.getByRole('link', { name: 'Writing', exact: true }).click();
   await expect(page).toHaveURL(/\/en\/blog\/?$/);

@@ -1,6 +1,9 @@
 ---
+import { Image } from 'astro:assets';
 import { resourceTopics, type ResourceEntry, type ResourceTopic } from '../services/resources';
 import type { Lang } from '../i18n/ui';
+import designCover from '../assets/resource-topic-design.svg';
+import securityCover from '../assets/resource-topic-security.svg';
 
 interface Props { resources: ResourceEntry[]; lang: Lang; embedded?: boolean; }
 const { resources, lang, embedded = false } = Astro.props;
@@ -16,21 +19,13 @@ const topicCopy: Record<ResourceTopic, { label: string; title: string; descripti
       design: { label: 'Topic 01', title: 'Design', description: 'Useful resources for interface, brand, typography, components, motion, visualization, and design engineering.', path: 'design' },
       security: { label: 'Topic 02', title: 'AI security and vulnerability engineering', description: 'Open-source approaches to AI-assisted security audits, vulnerability discovery, remediation, and verification.', path: 'security' },
     };
-const coverIds: Record<ResourceTopic, readonly string[]> = {
-  design: ['threeui', 'mobbin', 'fonts-in-use'],
-  security: ['shannon', 'cloudflare-security-audit-skill', 'snyk-agent-scan'],
+const topicCovers: Record<ResourceTopic, typeof designCover> = {
+  design: designCover,
+  security: securityCover,
 };
-const resourcesById = new Map(resources.map(resource => [resource.id, resource]));
 const topics = resourceTopics.map(topic => {
   const topicResources = resources.filter(resource => resource.data.topic === topic);
-  const covers = coverIds[topic].map(id => {
-    const resource = resourcesById.get(id);
-    if (!resource || resource.data.topic !== topic) {
-      throw new Error(`ResourcesHub: curated ${topic} cover "${id}" is missing from that topic.`);
-    }
-    return resource;
-  });
-  return { topic, topicResources, covers, copy: topicCopy[topic] };
+  return { topicResources, cover: topicCovers[topic], copy: topicCopy[topic] };
 });
 ---
 
@@ -43,21 +38,20 @@ const topics = resourceTopics.map(topic => {
 )}
 
 <div class="topic-list">
-  {topics.map(({ topicResources, covers, copy }) => {
+  {topics.map(({ topicResources, cover, copy }) => {
     if (topicResources.length === 0) return null;
     return (
       <a class="topic-card" href={`${base}/resources/${copy.path}`}>
-        <div class="topic-collage" aria-hidden="true">
-          {covers.map(resource => (
-            <img
-              src={resource.data.screenshot}
-              alt=""
-              width="1280"
-              height="800"
-              loading="lazy"
-              decoding="async"
-            />
-          ))}
+        <div class="topic-cover" aria-hidden="true">
+          <Image
+            src={cover}
+            alt=""
+            class="topic-cover-image"
+            width={1280}
+            height={720}
+            loading="lazy"
+            decoding="async"
+          />
         </div>
         <div class="topic-body">
           <p class="topic-label">{copy.label}</p>
@@ -94,20 +88,15 @@ const topics = resourceTopics.map(topic => {
     transform: translateY(-3px);
   }
   .topic-card:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
-  .topic-collage {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    grid-template-rows: repeat(2, 1fr);
-    gap: 1px;
+  .topic-cover {
     aspect-ratio: 16 / 9;
     overflow: hidden;
     border-bottom: 1px solid var(--color-border);
     background: var(--color-border);
   }
-  .topic-collage img { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform 400ms ease; }
-  .topic-collage img:first-child { grid-row: 1 / -1; }
-  .topic-card:hover .topic-collage img,
-  .topic-card:focus-visible .topic-collage img { transform: scale(1.03); }
+  .topic-cover-image { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 400ms ease; }
+  .topic-card:hover .topic-cover-image,
+  .topic-card:focus-visible .topic-cover-image { transform: scale(1.03); }
   .topic-body { display: flex; flex-direction: column; min-height: 15rem; padding: 1.25rem; }
   .topic-label { margin: 0 0 0.65rem; color: var(--color-accent); font: 0.6875rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; text-transform: uppercase; letter-spacing: 0.12em; }
   .topic-title { margin: 0; color: var(--color-text); font-size: 1.5rem; line-height: 1.25; transition: opacity var(--transition-base); }
@@ -132,8 +121,8 @@ const topics = resourceTopics.map(topic => {
     .topic-meta { margin-top: 1rem; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .topic-card, .topic-collage img, .topic-arrow { transition: none; }
+    .topic-card, .topic-cover-image, .topic-arrow { transition: none; }
     .topic-card:hover, .topic-card:focus-visible { transform: none; }
-    .topic-card:hover .topic-collage img, .topic-card:focus-visible .topic-collage img, .topic-card:hover .topic-arrow { transform: none; }
+    .topic-card:hover .topic-cover-image, .topic-card:focus-visible .topic-cover-image, .topic-card:hover .topic-arrow { transform: none; }
   }
 </style>
