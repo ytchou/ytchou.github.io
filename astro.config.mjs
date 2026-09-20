@@ -7,6 +7,8 @@ import { defineConfig } from 'astro/config';
 export default defineConfig({
   site: 'https://ytchou.github.io',
   redirects: {
+    '/about': '/',
+    '/en/about': '/en/',
     '/zh': '/',
     '/zh/blog': '/blog',
     '/zh/blog/[slug]': '/blog/[slug]',

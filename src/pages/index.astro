@@ -2,8 +2,10 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import BlogPostCard from '../components/BlogPostCard.astro';
+import JourneyTimeline from '../components/JourneyTimeline.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import ResourcesHub from '../components/ResourcesHub.astro';
+import SocialIconLinks from '../components/SocialIconLinks.astro';
 import { projects } from '../data/projects';
 import { selectPostsForLang, useTranslations } from '../i18n/utils';
 
@@ -18,7 +20,9 @@ const featuredProject = projects.find(project => project.featured) ?? projects.a
     <h1 id="home-title">Patrick C.</h1>
     <p class="role-label">{t('hero.role')}</p>
     <p class="home-tagline">{t('hero.tagline')}</p>
-    <a href="/about" class="home-link">{t('home.about')} <span aria-hidden="true">→</span></a>
+    <div class="home-contact-links">
+      <SocialIconLinks items={['email', 'github', 'linkedin']} />
+    </div>
   </header>
 
   <section class="home-section" aria-labelledby="writing-title">
@@ -37,6 +41,13 @@ const featuredProject = projects.find(project => project.featured) ?? projects.a
       <a href="/projects" class="section-link">{t('home.all-projects')} <span aria-hidden="true">→</span></a>
     </header>
     {featuredProject && <ProjectCard project={featuredProject} lang="zh" />}
+  </section>
+
+  <section class="home-section" aria-labelledby="journey-title">
+    <header class="section-header">
+      <h2 id="journey-title">{t('home.journey-title')}</h2>
+    </header>
+    <JourneyTimeline lang="zh" />
   </section>
 
   <section class="home-section" aria-labelledby="resources-title">
@@ -74,7 +85,6 @@ const featuredProject = projects.find(project => project.featured) ?? projects.a
     font-size: 1.125rem;
     line-height: 1.7;
   }
-  .home-link,
   .section-link {
     display: inline-flex;
     align-items: center;
@@ -84,8 +94,7 @@ const featuredProject = projects.find(project => project.featured) ?? projects.a
     font-size: 0.875rem;
     text-decoration: none;
   }
-  .home-link { margin-top: 0.75rem; }
-  .home-link:hover,
+  .home-contact-links { margin-top: 0.75rem; }
   .section-link:hover { color: var(--color-text); }
   .home-section {
     padding: 3rem 0;
