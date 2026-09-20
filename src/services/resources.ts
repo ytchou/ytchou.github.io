@@ -23,8 +23,3 @@ export function groupResources(resources: ResourceEntry[]): Map<ResourceGroup, R
     resources.filter(resource => resource.data.group === group),
   ]));
 }
-
-export function getCollectionFreshness(resources: ResourceEntry[]): Date | undefined {
-  if (resources.length === 0) return undefined;
-  return new Date(Math.min(...resources.map(resource => resource.data.lastCheckedDate.valueOf())));
-}

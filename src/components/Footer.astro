@@ -1,31 +1,14 @@
 ---
-import { getLangFromUrl, useTranslations } from '../i18n/utils';
-import { contactLinks } from '../data/contact';
+import SocialIconLinks from './SocialIconLinks.astro';
 
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
 const year = new Date().getFullYear();
-const rights = t('footer.rights').replace('{year}', String(year));
-
-const socialLinks = contactLinks.filter(
-  l => l.labelKey === 'contact.link.github' || l.labelKey === 'contact.link.linkedin'
-);
 ---
 
 <footer class="site-footer">
   <div class="footer-inner">
-    <p class="footer-copy">{rights}</p>
+    <p class="footer-copy">© {year} Patrick C.</p>
     <div class="footer-links">
-      {socialLinks.map(link => (
-        <a
-          href={link.href}
-          target={link.external ? '_blank' : undefined}
-          rel={link.external ? 'noopener noreferrer' : undefined}
-          class="footer-link"
-        >
-          {link.display}
-        </a>
-      ))}
+      <SocialIconLinks items={['linkedin', 'github', 'email']} />
     </div>
   </div>
 </footer>
@@ -41,22 +24,12 @@ const socialLinks = contactLinks.filter(
     margin: 0 auto;
     padding: 1rem 1.5rem;
   }
-  .footer-links { display: flex; align-items: center; gap: 1rem; }
+  .footer-links { display: flex; align-items: center; gap: 0.25rem; }
   .footer-copy {
     font-size: 0.8125rem;
     color: var(--color-muted);
     margin: 0;
   }
-  .footer-link {
-    display: inline-flex;
-    align-items: center;
-    min-height: 48px;
-    font-size: 0.8125rem;
-    color: var(--color-muted);
-    text-decoration: none;
-    transition: color var(--transition-base);
-  }
-  .footer-link:hover { color: var(--color-text); }
   @media (max-width: 639px) {
     .footer-inner { align-items: flex-start; flex-direction: column; gap: 0; }
   }

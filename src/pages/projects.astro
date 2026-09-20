@@ -14,9 +14,8 @@ const chips = [...new Set(projects.flatMap(p => p.tags))].sort().map(tag => ({ v
 <BaseLayout title={`${t('projects.title')} — 周永堂`} description={t('projects.subtitle')} layout="gallery">
   <!-- Page header -->
   <header class="page-header">
-    <p class="section-kicker">作品集</p>
-    <h1 class="page-title">{t('projects.title')}</h1>
-    <p class="page-description">{t('projects.subtitle')}</p>
+    <h1 class="page-title">{t('projects.heading')}</h1>
+    <p class="page-description">{t('projects.intro')}</p>
   </header>
 
   <!-- Tag filter bar -->

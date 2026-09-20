@@ -4,6 +4,51 @@ import { expect, test } from '@playwright/test';
 // often; asserting "37" would turn every content addition into a test failure, while
 // internal consistency (chip count == visible cards == header total) is the real contract.
 
+test.describe('resource topic hubs', () => {
+  test('Mandarin topics use one approved cover and open their complete directories', async ({ page }) => {
+    await page.goto('/resources');
+
+    const design = page.getByRole('link').filter({ has: page.getByRole('heading', { name: '設計', exact: true }) });
+    const security = page.getByRole('link').filter({ has: page.getByRole('heading', { name: 'AI 安全與漏洞工程' }) });
+
+    await expect(design).toHaveAttribute('href', '/resources/design');
+    await expect(design.locator('img')).toHaveCount(1);
+    await expect(design.locator('img')).toHaveAttribute('src', /resource-topic-design.*\.svg/);
+    await expect(design.locator('img')).toHaveAttribute('alt', '');
+
+    await expect(security).toHaveAttribute('href', '/resources/security');
+    await expect(security.locator('img')).toHaveCount(1);
+    await expect(security.locator('img')).toHaveAttribute('src', /resource-topic-security.*\.svg/);
+    await expect(security.locator('img')).toHaveAttribute('alt', '');
+
+    await expect(page.getByText(/資料檢查至/)).toHaveCount(0);
+  });
+
+  test('English topics route to the localized directories without freshness metadata', async ({ page }) => {
+    await page.goto('/en/resources');
+
+    await expect(page.getByRole('link').filter({ has: page.getByRole('heading', { name: 'Design', exact: true }) })).toHaveAttribute('href', '/en/resources/design');
+    await expect(page.getByRole('link').filter({ has: page.getByRole('heading', { name: 'AI security and vulnerability engineering' }) })).toHaveAttribute('href', '/en/resources/security');
+    await expect(page.getByText(/Reviewed through/)).toHaveCount(0);
+  });
+});
+
+test.describe('resource card destinations', () => {
+  test('each visible resource is one external new-tab link', async ({ page }) => {
+    await page.goto('/resources/security');
+
+    const items = page.locator('[data-filter-item]:visible');
+    for (const item of await items.all()) {
+      const links = item.getByRole('link');
+      await expect(links).toHaveCount(1);
+      await expect(links).toHaveAttribute('target', '_blank');
+      await expect(links).toHaveAttribute('rel', /noopener/);
+      await expect(links).toHaveAttribute('rel', /noreferrer/);
+      await expect(links).toHaveAttribute('aria-label', /另開新分頁/);
+    }
+  });
+});
+
 test.describe('resource catalog filter chips', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/resources/design');
@@ -69,12 +114,12 @@ test.describe('grid / list view toggle', () => {
     await page.goto('/resources/design');
 
     await expect(page.locator('html')).toHaveAttribute('data-catalog-view', 'grid');
-    await expect(page.locator('.resource-image-link').first()).toBeVisible();
+    await expect(page.locator('[data-resource-image]').first()).toBeVisible();
 
     await page.locator('[data-catalog-view-value="list"]').click();
 
     await expect(page.locator('html')).toHaveAttribute('data-catalog-view', 'list');
-    await expect(page.locator('.resource-image-link').first()).toBeHidden();
+    await expect(page.locator('[data-resource-image]').first()).toBeHidden();
     await expect(page.locator('[data-catalog-view-value="list"]')).toHaveAttribute('aria-pressed', 'true');
     await expect(page.locator('[data-catalog-view-value="grid"]')).toHaveAttribute('aria-pressed', 'false');
     // Cards themselves stay — list view removes the image, not the content.
@@ -84,7 +129,7 @@ test.describe('grid / list view toggle', () => {
 
     // Set by the inline head guard, so it is already correct on first paint.
     await expect(page.locator('html')).toHaveAttribute('data-catalog-view', 'list');
-    await expect(page.locator('.resource-image-link').first()).toBeHidden();
+    await expect(page.locator('[data-resource-image]').first()).toBeHidden();
     await expect(page.locator('[data-catalog-view-value="list"]')).toHaveAttribute('aria-pressed', 'true');
   });
 
@@ -95,7 +140,7 @@ test.describe('grid / list view toggle', () => {
     await page.goto('/en/resources/design');
 
     await expect(page.locator('html')).toHaveAttribute('data-catalog-view', 'list');
-    await expect(page.locator('.resource-image-link').first()).toBeHidden();
+    await expect(page.locator('[data-resource-image]').first()).toBeHidden();
   });
 });
 
@@ -108,7 +153,7 @@ test.describe('single-group catalog', () => {
     await expect(page.locator('[data-catalog-view-value="list"]')).toBeVisible();
 
     await page.locator('[data-catalog-view-value="list"]').click();
-    await expect(page.locator('.resource-image-link').first()).toBeHidden();
+    await expect(page.locator('[data-resource-image]').first()).toBeHidden();
   });
 });
 

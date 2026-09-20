@@ -1,12 +1,17 @@
 ---
-import { getCollectionFreshness, resourceTopics, type ResourceEntry, type ResourceTopic } from '../services/resources';
+import { Image } from 'astro:assets';
+import { resourceTopics, type ResourceEntry, type ResourceTopic } from '../services/resources';
 import type { Lang } from '../i18n/ui';
+import { useTranslations } from '../i18n/utils';
+import designCover from '../assets/resource-topic-design.svg';
+import securityCover from '../assets/resource-topic-security.svg';
 
-interface Props { resources: ResourceEntry[]; lang: Lang; }
-const { resources, lang } = Astro.props;
+interface Props { resources: ResourceEntry[]; lang: Lang; embedded?: boolean; }
+const { resources, lang, embedded = false } = Astro.props;
 const isZh = lang === 'zh';
+const t = useTranslations(lang);
 const base = isZh ? '' : '/en';
-const locale = isZh ? 'zh-TW' : 'en-US';
+const TopicHeading = embedded ? 'h3' : 'h2';
 const topicCopy: Record<ResourceTopic, { label: string; title: string; description: string; path: string }> = isZh
   ? {
       design: { label: '主題 01', title: '設計', description: '涵蓋介面、品牌、字體、元件、動態、視覺化與設計工程的實用資源。', path: 'design' },
@@ -16,30 +21,47 @@ const topicCopy: Record<ResourceTopic, { label: string; title: string; descripti
       design: { label: 'Topic 01', title: 'Design', description: 'Useful resources for interface, brand, typography, components, motion, visualization, and design engineering.', path: 'design' },
       security: { label: 'Topic 02', title: 'AI security and vulnerability engineering', description: 'Open-source approaches to AI-assisted security audits, vulnerability discovery, remediation, and verification.', path: 'security' },
     };
+const topicCovers: Record<ResourceTopic, typeof designCover> = {
+  design: designCover,
+  security: securityCover,
+};
+const topics = resourceTopics.map(topic => {
+  const topicResources = resources.filter(resource => resource.data.topic === topic);
+  return { topicResources, cover: topicCovers[topic], copy: topicCopy[topic] };
+});
 ---
 
-<header class="page-header">
-  <p class="section-kicker">{isZh ? '收藏' : 'Directory'}</p>
-  <h1 class="page-title">{isZh ? '資源' : 'Resources'}</h1>
-  <p class="page-description">{isZh ? '值得反覆使用的設計與安全參考、工具。' : 'A considered collection of design and security references worth returning to.'}</p>
-</header>
+{!embedded && (
+  <header class="page-header">
+    <h1 class="page-title">{t('resources.heading')}</h1>
+    <p class="page-description">{t('resources.intro')}</p>
+  </header>
+)}
 
 <div class="topic-list">
-  {resourceTopics.map(topic => {
-    const topicResources = resources.filter(resource => resource.data.topic === topic);
+  {topics.map(({ topicResources, cover, copy }) => {
     if (topicResources.length === 0) return null;
-    const freshness = getCollectionFreshness(topicResources);
-    const copy = topicCopy[topic];
     return (
       <a class="topic-card" href={`${base}/resources/${copy.path}`}>
-        <div>
-          <p class="topic-label">{copy.label}</p>
-          <h2>{copy.title}</h2>
-          <p>{copy.description}</p>
+        <div class="topic-cover" aria-hidden="true">
+          <Image
+            src={cover}
+            alt=""
+            class="topic-cover-image"
+            width={1280}
+            height={720}
+            loading="lazy"
+            decoding="async"
+          />
         </div>
-        <div class="topic-meta">
-          <span>{topicResources.length} {isZh ? '項資源' : 'resources'}</span>
-          {freshness && <span>{isZh ? '資料檢查至' : 'Reviewed through'} {freshness.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' })}</span>}
+        <div class="topic-body">
+          <p class="topic-label">{copy.label}</p>
+          <TopicHeading class="topic-title">{copy.title}</TopicHeading>
+          <p class="topic-description">{copy.description}</p>
+          <div class="topic-meta">
+            <span>{topicResources.length} {isZh ? '項資源' : 'resources'}</span>
+            <span class="topic-arrow" aria-hidden="true">→</span>
+          </div>
         </div>
       </a>
     );
@@ -47,12 +69,61 @@ const topicCopy: Record<ResourceTopic, { label: string; title: string; descripti
 </div>
 
 <style>
-  .topic-list { display: grid; gap: 1rem; }
-  .topic-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2rem; padding: 2rem; border: 1px solid var(--color-border); border-radius: var(--radius-card); text-decoration: none; transition: border-color var(--transition-base), background var(--transition-base); }
-  .topic-card:hover { border-color: var(--color-accent); background: var(--color-surface); }
-  .topic-label { margin: 0 0 0.75rem; color: var(--color-accent); font: 0.6875rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; text-transform: uppercase; letter-spacing: 0.12em; }
-  h2 { margin: 0; color: var(--color-text); font-size: 2rem; line-height: 1.2; }
-  .topic-card p:last-child { margin: 0.75rem 0 0; color: var(--color-muted); }
-  .topic-meta { display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; color: var(--color-text-subtle); font: 0.75rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: nowrap; }
-  @media (max-width: 639px) { .topic-card { grid-template-columns: 1fr; padding: 1.5rem; } .topic-meta { align-items: flex-start; gap: 0.5rem; white-space: normal; } }
+  .topic-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+  .topic-card {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: transparent;
+    box-shadow: var(--shadow-card);
+    color: inherit;
+    text-decoration: none;
+    transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base), background var(--transition-base);
+  }
+  .topic-card:hover,
+  .topic-card:focus-visible {
+    border-color: var(--color-border-hover);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-3px);
+  }
+  .topic-card:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
+  .topic-cover {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-border);
+  }
+  .topic-cover-image { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 400ms ease; }
+  .topic-card:hover .topic-cover-image,
+  .topic-card:focus-visible .topic-cover-image { transform: scale(1.03); }
+  .topic-body { display: flex; flex-direction: column; min-height: 15rem; padding: 1.25rem; }
+  .topic-label { margin: 0 0 0.65rem; color: var(--color-accent); font: 0.6875rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; text-transform: uppercase; letter-spacing: 0.12em; }
+  .topic-title { margin: 0; color: var(--color-text); font-size: 1.5rem; line-height: 1.25; transition: opacity var(--transition-base); }
+  .topic-card:hover .topic-title { opacity: 0.7; }
+  .topic-description {
+    display: -webkit-box;
+    overflow: hidden;
+    margin: 0.75rem 0 0;
+    color: var(--color-muted);
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+  .topic-meta { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: auto; padding-top: 1.25rem; color: var(--color-text-subtle); font: 0.75rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .topic-arrow { color: var(--color-text); font-size: 1rem; transition: transform var(--transition-base); }
+  .topic-card:hover .topic-arrow { transform: translateX(3px); }
+
+  @media (max-width: 767px) {
+    .topic-list { grid-template-columns: 1fr; }
+    .topic-body { min-height: 0; }
+    .topic-meta { margin-top: 1rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .topic-card, .topic-cover-image, .topic-arrow { transition: none; }
+    .topic-card:hover, .topic-card:focus-visible { transform: none; }
+    .topic-card:hover .topic-cover-image, .topic-card:focus-visible .topic-cover-image, .topic-card:hover .topic-arrow { transform: none; }
+  }
 </style>

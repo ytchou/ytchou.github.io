@@ -7,9 +7,10 @@ const t = useTranslations('en');
 ---
 
 <BaseLayout title={`${t('contact.title')} — Yung-Tang Chou`} description={t('contact.intro')}>
-  <p class="section-kicker">Contact</p>
-  <h1 class="text-3xl font-bold tracking-tight mb-4" style="color: var(--color-text);">{t('contact.title')}</h1>
-  <p class="mb-8" style="color: var(--color-muted);">{t('contact.intro')}</p>
+  <header class="page-header">
+    <h1 class="page-title">{t('contact.heading')}</h1>
+    <p class="page-description">{t('contact.page-intro')}</p>
+  </header>
 
   <ul class="space-y-3 list-none p-0 mb-12">
     {contactLinks.map(link => (

@@ -2,40 +2,120 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import BlogPostCard from '../components/BlogPostCard.astro';
+import JourneyTimeline from '../components/JourneyTimeline.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import ResourcesHub from '../components/ResourcesHub.astro';
+import SocialIconLinks from '../components/SocialIconLinks.astro';
+import { projects } from '../data/projects';
 import { selectPostsForLang, useTranslations } from '../i18n/utils';
 
 const t = useTranslations('zh');
-const posts = selectPostsForLang(await getCollection('blog'), 'zh').slice(0, 5);
+const posts = selectPostsForLang(await getCollection('blog'), 'zh').slice(0, 3);
+const resources = await getCollection('resources');
 ---
 
-<BaseLayout title="Patrick C." description={t('home.intro')}>
-  <section aria-labelledby="home-intro">
-    <h1 id="home-intro" class="home-intro">{t('home.intro')}</h1>
-    <div class="post-list">
-      {posts.map(post => <BlogPostCard post={post} uiLang="zh" />)}
+<BaseLayout title="Patrick C." description={t('hero.tagline')} layout="gallery">
+  <header class="home-hero" aria-labelledby="home-title">
+    <h1 id="home-title">Patrick C.</h1>
+    <p class="role-label">{t('hero.role')}</p>
+    <p class="home-tagline">{t('hero.tagline')}</p>
+    <div class="home-contact-links">
+      <SocialIconLinks items={['linkedin', 'github', 'email']} />
     </div>
-    <a href="/blog" class="all-posts-link">{t('home.all-posts')} <span aria-hidden="true">→</span></a>
+    <JourneyTimeline lang="zh" />
+  </header>
+
+  <section class="home-section" aria-labelledby="writing-title">
+    <header class="section-header">
+      <h2 id="writing-title">{t('home.recent-writing')}</h2>
+      <a href="/blog" class="section-link">{t('home.all-posts')} <span aria-hidden="true">→</span></a>
+    </header>
+    <div class="post-list">
+      {posts.map(post => <BlogPostCard post={post} uiLang="zh" headingLevel={3} />)}
+    </div>
+  </section>
+
+  <section class="home-section" aria-labelledby="projects-title">
+    <header class="section-header">
+      <h2 id="projects-title">{t('home.selected-projects')}</h2>
+      <a href="/projects" class="section-link">{t('home.all-projects')} <span aria-hidden="true">→</span></a>
+    </header>
+    <div class="home-project-list">
+      {projects.map(project => <ProjectCard project={project} lang="zh" />)}
+    </div>
+  </section>
+
+  <section class="home-section" aria-labelledby="resources-title">
+    <header class="section-header">
+      <h2 id="resources-title">{t('nav.resources')}</h2>
+      <a href="/resources" class="section-link">{t('home.all-resources')} <span aria-hidden="true">→</span></a>
+    </header>
+    <ResourcesHub resources={resources} lang="zh" embedded />
   </section>
 </BaseLayout>
 
 <style>
-  .home-intro {
+  .home-hero {
+    padding-bottom: 3rem;
+  }
+  .home-hero h1 {
+    margin: 0;
+    font-size: clamp(2.5rem, 8vw, 4rem);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+  .role-label {
+    margin: 1.25rem 0 0;
+    color: var(--color-text-secondary);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .home-tagline {
     max-width: 34rem;
-    margin: 0 0 3rem;
+    margin: 0.75rem 0 0;
     color: var(--color-muted);
     font-size: 1.125rem;
-    font-weight: 400;
     line-height: 1.7;
   }
-  .all-posts-link {
+  .section-link {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
     min-height: 48px;
-    margin-top: 1.5rem;
     color: var(--color-muted);
     font-size: 0.875rem;
     text-decoration: none;
   }
-  .all-posts-link:hover { color: var(--color-text); }
+  .home-contact-links { margin-top: 1rem; }
+  .post-list :global(.post-row:last-child) { border-bottom: 0; }
+  .home-project-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+  .section-link:hover { color: var(--color-text); }
+  .home-section {
+    padding: 3rem 0;
+    border-top: 1px solid var(--color-border);
+  }
+  .home-section:last-child { padding-bottom: 0; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .section-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  @media (max-width: 767px) {
+    .home-project-list { grid-template-columns: 1fr; }
+  }
 </style>
