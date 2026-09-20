@@ -12,6 +12,7 @@ This supersedes only the previous decisions that assigned the portrait and journ
 ## Fixed decisions
 
 - Home is ordered as identity and contact icons, Writing, Projects, Journey, then Resources.
+- Home renders the complete shared project collection so it stays in sync with the Projects page.
 - The identity block uses Email, GitHub, and LinkedIn icon links; the portrait is removed.
 - The complete existing journey timeline moves to Home unchanged, headed `一路走來` or `My journey`.
 - About disappears from primary navigation.

@@ -12,7 +12,6 @@ import { selectPostsForLang, useTranslations } from '../../i18n/utils';
 const t = useTranslations('en');
 const posts = selectPostsForLang(await getCollection('blog'), 'en').slice(0, 3);
 const resources = await getCollection('resources');
-const featuredProject = projects.find(project => project.featured) ?? projects.at(0);
 ---
 
 <BaseLayout title="Patrick C." description={t('hero.tagline')}>
@@ -40,7 +39,9 @@ const featuredProject = projects.find(project => project.featured) ?? projects.a
       <h2 id="projects-title">{t('nav.projects')}</h2>
       <a href="/en/projects" class="section-link">{t('home.all-projects')} <span aria-hidden="true">→</span></a>
     </header>
-    {featuredProject && <ProjectCard project={featuredProject} lang="en" />}
+    <div class="home-project-list">
+      {projects.map(project => <ProjectCard project={project} lang="en" />)}
+    </div>
   </section>
 
   <section class="home-section" aria-labelledby="journey-title">
@@ -95,6 +96,7 @@ const featuredProject = projects.find(project => project.featured) ?? projects.a
     text-decoration: none;
   }
   .home-contact-links { margin-top: 0.75rem; }
+  .home-project-list { display: grid; gap: 1rem; }
   .section-link:hover { color: var(--color-text); }
   .home-section {
     padding: 3rem 0;

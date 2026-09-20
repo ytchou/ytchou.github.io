@@ -9,7 +9,6 @@ export interface Project {
   tags: string[];
   githubUrl?: string;
   liveUrl?: string;
-  featured: boolean;
   image?: ImageMetadata;
 }
 
@@ -20,7 +19,6 @@ export const projects: Project[] = [
     descriptionZh: '精心策劃的目錄平台，連結台灣品牌與全球消費者，幫助在地製造商透過乾淨、值得信賴的展示體驗走向國際。',
     tags: ['Product', 'Next.js', 'TypeScript'],
     liveUrl: 'https://formoria.com/',
-    featured: true,
     image: formoriaHero,
   },
   {
@@ -30,7 +28,6 @@ export const projects: Project[] = [
     tags: ['Fitness', 'React', 'PWA'],
     githubUrl: 'https://github.com/ytchou/cardio-slot',
     liveUrl: 'https://ytchou.github.io/cardio-slot/',
-    featured: false,
     image: cardioSlotHero,
   },
 ];

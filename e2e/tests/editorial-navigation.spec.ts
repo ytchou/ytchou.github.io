@@ -36,6 +36,7 @@ test('Given a Mandarin visitor, when they browse the curated homepage, then each
   await expect(page.getByRole('heading', { level: 2, name: '資源' })).toBeVisible();
   await expect(journey.getByRole('listitem').first()).toContainText('回到台灣，在 AI x 資料科學領域深耕與探索');
   await expect(page.getByRole('heading', { level: 3, name: 'Formoria' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 3, name: 'Cardio Slot' })).toBeVisible();
   await expect(page.getByRole('heading', { level: 3, name: '設計', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { level: 3, name: 'AI 安全與漏洞工程' })).toBeVisible();
   const designTopic = page.getByRole('link').filter({ has: page.getByRole('heading', { level: 3, name: '設計', exact: true }) });
@@ -102,6 +103,7 @@ test('Given an English visitor, when they browse the curated homepage, then Chin
   expect(hrefs.every(href => href?.startsWith('/blog/'))).toBe(true);
   expect(new Set(hrefs).size).toBe(hrefs.length);
   await expect(page.getByRole('heading', { level: 3, name: 'Formoria' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 3, name: 'Cardio Slot' })).toBeVisible();
   const journey = page.locator('section').filter({ has: page.getByRole('heading', { level: 2, name: 'My journey' }) });
   await expect(journey.getByRole('heading', { level: 2, name: 'My journey' })).toBeVisible();
   await expect(journey.getByRole('listitem').first()).toContainText('back in Taiwan — building and writing at the intersection of AI × data');

@@ -18,6 +18,7 @@ Verification: confirm the updated journey fails against the current structure, t
 ## Acceptance criteria
 
 - Home is ordered identity, Writing, Projects, Journey, Resources in both locales.
+- Home and the Projects page render the same project collection.
 - Home exposes accessible Email, GitHub, and LinkedIn icons with correct link behavior.
 - About is absent from navigation and its former routes redirect to the matching homepage locale.
 - The portrait is absent; Contact, Footer, previews, and destination routes remain intact.
