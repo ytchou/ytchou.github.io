@@ -4,9 +4,19 @@ import { expect, test } from '@playwright/test';
 // Project tags overlap, so chips carry no counts and there is no group/section layer —
 // this exercises the flat-catalog path through the same shared script.
 
-for (const { name, path, allLabel } of [
-  { name: 'zh', path: '/projects', allLabel: '所有' },
-  { name: 'en', path: '/en/projects', allLabel: 'All' },
+for (const { name, path, allLabel, cardioDescription } of [
+  {
+    name: 'zh',
+    path: '/projects',
+    allLabel: '所有',
+    cardioDescription: '以拉霸機概念設計的有氧訓練產生器，組合訓練重點、節奏、收尾、時間、暖身與緩和，快速建立多變的跑步機課表。',
+  },
+  {
+    name: 'en',
+    path: '/en/projects',
+    allLabel: 'All',
+    cardioDescription: 'A slot-machine-inspired workout generator that builds varied treadmill sessions by combining focus, pattern, finish, duration, warm-up, and cooldown options.',
+  },
 ]) {
   test.describe(`projects tag filter (${name})`, () => {
     test.beforeEach(async ({ page }) => {
@@ -15,7 +25,7 @@ for (const { name, path, allLabel } of [
 
     test('renders a localized All chip and no view toggle', async ({ page }) => {
       await expect(page.locator('[data-filter-value="all"]')).toContainText(allLabel);
-      // Project cards have no screenshot, so a grid/list switch would be meaningless.
+      // The project catalog intentionally keeps its card-only presentation.
       await expect(page.locator('[data-catalog-view-value]')).toHaveCount(0);
     });
 
@@ -48,6 +58,15 @@ for (const { name, path, allLabel } of [
 
       await expect(page.locator('[data-filter-item]:visible')).toHaveCount(total);
       await expect(page.locator('[data-filter-value="all"]')).toHaveAttribute('aria-pressed', 'true');
+    });
+
+    test('Cardio Slot opens its source and live workout generator', async ({ page }) => {
+      const project = page.locator('[data-filter-item]').filter({ has: page.getByRole('heading', { name: 'Cardio Slot', exact: true }) });
+
+      await expect(project).toContainText(cardioDescription);
+      await expect(project.getByRole('img', { name: 'Cardio Slot' })).toBeVisible();
+      await expect(project.getByRole('link', { name: /GitHub/ })).toHaveAttribute('href', 'https://github.com/ytchou/cardio-slot');
+      await expect(project.getByRole('link', { name: /展示|Live/ })).toHaveAttribute('href', 'https://ytchou.github.io/cardio-slot/');
     });
   });
 }
