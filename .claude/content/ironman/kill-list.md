@@ -13,6 +13,7 @@ Appended after `_base` and `longform-zh`.
 | 最佳實踐 | 我採用的做法 | HARD |
 | 業界標準 | — | HARD |
 | 你應該 | — | HARD |
+| —— (em-dash) | comma, period, colon, or parentheses | HARD |
 | docs/ | — | HARD |
 | DEV- | — | HARD |
 | internal artifact names (ADR filenames, ticket IDs, doc paths, dates of internal docs) | state the decision and roughly when; the reader cannot open the file | GUIDANCE |

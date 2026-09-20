@@ -19,8 +19,8 @@ Evidence:
     series:  content/ironman/series.md
 
 Days whose implementation ticket has not landed cannot be drafted past section 3
-without inventing results — leave `<!-- TODO -->` markers and say so. Days 27
-and 28 draw on live Formoria analytics at publication time, not on anything
-committed. Day 21 needs the saved Google snippet screenshot; Day 24 needs the
+without inventing results — leave `<!-- TODO -->` markers and say so. Day 21
+draws on live Formoria analytics at publication time, not on anything
+committed. Day 24 needs the saved Google snippet screenshot and the
 recorded AEO citation tests.
 

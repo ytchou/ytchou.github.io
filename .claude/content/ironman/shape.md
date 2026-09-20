@@ -62,24 +62,22 @@ Takeaway section "doesn't belong in the content at all". Rules now:
   Day 02 is ~3400; problem-definition and comparison days run long, preview
   days run short. iThome's floor is 300.
 
-## Chapters (v5.4, 2026-09-14)
+## Chapters (v7.1, 2026-09-17)
 
 | Chapter | Days | Theme |
 |---|---|---|
-| 1 | 01–02 | 問題與定義 |
-| 2 | 03–05 | 產品的地基：資料與設計 |
-| 3 | 06–15 | 資料要先進來：curation agents 與那把尺 |
-| 4 | 16–18 | 搜尋要對上情境 |
-| 5 | 19–21 | 探索層 |
-| 6 | 22–24 | 被看見：SEO 的三個層次 |
-| 7 | 25–30 | 維運與那把尺 |
+| 1 | 01–03 | 問題與定義 |
+| 2 | 04–12 | Curation Pipeline：從架構到那把尺 |
+| 3 | 13–19 | 搜尋與探索 |
+| 4 | 20–25 | 一個人怎麼營運 |
+| 5 | 26–30 | 讓 Agent 替你值班 |
 
 `series.md` is the authoritative day→chapter→capability map.
 
 ## Artifacts
 
 Density varies by topic. Section 4 (結果) is where real data belongs — a trace,
-an eval table, a cost report, a before-and-after. Day 21 specifically needs the
-incorrect Google snippet screenshot; Days 15–16 lean on Langfuse screenshots.
+an eval table, a cost report, a before-and-after. Day 24 specifically needs the
+incorrect Google snippet screenshot; Days 10–12 lean on Langfuse screenshots.
 
 iThome enforces a 300 Chinese-character minimum; this floor sits well above it.
