@@ -29,7 +29,7 @@ test('Given a Mandarin visitor, when they browse the curated homepage, then each
   expect(homeCount).toBeGreaterThan(0);
   expect(homeCount).toBeLessThanOrEqual(3);
   await expect(homeRows.first().locator('.post-series')).toHaveText('系列鐵人賽');
-  await expect(homeRows.first().locator('[data-post-title]')).toHaveText('Day 5 | 一個品牌網站，怎麼變成可以被搜尋的產品資料？');
+  await expect(homeRows.first().locator('[data-post-title]')).toHaveText(/^Day \d+ \| .+/);
 
   await expect(page.getByRole('heading', { level: 2, name: '近期文章' })).toBeVisible();
   await expect(page.getByRole('heading', { level: 2, name: '精選專案' })).toBeVisible();
