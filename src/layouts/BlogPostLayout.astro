@@ -45,7 +45,7 @@ const backHref = series
 const backLabel = series
   ? (lang === 'zh' ? '← 所有天數' : '← All days')
   : (lang === 'zh' ? '← 所有文章' : '← All posts');
-const displayTitle = series && day != null ? `Day ${day}：${title}` : title;
+const displayTitle = series && day != null ? `Day ${day} | ${title}` : title;
 const pageTitle = `${displayTitle} — ${SITE_TITLE}`;
 ---
 
@@ -122,13 +122,13 @@ const pageTitle = `${displayTitle} — ${SITE_TITLE}`;
         {prevPost ? (
           <a href={`/${langPrefix}blog/${prevPost.slug}`} class="bottom-nav-link">
             <span class="bottom-nav-dir">← 上一篇</span>
-            <span class="bottom-nav-title">Day {prevPost.day}：{prevPost.title}</span>
+            <span class="bottom-nav-title">Day {prevPost.day} | {prevPost.title}</span>
           </a>
         ) : <span />}
         {nextPost ? (
           <a href={`/${langPrefix}blog/${nextPost.slug}`} class="bottom-nav-link bottom-nav-next">
             <span class="bottom-nav-dir">下一篇 →</span>
-            <span class="bottom-nav-title">Day {nextPost.day}：{nextPost.title}</span>
+            <span class="bottom-nav-title">Day {nextPost.day} | {nextPost.title}</span>
           </a>
         ) : <span />}
       </nav>

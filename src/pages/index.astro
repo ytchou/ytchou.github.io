@@ -20,13 +20,14 @@ const resources = await getCollection('resources');
     <p class="role-label">{t('hero.role')}</p>
     <p class="home-tagline">{t('hero.tagline')}</p>
     <div class="home-contact-links">
-      <SocialIconLinks items={['email', 'github', 'linkedin']} />
+      <SocialIconLinks items={['linkedin', 'github', 'email']} />
     </div>
+    <JourneyTimeline lang="zh" />
   </header>
 
   <section class="home-section" aria-labelledby="writing-title">
     <header class="section-header">
-      <h2 id="writing-title">{t('nav.writing')}</h2>
+      <h2 id="writing-title">{t('home.recent-writing')}</h2>
       <a href="/blog" class="section-link">{t('home.all-posts')} <span aria-hidden="true">→</span></a>
     </header>
     <div class="post-list">
@@ -36,19 +37,12 @@ const resources = await getCollection('resources');
 
   <section class="home-section" aria-labelledby="projects-title">
     <header class="section-header">
-      <h2 id="projects-title">{t('nav.projects')}</h2>
+      <h2 id="projects-title">{t('home.selected-projects')}</h2>
       <a href="/projects" class="section-link">{t('home.all-projects')} <span aria-hidden="true">→</span></a>
     </header>
     <div class="home-project-list">
       {projects.map(project => <ProjectCard project={project} lang="zh" />)}
     </div>
-  </section>
-
-  <section class="home-section" aria-labelledby="journey-title">
-    <header class="section-header">
-      <h2 id="journey-title">{t('home.journey-title')}</h2>
-    </header>
-    <JourneyTimeline lang="zh" />
   </section>
 
   <section class="home-section" aria-labelledby="resources-title">
@@ -95,7 +89,8 @@ const resources = await getCollection('resources');
     font-size: 0.875rem;
     text-decoration: none;
   }
-  .home-contact-links { margin-top: 0.75rem; }
+  .home-contact-links { margin-top: 1rem; }
+  .post-list :global(.post-row:last-child) { border-bottom: 0; }
   .home-project-list {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));

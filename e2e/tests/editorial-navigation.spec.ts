@@ -28,13 +28,15 @@ test('Given a Mandarin visitor, when they browse the curated homepage, then each
   const homeCount = await homeRows.count();
   expect(homeCount).toBeGreaterThan(0);
   expect(homeCount).toBeLessThanOrEqual(3);
+  await expect(homeRows.first().locator('.post-series')).toHaveText('系列鐵人賽');
+  await expect(homeRows.first().locator('[data-post-title]')).toHaveText('Day 5 | 一個品牌網站，怎麼變成可以被搜尋的產品資料？');
 
-  await expect(page.getByRole('heading', { level: 2, name: '文章' })).toBeVisible();
-  await expect(page.getByRole('heading', { level: 2, name: '專案' })).toBeVisible();
-  const journey = page.locator('section').filter({ has: page.getByRole('heading', { level: 2, name: '一路走來' }) });
-  await expect(journey.getByRole('heading', { level: 2, name: '一路走來' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 2, name: '近期文章' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 2, name: '精選專案' })).toBeVisible();
+  const hero = page.getByRole('heading', { level: 1, name: 'Patrick C.' }).locator('..');
+  await expect(page.getByRole('heading', { level: 2, name: '一路走來' })).toHaveCount(0);
   await expect(page.getByRole('heading', { level: 2, name: '資源' })).toBeVisible();
-  await expect(journey.getByRole('listitem').first()).toContainText('回到台灣，在 AI x 資料科學領域深耕與探索');
+  await expect(hero.getByRole('listitem').first()).toContainText('回到台灣，在 AI x 資料科學領域深耕與探索');
   await expect(page.getByRole('heading', { level: 3, name: 'Formoria' })).toBeVisible();
   await expect(page.getByRole('heading', { level: 3, name: 'Cardio Slot' })).toBeVisible();
   await expect(page.getByRole('heading', { level: 3, name: '設計', exact: true })).toBeVisible();
@@ -52,7 +54,10 @@ test('Given a Mandarin visitor, when they browse the curated homepage, then each
 
   const footer = page.getByRole('contentinfo');
   await expect(footer).toContainText(`© ${new Date().getFullYear()} Patrick C.`);
-  await expect(footer.getByRole('link', { name: '聯絡', exact: true })).toHaveAttribute('href', '/contact');
+  await expect(footer.getByRole('link', { name: '聯絡', exact: true })).toHaveCount(0);
+  const footerEmail = footer.getByRole('link', { name: 'Email', exact: true });
+  await expect(footerEmail).toHaveAttribute('href', 'mailto:patrick.ytchou@gmail.com');
+  await expect(footerEmail).not.toHaveAttribute('target', '_blank');
   const github = footer.getByRole('link', { name: 'GitHub', exact: true });
   await expect(github).toHaveAttribute('href', 'https://github.com/ytchou');
   await expect(github).toHaveAttribute('target', '_blank');
@@ -104,9 +109,9 @@ test('Given an English visitor, when they browse the curated homepage, then Chin
   expect(new Set(hrefs).size).toBe(hrefs.length);
   await expect(page.getByRole('heading', { level: 3, name: 'Formoria' })).toBeVisible();
   await expect(page.getByRole('heading', { level: 3, name: 'Cardio Slot' })).toBeVisible();
-  const journey = page.locator('section').filter({ has: page.getByRole('heading', { level: 2, name: 'My journey' }) });
-  await expect(journey.getByRole('heading', { level: 2, name: 'My journey' })).toBeVisible();
-  await expect(journey.getByRole('listitem').first()).toContainText('back in Taiwan — building and writing at the intersection of AI × data');
+  const hero = page.getByRole('heading', { level: 1, name: 'Patrick C.' }).locator('..');
+  await expect(page.getByRole('heading', { level: 2, name: 'My journey' })).toHaveCount(0);
+  await expect(hero.getByRole('listitem').first()).toContainText('back in Taiwan — building and writing at the intersection of AI × data');
   await expect(page.getByRole('heading', { level: 3, name: 'Design' })).toBeVisible();
   await expect(page.getByRole('heading', { level: 3, name: 'AI security and vulnerability engineering' })).toBeVisible();
   const designTopic = page.getByRole('link').filter({ has: page.getByRole('heading', { level: 3, name: 'Design' }) });
@@ -121,7 +126,8 @@ test('Given an English visitor, when they browse the curated homepage, then Chin
 
   const footer = page.getByRole('contentinfo');
   await expect(footer).toContainText(`© ${new Date().getFullYear()} Patrick C.`);
-  await expect(footer.getByRole('link', { name: 'Contact', exact: true })).toHaveAttribute('href', '/en/contact');
+  await expect(footer.getByRole('link', { name: 'Contact', exact: true })).toHaveCount(0);
+  await expect(footer.getByRole('link', { name: 'Email', exact: true })).toHaveAttribute('href', 'mailto:patrick.ytchou@gmail.com');
   await expect(footer.getByRole('link', { name: 'GitHub', exact: true })).toHaveAttribute('href', 'https://github.com/ytchou');
   await expect(footer.getByRole('link', { name: 'LinkedIn', exact: true })).toHaveAttribute('href', 'https://linkedin.com/in/ytchou');
 
@@ -165,5 +171,5 @@ test('Given a visitor exploring the portfolio, destination pages use Patrick’s
   await expect(page.getByText('標籤', { exact: true })).toHaveCount(0);
 
   await page.goto('/blog/day-01-why-this-series');
-  await expect(page.getByRole('heading', { level: 1 })).toContainText('Day 1');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Day 1 | 挑戰用 30 天利用 Side Project 學習 AI Agents');
 });

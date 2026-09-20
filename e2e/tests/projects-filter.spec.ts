@@ -60,13 +60,17 @@ for (const { name, path, allLabel, cardioDescription } of [
       await expect(page.locator('[data-filter-value="all"]')).toHaveAttribute('aria-pressed', 'true');
     });
 
-    test('Cardio Slot opens its source and live workout generator', async ({ page }) => {
+    test('Cardio Slot is one complete link to the live workout generator', async ({ page }) => {
       const project = page.locator('[data-filter-item]').filter({ has: page.getByRole('heading', { name: 'Cardio Slot', exact: true }) });
 
       await expect(project).toContainText(cardioDescription);
       await expect(project.getByRole('img', { name: 'Cardio Slot' })).toBeVisible();
-      await expect(project.getByRole('link', { name: /GitHub/ })).toHaveAttribute('href', 'https://github.com/ytchou/cardio-slot');
-      await expect(project.getByRole('link', { name: /展示|Live/ })).toHaveAttribute('href', 'https://ytchou.github.io/cardio-slot/');
+      const links = project.getByRole('link');
+      await expect(links).toHaveCount(1);
+      await expect(links).toHaveAttribute('href', 'https://ytchou.github.io/cardio-slot/');
+      await expect(links).toHaveAttribute('target', '_blank');
+      await expect(links).toHaveAttribute('rel', 'noopener noreferrer');
+      await expect(project).not.toContainText(/GitHub|展示|Live/);
     });
   });
 }

@@ -18,16 +18,21 @@ const category = post.data.tags[0];
 const isMandarinFallback = uiLang === 'en' && sourceLang === 'zh';
 const contentLang = sourceLang === 'zh' ? 'zh-TW' : 'en';
 const Heading = `h${headingLevel}` as 'h2' | 'h3';
+const isSeriesPost = Boolean(post.data.series && post.data.day != null);
+const displayTitle = isSeriesPost ? `Day ${post.data.day} | ${post.data.title}` : post.data.title;
+const seriesLabel = uiLang === 'zh' ? '系列' : 'Series';
 ---
 
 <article class="post-row" data-post-row data-post-source-lang={sourceLang} lang={contentLang}>
   <a href={href} class="post-row-link">
     <div class="post-meta">
       <time datetime={post.data.date.toISOString()}>{formattedDate}</time>
-      {category && <><span aria-hidden="true">·</span><span>{category}</span></>}
+      {category && <><span aria-hidden="true">·</span>{isSeriesPost ? (
+        <span class="post-series"><span class="post-series-label">{seriesLabel}</span><span class="post-series-name">{category}</span></span>
+      ) : <span>{category}</span>}</>}
       {isMandarinFallback && <><span aria-hidden="true">·</span><span>中文</span></>}
     </div>
-    <Heading class="post-title" data-post-title>{post.data.title}</Heading>
+    <Heading class="post-title" data-post-title>{displayTitle}</Heading>
     <p class="post-description">{post.data.description}</p>
   </a>
 </article>
@@ -61,6 +66,22 @@ const Heading = `h${headingLevel}` as 'h2' | 'h3';
     letter-spacing: -0.015em;
     line-height: 1.45;
     transition: color var(--transition-base);
+  }
+  .post-series {
+    display: inline-flex;
+    overflow: hidden;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 9999px;
+    color: var(--color-text-secondary);
+  }
+  .post-series-label {
+    padding: 0 0.4rem;
+    background: var(--color-surface);
+    color: var(--color-accent);
+  }
+  .post-series-name {
+    padding: 0 0.4rem;
+    border-left: 1px solid var(--color-border-strong);
   }
   .post-description {
     display: -webkit-box;

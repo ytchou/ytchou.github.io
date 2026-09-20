@@ -1,6 +1,5 @@
 ---
 import type { Project } from '../data/projects';
-import { useTranslations } from '../i18n/utils';
 import type { Lang } from '../i18n/ui';
 import { Image } from 'astro:assets';
 
@@ -9,36 +8,27 @@ interface Props {
   lang?: Lang;
 }
 const { project, lang = 'en' } = Astro.props;
-const t = useTranslations(lang);
+const destination = project.liveUrl ?? project.githubUrl;
+if (!destination) throw new Error(`Project "${project.title}" needs a liveUrl or githubUrl.`);
 ---
 
-<article class="project-card group flex flex-col">
-  {project.image && (
-    <div class="project-image-wrap">
-      <Image src={project.image} alt={project.title} class="project-image" width={800} height={450} />
+<article class="project-card group">
+  <a href={destination} target="_blank" rel="noopener noreferrer" class="project-card-link">
+    {project.image && (
+      <div class="project-image-wrap">
+        <Image src={project.image} alt={project.title} class="project-image" width={800} height={450} />
+      </div>
+    )}
+    <div class="project-body">
+      <h3 class="project-title font-semibold mt-0 transition-colors">{project.title}<span aria-hidden="true"> ↗</span></h3>
+      <p class="project-desc text-sm leading-relaxed flex-1">{lang === 'zh' && project.descriptionZh ? project.descriptionZh : project.description}</p>
+      <ul class="flex flex-wrap gap-1.5 list-none p-0 m-0">
+        {project.tags.map(tag => (
+          <li class="tag">{tag}</li>
+        ))}
+      </ul>
     </div>
-  )}
-  <div class="flex flex-col gap-3 flex-1 p-5">
-    <h3 class="project-title font-semibold mt-0 transition-colors">{project.title}</h3>
-    <p class="project-desc text-sm leading-relaxed flex-1">{lang === 'zh' && project.descriptionZh ? project.descriptionZh : project.description}</p>
-    <ul class="flex flex-wrap gap-1.5 list-none p-0 m-0">
-      {project.tags.map(tag => (
-        <li class="tag">{tag}</li>
-      ))}
-    </ul>
-    <div class="flex gap-3 pt-1">
-      {project.githubUrl && (
-        <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" class="project-link text-xs font-medium transition-colors no-underline">
-          {t('projects.github')} ↗
-        </a>
-      )}
-      {project.liveUrl && (
-        <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" class="project-link text-xs font-medium transition-colors no-underline">
-          {t('projects.live')} ↗
-        </a>
-      )}
-    </div>
-  </div>
+  </a>
 </article>
 
 <style>
@@ -73,9 +63,21 @@ const t = useTranslations(lang);
     box-shadow: var(--shadow-card-hover);
     transform: translateY(-3px);
   }
+  .project-card:focus-within {
+    background: var(--color-surface);
+    border-color: var(--color-border-hover);
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-3px);
+  }
+  .project-card-link { display: flex; flex-direction: column; height: 100%; color: inherit; text-decoration: none; }
+  .project-card-link:focus-visible { outline: 2px solid var(--color-accent); outline-offset: -2px; }
+  .project-body { display: flex; flex: 1; flex-direction: column; gap: 0.75rem; padding: 1.25rem; }
   .project-title { color: var(--color-text); transition: opacity var(--transition-base); }
-  .project-card:hover .project-title { opacity: 0.7; }
+  .project-card:hover .project-title,
+  .project-card:focus-within .project-title { opacity: 0.7; }
   .project-desc { color: var(--color-text-muted); }
-  .project-link { display: inline-flex; align-items: center; justify-content: center; min-width: 48px; min-height: 48px; color: var(--color-text-muted); transition: color var(--transition-base); }
-  .project-link:hover { color: var(--color-text); }
+  @media (prefers-reduced-motion: reduce) {
+    .project-card, .project-image { transition: none; }
+    .project-card:hover, .project-card:focus-within { transform: none; }
+  }
 </style>

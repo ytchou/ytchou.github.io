@@ -1,20 +1,14 @@
 ---
-import { getLangFromUrl, useTranslations } from '../i18n/utils';
 import SocialIconLinks from './SocialIconLinks.astro';
 
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
 const year = new Date().getFullYear();
-const rights = t('footer.rights').replace('{year}', String(year));
-const base = lang === 'zh' ? '' : '/en';
 ---
 
 <footer class="site-footer">
   <div class="footer-inner">
-    <p class="footer-copy">{rights}</p>
+    <p class="footer-copy">© {year} Patrick C.</p>
     <div class="footer-links">
-      <a href={`${base}/contact`} class="footer-link">{t('contact.title')}</a>
-      <SocialIconLinks items={['github', 'linkedin']} />
+      <SocialIconLinks items={['linkedin', 'github', 'email']} />
     </div>
   </div>
 </footer>
@@ -36,16 +30,6 @@ const base = lang === 'zh' ? '' : '/en';
     color: var(--color-muted);
     margin: 0;
   }
-  .footer-link {
-    display: inline-flex;
-    align-items: center;
-    min-height: 48px;
-    font-size: 0.8125rem;
-    color: var(--color-muted);
-    text-decoration: none;
-    transition: color var(--transition-base);
-  }
-  .footer-link:hover { color: var(--color-text); }
   @media (max-width: 639px) {
     .footer-inner { align-items: flex-start; flex-direction: column; gap: 0; }
   }

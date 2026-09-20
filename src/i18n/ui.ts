@@ -18,7 +18,8 @@ export const ui = {
     'home.all-posts': 'All posts',
     'home.all-projects': 'All projects',
     'home.all-resources': 'All resources',
-    'home.journey-title': 'My journey',
+    'home.recent-writing': 'Recent writing',
+    'home.selected-projects': 'Selected projects',
     'blog.title': 'Blog',
     'blog.subtitle': 'Notes on software, products, and ideas.',
     'blog.heading': 'What I’m learning',
@@ -51,7 +52,6 @@ export const ui = {
     'contact.link.email': 'Email',
     'contact.link.github': 'GitHub',
     'contact.link.linkedin': 'LinkedIn',
-    'footer.rights': '© {year} Patrick C.',
   },
   zh: {
     'nav.home': 'Patrick C.',
@@ -64,7 +64,8 @@ export const ui = {
     'home.all-posts': '所有文章',
     'home.all-projects': '所有專案',
     'home.all-resources': '所有資源',
-    'home.journey-title': '一路走來',
+    'home.recent-writing': '近期文章',
+    'home.selected-projects': '精選專案',
     'blog.title': '文章',
     'blog.subtitle': '關於軟體、產品與想法的文章。',
     'blog.heading': '我正在學的事',
@@ -97,7 +98,6 @@ export const ui = {
     'contact.link.email': 'Email',
     'contact.link.github': 'GitHub',
     'contact.link.linkedin': 'LinkedIn',
-    'footer.rights': '© {year} Patrick C.',
   },
 } as const;
 
