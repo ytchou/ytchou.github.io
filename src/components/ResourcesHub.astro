@@ -2,11 +2,12 @@
 import { getCollectionFreshness, resourceTopics, type ResourceEntry, type ResourceTopic } from '../services/resources';
 import type { Lang } from '../i18n/ui';
 
-interface Props { resources: ResourceEntry[]; lang: Lang; }
-const { resources, lang } = Astro.props;
+interface Props { resources: ResourceEntry[]; lang: Lang; embedded?: boolean; }
+const { resources, lang, embedded = false } = Astro.props;
 const isZh = lang === 'zh';
 const base = isZh ? '' : '/en';
 const locale = isZh ? 'zh-TW' : 'en-US';
+const TopicHeading = embedded ? 'h3' : 'h2';
 const topicCopy: Record<ResourceTopic, { label: string; title: string; description: string; path: string }> = isZh
   ? {
       design: { label: '主題 01', title: '設計', description: '涵蓋介面、品牌、字體、元件、動態、視覺化與設計工程的實用資源。', path: 'design' },
@@ -18,11 +19,13 @@ const topicCopy: Record<ResourceTopic, { label: string; title: string; descripti
     };
 ---
 
-<header class="page-header">
-  <p class="section-kicker">{isZh ? '收藏' : 'Directory'}</p>
-  <h1 class="page-title">{isZh ? '資源' : 'Resources'}</h1>
-  <p class="page-description">{isZh ? '值得反覆使用的設計與安全參考、工具。' : 'A considered collection of design and security references worth returning to.'}</p>
-</header>
+{!embedded && (
+  <header class="page-header">
+    <p class="section-kicker">{isZh ? '收藏' : 'Directory'}</p>
+    <h1 class="page-title">{isZh ? '資源' : 'Resources'}</h1>
+    <p class="page-description">{isZh ? '值得反覆使用的設計與安全參考、工具。' : 'A considered collection of design and security references worth returning to.'}</p>
+  </header>
+)}
 
 <div class="topic-list">
   {resourceTopics.map(topic => {
@@ -34,7 +37,7 @@ const topicCopy: Record<ResourceTopic, { label: string; title: string; descripti
       <a class="topic-card" href={`${base}/resources/${copy.path}`}>
         <div>
           <p class="topic-label">{copy.label}</p>
-          <h2>{copy.title}</h2>
+          <TopicHeading class="topic-title">{copy.title}</TopicHeading>
           <p>{copy.description}</p>
         </div>
         <div class="topic-meta">
@@ -51,7 +54,7 @@ const topicCopy: Record<ResourceTopic, { label: string; title: string; descripti
   .topic-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2rem; padding: 2rem; border: 1px solid var(--color-border); border-radius: var(--radius-card); text-decoration: none; transition: border-color var(--transition-base), background var(--transition-base); }
   .topic-card:hover { border-color: var(--color-accent); background: var(--color-surface); }
   .topic-label { margin: 0 0 0.75rem; color: var(--color-accent); font: 0.6875rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; text-transform: uppercase; letter-spacing: 0.12em; }
-  h2 { margin: 0; color: var(--color-text); font-size: 2rem; line-height: 1.2; }
+  .topic-title { margin: 0; color: var(--color-text); font-size: 2rem; line-height: 1.2; }
   .topic-card p:last-child { margin: 0.75rem 0 0; color: var(--color-muted); }
   .topic-meta { display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; color: var(--color-text-subtle); font: 0.75rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: nowrap; }
   @media (max-width: 639px) { .topic-card { grid-template-columns: 1fr; padding: 1.5rem; } .topic-meta { align-items: flex-start; gap: 0.5rem; white-space: normal; } }

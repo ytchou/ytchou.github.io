@@ -6,9 +6,10 @@ import { getPostSlug } from '../i18n/utils';
 interface Props {
   post: CollectionEntry<'blog'>;
   uiLang: Lang;
+  headingLevel?: 2 | 3;
 }
 
-const { post, uiLang } = Astro.props;
+const { post, uiLang, headingLevel = 2 } = Astro.props;
 const sourceLang = post.data.lang;
 const slug = getPostSlug(post.id);
 const href = sourceLang === 'en' ? `/en/blog/${slug}` : `/blog/${slug}`;
@@ -16,6 +17,7 @@ const formattedDate = post.data.date.toISOString().slice(0, 10);
 const category = post.data.tags[0];
 const isMandarinFallback = uiLang === 'en' && sourceLang === 'zh';
 const contentLang = sourceLang === 'zh' ? 'zh-TW' : 'en';
+const Heading = `h${headingLevel}` as 'h2' | 'h3';
 ---
 
 <article class="post-row" data-post-row data-post-source-lang={sourceLang} lang={contentLang}>
@@ -25,7 +27,7 @@ const contentLang = sourceLang === 'zh' ? 'zh-TW' : 'en';
       {category && <><span aria-hidden="true">·</span><span>{category}</span></>}
       {isMandarinFallback && <><span aria-hidden="true">·</span><span>中文</span></>}
     </div>
-    <h2 class="post-title" data-post-title>{post.data.title}</h2>
+    <Heading class="post-title" data-post-title>{post.data.title}</Heading>
     <p class="post-description">{post.data.description}</p>
   </a>
 </article>
