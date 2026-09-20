@@ -14,7 +14,7 @@ const posts = selectPostsForLang(await getCollection('blog'), 'en').slice(0, 3);
 const resources = await getCollection('resources');
 ---
 
-<BaseLayout title="Patrick C." description={t('hero.tagline')}>
+<BaseLayout title="Patrick C." description={t('hero.tagline')} layout="gallery">
   <header class="home-hero" aria-labelledby="home-title">
     <h1 id="home-title">Patrick C.</h1>
     <p class="role-label">{t('hero.role')}</p>
@@ -96,7 +96,11 @@ const resources = await getCollection('resources');
     text-decoration: none;
   }
   .home-contact-links { margin-top: 0.75rem; }
-  .home-project-list { display: grid; gap: 1rem; }
+  .home-project-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
   .section-link:hover { color: var(--color-text); }
   .home-section {
     padding: 3rem 0;
@@ -115,5 +119,8 @@ const resources = await getCollection('resources');
     font-size: 1.5rem;
     font-weight: 600;
     letter-spacing: -0.02em;
+  }
+  @media (max-width: 767px) {
+    .home-project-list { grid-template-columns: 1fr; }
   }
 </style>

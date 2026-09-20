@@ -6,6 +6,7 @@
 2. Add the shared social-icon row and reuse it from Home and Footer.
 3. Move `JourneyTimeline` to both homepages between Projects and Resources.
 4. Remove the About pages, portrait asset, stale translation keys, and Header link; add localized redirects.
+5. Use the existing gallery width on Home and render projects as a responsive two-column grid matching Resources.
 
 Verification: confirm the updated journey fails against the current structure, then run the scoped editorial journey after implementation.
 
@@ -19,6 +20,7 @@ Verification: confirm the updated journey fails against the current structure, t
 
 - Home is ordered identity, Writing, Projects, Journey, Resources in both locales.
 - Home and the Projects page render the same project collection.
+- Home aligns to the gallery-width shell and shows two project columns above the mobile breakpoint.
 - Home exposes accessible Email, GitHub, and LinkedIn icons with correct link behavior.
 - About is absent from navigation and its former routes redirect to the matching homepage locale.
 - The portrait is absent; Contact, Footer, previews, and destination routes remain intact.
