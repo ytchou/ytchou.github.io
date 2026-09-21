@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="980" viewBox="0 0 1800 980">
+<rect width="1800" height="980" fill="#ffffff"/>
+<style>
+.t{font-family:Inter,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif}
+.title{font-size:50px;font-weight:700;fill:#111827}
+.h{font-size:27px;font-weight:700;fill:#111827}
+.b{font-size:20px;fill:#334155}
+.small{font-size:17px;fill:#475569}
+.line{stroke:#55779e;stroke-width:4;fill:none}
+.red{stroke:#c5523f;stroke-width:4;fill:none}
+.green{stroke:#2c8b57;stroke-width:4;fill:none}
+</style>
+<defs>
+<marker id="blue" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#55779e"/></marker>
+<marker id="redm" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#c5523f"/></marker>
+<marker id="greenm" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#2c8b57"/></marker>
+</defs>
+
+<text x="390" y="78" class="t title">Acquire：Agent 根據 observation 決定下一步</text>
+
+<!-- left stack -->
+<rect x="55" y="150" width="500" height="190" rx="18" fill="#f8fbff" stroke="#7aa4cf" stroke-width="2"/>
+<circle cx="108" cy="206" r="28" fill="#e7f1fb"/>
+<text x="94" y="215" class="t h" font-size="24">G</text>
+<text x="155" y="214" class="t h">Gather 提供的入口</text>
+<line x1="88" y1="242" x2="522" y2="242" stroke="#cbd5e1"/>
+<text x="88" y="292" class="t b">官網 / 社群 / 搜尋結果</text>
+
+<rect x="55" y="405" width="500" height="270" rx="18" fill="#f9fcfa" stroke="#78b894" stroke-width="2"/>
+<circle cx="108" cy="462" r="28" fill="#e6f6ec"/>
+<text x="96" y="471" class="t h" font-size="24">O</text>
+<text x="155" y="470" class="t h">先觀察目前頁面</text>
+<line x1="88" y1="498" x2="522" y2="498" stroke="#cbd5e1"/>
+<text x="88" y="545" class="t b">• static HTML 是否有內容？</text>
+<text x="88" y="590" class="t b">• 是否需要 browser rendering？</text>
+<text x="88" y="635" class="t b">• 有哪些連結值得往下？</text>
+
+<!-- agent -->
+<rect x="665" y="300" width="485" height="305" rx="20" fill="#f7f5ff" stroke="#8d86d8" stroke-width="2"/>
+<circle cx="725" cy="360" r="30" fill="#ece8ff"/>
+<text x="712" y="369" class="t h" font-size="24">A</text>
+<text x="785" y="370" class="t h">Agent 決定下一步</text>
+<rect x="710" y="420" width="395" height="48" rx="12" fill="#efedff"/>
+<text x="745" y="452" class="t b">直接讀 HTML</text>
+<rect x="710" y="480" width="395" height="48" rx="12" fill="#efedff"/>
+<text x="745" y="512" class="t b">改用 browser rendering</text>
+<rect x="710" y="540" width="395" height="48" rx="12" fill="#efedff"/>
+<text x="745" y="572" class="t b">展開新連結</text>
+
+<!-- right -->
+<rect x="1280" y="150" width="465" height="190" rx="18" fill="#fffaf1" stroke="#d6b36a" stroke-width="2"/>
+<circle cx="1335" cy="206" r="28" fill="#fff0cf"/>
+<text x="1324" y="215" class="t h" font-size="22">P</text>
+<text x="1382" y="214" class="t h">提交抓取計畫</text>
+<line x1="1310" y1="242" x2="1712" y2="242" stroke="#cbd5e1"/>
+<text x="1310" y="292" class="t b">哪些頁面值得正式抓取</text>
+
+<rect x="1280" y="405" width="465" height="200" rx="18" fill="#f8fbff" stroke="#7aa4cf" stroke-width="2"/>
+<circle cx="1335" cy="462" r="28" fill="#e7f1fb"/>
+<text x="1323" y="471" class="t h" font-size="22">C</text>
+<text x="1382" y="470" class="t h">Critique：資訊夠不夠？</text>
+<line x1="1310" y1="498" x2="1712" y2="498" stroke="#cbd5e1"/>
+<text x="1310" y="550" class="t b">判斷目前 evidence 是否足夠</text>
+
+<rect x="1320" y="735" width="385" height="115" rx="18" fill="#f3fbf6" stroke="#78b894" stroke-width="2"/>
+<circle cx="1375" cy="792" r="25" fill="#dff5e7"/>
+<text x="1365" y="801" class="t h" font-size="22">✓</text>
+<text x="1430" y="801" class="t h">交給後續流程</text>
+
+<!-- recovery -->
+<rect x="690" y="700" width="435" height="205" rx="18" fill="#fff7f4" stroke="#df8e7c" stroke-width="2"/>
+<circle cx="745" cy="755" r="28" fill="#fde7e1"/>
+<text x="733" y="765" class="t h" font-size="22">R</text>
+<text x="795" y="764" class="t h">有限 recovery</text>
+<line x1="720" y1="795" x2="1090" y2="795" stroke="#e2e8f0"/>
+<text x="720" y="835" class="t b">• 改用 rendering</text>
+<text x="720" y="870" class="t b">• 展開更多連結 / 補做搜尋</text>
+
+<!-- arrows -->
+<path d="M555 245 H610 Q635 245 635 345 V420 Q635 450 665 450" class="line" marker-end="url(#blue)"/>
+<path d="M555 540 H620 Q640 540 640 505 H665" class="line" marker-end="url(#blue)"/>
+
+<path d="M1150 390 H1205 Q1230 390 1230 245 H1280" class="line" marker-end="url(#blue)"/>
+<path d="M1512 340 V405" class="line" marker-end="url(#blue)"/>
+
+<path d="M1510 605 V735" class="green" marker-end="url(#greenm)"/>
+<text x="1530" y="680" class="t h" fill="#2c8b57" font-size="22">夠</text>
+
+<path d="M1280 545 H1215 Q1185 545 1185 690 Q1185 735 1125 735" class="red" marker-end="url(#redm)"/>
+<text x="1195" y="645" class="t h" fill="#c5523f" font-size="22">不足</text>
+
+<path d="M905 700 V650 Q905 625 930 625 V605" class="line" marker-end="url(#blue)"/>
+</svg>

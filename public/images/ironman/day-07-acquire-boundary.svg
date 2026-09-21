@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="760" viewBox="0 0 1500 760">
+  <rect width="1500" height="760" fill="#ffffff"/>
+  <style>
+    text{font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;fill:#263238}
+    .title{font-size:42px;font-weight:700}.head{font-size:30px;font-weight:700}.body{font-size:23px}.small{font-size:20px;fill:#60717a}.label{font-size:22px;font-weight:700}
+    .box{fill:#ffffff;stroke:#b7c3c9;stroke-width:2}.input{fill:#f4f7fb;stroke:#8db0dc;stroke-width:2}.mission{fill:#f2f8f5;stroke:#78aa9e;stroke-width:2}.output{fill:#fbf7f2;stroke:#c9a174;stroke-width:2}
+    .line{stroke:#80919a;stroke-width:3;fill:none}.footer{fill:#eef7f4}
+  </style>
+  <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#80919a"/></marker></defs>
+  <text x="70" y="78" class="title">Acquire 的任務邊界</text>
+
+  <rect x="70" y="135" rx="18" width="390" height="470" class="input"/>
+  <text x="105" y="188" class="head">輸入</text>
+  <text x="105" y="225" class="small">Agent 一開始已知的資訊</text>
+  <rect x="100" y="265" rx="12" width="330" height="95" class="box"/>
+  <text x="125" y="303" class="label">品牌基本資訊</text>
+  <text x="125" y="336" class="small">名稱與前一階段整理結果</text>
+  <rect x="100" y="390" rx="12" width="330" height="145" class="box"/>
+  <text x="125" y="428" class="label">已知網站來源</text>
+  <text x="125" y="462" class="small">官網、社群、電商等</text>
+  <text x="125" y="494" class="small">Gather 已整理出的入口</text>
+
+  <path d="M475 365 L545 365" class="line" marker-end="url(#arrow)"/>
+
+  <rect x="565" y="135" rx="18" width="390" height="470" class="mission"/>
+  <text x="600" y="188" class="head">任務</text>
+  <text x="600" y="225" class="small">在有限探索中找到需要的資料</text>
+  <rect x="595" y="265" rx="12" width="330" height="120" class="box"/>
+  <text x="620" y="303" class="label">判斷哪些來源值得讀</text>
+  <text x="620" y="337" class="small">依照要找的資訊選來源</text>
+  <text x="620" y="368" class="small">而不是把整個網站逛完</text>
+  <rect x="595" y="415" rx="12" width="330" height="120" class="box"/>
+  <text x="620" y="453" class="label">依觀察結果調整方向</text>
+  <text x="620" y="487" class="small">必要時更換讀取方式</text>
+  <text x="620" y="518" class="small">或繼續探索新的入口</text>
+
+  <path d="M970 365 L1040 365" class="line" marker-end="url(#arrow)"/>
+
+  <rect x="1060" y="135" rx="18" width="370" height="470" class="output"/>
+  <text x="1095" y="188" class="head">預期輸出</text>
+  <text x="1095" y="225" class="small">交給後續程式執行的抓取計畫</text>
+  <rect x="1090" y="265" rx="12" width="310" height="270" class="box"/>
+  <text x="1115" y="305" class="label">抓取計畫列出</text>
+  <text x="1115" y="353" class="body">• 要處理的來源</text>
+  <text x="1115" y="399" class="body">• 讀取方式</text>
+  <text x="1140" y="431" class="small">static / render / skip</text>
+  <text x="1115" y="478" class="body">• 選擇原因</text>
+  <text x="1115" y="516" class="small">知道下一步去哪裡、怎麼拿</text>
+
+  <rect x="70" y="645" rx="14" width="1360" height="62" class="footer"/>
+  <text x="750" y="685" text-anchor="middle" class="label" fill="#356f63">先定義任務，再反推 Agent 需要哪些工具</text>
+</svg>
