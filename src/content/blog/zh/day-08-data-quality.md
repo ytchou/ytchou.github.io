@@ -1,5 +1,5 @@
 ---
-title: "資料抓回來之後：先定義什麼叫做可用的資料"
+title: "格式正確還不夠：怎麼產生「可用」的資料"
 description: "抓到了資料、格式也符合 schema，就代表可以用嗎？從結構合規、內容正確到使用適切，拆解三個不同層次的資料品質問題。"
 day: 8
 chapter: 2
@@ -92,20 +92,7 @@ type ProductPageEvidence = {
 
 若我們可以窮舉完所有的情形，我們則可以用簡單的 classifier 來進行分類，這部分我們可以使用傳統的 machine learning classifier 或是用簡易的 AI 模型達成。任務本身通常不需要太多的 reasoning，因此也不需要使用太過複雜跟龐大的模型。
 
-這邊特別要留意的是，AI 仍然可能給出一個符合 Structured Outputs、但違反 taxonomy 階層關係的答案。以目前的分類為例，`fashion` 是 Level 1，`leather-shoes`（皮鞋）是其下的 Level 2，而「樂福鞋」只是 `leather-shoes` 的 alias。即使模型回傳的兩個欄位各自都是合法值，也不代表它們組合起來就是合法的父子關係，因此還是需要一段商品驗證來檢查 taxonomy：
-
-```typescript
-// 簡化 verifyClosedSets 的實作
-const sub = subcategoryBySlug(proposal.subcategory)
-
-if (sub == null) {
-  failures.push("unknown subcategory")
-} else if (sub.category !== proposal.category) {
-  failures.push("subcategory belongs to another category")
-}
-```
-
-這段 code 可以證明 `subcategory` 確實存在，而且屬於指定的 `category`；**但它不能證明商品 A 在語意上真的屬於這個 subcategory。** 這一類任務最合理的分工，是讓平台定義答案邊界、程式驗證固定關係；真正需要理解商品文字與分類語意的部分，再交給模型處理。
+這邊特別要留意的是，AI 仍然可能給出一個符合 Structured Outputs、但違反 taxonomy 階層關係的答案。以目前的分類為例，`fashion` 是 Level 1，`leather-shoes`（皮鞋）是其下的 Level 2，這邊還需要注意兩者之間的關係是否合理。即使模型回傳的兩個欄位各自都是合法值，也不代表它們組合起來就是合法的父子關係，因此還是需要一段邏輯來驗證來檢查這個階層關係。
 
 ### 2. Evidence-grounded synthesis（基於證據的內容整合）
 
