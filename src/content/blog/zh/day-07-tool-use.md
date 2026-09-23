@@ -18,7 +18,7 @@ notion: https://app.notion.com/p/patrickytc/Day-07-Tool-Use-Agent-3db0d2d793cf81
 
 這邊我們會用 Acquire 這個步驟來當作為主要案例討論該怎麼執行：Acquire 從前一個階段拿到品牌資訊與一組可能的網站來源，但它還不知道真正值得讀的資料在哪裡，也不知道每個網站應該用什麼方式才能拿到有效內容。這篇要處理的核心問題因此是：**當任務本身可以定義清楚，但執行路徑必須隨著當下資訊改變時，Agent 到底靠什麼能力決定下一步？**
 
-![Acquire 階段工作流程](/images/ironman/day-07-acquire-workflow-reminder.svg)
+![Acquire 階段工作流程](/images/ironman/day-07-acquire-workflow-reminder.png)
 
 而讓模型能把這種判斷真正轉成行動的關鍵，就是接下來要談的 **Tool Use**。
 
@@ -37,7 +37,7 @@ notion: https://app.notion.com/p/patrickytc/Day-07-Tool-Use-Agent-3db0d2d793cf81
 
 釐清這些名詞之後，接下來真正重要的是 Tool Use 如何改變模型的執行方式。先把它濃縮成一個最基本的互動迴圈：
 
-![規則式流程 vs Agent 迴圈](/images/ironman/day-07-rules-vs-agent.svg)
+![規則式流程 vs Agent 迴圈](/images/ironman/day-07-rules-vs-agent.png)
 
 有了這個迴圈，模型就能根據每次工具回傳的新資訊調整下一步，而不需要沿著開發者事先寫好的固定流程前進。
 
@@ -55,7 +55,7 @@ notion: https://app.notion.com/p/patrickytc/Day-07-Tool-Use-Agent-3db0d2d793cf81
 - **任務**：根據後續需要的資訊，在有限的探索額度內判斷哪些來源值得繼續讀；過程中可以依新的觀察結果改變探索方向，目標不是逛完整個網站，而是針對性地找到需要的資料。
 - **預期輸出**：一份可以交給後續程式執行的抓取計畫，列出要處理的來源、讀取方式與選擇原因。這一步完成的是「知道接下來去哪裡、怎麼拿」，還不是整理完成的品牌或商品資料。
 
-![Acquire 階段的邊界定義](/images/ironman/day-07-acquire-boundary.svg)
+![Acquire 階段的邊界定義](/images/ironman/day-07-acquire-boundary.png)
 
 這裡會一個疑問：**既然 Agent 已經知道該怎麼抓取資訊，為什麼不讓它在探索階段直接抓取資料？**
 
