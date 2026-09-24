@@ -1,5 +1,5 @@
 ---
-title: "從來源資料到商品敘述：用 LLM 做內容整合"
+title: "從固定模板到自由生成：怎麼生成可信的商品敘述？"
 description: "商品敘述沒有唯一正確答案，但每一項事實都必須來自來源。從模板到 LLM，拆解 evidence-grounded synthesis 的提示詞設計與版本管理。"
 day: 10
 chapter: 2
