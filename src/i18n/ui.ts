@@ -95,7 +95,7 @@ export const ui = {
     'contact.coffee': '喝咖啡聊聊',
     'contact.coffee-body': '歡迎聊軟體、專案或職涯建議。',
     'contact.book': '預約咖啡聊聊',
-    'contact.link.email': 'Email',
+    'contact.link.email': '電子郵件',
     'contact.link.github': 'GitHub',
     'contact.link.linkedin': 'LinkedIn',
   },

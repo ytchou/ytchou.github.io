@@ -6,11 +6,16 @@ test('Given a Mandarin visitor, when they browse the curated homepage, then each
 
   await expect(page.getByRole('heading', { level: 1, name: 'Patrick C.' })).toBeVisible();
   await expect(page.getByText('Data Science, AI Workflows, and Product Analytics', { exact: true })).toBeVisible();
-  await expect(page.getByText('台灣資料科學家，用數據打造有意義的事。', { exact: true })).toBeVisible();
   const main = page.getByRole('main');
-  const email = main.getByRole('link', { name: 'Email', exact: true });
+  const email = main.getByRole('link', { name: '電子郵件', exact: true });
   await expect(email).toHaveAttribute('href', 'mailto:patrick.ytchou@gmail.com');
   await expect(email).not.toHaveAttribute('target', '_blank');
+  for (const label of ['LinkedIn', 'GitHub', '電子郵件']) {
+    const link = main.getByRole('link', { name: label, exact: true });
+    await link.hover();
+    await expect(link.locator('.social-icon-tooltip')).toBeVisible();
+    await expect(link.locator('.social-icon-tooltip')).toHaveText(label);
+  }
   for (const label of ['GitHub', 'LinkedIn']) {
     const link = main.getByRole('link', { name: label, exact: true });
     await expect(link).toHaveAttribute('target', '_blank');
@@ -28,6 +33,12 @@ test('Given a Mandarin visitor, when they browse the curated homepage, then each
   const homeCount = await homeRows.count();
   expect(homeCount).toBeGreaterThan(0);
   expect(homeCount).toBeLessThanOrEqual(3);
+  const zhHomeDate = homeRows.first().locator('time');
+  const zhHomeDateTime = await zhHomeDate.getAttribute('datetime');
+  expect(zhHomeDateTime).not.toBeNull();
+  await expect(zhHomeDate).toHaveText(new Intl.DateTimeFormat('zh-TW', {
+    year: 'numeric', month: 'long', day: 'numeric',
+  }).format(new Date(zhHomeDateTime!)));
   await expect(homeRows.first().locator('.post-series')).toHaveText('系列鐵人賽');
   await expect(homeRows.first().locator('[data-post-title]')).toHaveText(/^Day \d+ \| .+/);
 
@@ -41,6 +52,8 @@ test('Given a Mandarin visitor, when they browse the curated homepage, then each
   await expect(page.getByRole('heading', { level: 3, name: 'Cardio Slot' })).toBeVisible();
   await expect(page.getByRole('heading', { level: 3, name: '設計', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { level: 3, name: 'AI 安全與漏洞工程' })).toBeVisible();
+  await expect(page.getByText('主題', { exact: true })).toHaveCount(2);
+  await expect(page.getByText(/主題 0\d/)).toHaveCount(0);
   const designTopic = page.getByRole('link').filter({ has: page.getByRole('heading', { level: 3, name: '設計', exact: true }) });
   const securityTopic = page.getByRole('link').filter({ has: page.getByRole('heading', { level: 3, name: 'AI 安全與漏洞工程' }) });
   await expect(designTopic).toHaveAttribute('href', '/resources/design');
@@ -55,7 +68,7 @@ test('Given a Mandarin visitor, when they browse the curated homepage, then each
   const footer = page.getByRole('contentinfo');
   await expect(footer).toContainText(`© ${new Date().getFullYear()} Patrick C.`);
   await expect(footer.getByRole('link', { name: '聯絡', exact: true })).toHaveCount(0);
-  const footerEmail = footer.getByRole('link', { name: 'Email', exact: true });
+  const footerEmail = footer.getByRole('link', { name: '電子郵件', exact: true });
   await expect(footerEmail).toHaveAttribute('href', 'mailto:patrick.ytchou@gmail.com');
   await expect(footerEmail).not.toHaveAttribute('target', '_blank');
   const github = footer.getByRole('link', { name: 'GitHub', exact: true });
@@ -89,8 +102,13 @@ test('Given an English visitor, when they browse the curated homepage, then Chin
 
   await expect(page.getByRole('heading', { level: 1, name: 'Patrick C.' })).toBeVisible();
   await expect(page.getByText('Data Science, AI Workflows, and Product Analytics', { exact: true })).toBeVisible();
-  await expect(page.getByText('Data Scientist based in Taiwan. Building what matters.', { exact: true })).toBeVisible();
   const main = page.getByRole('main');
+  for (const label of ['LinkedIn', 'GitHub', 'Email']) {
+    const link = main.getByRole('link', { name: label, exact: true });
+    await link.hover();
+    await expect(link.locator('.social-icon-tooltip')).toBeVisible();
+    await expect(link.locator('.social-icon-tooltip')).toHaveText(label);
+  }
   await expect(main.getByRole('link', { name: 'Email', exact: true })).toHaveAttribute('href', 'mailto:patrick.ytchou@gmail.com');
   await expect(main.getByRole('link', { name: 'GitHub', exact: true })).toHaveAttribute('href', 'https://github.com/ytchou');
   await expect(main.getByRole('link', { name: 'LinkedIn', exact: true })).toHaveAttribute('href', 'https://linkedin.com/in/ytchou');
@@ -99,6 +117,12 @@ test('Given an English visitor, when they browse the curated homepage, then Chin
   const homeCount = await homeRows.count();
   expect(homeCount).toBeGreaterThan(0);
   expect(homeCount).toBeLessThanOrEqual(3);
+  const enHomeDate = homeRows.first().locator('time');
+  const enHomeDateTime = await enHomeDate.getAttribute('datetime');
+  expect(enHomeDateTime).not.toBeNull();
+  await expect(enHomeDate).toHaveText(new Intl.DateTimeFormat('en-US', {
+    year: 'numeric', month: 'long', day: 'numeric',
+  }).format(new Date(enHomeDateTime!)));
   for (const row of await homeRows.all()) {
     await expect(row).toHaveAttribute('data-post-source-lang', 'zh');
   }
@@ -114,6 +138,8 @@ test('Given an English visitor, when they browse the curated homepage, then Chin
   await expect(hero.getByRole('listitem').first()).toContainText('back in Taiwan — building and writing at the intersection of AI × data');
   await expect(page.getByRole('heading', { level: 3, name: 'Design' })).toBeVisible();
   await expect(page.getByRole('heading', { level: 3, name: 'AI security and vulnerability engineering' })).toBeVisible();
+  await expect(page.getByText('Topic', { exact: true })).toHaveCount(2);
+  await expect(page.getByText(/Topic 0\d/)).toHaveCount(0);
   const designTopic = page.getByRole('link').filter({ has: page.getByRole('heading', { level: 3, name: 'Design' }) });
   const securityTopic = page.getByRole('link').filter({ has: page.getByRole('heading', { level: 3, name: 'AI security and vulnerability engineering' }) });
   await expect(designTopic).toHaveAttribute('href', '/en/resources/design');
@@ -169,6 +195,12 @@ test('Given a visitor exploring the portfolio, destination pages use Patrick’s
   await expect(page.getByRole('heading', { level: 1, name: '鐵人賽', exact: true })).toBeVisible();
   await expect(page.getByText(/這裡有我寫過的 \d+ 篇相關文章。/)).toBeVisible();
   await expect(page.getByText('標籤', { exact: true })).toHaveCount(0);
+
+  await page.goto('/blog/day-06-structured-outputs');
+  const postHeader = page.locator('article > header');
+  await expect(postHeader.locator('time')).toHaveText('2026年9月20日');
+  await expect(postHeader.locator('.post-series')).toHaveText('系列鐵人賽');
+  await expect(postHeader.getByText(/第 \d+ 章/)).toHaveCount(0);
 
   await page.goto('/blog/day-01-why-this-series');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Day 1 | 挑戰用 30 天利用 Side Project 學習 AI Agents');

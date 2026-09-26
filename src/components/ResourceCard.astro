@@ -1,6 +1,7 @@
 ---
 import type { ResourceEntry } from '../services/resources';
 import type { Lang } from '../i18n/ui';
+import CardShell from './CardShell.astro';
 
 interface Props {
   resource: ResourceEntry;
@@ -18,76 +19,36 @@ const { data } = resource;
 const linkLabel = `${labels.visit} ${data.name} (${labels.opensNewTab})`;
 ---
 
-<article class="resource-card">
-  <a
-    href={data.url}
-    target="_blank"
-    rel="noopener noreferrer"
-    class="resource-card-link"
-    aria-label={linkLabel}
-  >
-    <div class="resource-image-wrap" data-resource-image>
-      <img
-        src={data.screenshot}
-        alt={`${data.name} ${labels.preview}`}
-        width="1280"
-        height="800"
-        loading="lazy"
-        decoding="async"
-      />
+<CardShell href={data.url} external className="resource-card" ariaLabel={linkLabel}>
+  <img
+    slot="media"
+    data-resource-image
+    class="resource-image"
+    src={data.screenshot}
+    alt={`${data.name} ${labels.preview}`}
+    width="1280"
+    height="800"
+    loading="lazy"
+    decoding="async"
+  />
+  <div class="resource-body">
+    <div class="resource-heading">
+      <h3>{data.name}<span aria-hidden="true"> ↗</span></h3>
     </div>
-    <div class="resource-body">
-      <div class="resource-heading">
-        <h3>{data.name}<span aria-hidden="true"> ↗</span></h3>
-      </div>
-      <p class="resource-description">{data.description[lang]}</p>
-      <p class="resource-best-for"><strong>{labels.bestFor}</strong> {data.bestFor[lang]}</p>
-      <ul class="resource-tags" aria-label={`${data.name} tags`}>
-        {data.tags.map(tag => <li class="tag">{tag}</li>)}
-      </ul>
-    </div>
-  </a>
-</article>
+    <p class="resource-description">{data.description[lang]}</p>
+    <p class="resource-best-for"><strong>{labels.bestFor}</strong> {data.bestFor[lang]}</p>
+    <ul class="resource-tags" aria-label={`${data.name} tags`}>
+      {data.tags.map(tag => <li class="tag">{tag}</li>)}
+    </ul>
+  </div>
+</CardShell>
 
 <style>
-  .resource-card {
-    min-width: 0;
-    overflow: hidden;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-card);
-    background: transparent;
-    box-shadow: var(--shadow-card);
-    transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base), background var(--transition-base);
-  }
-  .resource-card:hover,
-  .resource-card:focus-within {
-    background: var(--color-surface);
-    border-color: var(--color-border-hover);
-    box-shadow: var(--shadow-card-hover);
-    transform: translateY(-3px);
-  }
-  .resource-card-link { display: flex; flex-direction: column; height: 100%; color: inherit; text-decoration: none; }
-  .resource-card-link:focus-visible { outline: 2px solid var(--color-accent); outline-offset: -2px; }
-  .resource-image-wrap {
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
-    border-bottom: 1px solid var(--color-border);
-    background: var(--color-surface);
-  }
-  .resource-image-wrap img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: top;
-    transition: transform 400ms ease;
-  }
-  .resource-card:hover .resource-image-wrap img,
-  .resource-card:focus-within .resource-image-wrap img { transform: scale(1.03); }
-  .resource-body { display: flex; flex: 1; flex-direction: column; padding: 1.25rem; }
+  .resource-image { object-position: top; }
+  .resource-body { display: flex; flex: 1; flex-direction: column; }
   .resource-heading h3 { margin: 0; font-size: 1.25rem; font-weight: 600; line-height: 1.35; }
   .resource-heading { min-height: 48px; color: var(--color-text); transition: opacity var(--transition-base); }
-  .resource-card:hover .resource-heading { opacity: 0.7; }
+  :global(.resource-card:hover) .resource-heading { opacity: 0.7; }
   .resource-description,
   .resource-best-for { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
   .resource-description { margin: 0.5rem 0 0; color: var(--color-text-secondary); font-size: 0.9375rem; line-height: 1.65; }
@@ -97,10 +58,10 @@ const linkLabel = `${labels.visit} ${data.name} (${labels.opensNewTab})`;
 
   /* List view — dropping the screenshot is the point: it makes the page scannable,
      and because the img is lazy it is never fetched while hidden. */
-  :global([data-catalog-view='list']) .resource-image-wrap { display: none; }
-  :global([data-catalog-view='list']) .resource-card:hover,
-  :global([data-catalog-view='list']) .resource-card:focus-within { transform: none; }
-  :global([data-catalog-view='list']) .resource-body { padding: 1rem 1.25rem; }
+  :global([data-catalog-view='list']) :global(.card-shell-media) { display: none; }
+  :global([data-catalog-view='list']) :global(.resource-card:hover),
+  :global([data-catalog-view='list']) :global(.resource-card:focus-within) { transform: none; }
+  :global([data-catalog-view='list']) :global(.card-shell-body) { min-height: 0; padding: 1rem 1.25rem; }
   :global([data-catalog-view='list']) .resource-heading h3 { font-size: 1.0625rem; }
   :global([data-catalog-view='list']) .resource-heading { min-height: 32px; }
   :global([data-catalog-view='list']) .resource-description { margin-top: 0.25rem; font-size: 0.875rem; }
@@ -108,7 +69,6 @@ const linkLabel = `${labels.visit} ${data.name} (${labels.opensNewTab})`;
   :global([data-catalog-view='list']) .resource-tags { margin-top: 0.6rem; padding-top: 0; }
 
   @media (prefers-reduced-motion: reduce) {
-    .resource-card, .resource-image-wrap img { transition: none; }
-    .resource-card:hover, .resource-card:focus-within { transform: none; }
+    .resource-heading { transition: none; }
   }
 </style>

@@ -2,6 +2,7 @@
 import BaseLayout from './BaseLayout.astro';
 import { SITE_TITLE } from '../consts';
 import type { Lang } from '../i18n/ui';
+import PostMeta from '../components/PostMeta.astro';
 
 interface TocEntry {
   depth: number;
@@ -23,7 +24,6 @@ interface Props {
   lang?: Lang;
   series?: string;
   day?: number;
-  chapter?: number;
   toc?: TocEntry[];
   prevPost?: PostLink | null;
   nextPost?: PostLink | null;
@@ -31,12 +31,9 @@ interface Props {
 }
 const {
   title, description, date, tags, lang = 'en',
-  series, day, chapter, toc = [], prevPost, nextPost, totalDays = 30,
+  series, day, toc = [], prevPost, nextPost, totalDays = 30,
 } = Astro.props;
 
-const formatted = date.toLocaleDateString(lang === 'zh' ? 'zh-TW' : 'en-US', {
-  year: 'numeric', month: 'long', day: 'numeric'
-});
 const langPrefix = lang === 'en' ? 'en/' : '';
 const alternateBlogIndex = lang === 'zh' ? '/en/blog' : '/blog';
 const backHref = series
@@ -59,21 +56,13 @@ const pageTitle = `${displayTitle} — ${SITE_TITLE}`;
     <a href={backHref} class="back-link">{backLabel}</a>
     <header class="mb-10 pb-8 border-b" style="border-color: var(--color-border);">
       <h1 class="post-title">{displayTitle}</h1>
-      <div class="flex items-center gap-4 flex-wrap">
-        <time class="post-date" datetime={date.toISOString()}>{formatted}</time>
-        {series && chapter != null && (
-          <span class="post-tag">{`第 ${chapter} 章`}</span>
-        )}
-        {tags.length > 0 && (
-          <ul class="flex flex-wrap gap-1.5 list-none p-0 m-0">
-            {tags.map(tag => (
-              <li>
-                <a href={`/${langPrefix}blog/tag/${tag}`} class="post-tag">{tag}</a>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      <PostMeta
+        date={date}
+        lang={lang}
+        tags={tags}
+        isSeries={Boolean(series)}
+        tagHrefBase={`/${langPrefix}blog/tag`}
+      />
     </header>
 
     {series && (
@@ -156,28 +145,6 @@ const pageTitle = `${displayTitle} — ${SITE_TITLE}`;
     line-height: 1.1;
     color: var(--color-text);
     margin: 0 0 0.75rem;
-  }
-
-  .post-date {
-    font-size: 0.875rem;
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    color: var(--color-text-subtle);
-  }
-
-  .post-tag {
-    font-size: 0.6875rem;
-    font-weight: 500;
-    padding: 0.25rem 0.625rem;
-    border-radius: 9999px;
-    border: 1px solid var(--color-border-strong);
-    color: var(--color-text-secondary);
-    background: transparent;
-    text-decoration: none;
-    transition: color 150ms ease, border-color 150ms ease;
-  }
-  a.post-tag:hover {
-    color: var(--color-text);
-    border-color: var(--color-text);
   }
 
   /* Series card */

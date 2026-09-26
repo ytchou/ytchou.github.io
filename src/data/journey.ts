@@ -11,13 +11,13 @@ export const milestones: Milestone[] = [
     hash: 'HEAD',
     description: 'back in Taiwan — building and writing at the intersection of AI × data',
     descriptionZh: '回到台灣，在 AI x 資料科學領域深耕與探索',
-    year: 'NOW',
+    year: 2026,
     isHead: true,
   },
   {
     hash: 'a3f9c12',
-    description: 'full-time data scientist in the US',
-    descriptionZh: '在美國擔任全職資料科學家',
+    description: 'full-time data scientist in San Francisco',
+    descriptionZh: '在舊金山擔任全職資料科學家',
     year: 2023,
   },
   {
