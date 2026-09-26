@@ -2,6 +2,7 @@
 import type { Project } from '../data/projects';
 import type { Lang } from '../i18n/ui';
 import { Image } from 'astro:assets';
+import CardShell from './CardShell.astro';
 
 interface Props {
   project: Project;
@@ -9,75 +10,50 @@ interface Props {
 }
 const { project, lang = 'en' } = Astro.props;
 const destination = project.liveUrl ?? project.githubUrl;
-if (!destination) throw new Error(`Project "${project.title}" needs a liveUrl or githubUrl.`);
+if (!destination && !project.inDevelopment) throw new Error(`Project "${project.title}" needs a liveUrl or githubUrl.`);
+const statusLabel = lang === 'zh' ? '開發中' : 'In development';
 ---
 
-<article class="project-card group">
-  <a href={destination} target="_blank" rel="noopener noreferrer" class="project-card-link">
-    {project.image && (
-      <div class="project-image-wrap">
-        <Image src={project.image} alt={project.title} class="project-image" width={800} height={450} />
-      </div>
-    )}
-    <div class="project-body">
-      <h3 class="project-title font-semibold mt-0 transition-colors">{project.title}<span aria-hidden="true"> ↗</span></h3>
-      <p class="project-desc text-sm leading-relaxed flex-1">{lang === 'zh' && project.descriptionZh ? project.descriptionZh : project.description}</p>
-      <ul class="flex flex-wrap gap-1.5 list-none p-0 m-0">
-        {project.tags.map(tag => (
-          <li class="tag">{tag}</li>
-        ))}
-      </ul>
+<CardShell href={destination} external={Boolean(destination)} className="project-card">
+  {project.image && (
+    <div slot="media" class="project-media">
+      <Image src={project.image} alt={project.title} class="project-image" width={800} height={450} />
+      {project.inDevelopment && <span class="project-status">{statusLabel}</span>}
     </div>
-  </a>
-</article>
+  )}
+  <div class="project-body">
+    <h3 class="project-title font-semibold mt-0 transition-colors">{project.title}{destination && <span aria-hidden="true"> ↗</span>}</h3>
+    <p class="project-desc text-sm leading-relaxed flex-1">{lang === 'zh' && project.descriptionZh ? project.descriptionZh : project.description}</p>
+    <ul class="flex flex-wrap gap-1.5 list-none p-0 m-0">
+      {project.tags.map(tag => (
+        <li class="tag">{tag}</li>
+      ))}
+    </ul>
+  </div>
+</CardShell>
 
 <style>
-  .project-image-wrap {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
-    border-bottom: 1px solid var(--color-border);
+  .project-media { position: relative; width: 100%; height: 100%; }
+  .project-status {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    padding: 0.3rem 0.55rem;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 9999px;
+    background: color-mix(in srgb, var(--color-bg) 90%, transparent);
+    color: var(--color-text-secondary);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    line-height: 1.2;
+    backdrop-filter: blur(6px);
   }
-  .project-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform 400ms ease;
-  }
-  .project-card:hover .project-image {
-    transform: scale(1.03);
-  }
-
-  .project-card {
-    background: transparent;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-card);
-    box-shadow: var(--shadow-card);
-    overflow: hidden;
-    transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base), background var(--transition-base);
-  }
-  .project-card:hover {
-    background: var(--color-surface);
-    border-color: var(--color-border-hover);
-    box-shadow: var(--shadow-card-hover);
-    transform: translateY(-3px);
-  }
-  .project-card:focus-within {
-    background: var(--color-surface);
-    border-color: var(--color-border-hover);
-    box-shadow: var(--shadow-card-hover);
-    transform: translateY(-3px);
-  }
-  .project-card-link { display: flex; flex-direction: column; height: 100%; color: inherit; text-decoration: none; }
-  .project-card-link:focus-visible { outline: 2px solid var(--color-accent); outline-offset: -2px; }
-  .project-body { display: flex; flex: 1; flex-direction: column; gap: 0.75rem; padding: 1.25rem; }
+  .project-body { display: flex; flex: 1; flex-direction: column; gap: 0.75rem; }
   .project-title { color: var(--color-text); transition: opacity var(--transition-base); }
-  .project-card:hover .project-title,
-  .project-card:focus-within .project-title { opacity: 0.7; }
+  :global(.project-card:not(.card-shell--static):hover) .project-title,
+  :global(.project-card:not(.card-shell--static):focus-within) .project-title { opacity: 0.7; }
   .project-desc { color: var(--color-text-muted); }
   @media (prefers-reduced-motion: reduce) {
-    .project-card, .project-image { transition: none; }
-    .project-card:hover, .project-card:focus-within { transform: none; }
+    .project-title { transition: none; }
   }
 </style>

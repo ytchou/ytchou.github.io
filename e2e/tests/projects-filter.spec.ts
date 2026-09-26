@@ -4,18 +4,20 @@ import { expect, test } from '@playwright/test';
 // Project tags overlap, so chips carry no counts and there is no group/section layer —
 // this exercises the flat-catalog path through the same shared script.
 
-for (const { name, path, allLabel, cardioDescription } of [
+for (const { name, path, allLabel, cardioDescription, developmentLabel } of [
   {
     name: 'zh',
     path: '/projects',
     allLabel: '所有',
     cardioDescription: '以拉霸機概念設計的有氧訓練產生器，組合訓練重點、節奏、收尾、時間、暖身與緩和，快速建立多變的跑步機課表。',
+    developmentLabel: '開發中',
   },
   {
     name: 'en',
     path: '/en/projects',
     allLabel: 'All',
     cardioDescription: 'A slot-machine-inspired workout generator that builds varied treadmill sessions by combining focus, pattern, finish, duration, warm-up, and cooldown options.',
+    developmentLabel: 'In development',
   },
 ]) {
   test.describe(`projects tag filter (${name})`, () => {
@@ -71,6 +73,16 @@ for (const { name, path, allLabel, cardioDescription } of [
       await expect(links).toHaveAttribute('target', '_blank');
       await expect(links).toHaveAttribute('rel', 'noopener noreferrer');
       await expect(project).not.toContainText(/GitHub|展示|Live/);
+    });
+
+    test('Cardio Slot leads the catalog while Formoria is visibly in development and not linked', async ({ page }) => {
+      const projects = page.locator('[data-filter-item]');
+      await expect(projects.nth(0).getByRole('heading')).toHaveText('Cardio Slot ↗');
+      await expect(projects.nth(1).getByRole('heading')).toHaveText('Formoria');
+
+      const formoria = projects.filter({ has: page.getByRole('heading', { name: 'Formoria', exact: true }) });
+      await expect(formoria).toContainText(developmentLabel);
+      await expect(formoria.getByRole('link')).toHaveCount(0);
     });
   });
 }

@@ -1,0 +1,88 @@
+---
+interface Props {
+  href?: string;
+  className?: string;
+  external?: boolean;
+  ariaLabel?: string;
+}
+
+const { href, className, external = false, ariaLabel } = Astro.props;
+const hasMedia = Astro.slots.has('media');
+const Wrapper = href ? 'a' : 'div';
+---
+
+<article class:list={['card-shell', !href && 'card-shell--static', className]}>
+  <Wrapper
+    href={href}
+    target={href && external ? '_blank' : undefined}
+    rel={href && external ? 'noopener noreferrer' : undefined}
+    class="card-shell-link"
+    aria-label={ariaLabel}
+  >
+    {hasMedia && (
+      <div class="card-shell-media">
+        <slot name="media" />
+      </div>
+    )}
+    <div class="card-shell-body">
+      <slot />
+    </div>
+  </Wrapper>
+</article>
+
+<style>
+  .card-shell {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: transparent;
+    box-shadow: var(--shadow-card);
+    transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base), background var(--transition-base);
+  }
+  .card-shell:not(.card-shell--static):hover,
+  .card-shell:not(.card-shell--static):focus-within {
+    border-color: var(--color-border-hover);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-3px);
+  }
+  .card-shell-link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+  }
+  .card-shell-link:focus-visible { outline: 2px solid var(--color-accent); outline-offset: -2px; }
+  .card-shell-media {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+  .card-shell-media :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 400ms ease;
+  }
+  .card-shell:not(.card-shell--static):hover .card-shell-media :global(img),
+  .card-shell:not(.card-shell--static):focus-within .card-shell-media :global(img) { transform: scale(1.03); }
+  .card-shell-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 12rem;
+    padding: 1.25rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card-shell, .card-shell-media :global(img) { transition: none; }
+    .card-shell:not(.card-shell--static):hover,
+    .card-shell:not(.card-shell--static):focus-within { transform: none; }
+    .card-shell:not(.card-shell--static):hover .card-shell-media :global(img),
+    .card-shell:not(.card-shell--static):focus-within .card-shell-media :global(img) { transform: none; }
+  }
+</style>
