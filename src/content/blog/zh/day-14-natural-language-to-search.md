@@ -1,5 +1,5 @@
 ---
-title: "從一句需求到搜尋請求：自然語言怎麼接進搜尋系統？"
+title: "從一句需求到搜尋：自然語言怎麼接進搜尋系統？"
 description: "使用者輸入一句自然語言，搜尋系統怎麼同時保留語意並整理出結構化條件？從意圖解析與 embedding 並行，到手動篩選與系統推斷的合併。"
 day: 14
 chapter: 3
@@ -16,11 +16,9 @@ notion: https://app.notion.com/p/patrickytc/Day-14-3b10d2d793cf81fa9796ec33eea87
 
 假設使用者想找這樣的商品：
 
-> **想找一個適合露營用的隨行杯，最好是不鏽鋼、風格簡單，預算大概兩千元，而且不要玻璃。**
+> **想找一個適合露營用的隨行杯，最好是不鏽鋼、風格簡單。**
 
-這句話很符合人的思考方式：用途、材質、風格、預算和排除條件，很自然地被放在同一句話裡。但搜尋系統真正要使用這段資訊時，不能只把整句話當成一個字串丟進去。
-
-這篇文章想處理的是：**一段自然語言進入搜尋系統後，哪些資訊要拿來判斷「相關不相關」，哪些又可以變成明確的篩選條件。**
+這句話很符合人的思考方式：用途、材質和風格，很自然地被放在同一句話裡。但搜尋系統真正要使用這段資訊時並沒有想像中簡單。這篇文章想處理的是：**一段自然語言進入搜尋系統後，哪些資訊要拿來判斷「相關不相關」，哪些又可以變成明確的篩選條件。**
 
 ---
 
@@ -58,11 +56,11 @@ notion: https://app.notion.com/p/patrickytc/Day-14-3b10d2d793cf81fa9796ec33eea87
 
 ![自然語言進入搜尋後，完整原句會同時走意圖解析與 embedding 兩條路徑。](/images/ironman/day-14-query-flow.png)
 
-## 先處理篩選：Intent Parser 把明確資訊轉成結構化條件
+## 先看篩選這條路：Intent Parser 把明確資訊轉成結構化條件
 
 意圖解析器（Intent Parser）的工作，不是搜尋商品，也不是重寫使用者原本的句子，而是從完整 query 裡找出目前資料模型已經能夠明確表示的資訊。以本文的例子來說，「隨行杯」有機會對應到既有的 `subcategory`，「不鏽鋼」則有機會對應到 `material` 的類別。
 
-目前的流程會把既有 taxonomy 放進 system prompt，明確要求模型只能從現有分類與材質中選擇，不確定時就留空，模型的輸出再透過 Structured Outputs 與 Zod schema 驗證。
+目前的流程會把既有的 L1 / L2 分類與材質清單放進 system prompt，明確要求模型只能從這些既有值中選擇，不確定時就留空；模型的輸出再透過 Structured Outputs 與 Zod schema 驗證。
 
 把實作簡化後，大致可以理解成：
 
@@ -74,7 +72,7 @@ const intentParseShape = z.object({
 });
 
 const result = await client.chat({
-  system: SYSTEM_PROMPT, // 只提供既有 taxonomy
+  system: SYSTEM_PROMPT, // 提供既有分類與材質清單
   user: query,
   schema: INTENT_PARSE_JSON_SCHEMA,
   json: true,
@@ -86,7 +84,7 @@ if (!parsed.success) return null;
 return validateSubcategory(parsed.data);
 ```
 
-也就是說，LLM 負責判斷自然語言和既有 taxonomy 的對應關係，程式則負責限制「哪些答案可以被接受」。解析成功後，一個**可能的示意結果**會是：
+也就是說，LLM 負責判斷自然語言和既有分類、材質清單之間的對應關係，程式則負責限制「哪些答案可以被接受」。解析成功後，一個**可能的示意結果**會是：
 
 ```typescript
 {
@@ -104,7 +102,7 @@ return validateSubcategory(parsed.data);
 
 ![Embedding 把完整文字轉成向量表示，讓系統可以比較 query 與商品內容在語意上的距離。](/images/ironman/day-14-embedding-concept.png)
 
-例如使用者搜尋「適合露營、風格簡單的隨行杯」，某個商品介紹裡不一定真的出現「露營」兩個字，但如果它描述的是輕量、戶外攜帶、保溫等特徵，向量表示仍然有機會判斷它和這個需求接近。
+例如使用者搜尋「適合露營、風格簡單的隨行杯」，某個商品介紹裡不一定真的出現「露營」兩個字，但如果它描述的是輕量、戶外攜帶、保溫等特徵，即使兩段文字沒有完全相同的關鍵字，它們的向量表示仍可能彼此接近，讓後續的檢索系統把這件商品找出來。
 
 ## 實作上，Intent Parser 和 embedding 是並行的
 
@@ -141,4 +139,4 @@ const rpcParams = {
 
 下一篇會沿著 embedding 這條路繼續往下走。當 query 被轉成向量表示之後，我們就可以把它和商品的向量表示拿來比較，這會形成 **vector retrieval（向量檢索）**：用語意距離找出和需求比較接近的候選商品。
 
-不過實際的 Retrieval 並不只靠 embedding。精確的字詞仍然很有價值，因此系統還會保留 **lexical retrieval（文字檢索）**。下一篇會從這兩種檢索方式開始，看看它們各自擅長什麼、會漏掉什麼，以及最後怎麼透過 Hybrid Retrieval 把兩邊的候選結果合併起來。
+不過實際的 Retrieval 並不只靠 embedding，精確的字詞仍然很有價值，因此系統還會保留 **lexical retrieval（文字檢索）**。下一篇會從這兩種檢索方式開始，看看它們各自擅長什麼、會漏掉什麼，以及最後怎麼透過 Hybrid Retrieval 把兩邊的候選結果合併起來。
