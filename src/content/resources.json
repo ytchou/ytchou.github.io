@@ -190,6 +190,25 @@
     "screenshotCapturedDate": "2026-07-26"
   },
   {
+    "id": "inspo",
+    "group": "interface-web-inspiration",
+    "name": "Inspo",
+    "url": "https://inspomcp.dev/",
+    "screenshot": "/images/resources/catalogs/inspo.webp",
+    "tags": ["live sites", "agent-ready", "open source"],
+    "description": {
+      "en": "A free, MIT-licensed archive of 832 production websites and 2,320 screens, searchable in the browser or through an MCP server your coding agent can query.",
+      "zh": "免費且採 MIT 授權的資料庫，收錄 832 個正式上線網站、共 2,320 張畫面，可在瀏覽器中搜尋，也能透過 MCP server 讓 coding agent 直接查詢。"
+    },
+    "bestFor": {
+      "en": "Giving a coding agent real-world layout references to work from, instead of describing the look you want from memory.",
+      "zh": "讓 coding agent 直接參考真實網站的版面，而不是憑記憶描述想要的樣子。"
+    },
+    "addedDate": "2026-10-04",
+    "lastCheckedDate": "2026-10-04",
+    "screenshotCapturedDate": "2026-10-04"
+  },
+  {
     "id": "posts-design",
     "group": "brand-editorial-social",
     "name": "posts.design",
@@ -457,6 +476,25 @@
     "screenshotCapturedDate": "2026-08-21"
   },
   {
+    "id": "halaska-ui",
+    "group": "component-discovery",
+    "name": "Halaska UI",
+    "url": "https://ui.halaska.com/",
+    "screenshot": "/images/resources/catalogs/halaska-ui.webp",
+    "tags": ["AI interfaces", "shadcn", "open source"],
+    "description": {
+      "en": "A free, MIT-licensed React UI kit for AI products, shipped as a single file on top of shadcn/ui, with 40 agent UX patterns such as approval, permissions, checkpoints, and handoff, plus 77 components.",
+      "zh": "免費且採 MIT 授權、專為 AI 產品打造的 React UI kit，以單一檔案建構於 shadcn/ui 之上，收錄 40 種 agent UX 模式（如審核、權限、檢查點與交接）及 77 個元件。"
+    },
+    "bestFor": {
+      "en": "Designing the trust and control moments of an agent product, like plans, approvals, and streaming states, without inventing each pattern from scratch.",
+      "zh": "設計 agent 產品中關於信任與控制的關鍵時刻，例如計畫、審核與串流狀態，不必每個模式都從零發想。"
+    },
+    "addedDate": "2026-10-04",
+    "lastCheckedDate": "2026-10-04",
+    "screenshotCapturedDate": "2026-10-04"
+  },
+  {
     "id": "shadcn-ui",
     "group": "foundations",
     "name": "shadcn/ui",
@@ -666,6 +704,25 @@
     "screenshotCapturedDate": "2026-08-22"
   },
   {
+    "id": "transitions-dev",
+    "group": "motion-expressive-ui",
+    "name": "Transitions.dev",
+    "url": "https://transitions.dev/",
+    "screenshot": "/images/resources/catalogs/transitions-dev.webp",
+    "tags": ["motion", "product UI", "agent-ready"],
+    "description": {
+      "en": "A library of 43+ crafted UI transitions — modals, tooltips, toggles, card resizes, loaders — paired with an agent that scans a codebase, scores its motion, and opens pull requests to fix it. The library is free; a Pro tier adds more transitions.",
+      "zh": "收錄 43 個以上精心製作的 UI 轉場效果，涵蓋 modal、tooltip、切換開關、卡片縮放與載入動畫，並搭配一個能掃描程式碼庫、為動態效果評分、再以 pull request 修正問題的 agent。函式庫免費，Pro 方案提供更多轉場效果。"
+    },
+    "bestFor": {
+      "en": "Getting everyday product state changes like modals, tooltips, and toggles to feel right, and handing motion fixes to a coding agent.",
+      "zh": "讓 modal、tooltip、切換開關等日常產品狀態變化的動態感覺到位，並把動態效果的修正交給 coding agent。"
+    },
+    "addedDate": "2026-10-02",
+    "lastCheckedDate": "2026-10-02",
+    "screenshotCapturedDate": "2026-10-02"
+  },
+  {
     "id": "excalidraw",
     "group": "visualization-diagramming",
     "name": "Excalidraw",
@@ -683,6 +740,25 @@
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
     "screenshotCapturedDate": "2026-07-26"
+  },
+  {
+    "id": "diagram-design",
+    "group": "visualization-diagramming",
+    "name": "Diagram Design",
+    "url": "https://www.diagramdesign.dev/",
+    "screenshot": "/images/resources/catalogs/diagram-design.webp",
+    "tags": ["diagramming", "agent-ready", "open source"],
+    "description": {
+      "en": "An open-source skill for Claude Code, Codex, and Pi that draws 29 types of editorial diagrams as self-contained HTML + SVG files, matched to your site's colors and fonts. It can also import draw.io and Mermaid diagrams and redraw them.",
+      "zh": "開源的 Claude Code、Codex 與 Pi skill，能以自成一體的 HTML + SVG 檔案繪製 29 種編輯風格圖解，並自動套用網站的色彩與字體；也能匯入 draw.io 與 Mermaid 圖表重新繪製。"
+    },
+    "bestFor": {
+      "en": "Turning a system or process explanation into an on-brand, publication-ready diagram without leaving your coding agent.",
+      "zh": "不離開 coding agent，就把系統或流程說明變成符合品牌風格、可直接發佈的圖解。"
+    },
+    "addedDate": "2026-10-02",
+    "lastCheckedDate": "2026-10-02",
+    "screenshotCapturedDate": "2026-10-02"
   },
   {
     "id": "reicon",
