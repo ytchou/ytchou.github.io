@@ -13,14 +13,14 @@ const isZh = lang === 'zh';
 const t = useTranslations(lang);
 const base = isZh ? '' : '/en';
 const TopicHeading = embedded ? 'h3' : 'h2';
-const topicCopy: Record<ResourceTopic, { label: string; title: string; description: string; path: string }> = isZh
+const topicCopy: Record<ResourceTopic, { title: string; description: string; path: string }> = isZh
   ? {
-      design: { label: '主題', title: '設計', description: '涵蓋介面、品牌、字體、元件、動態、視覺化與設計工程的實用資源。', path: 'design' },
-      security: { label: '主題', title: 'AI 安全與漏洞工程', description: '探索 AI 輔助安全稽核、漏洞發現、修補與驗證的開源方法。', path: 'security' },
+      design: { title: '設計', description: '找靈感、挑字體、做動態效果時會打開的網站和工具。', path: 'design' },
+      security: { title: 'AI 安全', description: '研究怎麼用 AI 找漏洞、修漏洞時看過的開源工具。', path: 'security' },
     }
   : {
-      design: { label: 'Topic', title: 'Design', description: 'Useful resources for interface, brand, typography, components, motion, visualization, and design engineering.', path: 'design' },
-      security: { label: 'Topic', title: 'AI security and vulnerability engineering', description: 'Open-source approaches to AI-assisted security audits, vulnerability discovery, remediation, and verification.', path: 'security' },
+      design: { title: 'Design', description: 'Sites and tools I open when I’m looking for ideas, picking type, or working on motion.', path: 'design' },
+      security: { title: 'AI security', description: 'Open-source tools I’ve looked at while learning to find and fix vulnerabilities with AI.', path: 'security' },
     };
 const topicCovers: Record<ResourceTopic, typeof designCover> = {
   design: designCover,
@@ -54,7 +54,6 @@ const topics = resourceTopics.map(topic => {
           loading="lazy"
           decoding="async"
         />
-        <p class="topic-label">{copy.label}</p>
         <TopicHeading class="topic-title">{copy.title}</TopicHeading>
         <p class="topic-description">{copy.description}</p>
         <div class="topic-meta">
@@ -68,7 +67,6 @@ const topics = resourceTopics.map(topic => {
 
 <style>
   .topic-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
-  .topic-label { margin: 0 0 0.65rem; color: var(--color-accent); font: 0.6875rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; text-transform: uppercase; letter-spacing: 0.12em; }
   .topic-title { margin: 0; color: var(--color-text); font-size: 1.5rem; line-height: 1.25; transition: opacity var(--transition-base); }
   :global(.topic-card:hover) .topic-title { opacity: 0.7; }
   .topic-description {

@@ -5,6 +5,6 @@ import ResourcesDirectory from '../../components/ResourcesDirectory.astro';
 const resources = (await getCollection('resources')).filter(resource => resource.data.topic === 'security');
 ---
 
-<BaseLayout title="AI 安全與漏洞工程 — Patrick" description="探索 AI 輔助安全稽核、漏洞發現、修補與驗證的開源方法。" layout="gallery">
+<BaseLayout title="AI 安全 — Patrick" description="研究怎麼用 AI 找漏洞、修漏洞時看過的開源工具。" layout="gallery">
   <ResourcesDirectory resources={resources} lang="zh" topic="security" />
 </BaseLayout>

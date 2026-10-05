@@ -9,7 +9,7 @@ test.describe('resource topic hubs', () => {
     await page.goto('/resources');
 
     const design = page.getByRole('link').filter({ has: page.getByRole('heading', { name: '設計', exact: true }) });
-    const security = page.getByRole('link').filter({ has: page.getByRole('heading', { name: 'AI 安全與漏洞工程' }) });
+    const security = page.getByRole('link').filter({ has: page.getByRole('heading', { name: 'AI 安全', exact: true }) });
 
     await expect(design).toHaveAttribute('href', '/resources/design');
     await expect(design.locator('img')).toHaveCount(1);
@@ -28,7 +28,7 @@ test.describe('resource topic hubs', () => {
     await page.goto('/en/resources');
 
     await expect(page.getByRole('link').filter({ has: page.getByRole('heading', { name: 'Design', exact: true }) })).toHaveAttribute('href', '/en/resources/design');
-    await expect(page.getByRole('link').filter({ has: page.getByRole('heading', { name: 'AI security and vulnerability engineering' }) })).toHaveAttribute('href', '/en/resources/security');
+    await expect(page.getByRole('link').filter({ has: page.getByRole('heading', { name: 'AI security', exact: true }) })).toHaveAttribute('href', '/en/resources/security');
     await expect(page.getByText(/Reviewed through/)).toHaveCount(0);
   });
 });
