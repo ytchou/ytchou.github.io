@@ -1,7 +1,7 @@
 [
   {
     "id": "mobbin",
-    "group": "interface-web-inspiration",
+    "group": "inspiration",
     "name": "Mobbin",
     "url": "https://mobbin.com/",
     "screenshot": "/images/resources/catalogs/mobbin.webp",
@@ -16,11 +16,11 @@
     },
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
-    "screenshotCapturedDate": "2026-07-26"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "macapp-supply",
-    "group": "interface-web-inspiration",
+    "group": "inspiration",
     "name": "Macapp Supply",
     "url": "https://macapp.supply/",
     "screenshot": "/images/resources/catalogs/macapp-supply.webp",
@@ -35,11 +35,11 @@
     },
     "addedDate": "2026-08-19",
     "lastCheckedDate": "2026-08-19",
-    "screenshotCapturedDate": "2026-08-19"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "loadmore",
-    "group": "interface-web-inspiration",
+    "group": "inspiration",
     "name": "loadmo.re",
     "url": "https://loadmo.re/",
     "screenshot": "/images/resources/catalogs/loadmore.webp",
@@ -54,11 +54,11 @@
     },
     "addedDate": "2026-08-19",
     "lastCheckedDate": "2026-08-19",
-    "screenshotCapturedDate": "2026-08-19"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "noiced",
-    "group": "interface-web-inspiration",
+    "group": "inspiration",
     "name": "Noiced",
     "url": "https://noiced.com/",
     "screenshot": "/images/resources/catalogs/noiced.webp",
@@ -73,11 +73,11 @@
     },
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
-    "screenshotCapturedDate": "2026-07-26"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "recent-design",
-    "group": "interface-web-inspiration",
+    "group": "inspiration",
     "name": "Recent",
     "url": "https://recent.design/",
     "screenshot": "/images/resources/catalogs/recent-design.webp",
@@ -92,11 +92,11 @@
     },
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
-    "screenshotCapturedDate": "2026-07-26"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "dribbble",
-    "group": "interface-web-inspiration",
+    "group": "inspiration",
     "name": "Dribbble",
     "url": "https://dribbble.com/",
     "screenshot": "/images/resources/catalogs/dribbble.webp",
@@ -111,11 +111,11 @@
     },
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
-    "screenshotCapturedDate": "2026-07-26"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "best-website-templates",
-    "group": "interface-web-inspiration",
+    "group": "inspiration",
     "name": "Best Website Templates",
     "url": "https://bestwebsitetemplate.com/",
     "screenshot": "/images/resources/catalogs/best-website-templates.webp",
@@ -130,11 +130,11 @@
     },
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
-    "screenshotCapturedDate": "2026-07-26"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "footer-design",
-    "group": "interface-web-inspiration",
+    "group": "inspiration",
     "name": "Footer Design",
     "url": "https://www.footer.design/",
     "screenshot": "/images/resources/catalogs/footer-design.webp",
@@ -149,11 +149,11 @@
     },
     "addedDate": "2026-08-19",
     "lastCheckedDate": "2026-08-19",
-    "screenshotCapturedDate": "2026-08-19"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "details-so",
-    "group": "interface-web-inspiration",
+    "group": "inspiration",
     "name": "Details.so",
     "url": "https://www.details.so/",
     "screenshot": "/images/resources/catalogs/details-so.webp",
@@ -168,11 +168,11 @@
     },
     "addedDate": "2026-08-21",
     "lastCheckedDate": "2026-08-21",
-    "screenshotCapturedDate": "2026-08-21"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "awwwards",
-    "group": "interface-web-inspiration",
+    "group": "inspiration",
     "name": "Awwwards",
     "url": "https://www.awwwards.com/",
     "screenshot": "/images/resources/catalogs/awwwards.webp",
@@ -187,11 +187,11 @@
     },
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
-    "screenshotCapturedDate": "2026-07-26"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "inspo",
-    "group": "interface-web-inspiration",
+    "group": "inspiration",
     "name": "Inspo",
     "url": "https://inspomcp.dev/",
     "screenshot": "/images/resources/catalogs/inspo.webp",
@@ -206,11 +206,11 @@
     },
     "addedDate": "2026-10-04",
     "lastCheckedDate": "2026-10-04",
-    "screenshotCapturedDate": "2026-10-04"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "posts-design",
-    "group": "brand-editorial-social",
+    "group": "inspiration",
     "name": "posts.design",
     "url": "https://posts.design/",
     "screenshot": "/images/resources/catalogs/posts-design.webp",
@@ -225,11 +225,11 @@
     },
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
-    "screenshotCapturedDate": "2026-07-26"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "deck-gallery",
-    "group": "brand-editorial-social",
+    "group": "inspiration",
     "name": "Deck Gallery",
     "url": "https://deck.gallery/",
     "screenshot": "/images/resources/catalogs/deck-gallery.webp",
@@ -244,11 +244,11 @@
     },
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
-    "screenshotCapturedDate": "2026-07-26"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "logosystem",
-    "group": "brand-editorial-social",
+    "group": "inspiration",
     "name": "Logosystem",
     "url": "https://logosystem.co/",
     "screenshot": "/images/resources/catalogs/logosystem.webp",
@@ -263,12 +263,12 @@
     },
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
-    "screenshotCapturedDate": "2026-07-26"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "topic": "design",
     "id": "logos-lndev",
-    "group": "brand-editorial-social",
+    "group": "inspiration",
     "name": "SVG Logos",
     "url": "https://logos.lndev.me/",
     "screenshot": "/images/resources/catalogs/logos-lndev.webp",
@@ -283,11 +283,11 @@
     },
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
-    "screenshotCapturedDate": "2026-07-26"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "brand-guidelines",
-    "group": "brand-editorial-social",
+    "group": "inspiration",
     "name": "Brand Guidelines",
     "url": "https://www.brandguidelines.net/",
     "screenshot": "/images/resources/catalogs/brand-guidelines.webp",
@@ -302,11 +302,11 @@
     },
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
-    "screenshotCapturedDate": "2026-07-26"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "color-bears",
-    "group": "brand-editorial-social",
+    "group": "inspiration",
     "name": "Color Bears",
     "url": "https://www.threads.com/@color.bears",
     "screenshot": "/images/resources/catalogs/color-bears.webp",
@@ -325,7 +325,7 @@
   },
   {
     "id": "fonts-in-use",
-    "group": "typography",
+    "group": "type-icons-diagrams",
     "name": "Fonts In Use",
     "url": "https://fontsinuse.com/",
     "screenshot": "/images/resources/catalogs/fonts-in-use.webp",
@@ -340,11 +340,11 @@
     },
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
-    "screenshotCapturedDate": "2026-07-26"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "free-faces",
-    "group": "typography",
+    "group": "type-icons-diagrams",
     "name": "Free Faces",
     "url": "https://www.freefaces.gallery/",
     "screenshot": "/images/resources/catalogs/free-faces.webp",
@@ -359,11 +359,11 @@
     },
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
-    "screenshotCapturedDate": "2026-07-26"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "component-gallery",
-    "group": "component-discovery",
+    "group": "components-motion",
     "name": "The Component Gallery",
     "url": "https://component.gallery/",
     "screenshot": "/images/resources/catalogs/component-gallery.webp",
@@ -378,11 +378,11 @@
     },
     "addedDate": "2026-07-24",
     "lastCheckedDate": "2026-07-24",
-    "screenshotCapturedDate": "2026-07-24"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "21st-dev",
-    "group": "component-discovery",
+    "group": "components-motion",
     "name": "21st.dev",
     "url": "https://21st.dev/",
     "screenshot": "/images/resources/catalogs/21st-dev.webp",
@@ -397,11 +397,11 @@
     },
     "addedDate": "2026-07-24",
     "lastCheckedDate": "2026-07-24",
-    "screenshotCapturedDate": "2026-07-24"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "lander-figma-blocks",
-    "group": "component-discovery",
+    "group": "components-motion",
     "name": "Lander Figma Blocks",
     "url": "https://blocks.lander.studio/",
     "screenshot": "/images/resources/catalogs/lander-figma-blocks.webp",
@@ -416,11 +416,11 @@
     },
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
-    "screenshotCapturedDate": "2026-07-26"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "forever-components",
-    "group": "component-discovery",
+    "group": "components-motion",
     "name": "Forever Components",
     "url": "https://forever-components.vercel.app/infinite/",
     "screenshot": "/images/resources/catalogs/forever-components.webp",
@@ -435,11 +435,11 @@
     },
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
-    "screenshotCapturedDate": "2026-07-26"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "uiverse",
-    "group": "component-discovery",
+    "group": "components-motion",
     "name": "Uiverse",
     "url": "https://uiverse.io/",
     "screenshot": "/images/resources/catalogs/uiverse.webp",
@@ -458,7 +458,7 @@
   },
   {
     "id": "opensource-ui",
-    "group": "component-discovery",
+    "group": "components-motion",
     "name": "Opensource UI",
     "url": "https://opensourceui.in/",
     "screenshot": "/images/resources/catalogs/opensource-ui.webp",
@@ -473,11 +473,11 @@
     },
     "addedDate": "2026-08-21",
     "lastCheckedDate": "2026-08-21",
-    "screenshotCapturedDate": "2026-08-21"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "halaska-ui",
-    "group": "component-discovery",
+    "group": "components-motion",
     "name": "Halaska UI",
     "url": "https://ui.halaska.com/",
     "screenshot": "/images/resources/catalogs/halaska-ui.webp",
@@ -492,11 +492,11 @@
     },
     "addedDate": "2026-10-04",
     "lastCheckedDate": "2026-10-04",
-    "screenshotCapturedDate": "2026-10-04"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "shadcn-ui",
-    "group": "foundations",
+    "group": "components-motion",
     "name": "shadcn/ui",
     "url": "https://ui.shadcn.com/",
     "screenshot": "/images/resources/catalogs/shadcn-ui.webp",
@@ -511,11 +511,11 @@
     },
     "addedDate": "2026-07-24",
     "lastCheckedDate": "2026-07-24",
-    "screenshotCapturedDate": "2026-07-24"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "react-aria",
-    "group": "foundations",
+    "group": "components-motion",
     "name": "React Aria",
     "url": "https://react-aria.adobe.com/",
     "screenshot": "/images/resources/catalogs/react-aria.webp",
@@ -530,11 +530,11 @@
     },
     "addedDate": "2026-07-24",
     "lastCheckedDate": "2026-07-24",
-    "screenshotCapturedDate": "2026-07-24"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "morphin",
-    "group": "motion-expressive-ui",
+    "group": "inspiration",
     "name": "Morphin",
     "url": "https://morphin.dev/",
     "screenshot": "/images/resources/catalogs/morphin.webp",
@@ -549,11 +549,11 @@
     },
     "addedDate": "2026-07-24",
     "lastCheckedDate": "2026-07-24",
-    "screenshotCapturedDate": "2026-07-24"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "aceternity-ui",
-    "group": "motion-expressive-ui",
+    "group": "components-motion",
     "name": "Aceternity UI",
     "url": "https://ui.aceternity.com/",
     "screenshot": "/images/resources/catalogs/aceternity-ui.webp",
@@ -568,11 +568,11 @@
     },
     "addedDate": "2026-07-24",
     "lastCheckedDate": "2026-07-24",
-    "screenshotCapturedDate": "2026-07-24"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "magic-ui",
-    "group": "motion-expressive-ui",
+    "group": "components-motion",
     "name": "Magic UI",
     "url": "https://magicui.design/",
     "screenshot": "/images/resources/catalogs/magic-ui.webp",
@@ -587,11 +587,11 @@
     },
     "addedDate": "2026-07-24",
     "lastCheckedDate": "2026-07-24",
-    "screenshotCapturedDate": "2026-07-24"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "react-bits",
-    "group": "motion-expressive-ui",
+    "group": "components-motion",
     "name": "React Bits",
     "url": "https://www.reactbits.dev/",
     "screenshot": "/images/resources/catalogs/react-bits.webp",
@@ -606,11 +606,11 @@
     },
     "addedDate": "2026-07-24",
     "lastCheckedDate": "2026-07-24",
-    "screenshotCapturedDate": "2026-07-24"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "kinetics",
-    "group": "motion-expressive-ui",
+    "group": "components-motion",
     "name": "Kinetics",
     "url": "https://kinetics.colorion.co/",
     "screenshot": "/images/resources/catalogs/kinetics.webp",
@@ -625,11 +625,11 @@
     },
     "addedDate": "2026-07-24",
     "lastCheckedDate": "2026-07-24",
-    "screenshotCapturedDate": "2026-07-24"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "eldora-ui",
-    "group": "motion-expressive-ui",
+    "group": "components-motion",
     "name": "Eldora UI",
     "url": "https://www.eldoraui.site/",
     "screenshot": "/images/resources/catalogs/eldora-ui.webp",
@@ -644,11 +644,11 @@
     },
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
-    "screenshotCapturedDate": "2026-07-26"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "css-text-effects",
-    "group": "motion-expressive-ui",
+    "group": "components-motion",
     "name": "CSS Text Effects",
     "url": "https://text-effects.colorion.co/",
     "screenshot": "/images/resources/catalogs/css-text-effects.webp",
@@ -663,11 +663,11 @@
     },
     "addedDate": "2026-07-28",
     "lastCheckedDate": "2026-07-28",
-    "screenshotCapturedDate": "2026-07-28"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "generative-loaders",
-    "group": "motion-expressive-ui",
+    "group": "components-motion",
     "name": "Generative Loaders",
     "url": "https://generativeloaders.com/",
     "screenshot": "/images/resources/catalogs/generative-loaders.webp",
@@ -682,11 +682,11 @@
     },
     "addedDate": "2026-08-09",
     "lastCheckedDate": "2026-08-09",
-    "screenshotCapturedDate": "2026-08-09"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "threeui",
-    "group": "motion-expressive-ui",
+    "group": "components-motion",
     "name": "ThreeUI",
     "url": "https://threeui.com/browse",
     "screenshot": "/images/resources/catalogs/threeui.webp",
@@ -701,11 +701,11 @@
     },
     "addedDate": "2026-08-22",
     "lastCheckedDate": "2026-08-22",
-    "screenshotCapturedDate": "2026-08-22"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "transitions-dev",
-    "group": "motion-expressive-ui",
+    "group": "components-motion",
     "name": "Transitions.dev",
     "url": "https://transitions.dev/",
     "screenshot": "/images/resources/catalogs/transitions-dev.webp",
@@ -720,11 +720,11 @@
     },
     "addedDate": "2026-10-02",
     "lastCheckedDate": "2026-10-02",
-    "screenshotCapturedDate": "2026-10-02"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "excalidraw",
-    "group": "visualization-diagramming",
+    "group": "type-icons-diagrams",
     "name": "Excalidraw",
     "url": "https://excalidraw.com/",
     "screenshot": "/images/resources/catalogs/excalidraw.webp",
@@ -739,11 +739,11 @@
     },
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
-    "screenshotCapturedDate": "2026-07-26"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "diagram-design",
-    "group": "visualization-diagramming",
+    "group": "type-icons-diagrams",
     "name": "Diagram Design",
     "url": "https://www.diagramdesign.dev/",
     "screenshot": "/images/resources/catalogs/diagram-design.webp",
@@ -758,11 +758,11 @@
     },
     "addedDate": "2026-10-02",
     "lastCheckedDate": "2026-10-02",
-    "screenshotCapturedDate": "2026-10-02"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "id": "reicon",
-    "group": "icons-supporting-tools",
+    "group": "type-icons-diagrams",
     "name": "Reicon",
     "url": "https://reicon.dev/",
     "screenshot": "/images/resources/catalogs/reicon.webp",
@@ -777,26 +777,7 @@
     },
     "addedDate": "2026-07-24",
     "lastCheckedDate": "2026-07-24",
-    "screenshotCapturedDate": "2026-07-24"
-  },
-  {
-    "id": "icon-animator",
-    "group": "icons-supporting-tools",
-    "name": "Icon Animator",
-    "url": "https://www.iconanimator.app/",
-    "screenshot": "/images/resources/catalogs/icon-animator.webp",
-    "tags": ["icons", "animation", "SVG"],
-    "description": {
-      "en": "A browser-based tool for turning compatible SVG icons into adjustable stroke-draw animations.",
-      "zh": "把相容 SVG 圖示轉成可調整描邊動畫的瀏覽器工具。"
-    },
-    "bestFor": {
-      "en": "Quick icon micro-interactions without setting up a motion project.",
-      "zh": "不必建立完整動畫專案，就能快速製作圖示微互動。"
-    },
-    "addedDate": "2026-07-24",
-    "lastCheckedDate": "2026-07-24",
-    "screenshotCapturedDate": "2026-07-24"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "topic": "design",
@@ -816,7 +797,7 @@
     },
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
-    "screenshotCapturedDate": "2026-07-26"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "topic": "design",
@@ -836,7 +817,7 @@
     },
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
-    "screenshotCapturedDate": "2026-07-26"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "topic": "design",
@@ -856,7 +837,7 @@
     },
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
-    "screenshotCapturedDate": "2026-07-26"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "topic": "design",
@@ -876,7 +857,7 @@
     },
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
-    "screenshotCapturedDate": "2026-07-26"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "topic": "design",
@@ -896,7 +877,7 @@
     },
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
-    "screenshotCapturedDate": "2026-07-26"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "topic": "design",
@@ -916,7 +897,7 @@
     },
     "addedDate": "2026-07-27",
     "lastCheckedDate": "2026-07-27",
-    "screenshotCapturedDate": "2026-07-27"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "topic": "design",
@@ -936,7 +917,7 @@
     },
     "addedDate": "2026-07-27",
     "lastCheckedDate": "2026-07-27",
-    "screenshotCapturedDate": "2026-07-27"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "topic": "design",
@@ -956,7 +937,7 @@
     },
     "addedDate": "2026-08-21",
     "lastCheckedDate": "2026-08-21",
-    "screenshotCapturedDate": "2026-08-21"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "topic": "design",
@@ -976,7 +957,7 @@
     },
     "addedDate": "2026-08-03",
     "lastCheckedDate": "2026-08-03",
-    "screenshotCapturedDate": "2026-08-03"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "topic": "design",
@@ -996,7 +977,7 @@
     },
     "addedDate": "2026-08-08",
     "lastCheckedDate": "2026-08-08",
-    "screenshotCapturedDate": "2026-08-08"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "topic": "design",
@@ -1016,7 +997,7 @@
     },
     "addedDate": "2026-08-12",
     "lastCheckedDate": "2026-08-12",
-    "screenshotCapturedDate": "2026-08-12"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "topic": "design",
@@ -1036,7 +1017,7 @@
     },
     "addedDate": "2026-08-12",
     "lastCheckedDate": "2026-08-12",
-    "screenshotCapturedDate": "2026-08-12"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "topic": "design",
@@ -1056,7 +1037,7 @@
     },
     "addedDate": "2026-08-21",
     "lastCheckedDate": "2026-08-21",
-    "screenshotCapturedDate": "2026-08-21"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "topic": "security",
@@ -1076,7 +1057,7 @@
     },
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
-    "screenshotCapturedDate": "2026-07-26"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "topic": "security",
@@ -1096,7 +1077,7 @@
     },
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
-    "screenshotCapturedDate": "2026-07-26"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "topic": "security",
@@ -1116,7 +1097,7 @@
     },
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
-    "screenshotCapturedDate": "2026-07-26"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "topic": "security",
@@ -1136,7 +1117,7 @@
     },
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
-    "screenshotCapturedDate": "2026-07-26"
+    "screenshotCapturedDate": "2026-10-05"
   },
   {
     "topic": "security",
@@ -1156,6 +1137,6 @@
     },
     "addedDate": "2026-07-30",
     "lastCheckedDate": "2026-07-30",
-    "screenshotCapturedDate": "2026-07-30"
+    "screenshotCapturedDate": "2026-10-05"
   }
 ]

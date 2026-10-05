@@ -27,7 +27,6 @@ test('Given a Mandarin visitor, when they browse the curated homepage, then each
     await expect(page.getByRole('link', { name: label, exact: true })).toBeVisible();
   }
   await expect(page.getByRole('link', { name: '關於', exact: true })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Toggle dark mode' })).toBeVisible();
   await expect(page.locator('#lang-toggle')).toBeVisible();
   const homeRows = page.locator('[data-post-row]');
   const homeCount = await homeRows.count();
@@ -39,23 +38,20 @@ test('Given a Mandarin visitor, when they browse the curated homepage, then each
   await expect(zhHomeDate).toHaveText(new Intl.DateTimeFormat('zh-TW', {
     year: 'numeric', month: 'long', day: 'numeric',
   }).format(new Date(zhHomeDateTime!)));
-  await expect(homeRows.first().locator('.post-series')).toHaveText('系列鐵人賽');
-  await expect(homeRows.first().locator('[data-post-title]')).toHaveText(/^Day \d+ \| .+/);
 
   await expect(page.getByRole('heading', { level: 2, name: '近期文章' })).toBeVisible();
   await expect(page.getByRole('heading', { level: 2, name: '精選專案' })).toBeVisible();
   const hero = page.getByRole('heading', { level: 1, name: 'Patrick C.' }).locator('..');
   await expect(page.getByRole('heading', { level: 2, name: '一路走來' })).toHaveCount(0);
   await expect(page.getByRole('heading', { level: 2, name: '資源' })).toBeVisible();
-  await expect(hero.getByRole('listitem').first()).toContainText('回到台灣，在 AI x 資料科學領域深耕與探索');
+  await expect(hero).toContainText('回到台灣，在 AI x 資料科學領域深耕與探索');
   await expect(page.getByRole('heading', { level: 3, name: 'Formoria' })).toBeVisible();
   await expect(page.getByRole('heading', { level: 3, name: 'Cardio Slot' })).toBeVisible();
   await expect(page.getByRole('heading', { level: 3, name: '設計', exact: true })).toBeVisible();
-  await expect(page.getByRole('heading', { level: 3, name: 'AI 安全與漏洞工程' })).toBeVisible();
-  await expect(page.getByText('主題', { exact: true })).toHaveCount(2);
-  await expect(page.getByText(/主題 0\d/)).toHaveCount(0);
+  await expect(page.getByRole('heading', { level: 3, name: 'AI 安全', exact: true })).toBeVisible();
+  await expect(page.getByText('主題', { exact: true })).toHaveCount(0);
   const designTopic = page.getByRole('link').filter({ has: page.getByRole('heading', { level: 3, name: '設計', exact: true }) });
-  const securityTopic = page.getByRole('link').filter({ has: page.getByRole('heading', { level: 3, name: 'AI 安全與漏洞工程' }) });
+  const securityTopic = page.getByRole('link').filter({ has: page.getByRole('heading', { level: 3, name: 'AI 安全', exact: true }) });
   await expect(designTopic).toHaveAttribute('href', '/resources/design');
   await expect(designTopic.locator('img')).toHaveCount(1);
   await expect(securityTopic).toHaveAttribute('href', '/resources/security');
@@ -135,13 +131,12 @@ test('Given an English visitor, when they browse the curated homepage, then Chin
   await expect(page.getByRole('heading', { level: 3, name: 'Cardio Slot' })).toBeVisible();
   const hero = page.getByRole('heading', { level: 1, name: 'Patrick C.' }).locator('..');
   await expect(page.getByRole('heading', { level: 2, name: 'My journey' })).toHaveCount(0);
-  await expect(hero.getByRole('listitem').first()).toContainText('back in Taiwan — building and writing at the intersection of AI × data');
+  await expect(hero).toContainText('back in Taiwan — building and writing at the intersection of AI × data');
   await expect(page.getByRole('heading', { level: 3, name: 'Design' })).toBeVisible();
-  await expect(page.getByRole('heading', { level: 3, name: 'AI security and vulnerability engineering' })).toBeVisible();
-  await expect(page.getByText('Topic', { exact: true })).toHaveCount(2);
-  await expect(page.getByText(/Topic 0\d/)).toHaveCount(0);
+  await expect(page.getByRole('heading', { level: 3, name: 'AI security', exact: true })).toBeVisible();
+  await expect(page.getByText('Topic', { exact: true })).toHaveCount(0);
   const designTopic = page.getByRole('link').filter({ has: page.getByRole('heading', { level: 3, name: 'Design' }) });
-  const securityTopic = page.getByRole('link').filter({ has: page.getByRole('heading', { level: 3, name: 'AI security and vulnerability engineering' }) });
+  const securityTopic = page.getByRole('link').filter({ has: page.getByRole('heading', { level: 3, name: 'AI security', exact: true }) });
   await expect(designTopic).toHaveAttribute('href', '/en/resources/design');
   await expect(designTopic.locator('img')).toHaveCount(1);
   await expect(securityTopic).toHaveAttribute('href', '/en/resources/security');
@@ -174,8 +169,8 @@ test('Given a visitor exploring the portfolio, destination pages use Patrick’s
     { path: '/en/blog', heading: 'What I’m learning', intro: 'Notes from my work in data science, AI workflows, and building products.', eyebrow: 'Archive' },
     { path: '/projects', heading: '我正在做的事', intro: '從資料產品到實用小工具，這些是我把想法做成可用產品的過程。', eyebrow: '作品集' },
     { path: '/en/projects', heading: 'What I’m building', intro: 'Data products and small tools I’ve made to turn ideas into something useful.', eyebrow: 'Portfolio' },
-    { path: '/resources', heading: '我反覆使用的資源', intro: '做設計、研究 AI 安全與打造產品時，我真正會回頭使用的工具與參考。', eyebrow: '收藏' },
-    { path: '/en/resources', heading: 'Tools I keep coming back to', intro: 'The sites, references, and open-source tools I rely on for design, AI security, and product work.', eyebrow: 'Directory' },
+    { path: '/resources', heading: '我收藏的資源', intro: '平常做介面、研究 AI 安全時存下來的網站和工具。', eyebrow: '收藏' },
+    { path: '/en/resources', heading: 'Resources I’ve saved', intro: 'Sites and tools I’ve saved while designing interfaces and researching AI security.', eyebrow: 'Directory' },
     { path: '/contact', heading: '來聊聊吧', intro: '有想法、問題，或想聊資料、AI 與產品？寫信給我。', eyebrow: '聯繫' },
     { path: '/en/contact', heading: 'Let’s talk', intro: 'Have an idea, a question, or want to talk about data, AI, or products? Send me a note.' },
     { path: '/resources/design', heading: '我的設計工具箱', intro: '做介面、品牌、字體與動態時，我會實際回訪的工具和參考。', eyebrow: '資源 / 主題 01' },

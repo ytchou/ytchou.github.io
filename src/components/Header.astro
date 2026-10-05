@@ -25,37 +25,12 @@ const base = lang === 'en' ? '/en' : '';
     </div>
 
     <div class="nav-controls">
-      <button id="theme-toggle" aria-label="Toggle dark mode" class="theme-btn">
-        <span class="icon-sun">&#x2600;</span>
-        <span class="icon-moon">&#x263E;</span>
-      </button>
-
       <a href={altLangUrl} id="lang-toggle" class="lang-toggle">
         {t('nav.lang-toggle')}
       </a>
     </div>
   </nav>
 </header>
-
-<script>
-  const toggle = document.getElementById('theme-toggle');
-  const html = document.documentElement;
-
-  function getTheme() {
-    return html.getAttribute('data-theme') ||
-      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  }
-
-  function setTheme(theme: string) {
-    html.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
-  }
-
-  toggle?.addEventListener('click', () => {
-    setTheme(getTheme() === 'dark' ? 'light' : 'dark');
-  });
-
-</script>
 
 <style>
   .site-header {
@@ -110,34 +85,6 @@ const base = lang === 'en' ? '/en' : '';
     white-space: nowrap;
   }
   .nav-link:hover { color: var(--color-text); }
-
-  .theme-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    border: 0;
-    background: transparent;
-    cursor: pointer;
-    font-size: 14px;
-    color: var(--color-muted);
-    transition: border-color var(--transition-base), color var(--transition-base);
-    flex-shrink: 0;
-  }
-  .theme-btn:hover {
-    color: var(--color-text);
-  }
-
-  /* Show sun in dark mode, moon in light mode */
-  :global([data-theme="light"]) .icon-moon { display: none; }
-  :global([data-theme="light"]) .icon-sun { display: inline; }
-  :global([data-theme="dark"]) .icon-sun { display: none; }
-  :global([data-theme="dark"]) .icon-moon { display: inline; }
-
-  /* Default fallback (before JS runs) — hide moon, show sun */
-  :global(:root:not([data-theme])) .icon-moon { display: none; }
-  :global(:root:not([data-theme])) .icon-sun { display: inline; }
 
   .lang-toggle {
     display: inline-flex;

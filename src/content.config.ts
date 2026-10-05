@@ -28,14 +28,9 @@ const resources = defineCollection({
   schema: z.object({
     topic: z.enum(['design', 'security']).default('design'),
     group: z.enum([
-      'interface-web-inspiration',
-      'brand-editorial-social',
-      'typography',
-      'component-discovery',
-      'foundations',
-      'motion-expressive-ui',
-      'visualization-diagramming',
-      'icons-supporting-tools',
+      'inspiration',
+      'components-motion',
+      'type-icons-diagrams',
       'design-engineering',
       'agentic-security',
     ]),

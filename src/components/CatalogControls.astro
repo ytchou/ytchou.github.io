@@ -65,12 +65,13 @@ const render = showChips || showViewToggle;
 )}
 
 <style>
+  /* Two columns so the chips wrap inside the left one and the view toggle stays beside
+     them, right-aligned under the resource count, instead of dropping to its own line. */
   .catalog-controls {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
+    gap: 1rem 1.5rem;
   }
   .chip-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 
@@ -103,9 +104,7 @@ const render = showChips || showViewToggle;
 
   .view-toggle {
     display: inline-flex;
-    /* Keeps the toggle on the right edge even when the chip row wraps past it,
-       lining it up with the right-aligned resource count above. */
-    margin-left: auto;
+    grid-column: 2;
     gap: 0.25rem;
     padding: 0.2rem;
     border: 1px solid var(--color-border);

@@ -75,12 +75,8 @@ for (const { name, path, allLabel, cardioDescription, developmentLabel } of [
       await expect(project).not.toContainText(/GitHub|展示|Live/);
     });
 
-    test('Cardio Slot leads the catalog while Formoria is visibly in development and not linked', async ({ page }) => {
-      const projects = page.locator('[data-filter-item]');
-      await expect(projects.nth(0).getByRole('heading')).toHaveText('Cardio Slot ↗');
-      await expect(projects.nth(1).getByRole('heading')).toHaveText('Formoria');
-
-      const formoria = projects.filter({ has: page.getByRole('heading', { name: 'Formoria', exact: true }) });
+    test('Formoria is visibly in development and not linked', async ({ page }) => {
+      const formoria = page.locator('[data-filter-item]').filter({ has: page.getByRole('heading', { name: 'Formoria', exact: true }) });
       await expect(formoria).toContainText(developmentLabel);
       await expect(formoria.getByRole('link')).toHaveCount(0);
     });

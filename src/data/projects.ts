@@ -16,6 +16,14 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    title: 'Visual Cookbook',
+    description: 'A practical guide to choosing and building charts and diagrams, with copyable prompts, example datasets, and runnable D3, Plotly, and Matplotlib code.',
+    descriptionZh: '整理圖表與示意圖的選用時機，提供可複製的提示詞、範例資料，以及可執行的 D3、Plotly、Matplotlib 程式碼，幫助你把資料與想法畫清楚。',
+    tags: ['Data Visualization', 'D3', 'Plotly', 'Python'],
+    liveUrl: 'https://ytchou.github.io/visual-cookbook/',
+    image: visualCookbookHero,
+  },
+  {
     title: 'Cardio Slot',
     description: 'A slot-machine-inspired workout generator that builds varied treadmill sessions by combining focus, pattern, finish, duration, warm-up, and cooldown options.',
     descriptionZh: '以拉霸機概念設計的有氧訓練產生器，組合訓練重點、節奏、收尾、時間、暖身與緩和，快速建立多變的跑步機課表。',
@@ -31,13 +39,5 @@ export const projects: Project[] = [
     tags: ['Product', 'Next.js', 'TypeScript'],
     inDevelopment: true,
     image: formoriaHero,
-  },
-  {
-    title: 'Visual Cookbook',
-    description: 'A practical guide to choosing and building charts and diagrams, with copyable prompts, example datasets, and runnable D3, Plotly, and Matplotlib code.',
-    descriptionZh: '整理圖表與示意圖的選用時機，提供可複製的提示詞、範例資料，以及可執行的 D3、Plotly、Matplotlib 程式碼，幫助你把資料與想法畫清楚。',
-    tags: ['Data Visualization', 'D3', 'Plotly', 'Python'],
-    liveUrl: 'https://ytchou.github.io/visual-cookbook/',
-    image: visualCookbookHero,
   },
 ];
