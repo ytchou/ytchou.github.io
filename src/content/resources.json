@@ -495,6 +495,29 @@
     "screenshotCapturedDate": "2026-10-05"
   },
   {
+    "id": "boardui",
+    "group": "components-motion",
+    "name": "BoardUI",
+    "url": "https://www.boardui.com/",
+    "screenshot": "/images/resources/catalogs/boardui.webp",
+    "tags": [
+      "dashboards",
+      "data charts",
+      "freemium"
+    ],
+    "description": {
+      "en": "A React design system for dashboards and agent interfaces, built on Tailwind CSS v4, React Aria, TanStack Table, and Recharts, with 85 components, 19 data charts, page templates, and MCP support for coding agents. The core components are MIT licensed; a one-time Pro license unlocks advanced charts and templates.",
+      "zh": "專為儀表板與 agent 介面打造的 React 設計系統，建構於 Tailwind CSS v4、React Aria、TanStack Table 與 Recharts 之上，收錄 85 個元件、19 種資料圖表與頁面模板，並支援 coding agent 使用的 MCP。基礎元件採 MIT 授權，進階圖表與模板需一次性購買 Pro 授權。"
+    },
+    "bestFor": {
+      "en": "Building a data-heavy admin or analytics screen, with tables, charts, and filters, without assembling a chart library and a table library from scratch.",
+      "zh": "打造以資料為主的後台或分析頁面，包含表格、圖表與篩選，不必自己從零拼湊圖表函式庫與表格函式庫。"
+    },
+    "addedDate": "2026-10-06",
+    "lastCheckedDate": "2026-10-06",
+    "screenshotCapturedDate": "2026-10-06"
+  },
+  {
     "id": "shadcn-ui",
     "group": "components-motion",
     "name": "shadcn/ui",
