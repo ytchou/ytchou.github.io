@@ -29,7 +29,7 @@ async function checkScreenshot(catalog) {
 
 const expectedGroups = {
   inspiration: ['mobbin', 'macapp-supply', 'loadmore', 'noiced', 'recent-design', 'dribbble', 'best-website-templates', 'footer-design', 'details-so', 'awwwards', 'inspo', 'posts-design', 'deck-gallery', 'logosystem', 'logos-lndev', 'brand-guidelines', 'color-bears', 'morphin'],
-  'components-motion': ['component-gallery', '21st-dev', 'lander-figma-blocks', 'forever-components', 'uiverse', 'opensource-ui', 'halaska-ui', 'shadcn-ui', 'react-aria', 'aceternity-ui', 'magic-ui', 'react-bits', 'kinetics', 'eldora-ui', 'css-text-effects', 'generative-loaders', 'threeui', 'transitions-dev'],
+  'components-motion': ['component-gallery', '21st-dev', 'lander-figma-blocks', 'forever-components', 'uiverse', 'opensource-ui', 'halaska-ui', 'boardui', 'shadcn-ui', 'react-aria', 'aceternity-ui', 'magic-ui', 'react-bits', 'kinetics', 'eldora-ui', 'css-text-effects', 'generative-loaders', 'threeui', 'transitions-dev'],
   'type-icons-diagrams': ['fonts-in-use', 'free-faces', 'reicon', 'excalidraw', 'diagram-design'],
   'design-engineering': ['web-interface-guidelines', 'pasito', 'vaul', 'manage-design-projects', 'developing-taste', 'impeccable', 'agentation', 'boneyard', 'design-engineer-tools', 'refero-styles', 'ui-design-dictionary', 'vibe-coding-glossary', 'jakub-antalik'],
   'agentic-security': ['cloudflare-security-audit-skill', 'visa-vulnerability-agentic-harness', 'shannon', 'snyk-agent-scan', 'codex-security'],
