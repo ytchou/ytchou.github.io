@@ -8,7 +8,6 @@ images_max: 4
 sections_main_min: 2
 sections_main_max: 5
 required_first_heading: 今天要聊什麼？
-required_last_heading: 明天要聊什麼？
 first_heading_exempt_days: 1
 
 ## Structure is per article (template retired 2026-09-13)
@@ -45,15 +44,15 @@ Takeaway section "doesn't belong in the content at all". Rules now:
   examples (§7). Each one marks something the reader should keep.
 - **No Founder Takeaway.** No closing section that translates the piece for a
   different reader.
-- **Every day opens with `## 今天要聊什麼？` and ends with `## 明天要聊什麼？`**
-  (added 2026-09-14). Each is one short paragraph. The opener is the bridge
-  from yesterday: one sentence on what yesterday covered, then what today
-  covers and why it comes next. The closer is not a recap: it names the
-  conceptual bridge today built and gives a concrete reason to read tomorrow
-  (writing-guide §14 — 「今天把問題拆成資料、搜尋與探索三層，而三件事情最後都指向
-  同一個問題：機器到底要怎麼理解產品？明天就從這裡開始…」, never 「希望大家有所
-  收穫，明天繼續」). Day 01 has no opener (nothing to bridge from). This is the iThome convention and
-  overrides the base rule that the ending simply stops.
+- **Every day opens with `## 今天要聊什麼？`** (added 2026-09-14): one short
+  paragraph that bridges from yesterday, one sentence on what yesterday covered,
+  then what today covers and why it comes next. Day 01 has no opener (nothing to
+  bridge from).
+- **No closing teaser from Day 24 onward** (author rule, 2026-10-08). Each day is
+  a separate topic, so the article ends on its last substantive paragraph: no
+  `## 明天要聊什麼？`, no paragraph previewing the next post, no recap. Days 01–23
+  keep their existing closings. This replaces the 2026-09-14 rule that every day
+  ends with a 明天 closer.
 - **Each day spends only its own material.** `series.md` says which day owns
   which example, number, or argument. An opener previews; it does not
   demonstrate. The taxonomy-mismatch passage (「露營要帶的杯子」 vs the
