@@ -46,6 +46,8 @@ notion: https://app.notion.com/p/patrickytc/Day-26-Editorial-Agent-3ed0d2d793cf8
 
 這三段流程 AI 都能自己跑完，但內容合不合理、可不可信，最後還是要由人確認。所以 Editorial Agent 交回來的是一份 .mdx 草稿。MDX 是在 Markdown 裡加上網頁元件的格式，我的網站本來就用它寫文章，放進網站後就能直接預覽文字、商品卡和版面的實際樣子，再直接在上面修改、加上備註。
 
+![](/images/ironman/day-26-mdx-preview.png)
+
 ## 怎麼避免 AI 亂編商品資訊？
 
 Editorial Agent 用的商品資料，來自選物網站本身的商品庫，也就是系列中段介紹過的那條商品 Curation Agentic Workflow 整理出來的結果。不過寫文章時，AI 還是可能憑空編出資訊，也就是常說的幻覺；商品資料也可能已經過時，甚至商品頁早就不在了。所以寫進文章的每個事實，都要再回到官方頁面查一次：文章裡的每一句，都要在官方頁面上找得到對應的原文，找不到就刪掉。
