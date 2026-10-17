@@ -152,6 +152,44 @@
     "screenshotCapturedDate": "2026-10-05"
   },
   {
+    "id": "navbar-gallery",
+    "group": "inspiration",
+    "name": "Navbar Gallery",
+    "url": "https://www.navbar.gallery/",
+    "screenshot": "/images/resources/catalogs/navbar-gallery.webp",
+    "tags": ["navigation", "web design", "patterns"],
+    "description": {
+      "en": "A curated gallery of website navigation bars sorted by type: static and sticky bars, dropdowns, mega menus, and sidebars.",
+      "zh": "精選網站導覽列畫廊，依類型整理：固定與置頂導覽列、下拉選單、大型選單與側邊欄。"
+    },
+    "bestFor": {
+      "en": "Choosing a navigation structure and comparing how real sites handle menus, nesting, and the top of the page.",
+      "zh": "決定導覽結構時，比較真實網站如何處理選單、層級與頁面頂端。"
+    },
+    "addedDate": "2026-10-17",
+    "lastCheckedDate": "2026-10-17",
+    "screenshotCapturedDate": "2026-10-17"
+  },
+  {
+    "id": "cta-gallery",
+    "group": "inspiration",
+    "name": "CTA.gallery",
+    "url": "https://www.cta.gallery/",
+    "screenshot": "/images/resources/catalogs/cta-gallery.webp",
+    "tags": ["calls to action", "conversion", "patterns"],
+    "description": {
+      "en": "A curated gallery of calls to action from real sites, filterable by type, industry, and light or dark mode, from buttons and forms to pricing and newsletter sign-ups.",
+      "zh": "收錄真實網站行動呼籲（CTA）的精選畫廊，可依類型、產業與深淺色模式篩選，涵蓋按鈕、表單、定價與電子報訂閱。"
+    },
+    "bestFor": {
+      "en": "Designing a sign-up, pricing, or download prompt and looking for how others frame the ask.",
+      "zh": "設計註冊、定價或下載的引導時，參考別人如何提出邀請。"
+    },
+    "addedDate": "2026-10-17",
+    "lastCheckedDate": "2026-10-17",
+    "screenshotCapturedDate": "2026-10-17"
+  },
+  {
     "id": "details-so",
     "group": "inspiration",
     "name": "Details.so",
@@ -861,6 +899,26 @@
     "addedDate": "2026-07-26",
     "lastCheckedDate": "2026-07-26",
     "screenshotCapturedDate": "2026-10-05"
+  },
+  {
+    "topic": "design",
+    "id": "liquid-glass",
+    "group": "design-engineering",
+    "name": "liquid-glass",
+    "url": "https://glass.samasante.com/",
+    "screenshot": "/images/resources/catalogs/liquid-glass.webp",
+    "tags": ["React", "glass effect", "open source"],
+    "description": {
+      "en": "A headless, dependency-free React lens that recreates Apple-style Liquid Glass by refracting the live page in Safari, Firefox, and Chrome.",
+      "zh": "無相依的 headless React 元件，透過折射即時頁面內容重現 Apple 風格的 Liquid Glass，支援 Safari、Firefox 與 Chrome。"
+    },
+    "bestFor": {
+      "en": "Studying or adding a real refraction effect on the web without faking it with a static blur.",
+      "zh": "想在網頁上研究或加入真正的折射效果，而不是用靜態模糊假裝。"
+    },
+    "addedDate": "2026-10-17",
+    "lastCheckedDate": "2026-10-17",
+    "screenshotCapturedDate": "2026-10-17"
   },
   {
     "topic": "design",
