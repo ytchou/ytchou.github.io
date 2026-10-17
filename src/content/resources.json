@@ -651,6 +651,25 @@
     "screenshotCapturedDate": "2026-10-05"
   },
   {
+    "id": "affectui",
+    "group": "components-motion",
+    "name": "affectUI",
+    "url": "https://www.affectui.com/",
+    "screenshot": "/images/resources/catalogs/affectui.webp",
+    "tags": ["AI products", "agent UI", "React"],
+    "description": {
+      "en": "Single-file, dependency-free React components, screens, and blocks for AI products, from tool call and approval cards to full agent run and eval screens.",
+      "zh": "專為 AI 產品打造的單檔、無相依 React 元件、畫面與區塊，從工具呼叫、審核卡片到完整的 agent 執行與評估畫面。"
+    },
+    "bestFor": {
+      "en": "Building agent interfaces where the hard part is showing plans, tool calls, and approvals; most pieces need a one-time Pro license.",
+      "zh": "打造 agent 介面時，參考如何呈現計畫、工具呼叫與審核流程；多數元件需購買一次性 Pro 授權。"
+    },
+    "addedDate": "2026-10-17",
+    "lastCheckedDate": "2026-10-17",
+    "screenshotCapturedDate": "2026-10-17"
+  },
+  {
     "id": "react-bits",
     "group": "components-motion",
     "name": "React Bits",
