@@ -1,8 +1,10 @@
 // @ts-check
 import mdx from '@astrojs/mdx';
+import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
+import { fileURLToPath } from 'node:url';
 
 export default defineConfig({
   site: 'https://ytchou.github.io',
@@ -29,8 +31,13 @@ export default defineConfig({
       prefixDefaultLocale: false,
     },
   },
-  integrations: [mdx(), sitemap()],
+  integrations: [mdx(), react(), sitemap()],
   vite: {
+    resolve: {
+      alias: {
+        '@explainers': fileURLToPath(new URL('./src/components/explainers', import.meta.url)),
+      },
+    },
     plugins: [tailwindcss()],
   },
 });
