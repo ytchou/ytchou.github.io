@@ -3,9 +3,10 @@ import rss from '@astrojs/rss';
 import { SITE_TITLE } from '../consts';
 import { getPostSlug } from '../i18n/utils';
 import { ui } from '../i18n/ui';
+import { includePost } from '../services/drafts';
 
 export async function GET(context) {
-	const posts = await getCollection('blog', ({ data }) => data.lang === 'zh' && !data.draft);
+	const posts = await getCollection('blog', post => post.data.lang === 'zh' && includePost(post));
 	return rss({
 		title: SITE_TITLE,
 		description: ui.zh['blog.subtitle'],

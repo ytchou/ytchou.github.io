@@ -2,9 +2,10 @@
 import { getCollection, render } from 'astro:content';
 import BlogPostLayout from '../../layouts/BlogPostLayout.astro';
 import { getPostSlug } from '../../i18n/utils';
+import { includePost } from '../../services/drafts';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog', ({ data }) => data.lang === 'zh' && !data.draft);
+  const posts = await getCollection('blog', post => post.data.lang === 'zh' && includePost(post));
   return posts.map((post) => {
     const slug = getPostSlug(post.id);
     let prevPost = null;

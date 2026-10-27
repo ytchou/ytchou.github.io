@@ -1,5 +1,6 @@
 import type { CollectionEntry } from 'astro:content';
 import { defaultLang, ui, type Lang, type UIKey } from './ui';
+import { includePost } from '../services/drafts';
 
 export function getLangFromUrl(url: URL): Lang {
   const [, maybeLang] = url.pathname.split('/');
@@ -21,14 +22,14 @@ export function sortPosts(posts: CollectionEntry<'blog'>[]): CollectionEntry<'bl
 }
 
 /**
- * Select one published edition per slug for a locale.
+ * Select one visible edition per slug for a locale.
  * Mandarin stays Mandarin-only. English prefers English and falls back to Mandarin.
  */
 export function selectPostsForLang(
   posts: CollectionEntry<'blog'>[],
   lang: Lang,
 ): CollectionEntry<'blog'>[] {
-  const published = posts.filter(post => !post.data.draft);
+  const published = posts.filter(includePost);
   if (lang === 'zh') {
     return sortPosts(published.filter(post => post.data.lang === 'zh'));
   }
