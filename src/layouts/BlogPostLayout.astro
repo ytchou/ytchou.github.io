@@ -52,7 +52,6 @@ const hasToc = toc.length > 1;
   description={description}
   alternateLangUrl={alternateBlogIndex}
   hasAlternateTranslation={false}
-  layout={hasToc ? 'article' : 'editorial'}
 >
   <article class:list={{ 'has-toc': hasToc }}>
     <a href={backHref} class="back-link">{backLabel}</a>
@@ -160,6 +159,10 @@ const hasToc = toc.length > 1;
 </script>
 
 <style>
+  article {
+    max-width: var(--reading-width);
+  }
+
   .back-link {
     display: inline-block;
     font-size: 0.875rem;
@@ -304,6 +307,7 @@ const hasToc = toc.length > 1;
   /* Desktop: TOC moves to a sticky right-hand column */
   @media (min-width: 1024px) {
     .has-toc {
+      max-width: none;
       display: grid;
       grid-template-columns: minmax(0, 1fr) 13rem;
       column-gap: 3rem;

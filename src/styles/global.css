@@ -29,6 +29,11 @@
   --radius-sm:   6px;
   --radius-tag:  999px;
   --transition-base: 200ms ease;
+
+  /* Shared page frame: header, main and footer all use this width */
+  --container-width: 1088px;
+  /* Comfortable line length for long-form text inside the frame */
+  --reading-width: 784px;
 }
 
 html {
