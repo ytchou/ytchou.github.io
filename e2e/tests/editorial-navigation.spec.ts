@@ -194,9 +194,10 @@ test('Given a visitor exploring the portfolio, destination pages use Patrick’s
   await page.goto('/blog/day-06-structured-outputs');
   const postHeader = page.locator('article > header');
   await expect(postHeader.locator('time')).toHaveText('2026年9月20日');
-  await expect(postHeader.locator('.post-series')).toHaveText('系列鐵人賽');
+  await expect(postHeader.locator('.post-series')).toHaveText('系列鐵人賽：挑戰用 30 天利用 Side Project 學習 AI Agents');
   await expect(postHeader.getByText(/第 \d+ 章/)).toHaveCount(0);
 
   await page.goto('/blog/day-01-why-this-series');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Day 1 | 挑戰用 30 天利用 Side Project 學習 AI Agents');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('挑戰用 30 天利用 Side Project 學習 AI Agents');
+  await expect(page.locator('article > header .page-eyebrow')).toHaveText('Day 1 / 30');
 });

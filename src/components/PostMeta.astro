@@ -6,6 +6,9 @@ interface Props {
   lang: Lang;
   tags?: string[];
   isSeries?: boolean;
+  /** Full series name shown after the series tag, e.g. on the post page */
+  seriesTitle?: string;
+  day?: number;
   tagHrefBase?: string;
   fallbackLanguageLabel?: string;
 }
@@ -15,6 +18,8 @@ const {
   lang,
   tags = [],
   isSeries = false,
+  seriesTitle,
+  day,
   tagHrefBase,
   fallbackLanguageLabel,
 } = Astro.props;
@@ -25,6 +30,7 @@ const formattedDate = new Intl.DateTimeFormat(lang === 'zh' ? 'zh-TW' : 'en-US',
 }).format(date);
 const seriesLabel = lang === 'zh' ? '系列' : 'Series';
 const seriesTag = tags[0];
+const seriesName = seriesTitle ? `${seriesTag}：${seriesTitle}` : seriesTag;
 ---
 
 <div class="post-meta">
@@ -35,13 +41,19 @@ const seriesTag = tags[0];
       {tagHrefBase ? (
         <a href={`${tagHrefBase}/${seriesTag}`} class="post-series">
           <span class="post-series-label">{seriesLabel}</span>
-          <span class="post-series-name">{seriesTag}</span>
+          <span class="post-series-name">{seriesName}</span>
         </a>
       ) : (
         <span class="post-series">
           <span class="post-series-label">{seriesLabel}</span>
-          <span class="post-series-name">{seriesTag}</span>
+          <span class="post-series-name">{seriesName}</span>
         </span>
+      )}
+      {day != null && (
+        <>
+          <span aria-hidden="true">·</span>
+          <span>Day {day}</span>
+        </>
       )}
     </>
   )}
@@ -80,6 +92,8 @@ const seriesTag = tags[0];
     text-decoration: none;
   }
   .post-series-label {
+    flex-shrink: 0;
+    white-space: nowrap;
     padding: 0 0.4rem;
     background: var(--color-surface);
     color: var(--color-accent);

@@ -4,16 +4,19 @@
 interface Props {
   title: string;
   description?: string;
+  /** Small label above the title, e.g. a series day */
+  eyebrow?: string;
   back?: { href: string; label: string };
   /** 'page' for short section labels, 'article' for sentence-long post titles */
   variant?: 'page' | 'article';
 }
 
-const { title, description, back, variant = 'page' } = Astro.props;
+const { title, description, eyebrow, back, variant = 'page' } = Astro.props;
 ---
 
 {back && <a href={back.href} class="back-link">{back.label}</a>}
 <header class="page-header">
+  {eyebrow && <p class="page-eyebrow">{eyebrow}</p>}
   <h1 class:list={['page-title', { 'page-title--article': variant === 'article' }]}>{title}</h1>
   {description && <p class="page-description">{description}</p>}
   <slot />
