@@ -42,16 +42,3 @@ const { tag, posts } = Astro.props;
     {posts.map(post => <BlogPostCard post={post} uiLang="zh" />)}
   </div>
 </BaseLayout>
-
-<style>
-  .back-link {
-    display: inline-flex;
-    align-items: center;
-    min-height: 48px;
-    margin-bottom: 1.5rem;
-    color: var(--color-muted);
-    font-size: 0.875rem;
-    text-decoration: none;
-  }
-  .back-link:hover { color: var(--color-text); }
-</style>

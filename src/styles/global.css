@@ -103,6 +103,17 @@ a { color: inherit; }
 }
 
 /* ─── Shared page headings ─────────────────────────────── */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  margin-bottom: 1.5rem;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+.back-link:hover { color: var(--color-text); }
 .page-header {
   margin-bottom: 2.5rem;
   padding-bottom: 1.5rem;

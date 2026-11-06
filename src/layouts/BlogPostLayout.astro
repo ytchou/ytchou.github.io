@@ -55,7 +55,7 @@ const hasToc = toc.length > 1;
 >
   <article class:list={{ 'has-toc': hasToc }}>
     <a href={backHref} class="back-link">{backLabel}</a>
-    <header class="mb-10 pb-8 border-b" style="border-color: var(--color-border);">
+    <header class="page-header">
       <h1 class="post-title">{displayTitle}</h1>
       <PostMeta
         date={date}
@@ -161,18 +161,6 @@ const hasToc = toc.length > 1;
 <style>
   article {
     max-width: var(--reading-width);
-  }
-
-  .back-link {
-    display: inline-block;
-    font-size: 0.875rem;
-    color: var(--color-muted);
-    text-decoration: none;
-    margin-bottom: 2.5rem;
-    transition: color 150ms ease;
-  }
-  .back-link:hover {
-    color: var(--color-text);
   }
 
   .post-title {
