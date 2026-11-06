@@ -12,7 +12,6 @@ interface Props {
   description?: string;
   alternateLangUrl?: string;
   hasAlternateTranslation?: boolean;
-  layout?: 'editorial' | 'gallery';
 }
 
 const lang = getLangFromUrl(Astro.url);
@@ -22,7 +21,6 @@ const {
   description = defaultDescription,
   alternateLangUrl,
   hasAlternateTranslation = true,
-  layout = 'editorial',
 } = Astro.props;
 const htmlLang = lang === 'zh' ? 'zh-TW' : 'en';
 ---
@@ -41,7 +39,7 @@ const htmlLang = lang === 'zh' ? 'zh-TW' : 'en';
   </head>
   <body>
     <Header alternateLangUrl={alternateLangUrl} />
-    <main class:list={['site-main', `site-main--${layout}`]}>
+    <main class="site-main">
       <slot />
     </main>
     <Footer />
@@ -52,10 +50,9 @@ const htmlLang = lang === 'zh' ? 'zh-TW' : 'en';
   .site-main {
     width: 100%;
     margin: 0 auto;
+    max-width: var(--container-width);
     padding: 3rem 1.5rem 4rem;
   }
-  .site-main--editorial { max-width: 768px; }
-  .site-main--gallery { max-width: 1088px; }
   @media (max-width: 639px) {
     .site-main { padding-top: 2.25rem; }
   }

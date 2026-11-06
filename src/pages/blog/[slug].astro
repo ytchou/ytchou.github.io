@@ -10,14 +10,12 @@ export async function getStaticPaths() {
     const slug = getPostSlug(post.id);
     let prevPost = null;
     let nextPost = null;
-    let totalDays: number | undefined;
 
     if (post.data.series) {
       const seriesPosts = posts
         .filter(p => p.data.series === post.data.series)
         .sort((a, b) => (a.data.day ?? 0) - (b.data.day ?? 0));
       const idx = seriesPosts.findIndex(p => p.id === post.id);
-      totalDays = 30;
       if (idx > 0) {
         const p = seriesPosts[idx - 1];
         prevPost = { slug: getPostSlug(p.id), day: p.data.day!, title: p.data.title };
@@ -30,12 +28,12 @@ export async function getStaticPaths() {
 
     return {
       params: { slug },
-      props: { post, prevPost, nextPost, totalDays },
+      props: { post, prevPost, nextPost },
     };
   });
 }
 
-const { post, prevPost, nextPost, totalDays } = Astro.props;
+const { post, prevPost, nextPost } = Astro.props;
 const { Content, headings } = await render(post);
 const toc = headings.filter(h => h.depth === 2);
 ---
@@ -51,7 +49,6 @@ const toc = headings.filter(h => h.depth === 2);
   toc={toc}
   prevPost={prevPost}
   nextPost={nextPost}
-  totalDays={totalDays}
 >
   <Content />
 </BlogPostLayout>

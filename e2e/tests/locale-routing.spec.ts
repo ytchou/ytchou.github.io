@@ -28,7 +28,7 @@ test('Given an existing Mandarin article bookmark, when it opens, then it reache
 
   await expect(page).toHaveURL(/\/blog\/day-01-why-this-series\/?$/);
   await expect(page.locator('html')).toHaveAttribute('lang', 'zh-TW');
-  await expect(page.getByRole('heading', { level: 1 })).toContainText('Day 1');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('挑戰用 30 天利用 Side Project 學習 AI Agents');
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     'href',
     'https://ytchou.github.io/blog/day-01-why-this-series/',

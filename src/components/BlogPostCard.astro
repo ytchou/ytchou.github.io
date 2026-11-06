@@ -19,7 +19,6 @@ const isMandarinFallback = uiLang === 'en' && sourceLang === 'zh';
 const contentLang = sourceLang === 'zh' ? 'zh-TW' : 'en';
 const Heading = `h${headingLevel}` as 'h2' | 'h3';
 const isSeriesPost = Boolean(post.data.series && post.data.day != null);
-const displayTitle = isSeriesPost ? `Day ${post.data.day} | ${post.data.title}` : post.data.title;
 ---
 
 <article class="post-row" data-post-row data-post-source-lang={sourceLang} lang={contentLang}>
@@ -29,9 +28,10 @@ const displayTitle = isSeriesPost ? `Day ${post.data.day} | ${post.data.title}` 
       lang={uiLang}
       tags={category ? [category] : []}
       isSeries={isSeriesPost}
+      day={isSeriesPost ? post.data.day : undefined}
       fallbackLanguageLabel={isMandarinFallback ? '中文' : undefined}
     />
-    <Heading class="post-title" data-post-title>{displayTitle}</Heading>
+    <Heading class="post-title" data-post-title>{post.data.title}</Heading>
     <p class="post-description">{post.data.description}</p>
   </a>
 </article>

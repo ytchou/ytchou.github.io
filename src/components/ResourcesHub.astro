@@ -4,6 +4,7 @@ import { resourceTopics, type ResourceEntry, type ResourceTopic } from '../servi
 import type { Lang } from '../i18n/ui';
 import { useTranslations } from '../i18n/utils';
 import CardShell from './CardShell.astro';
+import PageHeader from './PageHeader.astro';
 import designCover from '../assets/resource-topic-design.svg';
 import securityCover from '../assets/resource-topic-security.svg';
 
@@ -33,10 +34,7 @@ const topics = resourceTopics.map(topic => {
 ---
 
 {!embedded && (
-  <header class="page-header">
-    <h1 class="page-title">{t('resources.heading')}</h1>
-    <p class="page-description">{t('resources.intro')}</p>
-  </header>
+  <PageHeader title={t('resources.heading')} description={t('resources.intro')} />
 )}
 
 <div class="topic-list">

@@ -29,6 +29,14 @@
   --radius-sm:   6px;
   --radius-tag:  999px;
   --transition-base: 200ms ease;
+
+  /* Shared page frame: header, main and footer all use this width */
+  --container-width: 1088px;
+  /* Comfortable line length for long-form text inside the frame */
+  --reading-width: 784px;
+  /* Title sizes: short section labels vs sentence-long article headlines */
+  --title-page: clamp(2.25rem, 6vw, 3.5rem);
+  --title-article: clamp(2rem, 4.5vw, 2.75rem);
 }
 
 html {
@@ -98,18 +106,42 @@ a { color: inherit; }
 }
 
 /* ─── Shared page headings ─────────────────────────────── */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  margin-bottom: 1.5rem;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+.back-link:hover { color: var(--color-text); }
 .page-header {
+  position: relative;
   margin-bottom: 2.5rem;
   padding-bottom: 1.5rem;
   border-bottom: 1px solid var(--color-border);
 }
+.page-eyebrow {
+  margin: 0 0 0.5rem;
+  color: var(--color-accent);
+  font: 500 0.75rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.05em;
+}
 .page-title {
   margin: 0;
   color: var(--color-text);
-  font-size: clamp(2.25rem, 6vw, 3.5rem);
+  font-size: var(--title-page);
   font-weight: 600;
   letter-spacing: -0.035em;
   line-height: 1.05;
+}
+.page-title--article {
+  margin-bottom: 0.75rem;
+  font-size: var(--title-article);
+  letter-spacing: -0.025em;
+  line-height: 1.15;
 }
 .page-description {
   max-width: 64ch;

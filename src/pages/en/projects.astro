@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
 import CatalogControls from '../../components/CatalogControls.astro';
 import { projects } from '../../data/projects';
@@ -11,12 +12,9 @@ const t = useTranslations('en');
 const chips = [...new Set(projects.flatMap(p => p.tags))].sort().map(tag => ({ value: tag, label: tag }));
 ---
 
-<BaseLayout title={`${t('projects.title')} — Patrick`} description={t('projects.subtitle')} layout="gallery">
+<BaseLayout title={`${t('projects.title')} — Patrick`} description={t('projects.subtitle')}>
   <!-- Page header -->
-  <header class="page-header">
-    <h1 class="page-title">{t('projects.heading')}</h1>
-    <p class="page-description">{t('projects.intro')}</p>
-  </header>
+  <PageHeader title={t('projects.heading')} description={t('projects.intro')} />
 
   <!-- Tag filter bar -->
   <div class="mb-8">
