@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import BlogPostCard from '../../../components/BlogPostCard.astro';
+import PageHeader from '../../../components/PageHeader.astro';
 import { includePost } from '../../../services/drafts';
 
 export async function getStaticPaths() {
@@ -32,11 +33,11 @@ const { tag, posts } = Astro.props;
   alternateLangUrl="/en/blog"
   hasAlternateTranslation={false}
 >
-  <a href="/blog" class="back-link">← 所有文章</a>
-  <header class="page-header">
-    <h1 class="page-title">{tag}</h1>
-    <p class="page-description">這裡有我寫過的 {posts.length} 篇相關文章。</p>
-  </header>
+  <PageHeader
+    title={tag}
+    description={`這裡有我寫過的 ${posts.length} 篇相關文章。`}
+    back={{ href: '/blog', label: '← 所有文章' }}
+  />
 
   <div class="post-list">
     {posts.map(post => <BlogPostCard post={post} uiLang="zh" />)}

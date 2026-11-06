@@ -1,6 +1,7 @@
 ---
 import ResourceCard from './ResourceCard.astro';
 import CatalogControls from './CatalogControls.astro';
+import PageHeader from './PageHeader.astro';
 import { groupResources, resourceGroups, type ResourceEntry, type ResourceTopic } from '../services/resources';
 import { useTranslations } from '../i18n/utils';
 import type { Lang } from '../i18n/ui';
@@ -45,12 +46,13 @@ const chips = resourceGroups
   }));
 ---
 
-<header class="page-header">
-  <a href={isZh ? '/resources' : '/en/resources'} class="back-link">← {isZh ? '所有資源' : 'All resources'}</a>
-  <h1 class="page-title">{topicCopy[topic].title}</h1>
-  <p class="page-description">{topicCopy[topic].description}</p>
+<PageHeader
+  title={topicCopy[topic].title}
+  description={topicCopy[topic].description}
+  back={{ href: isZh ? '/resources' : '/en/resources', label: `← ${isZh ? '所有資源' : 'All resources'}` }}
+>
   <p class="count" aria-live="polite"><span data-filter-total>{resources.length}</span> {isZh ? '項資源' : 'resources'}</p>
-</header>
+</PageHeader>
 
 <div class="controls-row">
   <CatalogControls chips={chips} lang={lang} showViewToggle />
@@ -84,7 +86,6 @@ const chips = resourceGroups
 <p class="empty-state" data-filter-empty hidden>{t('catalog.empty')}</p>
 
 <style>
-  .page-header { position: relative; }
   .count { position: absolute; right: 0; bottom: 1.5rem; margin: 0; color: var(--color-text-subtle); font: 0.75rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; }
   .controls-row { padding-top: 2rem; }
   .empty-state { margin: 4rem 0; color: var(--color-muted); font-size: 0.9375rem; text-align: center; }

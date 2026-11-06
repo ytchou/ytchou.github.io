@@ -34,6 +34,9 @@
   --container-width: 1088px;
   /* Comfortable line length for long-form text inside the frame */
   --reading-width: 784px;
+  /* Title sizes: short section labels vs sentence-long article headlines */
+  --title-page: clamp(2.25rem, 6vw, 3.5rem);
+  --title-article: clamp(2rem, 4.5vw, 2.75rem);
 }
 
 html {
@@ -115,6 +118,7 @@ a { color: inherit; }
 }
 .back-link:hover { color: var(--color-text); }
 .page-header {
+  position: relative;
   margin-bottom: 2.5rem;
   padding-bottom: 1.5rem;
   border-bottom: 1px solid var(--color-border);
@@ -122,10 +126,16 @@ a { color: inherit; }
 .page-title {
   margin: 0;
   color: var(--color-text);
-  font-size: clamp(2.25rem, 6vw, 3.5rem);
+  font-size: var(--title-page);
   font-weight: 600;
   letter-spacing: -0.035em;
   line-height: 1.05;
+}
+.page-title--article {
+  margin-bottom: 0.75rem;
+  font-size: var(--title-article);
+  letter-spacing: -0.025em;
+  line-height: 1.15;
 }
 .page-description {
   max-width: 64ch;
