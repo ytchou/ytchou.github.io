@@ -44,6 +44,7 @@ const backLabel = series
   : (lang === 'zh' ? '← 所有文章' : '← All posts');
 const displayTitle = series && day != null ? `Day ${day} | ${title}` : title;
 const pageTitle = `${displayTitle} — ${SITE_TITLE}`;
+const hasToc = toc.length > 1;
 ---
 
 <BaseLayout
@@ -51,8 +52,9 @@ const pageTitle = `${displayTitle} — ${SITE_TITLE}`;
   description={description}
   alternateLangUrl={alternateBlogIndex}
   hasAlternateTranslation={false}
+  layout={hasToc ? 'article' : 'editorial'}
 >
-  <article>
+  <article class:list={{ 'has-toc': hasToc }}>
     <a href={backHref} class="back-link">{backLabel}</a>
     <header class="mb-10 pb-8 border-b" style="border-color: var(--color-border);">
       <h1 class="post-title">{displayTitle}</h1>
@@ -91,7 +93,7 @@ const pageTitle = `${displayTitle} — ${SITE_TITLE}`;
       </div>
     )}
 
-    {toc.length > 1 && (
+    {hasToc && (
       <nav class="toc" aria-label="目錄">
         <p class="toc-label">目錄</p>
         <ol class="toc-list">
@@ -102,7 +104,7 @@ const pageTitle = `${displayTitle} — ${SITE_TITLE}`;
       </nav>
     )}
 
-    <div class="prose prose-gray max-w-none">
+    <div class="prose prose-gray max-w-none post-body">
       <slot />
     </div>
 
@@ -124,6 +126,38 @@ const pageTitle = `${displayTitle} — ${SITE_TITLE}`;
     )}
   </article>
 </BaseLayout>
+
+<script>
+  // Scroll-spy: mark the TOC link for the last heading scrolled past
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('.toc-list a')];
+  const targets = links
+    .map(link => document.getElementById(decodeURIComponent(link.hash.slice(1))))
+    .filter((el): el is HTMLElement => el !== null);
+
+  if (targets.length > 0) {
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      let activeId: string | null = null;
+      for (const el of targets) {
+        if (el.getBoundingClientRect().top > 120) break;
+        activeId = el.id;
+      }
+      for (const link of links) {
+        const isActive = decodeURIComponent(link.hash.slice(1)) === activeId;
+        if (isActive) link.setAttribute('aria-current', 'true');
+        else link.removeAttribute('aria-current');
+      }
+    };
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    }, { passive: true });
+    update();
+  }
+</script>
 
 <style>
   .back-link {
@@ -262,8 +296,56 @@ const pageTitle = `${displayTitle} — ${SITE_TITLE}`;
     color: var(--color-text-subtle);
     font-variant-numeric: tabular-nums;
   }
-  .toc-list li a:hover {
+  .toc-list li a:hover,
+  .toc-list li a[aria-current='true'] {
     color: var(--color-text);
+  }
+
+  /* Desktop: TOC moves to a sticky right-hand column */
+  @media (min-width: 1024px) {
+    .has-toc {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 13rem;
+      column-gap: 3rem;
+      grid-template-areas:
+        'back   toc'
+        'header toc'
+        'series toc'
+        'body   toc'
+        'bottom toc';
+    }
+    .has-toc .back-link { grid-area: back; justify-self: start; }
+    .has-toc > header { grid-area: header; }
+    .has-toc .series-card { grid-area: series; }
+    .has-toc .post-body { grid-area: body; }
+    .has-toc .bottom-nav { grid-area: bottom; }
+
+    .has-toc .toc {
+      grid-area: toc;
+      align-self: start;
+      position: sticky;
+      top: 6rem;
+      max-height: calc(100vh - 8rem);
+      overflow-y: auto;
+      margin: 0;
+      padding: 0.25rem 0 0.25rem 1.25rem;
+      border: none;
+      border-left: 1px solid var(--color-border);
+      border-radius: 0;
+      background: none;
+    }
+    .has-toc .toc-label {
+      display: none;
+    }
+    .has-toc .toc-list li a {
+      line-height: 1.5;
+    }
+    .has-toc .toc-list li a::before {
+      content: none;
+    }
+    .has-toc .toc-list li a[aria-current='true'] {
+      font-weight: 500;
+    }
   }
 
   /* Bottom navigation */

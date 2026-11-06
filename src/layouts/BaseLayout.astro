@@ -12,7 +12,7 @@ interface Props {
   description?: string;
   alternateLangUrl?: string;
   hasAlternateTranslation?: boolean;
-  layout?: 'editorial' | 'gallery';
+  layout?: 'editorial' | 'gallery' | 'article';
 }
 
 const lang = getLangFromUrl(Astro.url);
@@ -56,6 +56,11 @@ const htmlLang = lang === 'zh' ? 'zh-TW' : 'en';
   }
   .site-main--editorial { max-width: 768px; }
   .site-main--gallery { max-width: 1088px; }
+  /* Editorial width until there is room for the TOC sidebar beside it */
+  .site-main--article { max-width: 768px; }
+  @media (min-width: 1024px) {
+    .site-main--article { max-width: 1088px; }
+  }
   @media (max-width: 639px) {
     .site-main { padding-top: 2.25rem; }
   }
