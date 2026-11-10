@@ -48,7 +48,7 @@ export function selectPostsForLang(
 
 /** Strip the language-directory prefix from a content collection post ID to get a clean URL slug. */
 export function getPostSlug(id: string): string {
-  return id.startsWith('zh/') ? id.slice(3) : id;
+  return id.replace(/^(zh|en)\//, '');
 }
 
 export function getAlternateLangUrl(url: URL, lang: Lang): string {

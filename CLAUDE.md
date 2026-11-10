@@ -37,9 +37,9 @@ Shared classes (`.page-header`, `.page-title`, `.page-description`, `.page-eyebr
 
 ## Blog posts
 
-- Posts live in `src/content/blog/zh/`. `BlogPostLayout` adds the sticky TOC when a post has 2+ `##` headings.
+- Posts live in `src/content/blog/zh/` (English in `src/content/blog/en/`, same file name as the zh post). `BlogPostLayout` adds the sticky TOC when a post has 2+ `##` headings.
 - A post is a series post only when its frontmatter sets `series:` (with `day:`). Series posts get the `Day N / total` eyebrow and the series pill; posts without `series:` get plain tag pills.
-- Series titles and lengths live in `src/data/series.ts`, keyed by the `series` value. A new series is one entry there, not layout code.
+- Series titles and lengths live in `src/data/series.ts`, keyed by the `series` value. A new series is one entry there, not layout code. A `series:` value missing from that file fails the build.
 - Keep `Day N` out of post titles in content; the layout adds it to the eyebrow and the browser tab title.
 
 ## Tests
