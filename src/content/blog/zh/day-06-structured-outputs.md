@@ -161,7 +161,7 @@ if (!result.success) {
 
 ## 回到整條資料流程：Structured Outputs 怎麼把每一步接起來？
 
-**Structured Outputs 決定的是模型產生的資料要怎麼交給下一個階段。**只要某一步的模型輸出還要被後續程式使用，就需要穩定的輸出契約，因此回頭看整條資料流程我們可以發現每一個步驟都會因此而受益。
+**Structured Outputs 決定的是模型產生的資料要怎麼交給下一個階段**。只要某一步的模型輸出還要被後續程式使用，就需要穩定的輸出契約，因此回頭看整條資料流程我們可以發現每一個步驟都會因此而受益。
 
 ![Structured Outputs 在資料流程中的角色](/images/ironman/day-06-structured-outputs-tool-use-v2.png)
 
