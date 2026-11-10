@@ -15,5 +15,6 @@ jobs:
       - run: npm ci
       - run: node scripts/validate-resource-catalog.mjs
       - run: npm run build
+      - run: node scripts/check-literal-bold.mjs
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
