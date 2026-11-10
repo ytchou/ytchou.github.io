@@ -50,6 +50,7 @@ const dayLabel = series && day != null
 // The day stays in the browser tab and search results, not in the on-page title
 const pageTitle = `${series && day != null ? `Day ${day} | ${title}` : title} — ${SITE_TITLE}`;
 const hasToc = toc.length > 1;
+const tocLabel = lang === 'zh' ? '目錄' : 'Contents';
 ---
 
 <BaseLayout
@@ -76,8 +77,8 @@ const hasToc = toc.length > 1;
     </PageHeader>
 
     {hasToc && (
-      <nav class="toc" aria-label="目錄">
-        <p class="toc-label">目錄</p>
+      <nav class="toc" aria-label={tocLabel}>
+        <p class="toc-label">{tocLabel}</p>
         <ol class="toc-list">
           {toc.map(h => (
             <li><a href={`#${h.slug}`}>{h.text}</a></li>

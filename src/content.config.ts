@@ -1,6 +1,7 @@
 import { defineCollection } from 'astro:content';
 import { file, glob } from 'astro/loaders';
 import { z } from 'astro/zod';
+import { seriesInfo } from './data/series';
 
 const blog = defineCollection({
   loader: glob({ base: './src/content/blog', pattern: '**/*.{md,mdx}' }),
@@ -11,7 +12,11 @@ const blog = defineCollection({
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
     lang: z.enum(['en', 'zh']).default('en'),
-    series: z.string().optional(),
+    series: z.string()
+      .refine(series => series in seriesInfo, {
+        error: issue => `Unknown series "${issue.input}". Add it to src/data/series.ts.`,
+      })
+      .optional(),
     day: z.number().optional(),
     chapter: z.number().optional(),
     notion: z.string().optional(),
