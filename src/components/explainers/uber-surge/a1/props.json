@@ -1,0 +1,21 @@
+{
+  "sim": {
+    "riders": 40,
+    "driversBefore": 9,
+    "note": "示意模擬：人數與車數是為了呈現比例而設定，不是實際資料。"
+  },
+  "noSurge": {
+    "eventLabel": "2014–15 跨年夜，紐約加成故障停用 26 分鐘",
+    "outageMinutes": 26,
+    "requestMultiplier": 2,
+    "waitMultiplier": 2,
+    "completionCeilingPct": 25
+  },
+  "surge": {
+    "eventLabel": "2015 年麥迪遜廣場花園演唱會",
+    "driverMultiplierMax": 2,
+    "appOpenMultiplierMax": 4,
+    "avgPickupMinutes": 2.6
+  },
+  "source": "Hall、Kendrick、Nosko 以 Uber 內部資料撰寫的案例研究（Uber 自行公布，未經獨立驗證）"
+}
